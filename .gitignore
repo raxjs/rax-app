@@ -17,3 +17,13 @@ build
 .tmp/
 
 npmrc
+
+*~
+*.swp
+.DS_Store
+npm-debug.log
+lerna-debug.log
+npm-debug.log*
+lib/
+dist/
+.idea/
