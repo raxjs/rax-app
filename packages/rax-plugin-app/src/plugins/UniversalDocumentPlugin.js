@@ -44,7 +44,7 @@ module.exports = class UniversalDocumentPlugin {
       const { code } = babel.transformSync(fileContent, babelConfig);
 
       // code export
-      const fn = new Function('module', 'exports', 'require', code);
+      const fn = new Function('module', 'exports', 'require', code); // eslint-disable-line
       fn({ exports: {} }, module.exports, require);
       const documentElement = module.exports.__esModule ? module.exports.default : module.exports;
 
@@ -53,11 +53,11 @@ module.exports = class UniversalDocumentPlugin {
         const files = compilation.entrypoints.get(entry).getFiles();
         const fileName = files.filter(v => ~v.indexOf('.js'));
         // get document html string
-        const pageSource = '<!DOCTYPE html>' + renderToString(createElement(documentElement, {
+        const pageSource = `<!DOCTYPE html>${  renderToString(createElement(documentElement, {
           publicPath,
           styles: [],
-          scripts: fileName
-        }));
+          scripts: fileName,
+        }))}`;
 
         // insert html file
         compilation.assets[`web/${entry}.html`] = new RawSource(pageSource);

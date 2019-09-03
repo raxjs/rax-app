@@ -5,7 +5,7 @@ const { getBabelConfig } = require('rax-compile-config');
 
 const babelConfig = getBabelConfig();
 
-module.exports = function(content) {
+module.exports = function() {
   const query = typeof this.query === 'string' ? qs.parse(this.query.substr(1)) : this.query;
 
   const {
@@ -18,7 +18,7 @@ module.exports = function(content) {
     pageName,
     isMultiPages,
     styles = [],
-    scripts = []
+    scripts = [],
   } = query;
 
   const hasShell = fs.existsSync(absoluteShellPath);

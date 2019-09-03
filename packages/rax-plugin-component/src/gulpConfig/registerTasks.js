@@ -1,4 +1,4 @@
-'use strict';
+
 
 const path = require('path');
 const babel = require('gulp-babel');
@@ -9,20 +9,20 @@ const { getBabelConfig } = require('rax-compile-config');
 const {
   JS_FILES_PATTERN,
   OTHER_FILES_PATTERN,
-  IGNORE_PATTERN
+  IGNORE_PATTERN,
 } = require('./filePatterns');
 
 const babelConfig = getBabelConfig({
   styleSheet: true,
   custom: {
-    ignore: ['**/**/*.d.ts']
-  }
+    ignore: ['**/**/*.d.ts'],
+  },
 });
 
 module.exports = async({
   api,
   gulp,
-  watch
+  watch,
 }) => {
   const { context, log } = api;
   const { rootDir, userConfig } = context;
@@ -53,7 +53,7 @@ module.exports = async({
     skipLibCheck: true,
     declaration: true,
     declarationDir: BUILD_DIR,
-    outDir: BUILD_DIR
+    outDir: BUILD_DIR,
   });
 
   // for ts/tsx.
@@ -92,7 +92,7 @@ module.exports = async({
     skipLibCheck: true,
     declaration: true,
     declarationDir: BUILD_DIR,
-    outDir: BUILD_DIR
+    outDir: BUILD_DIR,
   });
 
   //  build ts/tsx to miniapp

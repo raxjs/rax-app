@@ -8,8 +8,8 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const babelConfig = getBabelConfig({
   styleSheet: true,
   custom: {
-    ignore: ['**/**/*.d.ts']
-  }
+    ignore: ['**/**/*.d.ts'],
+  },
 });
 
 module.exports = (context) => {

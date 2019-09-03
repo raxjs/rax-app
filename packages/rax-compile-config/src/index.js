@@ -10,5 +10,5 @@ module.exports = {
   getBabelConfig,
   setBabelAlias,
   hmrClient,
-  handleWebpackErr
+  handleWebpackErr,
 };

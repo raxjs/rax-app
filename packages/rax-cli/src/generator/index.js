@@ -1,5 +1,4 @@
 const ejs = require('ejs');
-const path = require('path');
 const TemplateProcesser = require('./templateProcesser');
 
 // Rename files start with '_'

@@ -38,7 +38,7 @@ module.exports = class PWAAppShellPlugin {
     // Render into index.html
     compiler.hooks.emit.tapAsync(NAME, async(compilation, callback) => {
       const shellValue = compilation.assets[outputFilename].source();
-      const AppShell = interopRequire(eval('var window = {};' + shellValue));
+      const AppShell = interopRequire(eval(`var window = {};${  shellValue}`)); // eslint-disable-line
       const content = renderToString(createElement(AppShell, {}));
 
       // Pre-render App-Shell renderToString element to index.html
@@ -46,7 +46,7 @@ module.exports = class PWAAppShellPlugin {
       Object.keys(entryObj).forEach(entry => {
         const pageHtmlValue = compilation.assets[`web/${entry}.html`].source();
         compilation.assets[`web/${entry}.html`] = new RawSource(pageHtmlValue.replace(
-          /<div(.*?) id=\"root\">(.*?)<\/div>/,
+          /<div(.*?) id="root">(.*?)<\/div>/,
           `<div id="root">${content}</div>`
         ));
       });
@@ -59,7 +59,7 @@ module.exports = class PWAAppShellPlugin {
     compiler.hooks.done.tap(NAME, () => {
       if (config.mode === 'production' || !config.mode) {
         const jsFile = path.join(config.output.path, outputFilename);
-        const mapFile = jsFile + '.map';
+        const mapFile = `${jsFile  }.map`;
         const htmlFile = jsFile.replace(/\.js$/, '.html');
 
         existsSync(jsFile) && unlinkSync(jsFile);

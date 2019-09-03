@@ -10,14 +10,14 @@ module.exports = (context, devCompileLog) => {
   jsx2mp.watch({
     webpackConfig: {
       output: {
-        path: outputPath
-      }
+        path: outputPath,
+      },
     },
     afterCompiled: (err, stats) => {
       devCompileLog({
         err,
         stats,
       });
-    }
+    },
   });
 };

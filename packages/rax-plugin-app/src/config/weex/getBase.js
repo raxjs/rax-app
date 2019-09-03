@@ -1,4 +1,4 @@
-'use strict';
+
 
 const WeexFrameworkBanner = require('../../plugins/WeexFrameworkBannerPlugin');
 const getWebpackBase = require('../getWebpackBase');

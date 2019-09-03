@@ -1,4 +1,4 @@
-'use strict';
+
 
 const loaderUtils = require('loader-utils');
 
@@ -18,7 +18,7 @@ module.exports = function(source, inputMap) {
 
   const options = loaderUtils.getOptions(this);
   const resourcePath = this.resourcePath;
-  let resourcePathInEntry = options.appIndex && options.appIndex.startsWith(resourcePath);
+  const resourcePathInEntry = options.appIndex && options.appIndex.startsWith(resourcePath);
 
   if (!resourcePathInEntry) {
     return callback(null, source, inputMap);

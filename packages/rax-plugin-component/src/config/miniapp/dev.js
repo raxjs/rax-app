@@ -20,6 +20,6 @@ module.exports = (context, devCompileLog) => {
         err,
         stats,
       });
-    }
+    },
   });
 };

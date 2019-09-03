@@ -8,7 +8,7 @@ class WeexFrameworkBannerPlugin {
   }
 
   apply(compiler) {
-    var frameworkComment = `// {"framework" : "${this.options.framework}"}`;
+    const frameworkComment = `// {"framework" : "${this.options.framework}"}`;
 
     // Webpack 4
     if (compiler.hooks && compiler.hooks.compilation && compiler.hooks.compilation.tap) {
@@ -20,7 +20,7 @@ class WeexFrameworkBannerPlugin {
           for (const chunk of chunks) {
             // Entry only
             if (!chunk.canBeInitial()) {
-              continue;
+              continue; // eslint-disable-line
             }
 
             chunk.files.forEach(function(file) {

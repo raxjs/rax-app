@@ -1,4 +1,4 @@
-'use strict';
+
 
 const chalk = require('chalk');
 const path = require('path');
@@ -22,7 +22,7 @@ module.exports = async(api, options = {}) => {
   log.info('component', chalk.green('Build start... '));
   registerTasks({ api, gulp });
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const buildMiniapp = ~targets.indexOf('miniapp');
 
     fs.removeSync(path.join(BUILD_DIR, 'miniappTemp'));

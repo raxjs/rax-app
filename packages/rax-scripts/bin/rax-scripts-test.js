@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-'use strict';
+
 const program = require('commander');
 
 program
-  .action((cmd) => {
+  .action(() => {
     require('../src/jest')();
   });
 

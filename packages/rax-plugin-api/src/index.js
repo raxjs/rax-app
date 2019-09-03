@@ -12,7 +12,7 @@ module.exports = (api, options = {}) => {
 
   options = {
     ...options,
-    targets: ['web', 'weex']
+    targets: ['web', 'weex'],
   };
 
   if (command === 'dev') {

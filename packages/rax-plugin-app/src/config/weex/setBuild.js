@@ -1,6 +1,4 @@
-'use strict';
-
-module.exports = (config, context) => {
+module.exports = (config) => {
   config.optimization
     .minimizer('uglify')
       .tap((args) => {

@@ -16,5 +16,5 @@ module.exports = {
     overlay: false,
     host: address.ip(),
     port: 9999,
-  }
+  },
 };

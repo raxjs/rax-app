@@ -1,4 +1,4 @@
-'use strict';
+
 const { getWebBase } = require('rax-plugin-app');
 const getEntries = require('./getEntries');
 

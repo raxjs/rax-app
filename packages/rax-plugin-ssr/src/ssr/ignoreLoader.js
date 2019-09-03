@@ -1,6 +1,4 @@
-'use strict';
-
-module.exports = function(content) {
+module.exports = function() {
   this.cacheable && this.cacheable();
   return '';
 };

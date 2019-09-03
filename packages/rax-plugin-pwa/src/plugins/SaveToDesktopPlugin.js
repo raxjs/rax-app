@@ -18,7 +18,7 @@ const PLUGIN_NAME = 'PWA_SaveToDesktopPlugin';
 
 const defaultManifest = {
   start_url: '.',
-  display: 'standalone'
+  display: 'standalone',
 };
 
 const iconSizes = [96, 128, 180, 256, 512];
@@ -65,7 +65,7 @@ module.exports = class SaveToDesktopPlugin {
           icons.push({
             src: iconPublicUrl,
             sizes: dimensions,
-            type: mimeType
+            type: mimeType,
           });
           // Write tags for iOS
           tags += `<link rel="apple-touch-icon" sizes="${dimensions}" href="${iconPublicUrl}">`;

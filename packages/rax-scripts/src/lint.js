@@ -1,4 +1,4 @@
-var eslintConfig = {
+const eslintConfig = {
   'root': true,
   'parser': 'babel-eslint',
   'env': {
@@ -6,17 +6,17 @@ var eslintConfig = {
     'node': true,
     'es6': true,
     'jest': true,
-    'commonjs': true
+    'commonjs': true,
   },
   'plugins': [
     'react',
-    'import'
+    'import',
   ],
   'settings': {
     'react': {
       'pragma': 'createElement', // Pragma to use, default to 'React'
-      'pragmaFrag': 'Fragment'
-    }
+      'pragmaFrag': 'Fragment',
+    },
   },
   'parserOptions': {
     'sourceType': 'module',
@@ -24,8 +24,8 @@ var eslintConfig = {
     'ecmaFeatures': {
       'jsx': true,
       'generators': true,
-      'experimentalObjectRestSpread': true
-    }
+      'experimentalObjectRestSpread': true,
+    },
   },
   'globals': [
     '__weex_data__',
@@ -37,7 +37,7 @@ var eslintConfig = {
     'webkitRequestAnimationFrame',
     'webkitCancelAnimationFrame',
     'jasmine',
-    'React'
+    'React',
   ],
 
   'rules': {
@@ -61,7 +61,7 @@ var eslintConfig = {
     'no-unused-vars': ['off', {
       'vars': 'local',
       'args': 'after-used',
-      'varsIgnorePattern': 'createElement'
+      'varsIgnorePattern': 'createElement',
     }],
     'no-undef': 'error',
     'no-unused-expressions': 'off',
@@ -71,13 +71,13 @@ var eslintConfig = {
     'no-new': 'off',
     'consistent-return': 'off',
     'dot-notation': ['error', {
-      'allowKeywords': true
+      'allowKeywords': true,
     }],
     'no-extend-native': 'error',
     'no-native-reassign': 'error',
     'no-return-assign': 'off',
     'no-constant-condition': ['error', {
-      'checkLoops': false
+      'checkLoops': false,
     }],
     'no-caller': 'error',
     'no-loop-func': 'off',
@@ -92,28 +92,28 @@ var eslintConfig = {
 
     'no-empty': 'off',
     'indent': ['error', 2, {
-      'SwitchCase': 1
+      'SwitchCase': 1,
     }],
     'camelcase': ['off', {
-      'properties': 'always'
+      'properties': 'always',
     }],
     'quotes': ['error', 'single', 'avoid-escape'],
     'brace-style': ['error', '1tbs', {
-      'allowSingleLine': false
+      'allowSingleLine': false,
     }],
     'comma-spacing': ['error', {
       'before': false,
-      'after': true
+      'after': true,
     }],
     'comma-style': ['error', 'last'],
     'eol-last': 'off',
     'func-names': 'off',
     'new-cap': ['error', {
-      'newIsCap': true
+      'newIsCap': true,
     }],
     'key-spacing': ['error', {
       'beforeColon': false,
-      'afterColon': true
+      'afterColon': true,
     }],
     'no-mixed-spaces-and-tabs': 'error',
     'no-multi-spaces': 'error',
@@ -133,13 +133,13 @@ var eslintConfig = {
     'spaced-comment': ['error', 'always', {
       'line': {
         'markers': ['/'],
-        'exceptions': ['-', '+']
+        'exceptions': ['-', '+'],
       },
       'block': {
         'markers': ['!'],
         'exceptions': ['*'],
-        'balanced': true
-      }
+        'balanced': true,
+      },
     }],
 
     /**
@@ -158,9 +158,9 @@ var eslintConfig = {
           '**/*.config.js',
           '**/config/*.js',
           '**/*.conf.js',
-          '**/tests/*.test.js'
-        ]
-      }
+          '**/tests/*.test.js',
+        ],
+      },
     ],
 
     /**
@@ -170,7 +170,7 @@ var eslintConfig = {
     'react/display-name': 'off',
     'react/jsx-boolean-value': ['off', 'always'],
     'react/jsx-no-bind': ['error', {
-      'allowArrowFunctions': true
+      'allowArrowFunctions': true,
     }],
     'react/prefer-es6-class': 'error',
     'react/jsx-curly-spacing': 'error',
@@ -198,16 +198,16 @@ var eslintConfig = {
         '/^(get|set)(?!(InitialState$|DefaultProps$|ChildContext$)).+$/',
         'everything-else',
         '/^render.+$/',
-        'render'
-      ]
-    }]
-  }
+        'render',
+      ],
+    }],
+  },
 };
 
-module.exports = function lint(type = 'component') {
-  var CLIEngine = require('eslint').CLIEngine;
-  var cli = new CLIEngine(eslintConfig);
-  var report = cli.executeOnFiles(['src/']);
-  var formatter = cli.getFormatter();
+module.exports = function lint() {
+  const CLIEngine = require('eslint').CLIEngine;
+  const cli = new CLIEngine(eslintConfig);
+  const report = cli.executeOnFiles(['src/']);
+  const formatter = cli.getFormatter();
   console.log(formatter(report.results));
 };

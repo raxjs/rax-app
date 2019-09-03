@@ -21,7 +21,7 @@ module.exports = (context, customEntry) => {
           err,
           stats,
         });
-      }
+      },
     });
   });
 };

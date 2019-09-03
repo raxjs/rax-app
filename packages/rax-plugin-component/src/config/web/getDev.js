@@ -42,7 +42,7 @@ module.exports = (context) => {
   config.plugin('html')
     .use(HtmlWebpackPlugin, [{
       inject: true,
-      template: path.resolve(__dirname, '../demo.html')
+      template: path.resolve(__dirname, '../demo.html'),
     }]);
 
   setUserConfig(config, context, 'web');

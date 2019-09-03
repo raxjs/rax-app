@@ -17,8 +17,8 @@ module.exports = (err, stats) => {
       errArr = [stats.compilation.errors];
     }
 
-    for (let errors of errArr) {
-      for (let e of errors) {
+    for (const errors of errArr) {
+      for (const e of errors) {
         let errMessage;
         let errStack;
 

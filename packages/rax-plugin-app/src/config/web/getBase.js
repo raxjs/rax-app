@@ -1,5 +1,3 @@
-'use strict';
-
 const UniversalDocumentPlugin = require('../../plugins/UniversalDocumentPlugin');
 const PWAAppShellPlugin = require('../../plugins/PWAAppShellPlugin');
 const getWebpackBase = require('../getWebpackBase');

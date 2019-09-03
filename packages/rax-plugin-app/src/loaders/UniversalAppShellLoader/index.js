@@ -2,10 +2,10 @@ const { join } = require('path');
 const { getOptions } = require('loader-utils');
 const { existsSync } = require('fs');
 const pathToRegexp = require('path-to-regexp');
-const getDepPath = require('./getDepPath');
-const getSourceCode = require('./getSourceCode');
 const babel = require('@babel/core');
 const { getBabelConfig, getRouteName } = require('rax-compile-config');
+const getDepPath = require('./getDepPath');
+const getSourceCode = require('./getSourceCode');
 
 const babelConfig = getBabelConfig();
 
@@ -66,7 +66,7 @@ module.exports = function(content) {
       `;
     } else {
       // common web app
-      appRenderMethod = 'render(createElement(Entry), document.getElementById("root"), { driver: DriverUniversal, hydrate: withSSR || ${PWASnapshot} });';
+      appRenderMethod = `render(createElement(Entry), document.getElementById("root"), { driver: DriverUniversal, hydrate: withSSR || ${PWASnapshot} });`;
     }
 
     appRender += `
@@ -79,7 +79,7 @@ module.exports = function(content) {
         }
         ${appRenderMethod}
       }
-      
+
       if (withSSR ${PWASnapshot ? "|| localStorage.getItem('__INITIAL_HTML_' + currentHistory.location.pathname + '__')" : ''} ) {
         getCurrentComponent(appProps.routerConfig.routes, withSSR)().then(function(InitialComponent) {
           if (InitialComponent !== null) {
@@ -128,7 +128,7 @@ module.exports = function(content) {
     renderModule,
     definedAppPath: this.resourcePath,
     historyMemory: historyMemory[historyType],
-    routeIndex: options.routeIndex
+    routeIndex: options.routeIndex,
   });
 
   const { code } = babel.transformSync(source, babelConfig);

@@ -1,12 +1,12 @@
-'use strict';
 
-var stripAnsi = require('strip-ansi');
-var formatWebpackMessages = require('./formatWebpackMessages');
 
-var wsUrl = `ws://${window.location.hostname}:${window.location.port}/sockjs-node/websocket`;
+const stripAnsi = require('strip-ansi');
+const formatWebpackMessages = require('./formatWebpackMessages');
+
+const wsUrl = `ws://${window.location.hostname}:${window.location.port}/sockjs-node/websocket`;
 // Connect to WebpackDevServer via a socket.
 console.log('The development server at', wsUrl);
-var connection = new WebSocket(wsUrl);
+const connection = new WebSocket(wsUrl);
 
 // Unlike WebpackDevServer client, we won't try to reconnect
 // to avoid spamming the console. Disconnect usually happens
@@ -24,9 +24,9 @@ connection.onerror = function() {
 };
 
 // Remember some state related to hot module replacement.
-var isFirstCompilation = true;
-var mostRecentCompilationHash = null;
-var hasCompileErrors = false;
+let isFirstCompilation = true;
+let mostRecentCompilationHash = null;
+let hasCompileErrors = false;
 
 function clearOutdatedErrors() {
   // Clean up outdated compile errors, if any.
@@ -39,7 +39,7 @@ function clearOutdatedErrors() {
 function handleSuccess() {
   clearOutdatedErrors();
 
-  var isHotUpdate = !isFirstCompilation;
+  const isHotUpdate = !isFirstCompilation;
   isFirstCompilation = false;
   hasCompileErrors = false;
 
@@ -56,18 +56,18 @@ function handleSuccess() {
 function handleWarnings(warnings) {
   clearOutdatedErrors();
 
-  var isHotUpdate = !isFirstCompilation;
+  const isHotUpdate = !isFirstCompilation;
   isFirstCompilation = false;
   hasCompileErrors = false;
 
   function printWarnings() {
     // Print warnings to the console.
-    var formatted = formatWebpackMessages({
-      warnings: warnings,
-      errors: []
+    const formatted = formatWebpackMessages({
+      warnings,
+      errors: [],
     });
 
-    for (var i = 0; i < formatted.warnings.length; i++) {
+    for (let i = 0; i < formatted.warnings.length; i++) {
       console.warn(stripAnsi(formatted.warnings[i]));
     }
   }
@@ -95,13 +95,13 @@ function handleErrors(errors) {
   hasCompileErrors = true;
 
   // "Massage" webpack messages.
-  var formatted = formatWebpackMessages({
-    errors: errors,
-    warnings: []
+  const formatted = formatWebpackMessages({
+    errors,
+    warnings: [],
   });
 
   // Also log them to the console.
-  for (var i = 0; i < formatted.errors.length; i++) {
+  for (let i = 0; i < formatted.errors.length; i++) {
     console.error(stripAnsi(formatted.errors[i]));
   }
 
@@ -117,7 +117,7 @@ function handleAvailableHash(hash) {
 
 // Handle messages from the server.
 connection.onmessage = function(e) {
-  var message = JSON.parse(e.data);
+  const message = JSON.parse(e.data);
   switch (message.type) {
     case 'hash':
       handleAvailableHash(message.data);
@@ -146,7 +146,7 @@ function isUpdateAvailable() {
   /* globals __webpack_hash__ */
   // __webpack_hash__ is the hash of the current compilation.
   // It's a global variable injected by Webpack.
-  return mostRecentCompilationHash !== __webpack_hash__;
+  return mostRecentCompilationHash !== __webpack_hash__; // eslint-disable-line
 }
 
 // Webpack disallows updates in other states.
@@ -185,7 +185,7 @@ function tryApplyUpdates(onHotUpdateSuccess) {
   }
 
   // https://webpack.github.io/docs/hot-module-replacement.html#check
-  var result = module.hot.check(/* autoApply */ true, handleApplyUpdates);
+  const result = module.hot.check(/* autoApply */ true, handleApplyUpdates);
 
   // // Webpack 2 returns a Promise instead of invoking a callback
   if (result && result.then) {

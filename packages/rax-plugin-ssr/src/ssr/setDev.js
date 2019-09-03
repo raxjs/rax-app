@@ -1,4 +1,4 @@
-'use strict';
+
 const path = require('path');
 const { getRouteName } = require('rax-compile-config');
 
@@ -21,11 +21,11 @@ module.exports = (config, context) => {
     const pathName = getRouteName(route, rootDir);
     let routePath = route.path;
     if (isMultiPages) {
-      routePath = new RegExp(`\/pages\/${pathName}\\/?((?!\\.(js|html|css|json)).)*$`);
+      routePath = new RegExp(`/pages/${pathName}\\/?((?!\\.(js|html|css|json)).)*$`);
     }
     routes.push({
       path: routePath,
-      component: path.join(distDir, filename.replace('[name]', pathName))
+      component: path.join(distDir, filename.replace('[name]', pathName)),
     });
   });
 
@@ -36,7 +36,7 @@ module.exports = (config, context) => {
     routes.forEach((route) => {
       app.get(route.path, function(req, res) {
         const bundleContent = memFs.readFileSync(route.component, 'utf8');
-        const mod = eval(bundleContent);
+        const mod = eval(bundleContent); // eslint-disable-line
         const page = mod.default || mod;
 
         page.render(req, res);

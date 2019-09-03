@@ -87,8 +87,8 @@ module.exports = (context) => {
   return config;
 };
 
-function addHotLoader(babelConfig) {
+function addHotLoader(originConfig) {
   return babelMerge.all([{
     plugins: [require.resolve('rax-hot-loader/babel')],
-  }, babelConfig]);
+  }, originConfig]);
 }

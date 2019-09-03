@@ -6,7 +6,7 @@ const { getBabelConfig } = require('rax-compile-config');
 
 const babelConfig = getBabelConfig();
 
-module.exports = function(content) {
+module.exports = function() {
   const options = getOptions(this) || {};
   const renderModule = options.renderModule || 'rax';
   const withSSR = process.env.RAX_SSR === 'true';

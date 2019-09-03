@@ -20,7 +20,7 @@ module.exports = (context) => {
 
     return {
       entryName,
-      ...route
+      ...route,
     };
   });
 };

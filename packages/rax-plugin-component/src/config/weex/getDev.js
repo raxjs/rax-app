@@ -1,7 +1,7 @@
-'use strict';
+
 const path = require('path');
-const WeexFrameworkBanner = require('../../plugins/WeexFrameworkBannerPlugin');
 const { hmrClient } = require('rax-compile-config');
+const WeexFrameworkBanner = require('../../plugins/WeexFrameworkBannerPlugin');
 
 const getBaseWebpack = require('../getBaseWebpack');
 const setUserConfig = require('../user/setConfig');

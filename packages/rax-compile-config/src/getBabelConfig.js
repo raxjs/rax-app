@@ -21,21 +21,21 @@ module.exports = (userOptions = {}) => {
         {
           targets: {
             chrome: '49',
-            ios: '8'
+            ios: '8',
           },
           loose: true,
           modules: 'auto',
           include: [
-            'transform-computed-properties'
-          ]
-        }
+            'transform-computed-properties',
+          ],
+        },
       ],
       [
         require.resolve('@babel/preset-react'), {
           'pragma': 'createElement',
-          'pragmaFrag': 'Fragment'
-        }
-      ]
+          'pragmaFrag': 'Fragment',
+        },
+      ],
     ],
     plugins: [
       [
@@ -44,8 +44,8 @@ module.exports = (userOptions = {}) => {
           'corejs': false,
           'helpers': false,
           'regenerator': true,
-          'useESModules': false
-        }
+          'useESModules': false,
+        },
       ],
       require.resolve('@babel/plugin-syntax-dynamic-import'),
       // Stage 0
@@ -67,8 +67,8 @@ module.exports = (userOptions = {}) => {
       [
         require.resolve('@babel/plugin-proposal-class-properties'),
         { loose: true },
-      ]
-    ]
+      ],
+    ],
   };
 
   const configArr = [baseConfig];
@@ -95,8 +95,8 @@ module.exports = (userOptions = {}) => {
   if (styleSheet) {
     configArr.push({
       plugins: [
-        [require.resolve('babel-plugin-transform-jsx-stylesheet'), { retainClassName: true }]
-      ]
+        [require.resolve('babel-plugin-transform-jsx-stylesheet'), { retainClassName: true }],
+      ],
     });
   }
 

@@ -3,5 +3,5 @@ const filePatterns = require('./filePatterns');
 
 module.exports = {
   registerTasks,
-  filePatterns
+  filePatterns,
 };

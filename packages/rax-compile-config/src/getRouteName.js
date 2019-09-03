@@ -17,7 +17,7 @@ module.exports = (route, rootDir) => {
   if (routeName === 'pages') {
     try {
       // get Home from pages/Home/index or pages/Home
-      const name = route.component.match(/pages\/([^\/]*)/);
+      const name = route.component.match(/pages\/([^/]*)/);
       return name[1];
     } catch (e) {
       console.error('"routeName": "pages" mode request routes in /pages directory');

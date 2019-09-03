@@ -6,26 +6,26 @@ const promptQuestion = [
     choices: [
       {
         name: 'App (Build application that works multi-platform)',
-        value: 'scaffold'
+        value: 'scaffold',
       },
       {
         name: 'Component (Build component for application include web)',
-        value: 'component'
+        value: 'component',
       },
       {
         name: 'API (Build universal API library)',
-        value: 'api'
-      }
+        value: 'api',
+      },
     ],
-    default: 'scaffold'
+    default: 'scaffold',
   },
   {
     type: 'checkbox',
     name: 'projectTargets',
-    when: function(answers) {
+    when(answers) {
       return answers.projectType === 'scaffold' || answers.projectType === 'component';
     },
-    validate: function(targets) {
+    validate(targets) {
       if (targets && targets.length > 0) return true;
       return 'Choose at least one of target.';
     },
@@ -33,46 +33,46 @@ const promptQuestion = [
     choices: [
       {
         name: 'web',
-        value: 'web'
+        value: 'web',
       },
       {
         name: 'weex',
-        value: 'weex'
+        value: 'weex',
       },
       {
         name: 'miniapp',
-        value: 'miniapp'
-      }
+        value: 'miniapp',
+      },
     ],
-    default: false
+    default: false,
   },
   {
     type: 'checkbox',
     name: 'projectFeatures',
-    when: function(answers) {
+    when(answers) {
       return answers.projectType === 'scaffold' && answers.projectTargets.includes('web');
     },
     message: 'Do you want to enable these features?',
     choices: [
       {
         name: 'server sider rendering (ssr)',
-        value: 'ssr'
-      }
+        value: 'ssr',
+      },
     ],
-    default: false
+    default: false,
   },
   {
     type: 'input',
     name: 'projectAuthor',
     message: 'What\'s author\'s name?',
-    default: 'rax'
+    default: 'rax',
   },
   {
     type: 'confirm',
     name: 'autoInstallModules',
     message: 'Do you want to install dependences automatically after initialization?',
-    default: 'y'
-  }
+    default: 'y',
+  },
 ];
 
 module.exports = {

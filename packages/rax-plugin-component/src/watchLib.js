@@ -1,5 +1,3 @@
-'use strict';
-
 const path = require('path');
 const fs = require('fs-extra');
 
@@ -12,10 +10,10 @@ const {
   JS_FILES_PATTERN,
   TS_FILES_PATTERN,
   OTHER_FILES_PATTERN,
-  IGNORE_PATTERN
+  IGNORE_PATTERN,
 } = filePatterns;
 
-module.exports = async(api, options = {}) => {
+module.exports = async(api) => {
   const { context, log } = api;
   const { rootDir } = context;
   const enableTypescript = fs.existsSync(path.join(rootDir, 'tsconfig.json'));

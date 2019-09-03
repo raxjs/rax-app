@@ -9,25 +9,25 @@ const spawn = require('cross-spawn');
 const inquirer = require('inquirer');
 const argv = require('minimist')(process.argv.slice(2));
 
-const cli = require('../src/');
-const pkg = require('../package.json');
-
-updateNotifier({pkg: pkg}).notify();
-
 // Check node version
 const chalk = require('chalk');
 const semver = require('semver');
 
+const cli = require('../src/');
+const pkg = require('../package.json');
+
+updateNotifier({pkg}).notify();
+
 if (!semver.satisfies(process.version, '>=8')) {
-  const message = 'You are currently running Node.js ' +
-    chalk.red(process.version) + '.\n' +
-    '\n' +
-    'Rax runs on Node 6.0 or newer. There are several ways to ' +
-    'upgrade Node.js depending on your preference.\n' +
-    '\n' +
-    'nvm:       nvm install node && nvm alias default node\n' +
-    'Homebrew:  brew install node\n' +
-    'Installer: download the Mac .pkg from https://nodejs.org/\n';
+  const message = `You are currently running Node.js ${
+    chalk.red(process.version)  }.\n` +
+    `\n` +
+    `Rax runs on Node 6.0 or newer. There are several ways to ` +
+    `upgrade Node.js depending on your preference.\n` +
+    `\n` +
+    `nvm:       nvm install node && nvm alias default node\n` +
+    `Homebrew:  brew install node\n` +
+    `Installer: download the Mac .pkg from https://nodejs.org/\n`;
 
   console.log(message);
   process.exit(1);
@@ -39,6 +39,8 @@ const RAX_PACKAGE_JSON_PATH = path.resolve(
   'rax',
   'package.json'
 );
+
+const raxPkg = require(RAX_PACKAGE_JSON_PATH);
 
 checkForVersionArgument();
 
@@ -77,8 +79,6 @@ function init(name, verbose, template) {
     .then(function(dirExists) {
       if (dirExists) {
         return createAfterConfirmation(name, verbose);
-      } else {
-        return;
       }
     })
     .then(function() {
@@ -97,8 +97,8 @@ function createAfterConfirmation(name) {
   const property = {
     type: 'confirm',
     name: 'continueWhileDirectoryExists',
-    message: 'Directory ' + name + ' already exists. Continue?',
-    default: false
+    message: `Directory ${  name  } already exists. Continue?`,
+    default: false,
   };
 
   return inquirer.prompt(property).then(function(answers) {
@@ -111,7 +111,7 @@ function createAfterConfirmation(name) {
   });
 }
 
-function askProjectInformaction(name) {
+function askProjectInformaction() {
   return inquirer.prompt(cli.config.promptQuestion);
 }
 
@@ -132,14 +132,14 @@ function createProject(name, verbose, template, userAnswers) {
   process.chdir(root);
 
   cli.init({
-    root: root,
-    projectName: projectName,
+    root,
+    projectName,
     projectType: userAnswers.projectType,
     projectFeatures: userAnswers.projectFeatures || [],
     projectAuthor: userAnswers.projectAuthor || '',
     projectTargets: userAnswers.projectTargets || [],
-    verbose: verbose,
-    template: template,
+    verbose,
+    template,
   }).then(function(directory) {
     if (autoInstallModules) {
       return install(directory, verbose);
@@ -148,19 +148,19 @@ function createProject(name, verbose, template, userAnswers) {
     }
   }).then(function(isAutoInstalled) {
     console.log(chalk.white.bold('To run your app:'));
-    console.log(chalk.white('   cd ' + projectName));
+    console.log(chalk.white(`   cd ${  projectName}`));
     if (!isAutoInstalled) {
-      console.log(chalk.white('   ' + (pkgManager === 'npm' ? 'npm install' : 'yarn')));
+      console.log(chalk.white(`   ${  pkgManager === 'npm' ? 'npm install' : 'yarn'}`));
     }
-    console.log(chalk.white('   ' + pkgManager + ' start'));
+    console.log(chalk.white(`   ${  pkgManager  } start`));
   });
 }
 
 function checkForVersionArgument() {
   if (argv._.length === 0 && (argv.v || argv.version)) {
-    console.log('rax-cli: ' + require('../package.json').version);
+    console.log(`rax-cli: ${  pkg.version}`);
     try {
-      console.log('rax: ' + require(RAX_PACKAGE_JSON_PATH).version);
+      console.log(`rax: ${  raxPkg.version}`);
     } catch (e) {
       console.log('rax: n/a - not inside a Rax project directory');
     }
@@ -197,7 +197,7 @@ function install(directory, verbose) {
 
     proc.on('close', function(code) {
       if (code !== 0) {
-        console.error('`' + pkgManager + ' install` failed');
+        console.error(`\`${  pkgManager  } install\` failed`);
         resolve(false);
       } else {
         resolve(true);
