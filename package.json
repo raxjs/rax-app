@@ -1,9 +1,5 @@
 {
-  "name": "scripts-core",
-  "version": "0.1.2",
-  "license": "BSD-3-Clause",
-  "description": "scripts core",
-  "main": "src/index.js",
+  "private": true,
   "scripts": {
     "setup": "lerna bootstrap --no-ci",
     "lint": "eslint --cache --ext .js ./",
