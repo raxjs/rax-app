@@ -21,7 +21,6 @@
     "qs": "^6.8.0",
     "rax-compile-config": "^0.1.2",
     "source-map": "^0.7.3",
-    "stack-generator": "^2.0.3",
     "error-stack-parser": "^2.0.3"
   }
 }
