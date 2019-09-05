@@ -14,7 +14,7 @@ function Document(props) {
     <html>
       <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover"/>
         <title><%= npmName %></title>
         {styles.map((src) => <link rel="stylesheet" href={`${publicPath}${src}`} />)}
       </head>
@@ -34,11 +34,12 @@ function Document(props) {
     scripts
   } = props;
 
+  
   return (
     <html>
       <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover"/>
         <title><%= npmName %></title>
         {styles.map((src) => <link rel="stylesheet" href={`${publicPath}${src}`} />)}
       </head>
