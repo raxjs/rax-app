@@ -66,14 +66,14 @@ module.exports = (config, context) => {
       app.get(route.path, function(req, res) {
         const bundleContent = memFs.readFileSync(route.component, 'utf8');
 
-        process.once('unhandledRejection', printErrorStack);
+        process.once('unhandledRejection', (error) => printErrorStack(error, bundleContent));
 
         try {
           const mod = eval(bundleContent); // eslint-disable-line
           const page = mod.default || mod;
           page.render(req, res);
         } catch (error) {
-          printErrorStack(error);
+          printErrorStack(error, bundleContent);
         }
       });
     });

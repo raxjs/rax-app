@@ -48,7 +48,7 @@ function parseWebpackPath(pathString) {
 
 function printError(message, stackFrame) {
   const stackMessage = stackFrame.map(frame => {
-    return `  at ${frame.functionName} (${frame.source}:${frame.lineNumber}:${frame.columnNumber})`;
+    return `    at ${frame.functionName} (${frame.source}:${frame.lineNumber}:${frame.columnNumber})`;
   });
 
   console.error(`Error: ${message}\n${stackMessage.join('\n')}`);
