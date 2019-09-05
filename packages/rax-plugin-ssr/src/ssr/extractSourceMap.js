@@ -1,7 +1,7 @@
 /**
  * The inline-source-map plugin in dev mode will
  * embed the source-map information in the last line of file.
- * @param bundleContent SSR的源代码
+ * @param bundleContent the source code of SSR
  * @returns {Object}
  */
 function getSourceMap(bundleContent) {
