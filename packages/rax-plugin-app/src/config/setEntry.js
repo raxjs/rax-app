@@ -9,7 +9,7 @@ module.exports = (config, context, type) => {
   const isDev = command === 'dev';
 
   // SPA
-  const appEntry = path.resolve(rootDir, 'src/app.js');
+  const appEntry = path.resolve(rootDir, 'src/app');
   const entryConfig = config.entry('index');
   if (isDev) {
     entryConfig.add(hmrClient);
