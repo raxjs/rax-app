@@ -1,5 +1,6 @@
 /**
- * dev模式下的inline-source-map插件会在最后一行嵌入source-map的信息
+ * The inline-source-map plugin in dev mode will
+ * embed the source-map information in the last line of file.
  * @param bundleContent SSR的源代码
  * @returns {Object}
  */

@@ -1,5 +1,5 @@
 /**
- * 提取错误信息中，eval内部代码的错误行数
+ * Extract the number of lines in error stack messages
  * @param error
  * @returns {[]}
  */
@@ -20,7 +20,7 @@ function parseEvalStackTrace(error) {
 }
 
 /**
- * 处理webpack路径
+ * parser webpack path
  * @param pathString
  * @returns {string|*}
  */

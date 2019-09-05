@@ -9,7 +9,7 @@ const extractSourceMap = require('./extractSourceMap');
 function printErrorStack(error, bundleContent) {
   const sourcemap = extractSourceMap.getSourceMap(bundleContent);
   const sourceMapConsumer = new SourceMap.SourceMapConsumer(sourcemap);
-  // 这个库解析不了带有eval的错误信息，还需要再加工
+  // error-stack-parser can't parse the error message with eval, and it needs to be processed again.
   const originalErrorStack = ErrorStackParser.parse(error);
 
   sourceMapConsumer.then(consumer => {
