@@ -11,25 +11,25 @@ module.exports = (config, context, value, target) => {
     if (target === 'weex') {
       config.module.rule('css')
         .test(/\.css?$/)
-        .use('css')
-        .loader(require.resolve('stylesheet-loader'));
+          .use('css')
+            .loader(require.resolve('stylesheet-loader'));
     }
 
     if (target === 'web') {
 
       config.module.rule('css')
         .test(/\.css?$/)
-        .use('css')
-        .loader(require.resolve('stylesheet-loader'))
-        .end()
-        .use('postcss')
-        .loader(require.resolve('postcss-loader'))
-        .options({
-          ident: 'postcss',
-          plugins: () => [
-            require('postcss-plugin-rpx2vw')(),
-          ],
-        });
+          .use('css')
+            .loader(require.resolve('stylesheet-loader'))
+          .end()
+          .use('postcss')
+            .loader(require.resolve('postcss-loader'))
+            .options({
+              ident: 'postcss',
+              plugins: () => [
+                require('postcss-plugin-rpx2vw')(),
+              ],
+            });
     }
 
     config.module.rule('jsx')
@@ -59,11 +59,11 @@ module.exports = (config, context, value, target) => {
 
     config.module.rule('css')
       .test(/\.css?$/)
-      .use('minicss')
-      .loader(MiniCssExtractPlugin.loader)
-      .end()
+        .use('minicss')
+          .loader(MiniCssExtractPlugin.loader)
+        .end()
       .oneOf('raw')
-        .resourceQuery(resourceQuery ? new RegExp(resourceQuery) :/raw/)
+        .resourceQuery(resourceQuery ? new RegExp(resourceQuery) :/\?raw$/)
           .use('css')
             .loader(require.resolve('css-loader'))
           .end()
@@ -75,7 +75,7 @@ module.exports = (config, context, value, target) => {
       .oneOf('normal')
         .use('css')
           .loader(require.resolve('css-loader'))
-          // 参考https://github.com/webpack-contrib/css-loader/tree/v2.1.1#localidentname
+          // reference: https://github.com/webpack-contrib/css-loader/tree/v2.1.1#localidentname
             .options(
               modules ?
               {
@@ -86,8 +86,8 @@ module.exports = (config, context, value, target) => {
               {})
             .end()
         .use('postcss')
-        .loader(require.resolve('postcss-loader'))
-        .options(postcssConfig);
+          .loader(require.resolve('postcss-loader'))
+          .options(postcssConfig);
 
     config.plugin('minicss')
       .use(MiniCssExtractPlugin, [{

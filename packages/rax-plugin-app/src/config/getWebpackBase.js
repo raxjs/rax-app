@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const Chain = require('webpack-chain');
 const babelMerge = require('babel-merge');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -11,8 +10,7 @@ const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
 const babelConfig = getBabelConfig();
 
 module.exports = (context) => {
-  const { rootDir, command , userConfig} = context;
-  const { analyzer } = userConfig;
+  const { rootDir, command } = context;
   const config = new Chain();
 
   config.target('web');
@@ -71,12 +69,6 @@ module.exports = (context) => {
     config.module.rule('tsx')
       .use('babel')
         .tap(opt => addHotLoader(opt));
-
-    if(analyzer){
-      // 开启https://www.npmjs.com/package/webpack-bundle-analyzer
-      config.plugin('BundleAnalyzerPlugin')
-        .use(BundleAnalyzerPlugin)
-    }
       
   } else if (command === 'build') {
     config.mode('production');

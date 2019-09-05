@@ -2,6 +2,7 @@ const address = require('address');
 
 module.exports = {
   inlineStyle: true,
+  analyzer: false,
   outputDir: 'build',
   publicPath: '/',
   devPublicPath: '/',
