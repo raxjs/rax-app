@@ -1,5 +1,5 @@
 
 
 module.exports = (config) => {
-  config.mode('production');
+  config.delete('devtool');
 };
