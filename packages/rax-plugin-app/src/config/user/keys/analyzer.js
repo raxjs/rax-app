@@ -1,6 +1,6 @@
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-module.exports = (config, context, value) => {
+module.exports = (config, context) => {
   const { userConfig} = context;
   const { analyzer } = userConfig;
 
