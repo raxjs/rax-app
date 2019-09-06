@@ -178,12 +178,14 @@ self.addEventListener('fetch', event => {
   } else {
     // cache priority for others
     event.respondWith(matchCache(event.request).then(res => {
+      const cloned = clonedFetch(event.request, fetchOptions);
+
       // cache hits
       if (res) {
         return res;
       }
 
-      return clonedFetch(event.request, fetchOptions);
+      return cloned;
     }));
   }
 });
