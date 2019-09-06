@@ -7,7 +7,9 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
 
-const babelConfig = getBabelConfig();
+const babelConfig = getBabelConfig({
+  styleSheet: true,
+});
 
 module.exports = (context) => {
   const { rootDir, command } = context;
@@ -69,7 +71,6 @@ module.exports = (context) => {
     config.module.rule('tsx')
       .use('babel')
         .tap(opt => addHotLoader(opt));
-      
   } else if (command === 'build') {
     config.mode('production');
     config.devtool('source-map');
