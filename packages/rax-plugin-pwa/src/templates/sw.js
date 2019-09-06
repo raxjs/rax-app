@@ -20,13 +20,13 @@ const SAVED_CACHE_PATTERN_LIST = <%= JSON.stringify(savedCachePatternList) %>;
 const CACHE_ID = 'RAX_PWA_SW_CACHE_<%= cacheId %>';
 
 // combo url pattern
-const COMBO_PATTERN = '<%= comboPattern %>';
-const COMBO_SPLIT_PATTERN = '<%= comboSplitPattern %>';
-const FETCH_TIMEOUT = Number(<%= timeout %>);
+const COMBO_PATTERN = stringToReg('<%= comboPattern %>');
+const COMBO_SPLIT_PATTERN = stringToReg('<%= comboSplitPattern %>');
+const HTML_LOADING_TIMEOUT = <%= htmlLoadingTimeout %>;
 
 // split combos as array
 const splitCombo = (url = '') => {
-  const match = url.match(stringToReg(COMBO_PATTERN));
+  const match = url.match(COMBO_PATTERN);
 
   if (match === null) {
     return [];
@@ -38,16 +38,16 @@ const splitCombo = (url = '') => {
 const isSameCombo = (aUrl = '', bUrl = '') => {
   if (aUrl === bUrl) return true;
 
-  const aCombos = splitCombo(aUrl);
-  const bCombos = splitCombo(bUrl);
+  const aComboItems = splitCombo(aUrl);
+  const bComboItems = splitCombo(bUrl);
 
   if (
-    aCombos.length !== bCombos.length
-    || aCombos.length === 0
-    || bCombos.length === 0
+    aComboItems.length !== bComboItems.length
+    || aComboItems.length === 0
+    || bComboItems.length === 0
   ) return false;
 
-  return !aCombos.some(combo => bCombos.indexOf(combo) === -1);
+  return !aComboItems.some(combo => bComboItems.indexOf(combo) === -1);
 }
 
 const matchCache = (req) => {
@@ -168,11 +168,10 @@ self.addEventListener('fetch', event => {
     mode: 'cors',
     credentials: 'omit'
   }
-  const cloneFetchRes = clonedFetch(event.request, fetchOptions, FETCH_TIMEOUT);
 
   if (isNavigate) {
     // html request always fetch
-    event.respondWith(cloneFetchRes.catch(_ => matchCache(event.request)));
+    event.respondWith(clonedFetch(event.request, fetchOptions, HTML_LOADING_TIMEOUT).catch(_ => matchCache(event.request)));
   } else {
     // cache priority for others
     event.respondWith(matchCache(event.request).then(res => {
@@ -181,7 +180,7 @@ self.addEventListener('fetch', event => {
         return res;
       }
 
-      return cloneFetchRes;
+      return clonedFetch(event.request, fetchOptions);
     }));
   }
 });
