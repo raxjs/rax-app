@@ -7,7 +7,7 @@ module.exports = `/**
 *
 */
 ;(function() {
-  if ('serviceWorker' in navigator) {<% if (unregister) { %>
+  if ('serviceWorker' in navigator && 'fetch' in window && 'caches' in window) {<% if (unregister) { %>
     navigator.serviceWorker.ready.then(registration => {
       registration.unregister();
     });<% } else { %>
