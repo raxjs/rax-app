@@ -22,7 +22,7 @@
     "npm": ">=3.0.0"
   },
   "dependencies": {
-    "commander": "^2.19.0",
+    "commander": "^3.0.1",
     "eslint": "^5.10.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-react": "~7.11.1",

@@ -39,7 +39,10 @@ module.exports = (context) => {
       .options(babelConfig)
       .end()
     .use('ts')
-      .loader(require.resolve('ts-loader'));
+      .loader(require.resolve('ts-loader'))
+      .options({
+        transpileOnly: true,
+      });
 
   config.module.rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
@@ -55,7 +58,6 @@ module.exports = (context) => {
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);
 
-
   if (command === 'dev') {
     config.mode('development');
     config.devtool('inline-module-source-map');
@@ -67,6 +69,7 @@ module.exports = (context) => {
     config.module.rule('tsx')
       .use('babel')
         .tap(opt => addHotLoader(opt));
+      
   } else if (command === 'build') {
     config.mode('production');
     config.devtool('source-map');
