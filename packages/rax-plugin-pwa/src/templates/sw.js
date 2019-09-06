@@ -20,18 +20,18 @@ const SAVED_CACHE_PATTERN_LIST = <%= JSON.stringify(savedCachePatternList) %>;
 const CACHE_ID = 'RAX_PWA_SW_CACHE_<%= cacheId %>';
 
 // combo url pattern
-const COMBO_PATTERN = stringToReg('<%= comboPattern %>');
-const COMBO_SPLIT_PATTERN = stringToReg('<%= comboSplitPattern %>');
+const COMBO_PATTERN = '<%= comboPattern %>';
+const COMBO_SPLIT_SEPARATOR = '<%= comboSplitSeparator %>';
 const HTML_LOADING_TIMEOUT = <%= htmlLoadingTimeout %>;
 
 // split combos as array
 const splitCombo = (url = '') => {
-  const match = url.match(COMBO_PATTERN);
+  const match = url.match(stringToReg(COMBO_PATTERN));
 
   if (match === null) {
     return [];
   }
-  return match[1].split(COMBO_SPLIT_PATTERN);
+  return match[1].split(COMBO_SPLIT_SEPARATOR);
 }
 
 // check two specific urls is same, even if the combo order is different
@@ -55,8 +55,11 @@ const matchCache = (req) => {
 
   return caches.open(CACHE_ID).then(cache => {
     return cache.match(url).then(res => {
-      // If matched the cache, use this.
+      // Cache hits
       if (res) return res;
+
+      // No comboPattern
+      if (!COMBO_PATTERN) return res;
 
       // Find same combo request
       return cache.keys().then(res => {
@@ -84,9 +87,9 @@ const precache = (target) => {
 };
 
 const stringToReg = (str) => {
-  if (!str) return;
+  if (!str) return null;
   const match = str.match(/^\\/(.*)\\/(\\w*)/);;
-  if (!match) return;
+  if (!match) return null;
   const [, pattern, flags] = match;
   return new RegExp(pattern, flags);
 }
