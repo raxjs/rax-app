@@ -55,7 +55,10 @@ module.exports = (context) => {
     .use(CaseSensitivePathsPlugin);
 
   config.plugin('copyWebpackPlugin')
-    .use(CopyWebpackPlugin, [[{ from: 'src/public', to: 'public' }]]);
+    .use(CopyWebpackPlugin, [
+      [{ from: 'src/public', to: 'public' }],
+      { logLevel: 'error' },
+    ]);
 
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);
