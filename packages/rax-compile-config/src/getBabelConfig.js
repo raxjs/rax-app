@@ -15,7 +15,7 @@ module.exports = (userOptions = {}) => {
 
   const baseConfig = {
     presets: [
-      require.resolve('@babel/preset-flow'),
+      require.resolve('@babel/preset-typescript'),
       [
         require.resolve('@babel/preset-env'),
         {

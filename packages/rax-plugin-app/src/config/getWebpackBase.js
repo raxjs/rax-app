@@ -37,12 +37,7 @@ module.exports = (context) => {
     .use('babel')
       .loader(require.resolve('babel-loader'))
       .options(babelConfig)
-      .end()
-    .use('ts')
-      .loader(require.resolve('ts-loader'))
-      .options({
-        transpileOnly: true,
-      });
+      .end();
 
   config.module.rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
@@ -69,7 +64,7 @@ module.exports = (context) => {
     config.module.rule('tsx')
       .use('babel')
         .tap(opt => addHotLoader(opt));
-      
+
   } else if (command === 'build') {
     config.mode('production');
     config.devtool('source-map');

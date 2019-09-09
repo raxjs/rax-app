@@ -25,6 +25,7 @@
     "@babel/preset-env": "7.2.0",
     "@babel/preset-flow": "7.0.0",
     "@babel/preset-react": "7.0.0",
+    "@babel/preset-typescript": "^7.6.0",
     "@babel/runtime": "^7.2.0",
     "babel-merge": "^3.0.0",
     "babel-plugin-transform-jsx-class": "^0.1.2",

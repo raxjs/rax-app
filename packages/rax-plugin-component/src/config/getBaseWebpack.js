@@ -42,9 +42,7 @@ module.exports = (context) => {
     .use('babel')
       .loader(require.resolve('babel-loader'))
       .options(babelConfig)
-      .end()
-    .use('ts')
-      .loader(require.resolve('ts-loader'));
+      .end();
 
   config.module.rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
