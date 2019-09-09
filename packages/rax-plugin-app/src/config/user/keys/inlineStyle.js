@@ -2,29 +2,27 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (config, context, value, target) => {
   setCSSRule(config.module.rule('css').test(/\.css?$/), context, value, target);
+  setCSSRule(config.module.rule('less').test(/\.less?$/), context, value, target);
 
-  if (target === 'web') {
-    setCSSRule(config.module.rule('less').test(/\.less?$/), context, value, target);
-    if (value) {
-      config.module.rule('less')
+  if (target === 'weex' || value) {
+    config.module.rule('less')
+      .use('less')
+        .loader(require.resolve('less-loader'));
+  } else if (target === 'web' && !value) {
+    config.module.rule('less')
+      .oneOf('raw')
         .use('less')
-          .loader(require.resolve('less-loader'));
-    } else  {
-      config.module.rule('less')
-        .oneOf('raw')
-          .use('less')
-            .loader(require.resolve('less-loader'))
-            .end()
+          .loader(require.resolve('less-loader'))
           .end()
-        .oneOf('normal')
-          .use('less')
-            .loader(require.resolve('less-loader'))
+        .end()
+      .oneOf('normal')
+        .use('less')
+          .loader(require.resolve('less-loader'))
 
-      config.plugin('minicss')
-        .use(MiniCssExtractPlugin, [{
-          filename: 'web/[name].css',
-        }]);
-    }
+    config.plugin('minicss')
+      .use(MiniCssExtractPlugin, [{
+        filename: 'web/[name].css',
+      }]);
   }
 };
 
