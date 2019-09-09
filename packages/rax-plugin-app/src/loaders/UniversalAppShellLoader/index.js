@@ -7,8 +7,6 @@ const { getBabelConfig, getRouteName } = require('rax-compile-config');
 const getDepPath = require('./getDepPath');
 const getSourceCode = require('./getSourceCode');
 
-const babelConfig = getBabelConfig();
-
 const historyMemory = {
   hash: 'createHashHistory',
   memory: 'createMemoryHistory',
@@ -131,6 +129,8 @@ module.exports = function(content) {
     routeIndex: options.routeIndex,
   });
 
+  // refs: https://github.com/babel/babel/issues/10154
+  const babelConfig = Object.assign({filename: this.resourcePath}, getBabelConfig());
   const { code } = babel.transformSync(source, babelConfig);
 
   return code;

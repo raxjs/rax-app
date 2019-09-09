@@ -6,8 +6,6 @@ const { getBabelConfig } = require('rax-compile-config');
 const { createElement } = require('rax');
 const { renderToString } = require('rax-server-renderer');
 
-const babelConfig = getBabelConfig();
-
 module.exports = class UniversalDocumentPlugin {
   constructor(options) {
     if (!options.path) {
@@ -41,6 +39,8 @@ module.exports = class UniversalDocumentPlugin {
         fileContent = fileContent.replace(/(<body[^>]*>)/, `$1${insertStr}`);
       }
 
+      // refs: https://github.com/babel/babel/issues/10154
+      const babelConfig = Object.assign({filename}, getBabelConfig());
       const { code } = babel.transformSync(fileContent, babelConfig);
 
       // code export

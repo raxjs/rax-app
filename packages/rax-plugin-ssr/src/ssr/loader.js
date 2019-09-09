@@ -3,8 +3,6 @@ const fs = require('fs');
 const babel = require('@babel/core');
 const { getBabelConfig } = require('rax-compile-config');
 
-const babelConfig = getBabelConfig();
-
 module.exports = function() {
   const query = typeof this.query === 'string' ? qs.parse(this.query.substr(1)) : this.query;
 
@@ -154,6 +152,8 @@ module.exports = function() {
     }
   `;
 
+  // refs: https://github.com/babel/babel/issues/10154
+  const babelConfig = Object.assign({filename: absoluteAppPath}, getBabelConfig());
   const { code } = babel.transformSync(source, babelConfig);
 
   return code;

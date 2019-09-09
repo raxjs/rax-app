@@ -4,8 +4,6 @@ const babel = require('@babel/core');
 const { getOptions } = require('loader-utils');
 const { getBabelConfig } = require('rax-compile-config');
 
-const babelConfig = getBabelConfig();
-
 module.exports = function() {
   const options = getOptions(this) || {};
   const renderModule = options.renderModule || 'rax';
@@ -69,6 +67,8 @@ module.exports = function() {
     ${appRender}
   `;
 
+  // refs: https://github.com/babel/babel/issues/10154
+  const babelConfig = Object.assign({filename: 'render.ts'}, getBabelConfig());
   const { code } = babel.transformSync(source, babelConfig);
 
   return code;
