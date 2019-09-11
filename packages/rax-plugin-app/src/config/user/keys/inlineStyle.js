@@ -1,44 +1,65 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const babelMerge = require('babel-merge');
 
 module.exports = (config, context, value, target) => {
+  setCSSRule(config.module.rule('css').test(/\.css?$/), context, value, target);
+  setCSSRule(config.module.rule('less').test(/\.less?$/), context, value, target);
+
+  if (target === 'weex' || value) {
+    config.module.rule('less')
+      .use('less')
+        .loader(require.resolve('less-loader'));
+  } else if (target === 'web' && !value) {
+    config.module.rule('less')
+      .oneOf('raw')
+        .use('less')
+          .loader(require.resolve('less-loader'))
+          .end()
+        .end()
+      .oneOf('normal')
+        .use('less')
+          .loader(require.resolve('less-loader'))
+
+    config.plugin('minicss')
+      .use(MiniCssExtractPlugin, [{
+        filename: 'web/[name].css',
+      }]);
+  }
+};
+
+function setCSSRule(configRule, context, value, target) {
   const { userConfig } = context;
   const { extraStyle = {} } = userConfig;
-  const { cssModules : { modules , resourceQuery} } = extraStyle;
+  const { cssModules = {} } = extraStyle;
+  const { modules , resourceQuery } = cssModules;
 
   // enbale inlineStyle
   if (target === 'weex' || value) {
     if (target === 'weex') {
-      config.module.rule('css')
-        .test(/\.css?$/)
-          .use('css')
-            .loader(require.resolve('stylesheet-loader'));
+      configRule
+        .use('css')
+          .loader(require.resolve('stylesheet-loader'))
+          .options({
+            transformDescendantCombinator: true,
+          })
     }
 
     if (target === 'web') {
-
-      config.module.rule('css')
-        .test(/\.css?$/)
-          .use('css')
-            .loader(require.resolve('stylesheet-loader'))
+      configRule
+        .use('css')
+          .loader(require.resolve('stylesheet-loader'))
+          .options({
+            transformDescendantCombinator: true,
+          })
           .end()
-          .use('postcss')
-            .loader(require.resolve('postcss-loader'))
-            .options({
-              ident: 'postcss',
-              plugins: () => [
-                require('postcss-plugin-rpx2vw')(),
-              ],
-            });
+        .use('postcss')
+          .loader(require.resolve('postcss-loader'))
+          .options({
+            ident: 'postcss',
+            plugins: () => [
+              require('postcss-plugin-rpx2vw')(),
+            ],
+          });
     }
-
-    config.module.rule('jsx')
-      .use('babel')
-      .tap(opt => addStylePlugin(opt));
-
-    config.module.rule('tsx')
-      .use('babel')
-      .tap(opt => addStylePlugin(opt));
     // disable inlineStyle
   } else if (target === 'web' && !value) {
     // extract css file in web while inlineStyle is disabled
@@ -57,19 +78,18 @@ module.exports = (config, context, value, target) => {
     };
 
 
-    config.module.rule('css')
-      .test(/\.css?$/)
-        .use('minicss')
-          .loader(MiniCssExtractPlugin.loader)
+    configRule
+      .use('minicss')
+        .loader(MiniCssExtractPlugin.loader)
         .end()
       .oneOf('raw')
         .resourceQuery(resourceQuery ? new RegExp(resourceQuery) :/\?raw$/)
-          .use('css')
-            .loader(require.resolve('css-loader'))
+        .use('css')
+          .loader(require.resolve('css-loader'))
           .end()
-          .use('postcss')
-            .loader(require.resolve('postcss-loader'))
-            .options(postcssConfig)
+        .use('postcss')
+          .loader(require.resolve('postcss-loader'))
+          .options(postcssConfig)
           .end()
         .end()
       .oneOf('normal')
@@ -88,16 +108,5 @@ module.exports = (config, context, value, target) => {
         .use('postcss')
           .loader(require.resolve('postcss-loader'))
           .options(postcssConfig);
-
-    config.plugin('minicss')
-      .use(MiniCssExtractPlugin, [{
-        filename: 'web/[name].css',
-      }]);
   }
-};
-
-function addStylePlugin(babelConfig) {
-  return babelMerge.all([{
-    plugins: [require.resolve('babel-plugin-transform-jsx-stylesheet')],
-  }, babelConfig]);
 }

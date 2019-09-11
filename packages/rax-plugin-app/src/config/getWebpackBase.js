@@ -1,5 +1,7 @@
 const webpack = require('webpack');
 const Chain = require('webpack-chain');
+const fs = require('fs-extra');
+const path = require('path');
 const babelMerge = require('babel-merge');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -7,7 +9,9 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
 
-const babelConfig = getBabelConfig();
+const babelConfig = getBabelConfig({
+  styleSheet: true,
+});
 
 module.exports = (context) => {
   const { rootDir, command } = context;
@@ -52,8 +56,10 @@ module.exports = (context) => {
   config.plugin('caseSensitivePaths')
     .use(CaseSensitivePathsPlugin);
 
-  config.plugin('copyWebpackPlugin')
+  if (fs.existsSync(path.resolve(rootDir, 'src/public'))) {
+    config.plugin('copyWebpackPlugin')
     .use(CopyWebpackPlugin, [[{ from: 'src/public', to: 'public' }]]);
+  }
 
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);
@@ -69,7 +75,6 @@ module.exports = (context) => {
     config.module.rule('tsx')
       .use('babel')
         .tap(opt => addHotLoader(opt));
-      
   } else if (command === 'build') {
     config.mode('production');
     config.devtool('source-map');
