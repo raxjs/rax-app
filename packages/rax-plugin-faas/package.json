@@ -12,5 +12,8 @@
     "url": "https://github.com/alibaba/rax/issues"
   },
   "homepage": "https://github.com/alibaba/rax#readme",
-  "dependencies": {}
+  "dependencies": {
+    "@koa/router": "^8.0.1",
+    "koa": "^2.8.1"
+  }
 }
