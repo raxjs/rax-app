@@ -25,15 +25,6 @@ module.exports = (context) => {
   config.resolve.extensions
     .merge(['.js', '.json', '.jsx', '.html', '.ts', '.tsx']);
 
-  config.externals([
-    function(ctx, request, callback) {
-      if (request.indexOf('@weex-module') !== -1) {
-        return callback(null, 'undefined');
-      }
-      callback();
-    },
-  ]);
-
   config.resolve.alias
     .set('@core/app', 'universal-app-runtime')
     .set('@core/page', 'universal-app-runtime')
