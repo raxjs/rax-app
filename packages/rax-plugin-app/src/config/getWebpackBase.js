@@ -1,5 +1,7 @@
 const webpack = require('webpack');
 const Chain = require('webpack-chain');
+const fs = require('fs-extra');
+const path = require('path');
 const babelMerge = require('babel-merge');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -22,6 +24,15 @@ module.exports = (context) => {
 
   config.resolve.extensions
     .merge(['.js', '.json', '.jsx', '.html', '.ts', '.tsx']);
+
+  config.externals([
+    function(ctx, request, callback) {
+      if (request.indexOf('@weex-module') !== -1) {
+        return callback(null, 'undefined');
+      }
+      callback();
+    },
+  ]);
 
   config.resolve.alias
     .set('@core/app', 'universal-app-runtime')
@@ -54,11 +65,10 @@ module.exports = (context) => {
   config.plugin('caseSensitivePaths')
     .use(CaseSensitivePathsPlugin);
 
-  config.plugin('copyWebpackPlugin')
-    .use(CopyWebpackPlugin, [
-      [{ from: 'src/public', to: 'public' }],
-      { logLevel: 'error' },
-    ]);
+  if (fs.existsSync(path.resolve(rootDir, 'src/public'))) {
+    config.plugin('copyWebpackPlugin')
+    .use(CopyWebpackPlugin, [[{ from: 'src/public', to: 'public' }]]);
+  }
 
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);
