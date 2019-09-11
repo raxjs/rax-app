@@ -75,6 +75,7 @@ module.exports = (context) => {
     config.module.rule('tsx')
       .use('babel')
         .tap(opt => addHotLoader(opt));
+
   } else if (command === 'build') {
     config.mode('production');
     config.devtool('source-map');
@@ -90,6 +91,13 @@ module.exports = (context) => {
         .use(OptimizeCSSAssetsPlugin, [{
           canPrint: true,
         }]);
+
+      // 单个js入口不超过 100k
+      config.performance
+      .hints(hints)
+      .maxEntrypointSize(100000)
+      .maxAssetSize(300000)
+      .assetFilter(filename => /\.m?js$/.test(filename));
   }
 
   return config;
