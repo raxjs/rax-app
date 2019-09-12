@@ -7,7 +7,7 @@ const REQUIRE_PATTERN = /require\(['|"](.*?)['|"]\)/g;
 function getFuncPath (cwd, handler = '') {
   const paths = /\.js$/.test(handler)
     ? [handler]
-    : [handler + '.js' , handler + '/index.js'];
+    : [`${handler}.js` , `${handler}/index.js`];
 
   for (let i = 0; i < paths.length; i++) {
     const fileResolvePath = path.resolve(cwd, paths[i]);
@@ -39,29 +39,31 @@ module.exports = (cwd = process.cwd(), options = {}) => {
       const { handler = '' } = functions[funcName] || {};
       const funcPath = getFuncPath(cwd, handler);
 
-      // If handler file is not exist
-      if (!funcPath) {
-        console.log(`The function ${funcName} file is not existed.`);
-        console.log(`Please make sure handler is a existed file path.`);
-        continue;
-      };
+      if (funcPath) {
+        funcFiles[funcName] = {
+          src: funcPath,
+          dependencies: {},
+        };
 
-      const funcDeps = (funcFiles[funcName] = {
-        src: funcPath,
-        dependencies: {}
-      });
+        const funcDeps = funcFiles[funcName];
+        const funcContent = fs.readFileSync(funcPath, 'utf-8');
+        const nodeModulesPath = path.resolve(cwd, 'node_modules');
 
-      const funcContent = fs.readFileSync(funcPath, 'utf-8');
-      const nodeModulesPath = path.resolve(cwd, 'node_modules');
+        let result = REQUIRE_PATTERN.exec(funcContent);
+        while (result !== null) {
+          const depName = result[1];
 
-      while ((result = REQUIRE_PATTERN.exec(funcContent)) !== null) {
-        const depName = result[1];
-
-        // TODO: collect local files
-        if (!BUILD_IN_MODULES.includes(depName) && !isLocal(depName)) {
-          // collect dependencies
-          collectDepsPath(cwd, nodeModulesPath, depName, funcDeps.dependencies);
+          // TODO: collect local files
+          if (!BUILD_IN_MODULES.includes(depName) && !isLocal(depName)) {
+            // collect dependencies
+            collectDepsPath(cwd, nodeModulesPath, depName, funcDeps.dependencies);
+          }
+          result = REQUIRE_PATTERN.exec(funcContent);
         }
+      } else {
+        // If handler file is not exist
+        console.log(`The function ${funcName} file is not existed.`);
+        console.log('Please make sure handler is a existed file path.');
       }
     }
     return funcFiles;

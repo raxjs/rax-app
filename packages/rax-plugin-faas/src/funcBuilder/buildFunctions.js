@@ -5,7 +5,10 @@ const recursiveCopy = require('recursive-copy');
  * build functions
  */
 module.exports = async (cwd, functions) => {
-  for (let name in functions) {
+  const names = Object.keys(functions);
+
+  for (let i = 0; i < names.length; i++) {
+    const name = names[i];
     const { src, dependencies } = functions[name];
     const funcsDir = path.resolve(cwd, './.serverless');
 
@@ -31,9 +34,10 @@ async function copyFunction(cwd, targetDir, funcPath) {
 }
 
 // copy function dependencies
-async function copyDependenices(cwd, targetDir, deps) {
-  for (let dep in deps) {
-    const insPath = deps[dep];
+async function copyDependenices(cwd, targetDir, dependencies) {
+  const depKeys = Object.keys(dependencies);
+  for (let i = 0; i < depKeys.length; i++) {
+    const insPath = dependencies[depKeys[i]];
     const cpPath = insPath.replace(cwd, targetDir);
 
     await copy(insPath, cpPath);
