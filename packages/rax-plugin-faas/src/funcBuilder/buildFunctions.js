@@ -10,7 +10,7 @@ module.exports = async (cwd, functions) => {
   for (let i = 0; i < names.length; i++) {
     const name = names[i];
     const { src, dependencies } = functions[name];
-    const funcsDir = path.resolve(cwd, './.serverless');
+    const funcsDir = path.resolve(cwd, './.serverless', name);
 
     await copyFunction(cwd, funcsDir, src);
     await copyDependenices(cwd, funcsDir, dependencies);
