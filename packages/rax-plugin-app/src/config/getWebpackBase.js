@@ -94,7 +94,7 @@ module.exports = (context) => {
 
       // 单个js入口不超过 100k
       config.performance
-      .hints(hints)
+      .hints('warning')
       .maxEntrypointSize(100000)
       .maxAssetSize(300000)
       .assetFilter(filename => /\.m?js$/.test(filename));
