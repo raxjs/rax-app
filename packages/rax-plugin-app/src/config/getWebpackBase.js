@@ -1,5 +1,7 @@
 const webpack = require('webpack');
 const Chain = require('webpack-chain');
+const fs = require('fs-extra');
+const path = require('path');
 const babelMerge = require('babel-merge');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -61,11 +63,10 @@ module.exports = (context) => {
   config.plugin('caseSensitivePaths')
     .use(CaseSensitivePathsPlugin);
 
-  config.plugin('copyWebpackPlugin')
-    .use(CopyWebpackPlugin, [
-      [{ from: 'src/public', to: 'public' }],
-      { logLevel: 'error' },
-    ]);
+  if (fs.existsSync(path.resolve(rootDir, 'src/public'))) {
+    config.plugin('copyWebpackPlugin')
+    .use(CopyWebpackPlugin, [[{ from: 'src/public', to: 'public' }]]);
+  }
 
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);

@@ -31,6 +31,7 @@
     "image-source-loader": "^0.6.5",
     "json-loader": "^0.5.7",
     "jsx2mp-cli": "^0.1.0",
+    "stylesheet-loader": "^0.6.5",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
     "loader-utils": "^1.1.0",
