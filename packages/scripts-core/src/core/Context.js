@@ -1,5 +1,4 @@
 const path = require('path');
-const autoBind = require('auto-bind');
 const fs = require('fs-extra');
 
 const log = require('./log');
@@ -13,7 +12,17 @@ module.exports = class Context {
     rootDir = process.cwd(),
     args = {} }
   ) {
-    autoBind(this);
+    this.getProjectFile = this.getProjectFile.bind(this);
+    this.getUserConfig = this.getUserConfig.bind(this);
+    this.getPlugins = this.getPlugins.bind(this);
+    this.registerConfig = this.registerConfig.bind(this);
+    this.getNamedConfig = this.getNamedConfig.bind(this);
+    this.chainWebpack = this.chainWebpack.bind(this);
+    this.onHook = this.onHook.bind(this);
+    this.applyHook = this.applyHook.bind(this);
+    this.runPlugins = this.runPlugins.bind(this);
+    this.runWebpackFn = this.runWebpackFn.bind(this);
+    this.getConfig = this.getConfig.bind(this);
 
     this.command = command;
     this.commandArgs = args;
@@ -113,10 +122,6 @@ module.exports = class Context {
     return configInfo.chainConfig;
   }
 
-  setDevServer(server) {
-    this.__CustomDevServer = server;
-  }
-
   chainWebpack(fn) {
     const fnInfo = this.__webpackFns.find(v => v.name === this.pluginName);
     if (!fnInfo) {
@@ -147,13 +152,6 @@ module.exports = class Context {
   async runPlugins() {
     for (const pluginInfo of this.__plugins) {
       const { fn, options } = pluginInfo;
-      // const pluginContext = _.pick(this, [
-      //   'command',
-      //   'commandArgs',
-      //   'rootDir',
-      //   'userConfig',
-      //   'pkg',
-      // ]);
 
       const pluginAPI = {
         log,
@@ -161,7 +159,6 @@ module.exports = class Context {
         registerConfig: this.registerConfig,
         chainWebpack: this.chainWebpack,
         onHook: this.onHook,
-        setDevServer: this.setDevServer,
       }
 
       await fn(pluginAPI, options);

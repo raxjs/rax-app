@@ -14,7 +14,7 @@ module.exports = (context) => {
     function(ctx, request, callback) {
       if (request.indexOf('@weex-module') !== -1) {
         console.log()
-        console.log(chalk.yellow(`[WARN] require('@weex-module/xxx') will be deprecated soon, please use weex.requireModule('xxx') instead.`));
+        console.log(chalk.yellow(`[WARN] require('@weex-module/xxx') will be deprecated, please use weex.requireModule('xxx') instead.`));
         console.log()
         return callback(null, `commonjs ${request}`);
       }
