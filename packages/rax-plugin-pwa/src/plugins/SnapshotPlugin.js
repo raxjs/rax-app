@@ -20,21 +20,12 @@ module.exports = class SnapshotPlugin {
   }
 
   apply(compiler) {
-    const config = compiler.options;
     const { snapshot } = this.options;
     const withSSR = process.env.RAX_SSR === 'true';
 
     if (!snapshot) {
       // Exit if no htmlShot config
       return;
-    }
-
-    try {
-      // Told universal-app-shell-loader to use hydrate
-      const targetIdx = config.entry.index.findIndex(item => ~item.indexOf('UniversalAppShellLoader') && /\/src\/app\.js$/.test(item));
-      config.entry.index[targetIdx] = config.entry.index[targetIdx].replace('type=web', 'type=web&&PWASnapshot=true');
-    } catch (e) {
-      console.warn('Hydrate snapshot failed: your Rax engineering may out of date!');
     }
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {

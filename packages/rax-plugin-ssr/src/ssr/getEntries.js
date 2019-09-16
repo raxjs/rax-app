@@ -24,7 +24,7 @@ module.exports = (config, context) => {
 
   routes.forEach((route) => {
     const entry = getRouteName(route, rootDir);
-    const absolutePagePath = path.resolve(appSrc, route.component);
+    const absolutePagePath = path.resolve(appSrc, route.source);
 
     const query = {
       path: route.path,

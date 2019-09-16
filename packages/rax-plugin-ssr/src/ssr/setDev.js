@@ -64,7 +64,7 @@ module.exports = (config, context) => {
     const memFs = devServer.compiler.compilers[0].outputFileSystem;
     routes.forEach((route) => {
       app.get(route.path, function(req, res) {
-        const bundleContent = memFs.readFileSync(route.component, 'utf8');
+        const bundleContent = memFs.readFileSync(route.source, 'utf8');
 
         process.once('unhandledRejection', (error) => printErrorStack(error, bundleContent));
 

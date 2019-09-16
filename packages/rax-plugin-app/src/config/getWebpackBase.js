@@ -30,12 +30,12 @@ module.exports = (context) => {
     .set('@core/page', 'universal-app-runtime')
     .set('@core/router', 'universal-app-runtime');
 
-  // Process JSON file to js file
-  config.module.rule('json')
+  // Process app.json file
+  config.module.rule('appJSON')
     .type("javascript/auto")
     .test(/app\.json$/)
     .use('loader')
-    .loader(require.resolve('json-loader'))
+    .loader(require.resolve('../loaders/AppConfigLoader'));
 
   config.module.rule('jsx')
     .test(/\.(js|mjs|jsx)$/)
