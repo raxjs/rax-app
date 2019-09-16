@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const Koa = require('koa');
 const Router = require('@koa/router');
+const cors = require('@koa/cors');
 
 const app = new Koa();
 const router = new Router();
@@ -14,9 +15,9 @@ module.exports = ({ context, chainWebpack }, options) => {
     const webConfig = config.getConfig('web');
     webConfig
       .plugin('faasDefinePlugin')
-      .use(webpack.DefinePlugin, [{
-        __FAAS_API__: '127.0.0.1:3000',
-      }])
+        .use(webpack.DefinePlugin, [{
+          __FAAS_API__: JSON.stringify('http://127.0.0.1:3000'),
+        }]);
   });
 
   functions.forEach((fnc) => {
@@ -54,9 +55,10 @@ module.exports = ({ context, chainWebpack }, options) => {
     });
   })
 
+  app.use(cors());
   app
     .use(router.routes())
-    .use(router.allowedMethods());
+    .use(router.allowedMethods())
 
   app.listen(3000);
   console.log('Faas development server at 127.0.0.1:3000');
