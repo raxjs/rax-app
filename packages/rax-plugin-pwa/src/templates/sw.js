@@ -10,14 +10,74 @@ module.exports = `/**
 */
 
 // precache list, specific URL required
-let preCacheUrlList = <%= JSON.stringify(preCacheUrlList) %>;
+const PRE_CACHE_URL_LIST = <%= JSON.stringify(preCacheUrlList) %>;
 
 // ignore following assets, match thougth regExp
-let ignorePatternList = <%= JSON.stringify(ignorePatternList) %>;
+const IGNORE_PATTERN_LIST = <%= JSON.stringify(ignorePatternList) %>;
 
 // chche following assets, match thougth regExp
-let savedCachePatternList = <%= JSON.stringify(savedCachePatternList) %>;
+const SAVED_CACHE_PATTERN_LIST = <%= JSON.stringify(savedCachePatternList) %>;
 const CACHE_ID = 'RAX_PWA_SW_CACHE_<%= cacheId %>';
+
+// combo url pattern
+const COMBO_PATTERN = '<%= comboPattern %>';
+const COMBO_SPLIT_SEPARATOR = '<%= comboSplitSeparator %>';
+const HTML_LOADING_TIMEOUT = <%= htmlLoadingTimeout %>;
+
+// split combos as array
+const splitCombo = (url = '') => {
+  const match = url.match(stringToReg(COMBO_PATTERN));
+
+  if (match === null) {
+    return [];
+  }
+  return match[1].split(COMBO_SPLIT_SEPARATOR);
+}
+
+// check two specific urls is same, even if the combo order is different
+const isSameCombo = (aUrl = '', bUrl = '') => {
+  if (aUrl === bUrl) return true;
+
+  const aComboItems = splitCombo(aUrl);
+  const bComboItems = splitCombo(bUrl);
+
+  if (
+    aComboItems.length !== bComboItems.length
+    || aComboItems.length === 0
+    || bComboItems.length === 0
+  ) return false;
+
+  return !aComboItems.some(combo => bComboItems.indexOf(combo) === -1);
+}
+
+const matchCache = (req) => {
+  const { url = '' } = req;
+
+  return caches.open(CACHE_ID).then(cache => {
+    return cache.match(url).then(res => {
+      // Cache hits
+      if (res) return res;
+
+      // No comboPattern
+      if (!COMBO_PATTERN) return res;
+
+      // Find same combo request
+      return cache.keys().then(res => {
+        let i = -1;
+
+        while(++i < res.length) {
+          const resItem = res[i];
+
+          if (isSameCombo(url, resItem.url)) {
+            // resItem is useless for a response,
+            // the resItem.body is undefined
+            return cache.match(resItem.url);
+          }
+        }
+      });
+    });
+  });
+}
 
 // precache the target assets.
 const precache = (target) => {
@@ -27,9 +87,9 @@ const precache = (target) => {
 };
 
 const stringToReg = (str) => {
-  if (!str) return;
+  if (!str) return null;
   const match = str.match(/^\\/(.*)\\/(\\w*)/);;
-  if (!match) return;
+  if (!match) return null;
   const [, pattern, flags] = match;
   return new RegExp(pattern, flags);
 }
@@ -44,15 +104,35 @@ const isMatch = (patternStr, testStr) => {
 
 // save cache
 const saveCache = (req, res) => {
-  return caches.open(CACHE_ID).then(cache => {
-    if (res.ok) cache.put(req, res);
-  });
-};
+  if (req && res && res.ok) {
+    return caches.open(CACHE_ID).then(cache => {
+      cache.put(req.url, res);
+    });
+  }
+  return Promise.resolve();
+}
+
+const clonedFetch = (req, options, timeout) => {
+  return new Promise((resolve, reject) => {
+    if (timeout > 0) {
+      setTimeout(function() {
+        reject(new Error("Fetch timeout"))
+      }, timeout);
+    }
+
+    fetch(req.clone(), options).then(res => {
+      saveCache(req, res.clone());
+      resolve(res);
+    });
+  })
+}
+
 <% if (skipWaiting) { %>
 // skip service worker waiting become the active worker
 const skipWaiting = () => {
   addEventListener('install', () => self.skipWaiting());
 };
+
 skipWaiting();
 <% } %>
 <% if (clientsClaim) { %>
@@ -62,73 +142,51 @@ skipWaiting();
 const clientsClaim = () => {
   addEventListener('activate', () => self.clients.claim());
 };
+
 clientsClaim();
 <% } %>
-self.addEventListener('install', (e) => {
-  e.waitUntil(precache(preCacheUrlList));
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(precache(PRE_CACHE_URL_LIST));
 });
 
-self.addEventListener('fetch', e => {
-  let url = new URL(e.request.url);
+self.addEventListener('fetch', event => {
+  let url = new URL(event.request.url);
 
   if (
-    e.request.method != 'GET' ||
-    !savedCachePatternList.some(pat => isMatch(pat, url.href)) ||
-    // ignore ignorePatternList
-    ignorePatternList.some(pat => isMatch(pat, url.href))
+    event.request.method != 'GET' ||
+    !SAVED_CACHE_PATTERN_LIST.some(pat => isMatch(pat, url.href)) ||
+    // ignore IGNORE_PATTERN_LIST
+    IGNORE_PATTERN_LIST.some(pat => isMatch(pat, url.href))
   ) {
     return;
   }
 
   // is same-origin
-  let isSameOrigin = url.host === self.location.host;
-  let isNavigate = e.request.mode == 'navigate' || e.request.destination == 'document';
-  let cached = caches.match(e.request);
-  // clone request info for retry request
-  let clonedFetch = fetch(
-    e.request.clone(),
-    isSameOrigin ? {} : {
-      mode: 'cors',
-      credentials: 'omit'
-    }
-  );
+  const isSameOrigin = url.host === self.location.host;
+  // is html request
+  const isNavigate = event.request.mode === 'navigate'
+    || event.request.destination === 'document';
+  const fetchOptions = isSameOrigin ? {} : {
+    mode: 'cors',
+    credentials: 'omit'
+  }
 
-  let useCached = new Promise((resolve, reject) => {
-    if (isNavigate) {
-      setTimeout(() => {
-        reject();
-      }, 20000);
-    } else {
-      resolve(cached);
-    }
-  });
+  if (isNavigate) {
+    // html request always fetch
+    event.respondWith(clonedFetch(event.request, fetchOptions, HTML_LOADING_TIMEOUT).catch(_ => matchCache(event.request)));
+  } else {
+    // cache priority for others
+    event.respondWith(matchCache(event.request).then(res => {
+      const cloned = clonedFetch(event.request, fetchOptions);
 
-  // stale-while-revalidating
-  // https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate
+      // cache hits
+      if (res) {
+        return res;
+      }
 
-  // return cache
-  e.respondWith(
-    Promise.race([clonedFetch.catch(_ => cached), useCached])
-      .then(res => {
-        return res || clonedFetch;
-      })
-      .catch(_ => {
-        if (isNavigate) return caches.match('/offline/');
-      })
-  );
-
-  // update cache through last-modified
-  let fetchedCopy = clonedFetch.then(_res => _res.clone());
-  e.waitUntil(
-    Promise.all([fetchedCopy, caches.match(e.request)])
-      .then(([resp, cresp]) => {
-        let fModified = resp.headers.get('last-modified');
-        let cModified = cresp && cresp.headers.get('last-modified');
-        if (isNavigate || !fModified || fModified != cModified) {
-          return saveCache(e.request, resp);
-        }
-      })
-      .catch(_ => { })
-  );
+      return cloned;
+    }));
+  }
 });
 `;

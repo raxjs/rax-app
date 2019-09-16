@@ -10,6 +10,9 @@ const HTML_PATH = 'web/index.html';
 const SWBS_FILE_PATH = 'web/swbs.js';
 const SW_FILE_PATH = 'web/sw.js';
 const DEFAULT_IGNORE_LIST = ['/swbs.js/i'];
+const DEFAULT_COMBO_SPLIT_SEPARATOR = ','; // split combos through `,`
+const DEFAULT_COMBO_PATTERN = ''; // match combo string, like /\\/\\?\\?(.+)/
+const DEFAULT_HTML_LOADING_TIMEOUT = 10000; // fetch timeout
 
 function patternToString(pattern) {
   return pattern.toString();
@@ -48,9 +51,12 @@ module.exports = class ServiceWorkerPlugin {
           : [],
         // Cache id
         cacheId: serviceWorker.cacheId || pkg.name,
-        skipWaiting: serviceWorker.skipWaiting || false,
+        skipWaiting: serviceWorker.skipWaiting || true,
         clientsClaim: serviceWorker.clientsClaim || false,
+        comboPattern: serviceWorker.comboPattern || DEFAULT_COMBO_PATTERN,
+        comboSplitSeparator: serviceWorker.comboSplitSeparator || DEFAULT_COMBO_SPLIT_SEPARATOR,
         unregister: serviceWorker.unregister || false,
+        htmlLoadingTimeout: Number(serviceWorker.htmlLoadingTimeout) || DEFAULT_HTML_LOADING_TIMEOUT,
       };
 
       const SWBSCode = templateGenerator(SWBSTemplate)(data);
