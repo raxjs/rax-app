@@ -1,13 +1,23 @@
 const path = require('path');
+const webpack = require('webpack');
 const Koa = require('koa');
 const Router = require('@koa/router');
 
 const app = new Koa();
 const router = new Router();
 
-module.exports = ({ context }, options) => {
+module.exports = ({ context, chainWebpack }, options) => {
   const { rootDir } = context;
   const { functions } = options;
+
+  chainWebpack((config) => {
+    const webConfig = config.getConfig('web');
+    webConfig
+      .plugin('faasDefinePlugin')
+      .use(webpack.DefinePlugin, [{
+        __FAAS_API__: '127.0.0.1:3000',
+      }])
+  });
 
   functions.forEach((fnc) => {
     const [ fileName, fncName ] = fnc.handler.split('.');
