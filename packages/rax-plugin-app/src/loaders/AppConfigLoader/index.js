@@ -40,7 +40,7 @@ module.exports = function (appJSON) {
     });`;
   }).join('\n');
 
-  let processShell = '';
+  let processShell;
   if (appConfig.shell) {
     processShell = `
     import Shell from "${getDepPath(appConfig.shell.source, this.rootContext)}";
@@ -49,6 +49,8 @@ module.exports = function (appJSON) {
       component: Shell
     };
     `;
+  } else {
+    processShell = '';
   }
 
   return `
