@@ -22,6 +22,15 @@ module.exports = (context) => {
   config.target('web');
   config.context(rootDir);
 
+  config.externals([
+    function(ctx, request, callback) {
+      if (request.indexOf('@weex-module') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
+      callback();
+    },
+  ]);
+
   config.resolve.extensions
     .merge(['.js', '.json', '.jsx', '.ts', '.tsx', '.html']);
 
