@@ -75,7 +75,6 @@ module.exports = (context) => {
     config.module.rule('tsx')
       .use('babel')
         .tap(opt => addHotLoader(opt));
-
   } else if (command === 'build') {
     config.mode('production');
     config.devtool('source-map');
@@ -92,12 +91,12 @@ module.exports = (context) => {
           canPrint: true,
         }]);
 
-      // 单个js入口不超过 100k
+      // max size: 100k/entry
       config.performance
-      .hints('warning')
-      .maxEntrypointSize(100000)
-      .maxAssetSize(300000)
-      .assetFilter(filename => /\.m?js$/.test(filename));
+        .hints('warning')
+        .maxEntrypointSize(100000)
+        .maxAssetSize(300000)
+        .assetFilter(filename => /\.m?js$/.test(filename));
   }
 
   return config;
