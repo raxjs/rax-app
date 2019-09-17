@@ -34,8 +34,12 @@ module.exports = (context) => {
   config.module.rule('appJSON')
     .type("javascript/auto")
     .test(/app\.json$/)
+    .use('babel')
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig)
+    .end()
     .use('loader')
-    .loader(require.resolve('../loaders/AppConfigLoader'));
+    .loader(require.resolve('../loaders/AppConfigLoader'))
 
   config.module.rule('jsx')
     .test(/\.(js|mjs|jsx)$/)
