@@ -1,4 +1,5 @@
 const dev = require('./dev');
+const funcBuilder = require('./funcBuilder');
 
 const defaultFncConfig = {
   name: 'index',
@@ -16,5 +17,9 @@ module.exports = (api, options) => {
 
   if (command === 'dev') {
     dev(api, options);
+  }
+
+  if (command === 'build') {
+    funcBuilder(api, options);
   }
 };
