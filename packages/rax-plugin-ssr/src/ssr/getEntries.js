@@ -35,7 +35,7 @@ module.exports = (config, context) => {
       absolutePagePath,
       absoluteAppJSONPath,
       publicPath,
-      isMultiPages,
+      isMultiPages: true,
       styles: inlineStyle ? [] : [`web/${entry}.css`],
       scripts: isMultiPages ? [`web/${entry}.js`] : [`web/${entry}.js`, 'web/index.js'],
     };
