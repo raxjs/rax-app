@@ -16,6 +16,7 @@ module.exports = function() {
     absoluteAppJSONPath,
     publicPath,
     pageName,
+    pagePath,
     isMultiPages,
     styles = [],
     scripts = [],
@@ -40,7 +41,8 @@ module.exports = function() {
       const initialData = {
         shellData,
         appData,
-        pageData
+        pageData,
+        pagePath: '${pagePath}'
       };
 
       const contentElement = createElement(Shell, null, createElement(App, {

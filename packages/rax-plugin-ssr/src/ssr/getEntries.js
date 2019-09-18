@@ -27,7 +27,7 @@ module.exports = (config, context) => {
     const absolutePagePath = path.resolve(appSrc, route.source);
 
     const query = {
-      path: route.path,
+      pagePath: route.path,
       pageName: entry,
       absoluteDocumentPath,
       absoluteShellPath,
