@@ -34,5 +34,6 @@ module.exports = (context) => {
       .end();
   }
 
+  config.module.rules.delete('appJSON');
   return config;
 };
