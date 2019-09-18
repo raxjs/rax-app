@@ -30,7 +30,11 @@ module.exports = function (appJSON) {
     const dynamicImportComponent =
       `() =>
       import(/* webpackChunkName: "${getRouteName(route, this.rootContext)}" */ '${getDepPath(route.source, this.rootContext)}')
-      .then((mod) => () => interopRequire(mod))
+      .then((mod) => () => {
+        const reference = interopRequire(mod);
+        reference.__path = '${route.path}';
+        return reference;
+      })
     `;
     const importComponent = `() => () => interopRequire(require('${getDepPath(route.source, this.rootContext)}'))`;
 
