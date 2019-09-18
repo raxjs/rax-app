@@ -1,4 +1,5 @@
 const { getRouteName } = require('rax-compile-config');
+const { getOptions } = require('loader-utils');
 const getDepPath = require('./getDepPath');
 
 /**
@@ -19,9 +20,9 @@ const getDepPath = require('./getDepPath');
   }
  */
 module.exports = function (appJSON) {
-
+  const options = getOptions(this) || {};
+  const { type } = options;
   const appConfig = JSON.parse(appJSON);
-  const raxType = process.env.RAX_TYPE;
 
   const assembleRoutes = appConfig.routes.map((route) => {
     // First level function to support hooks will autorun function type state,
@@ -36,7 +37,7 @@ module.exports = function (appJSON) {
     return `routes.push({
       path: '${route.path}',
       source: '${route.source}',
-      component: ${raxType === 'web' ? dynamicImportComponent : importComponent}
+      component: ${type === 'web' ? dynamicImportComponent : importComponent}
     });`;
   }).join('\n');
 
