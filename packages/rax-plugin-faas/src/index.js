@@ -13,6 +13,6 @@ module.exports = (api, options) => {
   }
 
   if (command === 'build') {
-    build(api, functionConfig);
+    build(api, functionConfig, options);
   }
 };

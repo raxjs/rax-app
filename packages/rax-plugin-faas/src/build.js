@@ -5,13 +5,12 @@ const fs = require('fs-extra');
 const generateYaml = require('./generateYaml');
 const funcBuilder = require('./funcBuilder');
 
-module.exports = (api, functionConfig) => {
+module.exports = (api, functionConfig, options) => {
   const { chainWebpack, context, onHook } = api;
   const { rootDir, userConfig } = context;
   const { outputDir } = userConfig;
 
-  const devServerUrl = 'test';
-  // const devServerUrl = `http://localhost:${DEFAULT_PORT}/2016-08-15/proxy/${functionConfig.name}`;
+  const devServerUrl = `http://${options.aliyunId}.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/${functionConfig.name}`;
 
   chainWebpack((config) => {
     const webConfig = config.getConfig('web');
