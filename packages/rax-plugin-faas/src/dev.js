@@ -1,21 +1,15 @@
-const path = require('path');
 const webpack = require('webpack');
-const Koa = require('koa');
-const Router = require('@koa/router');
-const cors = require('@koa/cors');
+const shell = require('shelljs');
+const yaml = require('js-yaml');
+const _ = require('lodash');
+const fs = require('fs-extra');
 
-const app = new Koa();
-const router = new Router();
+const DEFAULT_PORT = '8000';
 
-const DEFAULT_PROTOCOL = 'http';
-const DEFAULT_HOST = '127.0.0.1';
-const DEFAULT_PORT = '3000';
+module.exports = ({ chainWebpack }, functionConfig) => {
+  const { functionArr } = functionConfig;
 
-module.exports = ({ context, chainWebpack }, functionConfig) => {
-  const { rootDir } = context;
-  const { functions } = functionConfig;
-
-  const devServerUrl = `${DEFAULT_PROTOCOL}://${DEFAULT_HOST}:${DEFAULT_PORT}`;
+  const devServerUrl = `http://localhost:${DEFAULT_PORT}/2016-08-15/proxy/${functionConfig.name}`;
 
   chainWebpack((config) => {
     const webConfig = config.getConfig('web');
@@ -26,47 +20,47 @@ module.exports = ({ context, chainWebpack }, functionConfig) => {
         }]);
   });
 
-  functions.forEach((fnc) => {
-    const [ fileName, fncName ] = fnc.handler.split('.');
-    const handlerPath = path.resolve(fnc.realPath, fileName);
-    const handler = require(handlerPath)[fncName];
-    const routePath = fnc.name;
+  const yamlObj = {
+    ROSTemplateFormatVersion: '2015-09-01',
+    Transform: 'Aliyun::Serverless-2018-04-03',
+    Resources: {
+      [functionConfig.name]: {
+        Type: 'Aliyun::Serverless::Service',
+      },
+    },
+  }
 
-    router.get(`/${routePath}*`,async (ctx) => {
-      const { request, response } = ctx;
-
-      // aliyun fc request
-      const customReq = {
-        headers: request.headers,
-        path: request.path,
-        queries: request.query,
-        method: request.method,
-        clientIP: request.ip,
-        url: request.url,
-      }
-
-      // aliyun fc response
-      const customRes = {
-        setStatusCode: (value) => {
-          response.status = value;
+  functionArr.forEach((fnc) => {
+    yamlObj.Resources[functionConfig.name][fnc.name] = {
+      Type: 'Aliyun::Serverless::Function',
+      Properties: {
+        Handler: fnc.handler,
+        Runtime: 'nodejs8',
+        CodeUri: fnc.path,
+      },
+      Events: {
+        httpTrigger: {
+          Type: 'HTTP',
+          Properties: {
+            AuthType: 'ANONYMOUS',
+            Methods: _.clone(fnc.methods), // must be new value
+          },
         },
-        setHeader: response.set,
-        deleteHeader: response.remove,
-        send: (value) => {
-          response.body = value;
-        },
-      }
-
-      await handler(customReq, customRes, {});
-    });
+      },
+    }
   })
 
-  app.use(cors());
-  app
-    .use(router.routes())
-    .use(router.allowedMethods())
+  const templateYaml = yaml.safeDump(yamlObj)
 
-  app.listen(DEFAULT_PORT);
-  console.log(`[FAAS] Development server at ${devServerUrl}`);
-  console.log();
+  fs.writeFileSync(`${functionConfig.realRootPath}/template.yml`, templateYaml);
+  runCommand(`cd ${functionConfig.realRootPath} && npx fun local start`);
 };
+
+// rerun command when error
+function runCommand(cmdStr) {
+  shell.exec(cmdStr, { async: true }, (error) => {
+    if (error) {
+      runCommand(cmdStr);
+    }
+  });
+}

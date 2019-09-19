@@ -4,7 +4,7 @@ const _ = require('lodash');
 const defaultFncConfig = {
   trigger: 'http',
   handler: 'index.handler',
-  method: ['GET'],
+  methods: ['GET'],
 }
 /**
  * result {
@@ -16,7 +16,7 @@ const defaultFncConfig = {
  *        realPath: string
  *        trigger: string
  *        handler: string
- *        method: array(string)
+ *        methods: array(string)
  *    }]
  * }
  */
