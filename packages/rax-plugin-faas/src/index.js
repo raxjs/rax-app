@@ -1,25 +1,18 @@
+const generateFunctionConfig = require('./generateFunctionConfig');
+
 const dev = require('./dev');
 const funcBuilder = require('./funcBuilder');
-
-const defaultFncConfig = {
-  name: 'index',
-  trigger: 'http',
-  handler: 'index.handler',
-  method: ['GET'],
-}
 
 module.exports = (api, options) => {
   const { context } = api;
   const { command } = context;
-  options.functions = options.functions.map(v => {
-    return Object.assign({}, defaultFncConfig, v);
-  })
+  const functionConfig = generateFunctionConfig(api.context, options)
 
   if (command === 'dev') {
-    dev(api, options);
+    dev(api, functionConfig);
   }
 
   if (command === 'build') {
-    funcBuilder(api, options);
+    funcBuilder(api, functionConfig);
   }
 };

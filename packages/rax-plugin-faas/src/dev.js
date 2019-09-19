@@ -7,22 +7,28 @@ const cors = require('@koa/cors');
 const app = new Koa();
 const router = new Router();
 
-module.exports = ({ context, chainWebpack }, options) => {
+const DEFAULT_PROTOCOL = 'http';
+const DEFAULT_HOST = '127.0.0.1';
+const DEFAULT_PORT = '3000';
+
+module.exports = ({ context, chainWebpack }, functionConfig) => {
   const { rootDir } = context;
-  const { functions } = options;
+  const { functions } = functionConfig;
+
+  const devServerUrl = `${DEFAULT_PROTOCOL}://${DEFAULT_HOST}:${DEFAULT_PORT}`;
 
   chainWebpack((config) => {
     const webConfig = config.getConfig('web');
     webConfig
       .plugin('faasDefinePlugin')
         .use(webpack.DefinePlugin, [{
-          __FAAS_API__: JSON.stringify('http://127.0.0.1:3000'),
+          __FAAS_API__: JSON.stringify(devServerUrl),
         }]);
   });
 
   functions.forEach((fnc) => {
     const [ fileName, fncName ] = fnc.handler.split('.');
-    const handlerPath = path.resolve(rootDir, fnc.path, fileName);
+    const handlerPath = path.resolve(fnc.realPath, fileName);
     const handler = require(handlerPath)[fncName];
     const routePath = fnc.name;
 
@@ -60,6 +66,7 @@ module.exports = ({ context, chainWebpack }, options) => {
     .use(router.routes())
     .use(router.allowedMethods())
 
-  app.listen(3000);
-  console.log('Faas development server at 127.0.0.1:3000');
+  app.listen(DEFAULT_PORT);
+  console.log(`[FAAS] Development server at ${devServerUrl}`);
+  console.log();
 };
