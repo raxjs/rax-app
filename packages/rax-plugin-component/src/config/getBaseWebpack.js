@@ -22,23 +22,26 @@ module.exports = (context) => {
   config.target('web');
   config.context(rootDir);
 
+  config.externals([
+    function(ctx, request, callback) {
+      if (request.indexOf('@weex-module') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
+      callback();
+    },
+  ]);
+
   config.resolve.extensions
     .merge(['.js', '.json', '.jsx', '.ts', '.tsx', '.html']);
 
   config.module.rule('jsx')
     .test(/\.(js|mjs|jsx)$/)
-    .exclude
-      .add(/(node_modules|bower_components)/)
-      .end()
     .use('babel')
       .loader(require.resolve('babel-loader'))
       .options(babelConfig);
 
   config.module.rule('tsx')
     .test(/\.tsx?$/)
-    .exclude
-      .add(/(node_modules|bower_components)/)
-      .end()
     .use('babel')
       .loader(require.resolve('babel-loader'))
       .options(babelConfig)
