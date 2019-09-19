@@ -24,7 +24,15 @@ module.exports = function (appJSON) {
   const { type } = options;
   const appConfig = JSON.parse(appJSON);
 
+  if (!appConfig.routes || !Array.isArray(appConfig.routes)) {
+    throw new Error('routes should be an array in app.json.');
+  }
+
   const assembleRoutes = appConfig.routes.map((route) => {
+    if (!route.path || !route.source) {
+      throw new Error('route object should have path and source.');
+    }
+
     // First level function to support hooks will autorun function type state,
     // Second level function to support rax-use-router rule autorun function type component.
     const dynamicImportComponent =
