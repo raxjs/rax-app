@@ -1,6 +1,6 @@
 {
   "name": "rax-plugin-pwa",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Rax PWA plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
