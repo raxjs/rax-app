@@ -43,6 +43,9 @@ module.exports = (context, options) => {
     }
 
     const func = Object.assign({}, defaultFncConfig, customConfig);
+    const [ handlerFile, handlerFunc ] = func.handler.split('.');
+    func.handlerFile = handlerFile;
+    func.handlerFunc = handlerFunc;
     func.realPath = path.resolve(realRootPath, func.path);
     functionArr.push(func);
   }

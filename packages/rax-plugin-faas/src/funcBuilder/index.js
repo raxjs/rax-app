@@ -1,11 +1,11 @@
 const generateFuncPath = require('./generateFuncPath');
 const buildFunctions = require('./buildFunctions');
 
-module.exports = (api, options) => {
+module.exports = (api, functionConfig) => {
   const { context } = api;
   const { rootDir } = context;
 
-  const funcs = generateFuncPath(rootDir, options);
+  const funcs = generateFuncPath(rootDir, functionConfig);
 
-  buildFunctions(rootDir, funcs);
+  buildFunctions(context, funcs);
 };

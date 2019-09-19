@@ -1,7 +1,7 @@
 const generateFunctionConfig = require('./generateFunctionConfig');
 
 const dev = require('./dev');
-const funcBuilder = require('./funcBuilder');
+const build = require('./build');
 
 module.exports = (api, options) => {
   const { context } = api;
@@ -13,6 +13,6 @@ module.exports = (api, options) => {
   }
 
   if (command === 'build') {
-    funcBuilder(api, functionConfig);
+    build(api, functionConfig);
   }
 };
