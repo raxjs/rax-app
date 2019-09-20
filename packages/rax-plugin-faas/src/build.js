@@ -9,8 +9,9 @@ module.exports = (api, functionConfig, options) => {
   const { chainWebpack, context, onHook } = api;
   const { rootDir, userConfig } = context;
   const { outputDir } = userConfig;
+  const { aliyunConfig } = options;
 
-  const devServerUrl = `http://${options.aliyunId}.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/${functionConfig.name}`;
+  const devServerUrl = `http://${aliyunConfig.id}.${aliyunConfig.region}.fc.aliyuncs.com/2016-08-15/proxy/${functionConfig.name}`;
 
   chainWebpack((config) => {
     const webConfig = config.getConfig('web');
@@ -28,4 +29,3 @@ module.exports = (api, functionConfig, options) => {
     funcBuilder(api, functionConfig);
   })
 };
-
