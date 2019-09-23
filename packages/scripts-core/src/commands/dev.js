@@ -27,9 +27,6 @@ module.exports = async function({
 
   const configArr = await context.getConfig();
 
-  // CustomDevServer may be changed by plugins
-  const { __CustomDevServer: CustomDevServer } = context;
-
   if (configArr.length) {
     let devServerConfig = {
       port: 9999,
@@ -57,12 +54,7 @@ module.exports = async function({
       process.exit(1);
     }
 
-    let devServer;
-    if (CustomDevServer) {
-      devServer = new CustomDevServer(compiler, devServerConfig);
-    } else {
-      devServer = new WebpackDevServer(compiler, devServerConfig);
-    }
+    const devServer = new WebpackDevServer(compiler, devServerConfig);
 
     serverUrl = `http://${devServerConfig.host}:${devServerConfig.port}`;
 
