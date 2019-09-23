@@ -25,8 +25,9 @@ module.exports = class ServiceWorkerPlugin {
 
   apply(compiler) {
     const { serviceWorker, context } = this.options;
-    const { pkg } = context;
+    const { pkg, userConfig } = context;
 
+    const publicPath = userConfig.publicPath || '/';
     if (!serviceWorker) {
       // Exit if no serviceWorker config
       return;
@@ -61,7 +62,7 @@ module.exports = class ServiceWorkerPlugin {
 
       const SWBSCode = templateGenerator(SWBSTemplate)(data);
       const SWCode = templateGenerator(SWTemplate)(data);
-      const scriptCode = `<script src="/${SWBS_FILE_PATH}" type="text/javascript" crossorigin="anonymous"></script>`;
+      const scriptCode = `<script src="${publicPath}${SWBS_FILE_PATH}" type="text/javascript" crossorigin="anonymous"></script>`;
       const htmlCode = compilation
         .assets[HTML_PATH]
         .source()

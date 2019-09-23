@@ -1,6 +1,6 @@
 {
   "name": "rax-plugin-multi-pages",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "rax app base plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/alibaba/rax#readme",
   "peerDependencies": {
-    "rax-plugin-app": "^0.1.0"
+    "rax-plugin-app": "^0.2.0"
   },
   "dependencies": {
     "@babel/core": "7.2.0",
@@ -22,6 +22,6 @@
     "fs-extra": "^8.1.0",
     "loader-utils": "^1.1.0",
     "qrcode-terminal": "^0.12.0",
-    "rax-compile-config": "^0.1.2"
+    "rax-compile-config": "^0.2.0"
   }
 }

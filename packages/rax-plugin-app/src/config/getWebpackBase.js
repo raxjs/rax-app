@@ -30,28 +30,39 @@ module.exports = (context) => {
     .set('@core/page', 'universal-app-runtime')
     .set('@core/router', 'universal-app-runtime');
 
+  // Process app.json file
+  config.module.rule('appJSON')
+    .type("javascript/auto")
+    .test(/app\.json$/)
+    .use('babel')
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig)
+    .end()
+    .use('loader')
+    .loader(require.resolve('../loaders/AppConfigLoader'))
+
   config.module.rule('jsx')
     .test(/\.(js|mjs|jsx)$/)
     .use('babel')
-      .loader(require.resolve('babel-loader'))
-      .options(babelConfig);
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig);
 
   config.module.rule('tsx')
     .test(/\.(ts|tsx)?$/)
     .use('babel')
-      .loader(require.resolve('babel-loader'))
-      .options(babelConfig)
-      .end()
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig)
+    .end()
     .use('ts')
-      .loader(require.resolve('ts-loader'))
-      .options({
-        transpileOnly: true,
-      });
+    .loader(require.resolve('ts-loader'))
+    .options({
+      transpileOnly: true,
+    });
 
   config.module.rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
     .use('source')
-      .loader(require.resolve('image-source-loader'));
+    .loader(require.resolve('image-source-loader'));
 
   config.plugin('caseSensitivePaths')
     .use(CaseSensitivePathsPlugin);
@@ -70,28 +81,28 @@ module.exports = (context) => {
 
     config.module.rule('jsx')
       .use('babel')
-        .tap(opt => addHotLoader(opt));
+      .tap(opt => addHotLoader(opt));
 
     config.module.rule('tsx')
       .use('babel')
-        .tap(opt => addHotLoader(opt));
+      .tap(opt => addHotLoader(opt));
   } else if (command === 'build') {
     config.mode('production');
     config.devtool('source-map');
 
     config.optimization
       .minimizer('uglify')
-        .use(UglifyJSPlugin, [{
-          cache: true,
-          sourceMap: true,
-        }])
-        .end()
+      .use(UglifyJSPlugin, [{
+        cache: true,
+        sourceMap: true,
+      }])
+      .end()
       .minimizer('optimizeCSS')
-        .use(OptimizeCSSAssetsPlugin, [{
-          canPrint: true,
-        }]);
+      .use(OptimizeCSSAssetsPlugin, [{
+        canPrint: true,
+      }]);
   }
-
+  
   return config;
 };
 

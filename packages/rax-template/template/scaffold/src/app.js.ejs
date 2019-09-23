@@ -1,10 +1,4 @@
-import { createElement } from 'rax';
-import { useRouter } from 'universal-app-runtime';
+import { runApp } from 'rax-app';
+import appConfig from './app.json';
 
-export default function App(props) {
-  const { routerConfig } = props;
-
-  const { Router } = useRouter(routerConfig);
-
-  return <Router {...props} />;
-}
+runApp(appConfig);

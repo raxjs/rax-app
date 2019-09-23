@@ -24,10 +24,10 @@ module.exports = (config, context) => {
 
   routes.forEach((route) => {
     const entry = getRouteName(route, rootDir);
-    const absolutePagePath = path.resolve(appSrc, route.component);
+    const absolutePagePath = path.resolve(appSrc, route.source);
 
     const query = {
-      path: route.path,
+      pagePath: route.path,
       pageName: entry,
       absoluteDocumentPath,
       absoluteShellPath,
@@ -35,7 +35,6 @@ module.exports = (config, context) => {
       absolutePagePath,
       absoluteAppJSONPath,
       publicPath,
-      isMultiPages,
       styles: inlineStyle ? [] : [`web/${entry}.css`],
       scripts: isMultiPages ? [`web/${entry}.js`] : [`web/${entry}.js`, 'web/index.js'],
     };
