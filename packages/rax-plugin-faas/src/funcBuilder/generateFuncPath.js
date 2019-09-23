@@ -4,22 +4,6 @@ const { BUILD_IN_MODULES } = require('./constants');
 
 const REQUIRE_PATTERN = /require\(['|"](.*?)['|"]\)/g;
 
-function getFuncPath (cwd, handler = '') {
-  const paths = /\.js$/.test(handler)
-    ? [handler]
-    : [`${handler}.js` , `${handler}/index.js`];
-
-  for (let i = 0; i < paths.length; i++) {
-    const fileResolvePath = path.resolve(cwd, paths[i]);
-
-    if (fs.existsSync(fileResolvePath)) {
-      return fileResolvePath;
-    }
-  }
-
-  return '';
-}
-
 function isLocal(str) {
   return /^\.|^\/|^\\/.test(str);
 }
@@ -27,50 +11,36 @@ function isLocal(str) {
 /**
  * generate function source file path and dependencies path
  */
-module.exports = (cwd = process.cwd(), options = {}) => {
-  try {
-    const { functions } = options;
-    const funcNames = Object.keys(functions);
-    const funcFiles = {};
+module.exports = (cwd = process.cwd(), functionConfig) => {
+  const { functionArr } = functionConfig;
+  // const funcNames = Object.keys(functions);
+  const funcFiles = {};
 
-    let i = -1;
-    while (++i < funcNames.length) {
-      const funcName = funcNames[i];
-      const { handler = '' } = functions[funcName] || {};
-      const funcPath = getFuncPath(cwd, handler);
+  functionArr.forEach((func) => {
+    const funcPath = path.resolve(func.realPath, `${func.handlerFile}.js`);
 
-      if (funcPath) {
-        funcFiles[funcName] = {
-          src: funcPath,
-          dependencies: {},
-        };
+    funcFiles[func.name] = {
+      src: func.realPath,
+      dependencies: {},
+    };
 
-        const funcDeps = funcFiles[funcName];
-        const funcContent = fs.readFileSync(funcPath, 'utf-8');
-        const nodeModulesPath = path.resolve(cwd, 'node_modules');
+    const funcContent = fs.readFileSync(funcPath, 'utf-8');
+    const nodeModulesPath = path.resolve(cwd, 'node_modules');
 
-        let result = REQUIRE_PATTERN.exec(funcContent);
-        while (result !== null) {
-          const depName = result[1];
+    let result = REQUIRE_PATTERN.exec(funcContent);
+    while (result !== null) {
+      const depName = result[1];
 
-          // TODO: collect local files
-          if (!BUILD_IN_MODULES.includes(depName) && !isLocal(depName)) {
-            // collect dependencies
-            collectDepsPath(cwd, nodeModulesPath, depName, funcDeps.dependencies);
-          }
-          result = REQUIRE_PATTERN.exec(funcContent);
-        }
-      } else {
-        // If handler file is not exist
-        console.log(`The function ${funcName} file is not existed.`);
-        console.log('Please make sure handler is a existed file path.');
+      // TODO: collect local files
+      if (!BUILD_IN_MODULES.includes(depName) && !isLocal(depName)) {
+        // collect dependencies
+        collectDepsPath(cwd, nodeModulesPath, depName, funcFiles[func.name].dependencies);
       }
+      result = REQUIRE_PATTERN.exec(funcContent);
     }
-    return funcFiles;
-  } catch(err) {
-    console.error(err);
-    process.exist(1);
-  }
+  });
+
+  return funcFiles;
 }
 
 // recursive collect dependencies path
