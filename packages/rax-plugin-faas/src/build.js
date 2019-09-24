@@ -11,7 +11,7 @@ module.exports = (api, functionConfig, options) => {
   const { outputDir } = userConfig;
   const { aliyunConfig } = options;
 
-  const devServerUrl = `http://${aliyunConfig.id}.${aliyunConfig.region}.fc.aliyuncs.com/2016-08-15/proxy/${functionConfig.name}`;
+  const devServerUrl = `//${aliyunConfig.id}.${aliyunConfig.region}.fc.aliyuncs.com/2016-08-15/proxy/${functionConfig.name}`;
 
   chainWebpack((config) => {
     const webConfig = config.getConfig('web');
