@@ -1,0 +1,62 @@
+// node build-in modules, refer https://github.com/nodejs/node/tree/v10.15.3/lib
+const NODE_MODULES = [
+  "assert",
+  "async_hooks",
+  "buffer",
+  "child_process",
+  "cluster",
+  "console",
+  "constants",
+  "crypto",
+  "dgram",
+  "dns",
+  "domain",
+  "events",
+  "fs",
+  "http",
+  "http2",
+  "https",
+  "inspector",
+  "module",
+  "net",
+  "os",
+  "path",
+  "perf_hooks",
+  "process",
+  "punycode",
+  "querystring",
+  "readline",
+  "repl",
+  "stream",
+  "string_decoder",
+  "sys",
+  "timers",
+  "tls",
+  "trace_events",
+  "tty",
+  "url",
+  "util",
+  "v8",
+  "vm",
+  "worker_threads",
+  "zlib",
+];
+
+// aliyun function runtime build-in modules, refer 
+// https://help.aliyun.com/document_detail/58011.html?spm=a2c4g.11186623.6.562.7ca04853bgol6U
+const ALIYUN_MODULES = [
+  "co",
+  "gm",
+  "ali-oss",
+  "ali-mns",
+  "tablestore",
+  "aliyun-sdk",
+  "@alicloud/fc2",
+  "opencv",
+  "body",
+  "raw-body",
+];
+
+module.exports = {
+  BUILD_IN_MODULES: [].concat(NODE_MODULES, ALIYUN_MODULES),
+}

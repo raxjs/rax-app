@@ -55,7 +55,7 @@ const promptQuestion = [
     message: 'Do you want to enable these features?',
     choices: [
       {
-        name: 'server sider rendering (ssr)',
+        name: 'server side rendering (ssr)',
         value: 'ssr',
       },
     ],
