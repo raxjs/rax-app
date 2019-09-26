@@ -1,6 +1,6 @@
 {
   "name": "rax-plugin-app",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "rax app base plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
@@ -29,7 +29,7 @@
     "deepmerge": "^4.0.0",
     "fs-extra": "^8.1.0",
     "image-source-loader": "^0.6.5",
-    "jsx2mp-cli": "^0.1.0",
+    "jsx2mp-cli": "^0.2.0",
     "stylesheet-loader": "^0.6.5",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
