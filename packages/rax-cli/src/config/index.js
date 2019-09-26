@@ -9,6 +9,10 @@ const promptQuestion = [
         value: 'scaffold',
       },
       {
+        name: 'FaaS App (Build application with FaaS)',
+        value: 'faas',
+      },
+      {
         name: 'Component (Build component for application include web)',
         value: 'component',
       },
@@ -23,7 +27,7 @@ const promptQuestion = [
     type: 'checkbox',
     name: 'projectTargets',
     when(answers) {
-      return answers.projectType === 'scaffold' || answers.projectType === 'component';
+      return answers.projectType === 'scaffold' || answers.projectType === 'component' || answers.projectType === 'faas';
     },
     validate(targets) {
       if (targets && targets.length > 0) return true;
@@ -50,7 +54,7 @@ const promptQuestion = [
     type: 'checkbox',
     name: 'projectFeatures',
     when(answers) {
-      return answers.projectType === 'scaffold' && answers.projectTargets.includes('web');
+      return (answers.projectType === 'scaffold' || answers.projectType === 'faas') && answers.projectTargets.includes('web');
     },
     message: 'Do you want to enable these features?',
     choices: [
@@ -66,6 +70,32 @@ const promptQuestion = [
     name: 'projectAuthor',
     message: 'What\'s author\'s name?',
     default: 'rax',
+  },
+  {
+    type: 'input',
+    name: 'projectAliyunId',
+    message: 'What\'s alibaba cloud account id?',
+    when(answers) {
+      return answers.projectType === 'faas';
+    },
+    validate(val) {
+      if (val && val.trim()) return true;
+      return 'Input your alibaba cloud account id.';
+    },
+    default: '',
+  },
+  {
+    type: 'input',
+    name: 'projectFaasRegion',
+    message: 'What\'s FaaS region?',
+    when(answers) {
+      return answers.projectType === 'faas';
+    },
+    validate(val) {
+      if (val && val.trim()) return true;
+      return 'Input your FaaS region.';
+    },
+    default: 'cn-hangzhou',
   },
   {
     type: 'confirm',

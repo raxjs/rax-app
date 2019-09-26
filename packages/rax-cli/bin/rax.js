@@ -136,6 +136,8 @@ function createProject(name, verbose, template, userAnswers) {
     projectFeatures: userAnswers.projectFeatures || [],
     projectAuthor: userAnswers.projectAuthor || '',
     projectTargets: userAnswers.projectTargets || [],
+    projectAliyunId: userAnswers.projectAliyunId,
+    projectFaasRegion: userAnswers.projectFaasRegion,
     verbose,
     template,
   }).then(function(directory) {

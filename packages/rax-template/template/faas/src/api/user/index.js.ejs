@@ -1,0 +1,5 @@
+module.exports.handler = function (request, response, context) {
+  response.setStatusCode(200);
+  response.setHeader('content-type', 'application/json');
+  response.send(JSON.stringify({ account: "<%= projectAuthor %>" }));
+};
