@@ -1,6 +1,6 @@
-# rax-plugin-faas
+# rax-plugin-faas [![npm](https://img.shields.io/npm/v/rax-plugin-faas.svg)](https://www.npmjs.com/package/rax-plugin-faas)
 
-Rax scripts plugin for FaaS, the plugin based on Function Compute of Alibaba cloud.
+`rax-scripts` plugin for FaaS, the plugin based on Function Compute of Alibaba cloud.
 
 The plugin support following features:
 
