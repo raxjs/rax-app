@@ -17,13 +17,13 @@ module.exports = (config, context, entries, type) => {
 
   config.entryPoints.clear();
 
-  entries.forEach(({ entryName, component }) => {
+  entries.forEach(({ entryName, source }) => {
     const entryConfig = config.entry(entryName);
     if (isDev && process.env.RAX_SSR !== 'true') {
       entryConfig.add(hmrClient);
     }
 
-    const pageEntry = getDepPath(rootDir, component);
+    const pageEntry = getDepPath(rootDir, source);
     entryConfig.add(`${MulitPageLoader}?type=${type}!${pageEntry}`);
   });
 };

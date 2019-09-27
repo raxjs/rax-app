@@ -40,8 +40,6 @@ const RAX_PACKAGE_JSON_PATH = path.resolve(
   'package.json'
 );
 
-const raxPkg = require(RAX_PACKAGE_JSON_PATH);
-
 checkForVersionArgument();
 
 // minimist api
@@ -138,6 +136,8 @@ function createProject(name, verbose, template, userAnswers) {
     projectFeatures: userAnswers.projectFeatures || [],
     projectAuthor: userAnswers.projectAuthor || '',
     projectTargets: userAnswers.projectTargets || [],
+    projectAliyunId: userAnswers.projectAliyunId,
+    projectServerlessRegion: userAnswers.projectServerlessRegion,
     verbose,
     template,
   }).then(function(directory) {
@@ -160,7 +160,7 @@ function checkForVersionArgument() {
   if (argv._.length === 0 && (argv.v || argv.version)) {
     console.log(`rax-cli: ${  pkg.version}`);
     try {
-      console.log(`rax: ${  raxPkg.version}`);
+      console.log(`rax: ${require(RAX_PACKAGE_JSON_PATH).version}`);
     } catch (e) {
       console.log('rax: n/a - not inside a Rax project directory');
     }

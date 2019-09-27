@@ -11,12 +11,11 @@ module.exports = function() {
   const {
     absoluteDocumentPath,
     absoluteShellPath,
-    absoluteAppPath,
     absolutePagePath,
     absoluteAppJSONPath,
     publicPath,
     pageName,
-    isMultiPages,
+    pagePath,
     styles = [],
     scripts = [],
   } = query;
@@ -24,9 +23,7 @@ module.exports = function() {
   const hasShell = fs.existsSync(absoluteShellPath);
   const shellStr = hasShell ? `import Shell from '${absoluteShellPath}'` : 'const Shell = function (props) { return props.children };';
 
-  let renderHtmlFnc = `
-    import App from '${absoluteAppPath}';
-
+  const renderHtmlFnc = `
     async function renderComponentToHTML(req, res, Component) {
       const ctx = {
         req,
@@ -34,21 +31,15 @@ module.exports = function() {
       };
 
       const shellData = await getInitialProps(Shell, ctx);
-      const appData = await getInitialProps(App, ctx);
       const pageData = await getInitialProps(Component, ctx);
 
       const initialData = {
         shellData,
-        appData,
-        pageData
+        pageData,
+        pagePath: '${pagePath}'
       };
 
-      const contentElement = createElement(Shell, null, createElement(App, {
-        routerConfig: {
-          InitialComponent: Component,
-          routes: appJSON.routes
-        }
-      }));
+      const contentElement = createElement(Shell, null, createElement(Component));
 
       const initialHtml = renderer.renderToString(contentElement, {
         defaultUnit: 'rpx'
@@ -70,46 +61,6 @@ module.exports = function() {
       return html;
     }
   `;
-
-  if (isMultiPages === 'true') {
-    renderHtmlFnc = `
-      async function renderComponentToHTML(req, res, Component) {
-        const ctx = {
-          req,
-          res
-        };
-
-        const shellData = await getInitialProps(Shell, ctx);
-        const pageData = await getInitialProps(Component, ctx);
-
-        const initialData = {
-          shellData,
-          pageData
-        };
-
-        const contentElement = createElement(Shell, null, createElement(Component));
-
-        const initialHtml = renderer.renderToString(contentElement, {
-          defaultUnit: 'rpx'
-        });
-
-        const documentProps = {
-          initialHtml: initialHtml,
-          initialData: JSON.stringify(initialData),
-          publicPath: '${publicPath}',
-          pageName: '${pageName}',
-          styles: ${JSON.stringify(styles)},
-          scripts: ${JSON.stringify(scripts)}
-        };
-
-        await getInitialProps(Document, ctx);
-        const documentElement = createElement(Document, documentProps);;
-        const html = '<!doctype html>' + renderer.renderToString(documentElement);
-
-        return html;
-      }
-    `;
-  }
 
   const source = `
     import { createElement } from 'rax';

@@ -11,13 +11,13 @@ module.exports = (route, rootDir) => {
   const routeName = appConfig.routeName ? appConfig.routeName : 'path';
 
   if (routeName === 'path') {
-    return route.component.replace(/\//g, '_');
+    return route.source.replace(/\//g, '_');
   }
 
   if (routeName === 'pages') {
     try {
       // get Home from pages/Home/index or pages/Home
-      const name = route.component.match(/pages\/([^/]*)/);
+      const name = route.source.match(/pages\/([^/]*)/);
       return name[1];
     } catch (e) {
       console.error('"routeName": "pages" mode request routes in /pages directory');

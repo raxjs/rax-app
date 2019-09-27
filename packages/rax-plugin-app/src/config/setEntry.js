@@ -2,7 +2,6 @@ const path = require('path');
 
 const { hmrClient } = require('rax-compile-config');
 
-const UniversalAppShellLoader = require.resolve('../loaders/UniversalAppShellLoader');
 
 module.exports = (config, context, type) => {
   const { rootDir, command } = context;
@@ -11,8 +10,13 @@ module.exports = (config, context, type) => {
   // SPA
   const appEntry = path.resolve(rootDir, 'src/app.js');
   const entryConfig = config.entry('index');
+
+  config.module.rule('appJSON')
+    .use('loader')
+    .tap(() => ({ type }));
+
   if (isDev) {
     entryConfig.add(hmrClient);
   }
-  entryConfig.add(`${UniversalAppShellLoader}?type=${type}!${appEntry}`);
+  entryConfig.add(appEntry);
 };
