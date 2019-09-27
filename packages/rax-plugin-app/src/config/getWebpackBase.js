@@ -98,16 +98,16 @@ module.exports = (context) => {
       }])
       .end()
       .minimizer('optimizeCSS')
-        .use(OptimizeCSSAssetsPlugin, [{
-          canPrint: true,
-        }]);
+      .use(OptimizeCSSAssetsPlugin, [{
+        canPrint: true,
+      }]);
 
-      // max size: 100k/entry
-      config.performance
-        .hints('warning')
-        .maxEntrypointSize(100000)
-        .maxAssetSize(300000)
-        .assetFilter(filename => /\.m?js$/.test(filename));
+    // max size: 100k/entry
+    config.performance
+      .hints('warning')
+      .maxEntrypointSize(100000)
+      .maxAssetSize(300000)
+      .assetFilter(filename => /\.m?js$/.test(filename));
   }
   
   return config;
