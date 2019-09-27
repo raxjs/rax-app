@@ -44,6 +44,8 @@ module.exports = {
       projectType: 'scaffold',
       projectTargets: ['web'],
       projectFeatures: [],
+      projectAliyunId: '',
+      projectServerlessRegion: '',
     };
     const projectInfo = Object.assign({}, defaultInfo, args);
     const template = projectInfo.template || 'rax-template';
