@@ -13,6 +13,10 @@ const promptQuestion = [
         value: 'serverless',
       },
       {
+        name: 'Lite App (The simplest possible setup)',
+        value: 'lite',
+      },
+      {
         name: 'Component (Build component for application include web)',
         value: 'component',
       },
