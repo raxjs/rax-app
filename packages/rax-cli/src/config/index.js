@@ -13,7 +13,7 @@ const promptQuestion = [
         value: 'serverless',
       },
       {
-        name: 'Lite App (A lite application without router)',
+        name: 'Lite App (The simplest possible setup)',
         value: 'lite',
       },
       {
