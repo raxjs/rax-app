@@ -6,7 +6,7 @@ module.exports = function test() {
     projects: [process.cwd()],
     collectCoverage: true,
     verbose: true,
-    transform: JSON.stringify({'^.+\\.(js|jsx|ts|tsx)$': require.resolve('./utils/babelTransformer.js')}),
+    transform: JSON.stringify({'^.+\\.(js|jsx|ts|tsx)$': require.resolve('./babelTransformer.js')}),
     setupFiles: [
       require.resolve('jest-localstorage-mock'),
     ],

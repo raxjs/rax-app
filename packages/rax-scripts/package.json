@@ -1,6 +1,6 @@
 {
   "name": "rax-scripts",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "license": "BSD-3-Clause",
   "description": "Project scripts for Rax.",
   "bin": {
@@ -22,6 +22,9 @@
     "npm": ">=3.0.0"
   },
   "dependencies": {
+    "@babel/preset-typescript": "^7.6.0",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
     "commander": "^3.0.1",
     "eslint": "^5.10.0",
     "eslint-plugin-import": "^2.14.0",
@@ -29,6 +32,7 @@
     "jest": "^24.8.0",
     "jest-cli": "^24.7.1",
     "jest-localstorage-mock": "^2.3.0",
+    "rax-compile-config": "^0.2.0",
     "scripts-core": "^0.1.0"
   }
 }
