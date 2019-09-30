@@ -88,7 +88,6 @@ module.exports = (context) => {
       .tap(opt => addHotLoader(opt));
   } else if (command === 'build') {
     config.mode('production');
-    config.devtool('source-map');
 
     config.optimization
       .minimizer('uglify')
@@ -109,7 +108,7 @@ module.exports = (context) => {
       .maxAssetSize(300000)
       .assetFilter(filename => /\.m?js$/.test(filename));
   }
-  
+
   return config;
 };
 

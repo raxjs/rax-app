@@ -65,7 +65,6 @@ module.exports = (context) => {
     config.devtool('inline-module-source-map');
   } else if (command === 'build') {
     config.mode('production');
-    config.devtool('source-map');
 
     config.optimization
       .minimizer('uglify')
