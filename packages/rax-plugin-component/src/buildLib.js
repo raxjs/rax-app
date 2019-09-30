@@ -22,6 +22,8 @@ module.exports = async(api, options = {}) => {
   log.info('component', chalk.green('Build start... '));
   registerTasks({ api, gulp });
 
+  fs.removeSync(BUILD_DIR);
+
   return new Promise((resolve) => {
     const buildMiniapp = ~targets.indexOf('miniapp');
 
