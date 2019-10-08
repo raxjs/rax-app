@@ -15,9 +15,6 @@ const interopRequire = (obj) => {
 // The App-Shell component will be pre-rendered to index.html.
 // When user loaded entry javascript file, it will hydrate the App-Shell component.
 module.exports = class PWAAppShellPlugin {
-  constructor() {
-    this.name = NAME;
-  }
 
   apply(compiler) {
     let appConfig;
@@ -43,7 +40,7 @@ module.exports = class PWAAppShellPlugin {
     const outputFile = path.join(config.output.path, config.output.filename.replace('[name]', FILE_NAME));
 
     // Compile App-Shell
-    compiler.hooks.beforeCompile.tapAsync(this.name, (compilationParams, callback) => {
+    compiler.hooks.beforeCompile.tapAsync(NAME, (compilationParams, callback) => {
       // externals rax, update libraryTarget, disabled self plugin
       const newConfig = Object.assign({}, config, {
         target: 'node',
@@ -52,7 +49,7 @@ module.exports = class PWAAppShellPlugin {
         },
         entry: { [FILE_NAME]: [file] },
         output: Object.assign({}, config.output, { libraryTarget: 'commonjs2' }),
-        plugins: config.plugins.filter(plugin => plugin.name !== this.name),
+        plugins: config.plugins.filter(plugin => plugin !== this),
       });
       webpack(newConfig).run(() => {
         callback();
@@ -60,7 +57,7 @@ module.exports = class PWAAppShellPlugin {
     });
 
     // Render into index.html
-    compiler.hooks.emit.tapAsync(this.name, (compilation, callback) => {
+    compiler.hooks.emit.tapAsync(NAME, (compilation, callback) => {
 
       const AppShell = interopRequire(eval(readFileSync(outputFile, 'utf-8'))); // eslint-disable-line
       const content = renderToString(createElement(AppShell, {}));
@@ -78,7 +75,7 @@ module.exports = class PWAAppShellPlugin {
     });
 
     // Delete temp files
-    compiler.hooks.done.tap(this.name, () => {
+    compiler.hooks.done.tap(NAME, () => {
       if (config.mode === 'production' || !config.mode) {
         const mapFile = `${outputFile}.map`;
         const htmlFile = outputFile.replace(/\.js$/, '.html');
