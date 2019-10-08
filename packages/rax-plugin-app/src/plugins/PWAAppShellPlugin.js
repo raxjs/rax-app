@@ -45,26 +45,15 @@ module.exports = class PWAAppShellPlugin {
     // Compile App-Shell
     compiler.hooks.beforeCompile.tapAsync(this.name, (compilationParams, callback) => {
       // externals rax, update libraryTarget, disabled self plugin
-      const newConfig = {
-        ...config,
+      const newConfig = Object.assign({}, config, {
+        target: 'node',
         externals: {
           rax: 'rax',
         },
         entry: { [FILE_NAME]: [file] },
-        output: {
-          ...config.output,
-          libraryTarget: 'commonjs2',
-        },
-        plugins: config.plugins.map((plugin) => {
-          // disabled self plugin
-          if (plugin.name === this.name) {
-            return function () {
-              // ignore
-            };
-          }
-          return plugin;
-        }),
-      };
+        output: Object.assign({}, config.output, { libraryTarget: 'commonjs2' }),
+        plugins: config.plugins.filter(plugin => plugin.name !== this.name),
+      });
       webpack(newConfig).run(() => {
         callback();
       });
@@ -73,7 +62,7 @@ module.exports = class PWAAppShellPlugin {
     // Render into index.html
     compiler.hooks.emit.tapAsync(this.name, (compilation, callback) => {
 
-      const AppShell = interopRequire(eval(`var window = {};${readFileSync(outputFile, 'utf-8')}`)); // eslint-disable-line
+      const AppShell = interopRequire(eval(readFileSync(outputFile, 'utf-8'))); // eslint-disable-line
       const content = renderToString(createElement(AppShell, {}));
 
       // Pre-render App-Shell renderToString element to index.html
