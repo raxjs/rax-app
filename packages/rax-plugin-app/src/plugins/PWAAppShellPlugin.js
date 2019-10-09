@@ -59,7 +59,12 @@ module.exports = class PWAAppShellPlugin {
     // Render into index.html
     compiler.hooks.emit.tapAsync(NAME, (compilation, callback) => {
 
-      const AppShell = interopRequire(eval(readFileSync(outputFile, 'utf-8'))); // eslint-disable-line
+      const tempCode = readFileSync(outputFile, 'utf-8');
+      const tempFn = new Function('require', 'module', tempCode); // eslint-disable-line
+      const tempModule = { exports: {} };
+      tempFn(require, tempModule);
+
+      const AppShell = interopRequire(tempModule.exports);
       const content = renderToString(createElement(AppShell, {}));
 
       // Pre-render App-Shell renderToString element to index.html
