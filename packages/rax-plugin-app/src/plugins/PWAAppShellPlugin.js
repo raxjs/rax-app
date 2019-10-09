@@ -64,6 +64,10 @@ module.exports = class PWAAppShellPlugin {
       const tempModule = { exports: {} };
       tempFn(require, tempModule);
 
+      if (Object.keys(tempModule.exports).length === 0) {
+        throw new Error('Please make sure exports app shell component!');
+      }
+
       const AppShell = interopRequire(tempModule.exports);
       const content = renderToString(createElement(AppShell, {}));
 
