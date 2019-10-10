@@ -12,7 +12,7 @@ program
     dev({
       args: {
         config: cmd.config,
-        port: cmd.port
+        port: cmd.port,
       },
     });
   })
