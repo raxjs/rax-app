@@ -26,10 +26,9 @@ module.exports = async function({
   await applyHook(`before.${command}`);
 
   const configArr = await context.getConfig();
-
   if (configArr.length) {
     let devServerConfig = {
-      port: 9999,
+      port: args.port || 9999,
       host: address.ip(),
     };
 
@@ -39,7 +38,7 @@ module.exports = async function({
       const webpackConfig = chainConfig.toConfig();
 
       if (webpackConfig.devServer) {
-        devServerConfig = deepmerge(devServerConfig, webpackConfig.devServer);
+        devServerConfig = deepmerge(webpackConfig.devServer, devServerConfig);
       }
     }
 
