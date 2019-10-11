@@ -38,9 +38,11 @@ module.exports = async function({
       const webpackConfig = chainConfig.toConfig();
 
       if (webpackConfig.devServer) {
-        devServerConfig = deepmerge(devServerConfig, webpackConfig.devServer, {
-          port: args.port
-        });
+        devServerConfig = deepmerge(devServerConfig, webpackConfig.devServer);
+        // Command uses port is weightest
+        if (args.port) {
+          devServerConfig.port = args.port;
+        }
       }
     }
 
