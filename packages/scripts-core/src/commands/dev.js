@@ -28,7 +28,7 @@ module.exports = async function({
   const configArr = await context.getConfig();
   if (configArr.length) {
     let devServerConfig = {
-      port: args.port || 9999,
+      port: 9999,
       host: address.ip(),
     };
 
@@ -38,7 +38,9 @@ module.exports = async function({
       const webpackConfig = chainConfig.toConfig();
 
       if (webpackConfig.devServer) {
-        devServerConfig = deepmerge(webpackConfig.devServer, devServerConfig);
+        devServerConfig = deepmerge(devServerConfig, webpackConfig.devServer, {
+          port: args.port
+        });
       }
     }
 
