@@ -22,13 +22,13 @@ module.exports = (context) => {
                 targets: {
                   node: '8',
                 },
-              }
+              };
 
               return [v[0], args];
             }
 
             return v;
-          })
+          });
 
           return res;
         });

@@ -17,7 +17,7 @@ module.exports = (config, context, value, target) => {
         .end()
       .oneOf('normal')
         .use('less')
-          .loader(require.resolve('less-loader'))
+          .loader(require.resolve('less-loader'));
 
     config.plugin('minicss')
       .use(MiniCssExtractPlugin, [{
@@ -40,7 +40,7 @@ function setCSSRule(configRule, context, value, target) {
           .loader(require.resolve('stylesheet-loader'))
           .options({
             transformDescendantCombinator: true,
-          })
+          });
     }
 
     if (target === 'web') {

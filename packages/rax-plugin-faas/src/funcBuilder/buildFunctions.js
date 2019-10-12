@@ -18,7 +18,7 @@ module.exports = async (context, functions) => {
     await copy(src, funcsDir);
     await copyDependenices(rootDir, funcsDir, dependencies);
   }
-}
+};
 
 // copy file or dir
 async function copy(src, target) {

@@ -83,7 +83,7 @@ module.exports = async function({
           stats,
         });
       });
-    })
+    });
   }
 
   await applyHook(`after.${command}`, res);

@@ -41,7 +41,7 @@ module.exports = (cwd = process.cwd(), functionConfig) => {
   });
 
   return funcFiles;
-}
+};
 
 // recursive collect dependencies path
 function collectDepsPath(root, nodeModulesPath, pkgName, deps = {}) {

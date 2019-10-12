@@ -77,4 +77,4 @@ module.exports = function (appJSON) {
     ${processShell}
     export default appConfig;
   `;
-}
+};
