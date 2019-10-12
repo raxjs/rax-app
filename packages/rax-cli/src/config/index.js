@@ -9,14 +9,6 @@ const promptQuestion = [
         value: 'scaffold',
       },
       {
-        name: 'Serverless App (Build application with Serverless)',
-        value: 'serverless',
-      },
-      {
-        name: 'Lite App (The simplest possible setup)',
-        value: 'lite',
-      },
-      {
         name: 'Component (Build component for application include web)',
         value: 'component',
       },
@@ -28,10 +20,29 @@ const promptQuestion = [
     default: 'scaffold',
   },
   {
+    type: 'list',
+    name: 'projectType',
+    message: 'What\'s your application type?',
+    when(answers) {
+      return answers.projectType === 'scaffold';
+    },
+    choices: [
+      {
+        name: 'Standard App (The complete solution for application that works multi-platform)',
+        value: 'scaffold',
+      },
+      {
+        name: 'Lite App (The simplest possible setup)',
+        value: 'lite',
+      },
+    ],
+    default: 'scaffold',
+  },
+  {
     type: 'checkbox',
     name: 'projectTargets',
     when(answers) {
-      return answers.projectType === 'scaffold' || answers.projectType === 'component' || answers.projectType === 'serverless';
+      return answers.projectType === 'scaffold' || answers.projectType === 'component';
     },
     validate(targets) {
       if (targets && targets.length > 0) return true;
@@ -58,13 +69,20 @@ const promptQuestion = [
     type: 'checkbox',
     name: 'projectFeatures',
     when(answers) {
-      return (answers.projectType === 'scaffold' || answers.projectType === 'serverless') && answers.projectTargets.includes('web');
+      return answers.projectType === 'scaffold';
     },
     message: 'Do you want to enable these features?',
     choices: [
       {
         name: 'server side rendering (ssr)',
         value: 'ssr',
+        disabled: (answers) => {
+          return !answers.projectTargets.includes('web');
+        },
+      },
+      {
+        name: 'serverless solution (FaaS)',
+        value: 'serverless',
       },
     ],
     default: false,
@@ -80,7 +98,8 @@ const promptQuestion = [
     name: 'projectAliyunId',
     message: 'What\'s alibaba cloud account id?',
     when(answers) {
-      return answers.projectType === 'serverless';
+      const features = answers.projectFeatures;
+      return features && features.includes('serverless');
     },
     validate(val) {
       if (val && val.trim()) return true;
@@ -93,7 +112,8 @@ const promptQuestion = [
     name: 'projectServerlessRegion',
     message: 'What\'s serverless region?',
     when(answers) {
-      return answers.projectType === 'serverless';
+      const features = answers.projectFeatures;
+      return features && features.includes('serverless');
     },
     validate(val) {
       if (val && val.trim()) return true;
