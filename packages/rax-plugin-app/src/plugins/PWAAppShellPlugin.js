@@ -1,6 +1,7 @@
 const path = require('path');
+const webpack = require('webpack');
 const { RawSource } = require('webpack-sources');
-const { existsSync, unlinkSync } = require('fs');
+const { existsSync, readFileSync, unlinkSync } = require('fs');
 const { createElement } = require('rax');
 const { renderToString } = require('rax-server-renderer');
 
@@ -14,31 +15,60 @@ const interopRequire = (obj) => {
 // The App-Shell component will be pre-rendered to index.html.
 // When user loaded entry javascript file, it will hydrate the App-Shell component.
 module.exports = class PWAAppShellPlugin {
-  constructor(options) {
-    if (!options.path) {
-      throw new Error('Please specify shell file location with the path attribute');
-    }
-
-    this.shellPath = options.path ? options.path : 'src/shell/index.jsx';
-  }
 
   apply(compiler) {
+    let appConfig;
     const config = compiler.options;
-    const file = path.resolve(config.context, this.shellPath);
-    // Only Web projects are supported. Effective when the user directory contains 'shell/index.jsx'
-    if (config.target !== 'web' || !existsSync(file)) return;
 
-    const outputFilename = config.output.filename.replace('[name]', FILE_NAME);
+    try {
+      const appJSON = path.resolve(config.context, 'src/app.json');
+      appConfig = JSON.parse(readFileSync(appJSON, 'utf-8'));
+    } catch (e) {
+      throw new Error('Please make sure your project has app.json!');
+    }
+
+    // Only Web projects are supported. Effective when the user set shell
+    if (config.target !== 'web' || !appConfig.shell) return;
+
+    // It's must have source config
+    if (!appConfig.shell.source) {
+      throw new Error('Please make sure shell config contains source!');
+    }
+
+    const file = path.resolve(config.context, `src/${appConfig.shell.source}`);
+    // build/web/[FILE_NAME].js
+    const outputFile = path.join(config.output.path, config.output.filename.replace('[name]', FILE_NAME));
 
     // Compile App-Shell
-    compiler.hooks.entryOption.tap(NAME, (context, entry) => {
-      entry[FILE_NAME] = [file];
+    compiler.hooks.beforeCompile.tapAsync(NAME, (compilationParams, callback) => {
+      // externals rax, update libraryTarget, disabled self plugin
+      const newConfig = Object.assign({}, config, {
+        target: 'node',
+        externals: {
+          rax: 'rax',
+        },
+        entry: { [FILE_NAME]: [file] },
+        output: Object.assign({}, config.output, { libraryTarget: 'commonjs2' }),
+        plugins: config.plugins.filter(plugin => plugin !== this),
+      });
+      webpack(newConfig).run(() => {
+        callback();
+      });
     });
 
     // Render into index.html
-    compiler.hooks.emit.tapAsync(NAME, async(compilation, callback) => {
-      const shellValue = compilation.assets[outputFilename].source();
-      const AppShell = interopRequire(eval(`var window = {};${  shellValue}`)); // eslint-disable-line
+    compiler.hooks.emit.tapAsync(NAME, (compilation, callback) => {
+
+      const tempCode = readFileSync(outputFile, 'utf-8');
+      const tempFn = new Function('require', 'module', tempCode); // eslint-disable-line
+      const tempModule = { exports: {} };
+      tempFn(require, tempModule);
+
+      if (Object.keys(tempModule.exports).length === 0) {
+        throw new Error('Please make sure exports app shell component!');
+      }
+
+      const AppShell = interopRequire(tempModule.exports);
       const content = renderToString(createElement(AppShell, {}));
 
       // Pre-render App-Shell renderToString element to index.html
@@ -50,19 +80,16 @@ module.exports = class PWAAppShellPlugin {
           `<div id="root">${content}</div>`
         ));
       });
-
       callback();
     });
-
 
     // Delete temp files
     compiler.hooks.done.tap(NAME, () => {
       if (config.mode === 'production' || !config.mode) {
-        const jsFile = path.join(config.output.path, outputFilename);
-        const mapFile = `${jsFile  }.map`;
-        const htmlFile = jsFile.replace(/\.js$/, '.html');
+        const mapFile = `${outputFile}.map`;
+        const htmlFile = outputFile.replace(/\.js$/, '.html');
 
-        existsSync(jsFile) && unlinkSync(jsFile);
+        existsSync(outputFile) && unlinkSync(outputFile);
         existsSync(mapFile) && unlinkSync(mapFile);
         existsSync(htmlFile) && unlinkSync(htmlFile);
       }
