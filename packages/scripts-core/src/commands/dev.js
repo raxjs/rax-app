@@ -12,13 +12,11 @@ module.exports = async function({
   rootDir,
 }) {
   const command = 'dev';
-
   const context = new Context({
     args,
     command,
     rootDir,
   });
-
   let serverUrl = '';
 
   const { applyHook } = context;
@@ -39,10 +37,6 @@ module.exports = async function({
 
       if (webpackConfig.devServer) {
         devServerConfig = deepmerge(devServerConfig, webpackConfig.devServer);
-        // Command uses port is weightest
-        if (args.port) {
-          devServerConfig.port = args.port;
-        }
       }
     }
 

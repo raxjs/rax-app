@@ -56,7 +56,7 @@ module.exports = class Context {
   }
 
   getUserConfig() {
-    const { config } = this.commandArgs;
+    const { config, port } = this.commandArgs;
     let configPath = '';
     if (config) {
       configPath = path.isAbsolute(config) ? config : path.resolve(this.rootDir, config);
@@ -67,6 +67,12 @@ module.exports = class Context {
     if (fs.existsSync(configPath)) {
       try {
         userConfig = fs.readJsonSync(configPath);
+        if (port) {
+          if (!userConfig.devServer) {
+            userConfig.devServer = {};
+          }
+          userConfig.devServer.port = port;
+        }
       } catch (err) {
         log.info('CONFIG', `Fail to load config file ${configPath}, use default config instead`);
         log.error(err);
