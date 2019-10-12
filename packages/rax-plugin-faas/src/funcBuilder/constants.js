@@ -59,4 +59,4 @@ const ALIYUN_MODULES = [
 
 module.exports = {
   BUILD_IN_MODULES: [].concat(NODE_MODULES, ALIYUN_MODULES),
-}
+};

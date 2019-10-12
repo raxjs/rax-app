@@ -14,7 +14,7 @@ module.exports = (functionConfig, targetPath) => {
         Type: 'Aliyun::Serverless::Service',
       },
     },
-  }
+  };
 
   functionArr.forEach((fnc) => {
     yamlObj.Resources[functionConfig.name][fnc.name] = {
@@ -33,9 +33,9 @@ module.exports = (functionConfig, targetPath) => {
           },
         },
       },
-    }
-  })
+    };
+  });
 
-  const templateYaml = yaml.safeDump(yamlObj)
+  const templateYaml = yaml.safeDump(yamlObj);
   fs.writeFileSync(`${yamlPath}/template.yml`, templateYaml);
 };

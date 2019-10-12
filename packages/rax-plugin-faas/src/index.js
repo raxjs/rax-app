@@ -6,7 +6,7 @@ const build = require('./build');
 module.exports = (api, options) => {
   const { context } = api;
   const { command } = context;
-  const functionConfig = generateFunctionConfig(api.context, options)
+  const functionConfig = generateFunctionConfig(api.context, options);
 
   if (command === 'dev') {
     dev(api, functionConfig);

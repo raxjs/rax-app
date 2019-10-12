@@ -116,7 +116,7 @@ module.exports = class Context {
   getNamedConfig(name) {
     const configInfo = this.__configArr.find(v => v.name === name);
     if (!configInfo) {
-      console.error(`There is no config named ${name}`)
+      console.error(`There is no config named ${name}`);
       return;
     };
     return configInfo.chainConfig;
@@ -159,7 +159,7 @@ module.exports = class Context {
         registerConfig: this.registerConfig,
         chainWebpack: this.chainWebpack,
         onHook: this.onHook,
-      }
+      };
 
       await fn(pluginAPI, options);
     }

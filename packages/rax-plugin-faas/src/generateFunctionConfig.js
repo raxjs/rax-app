@@ -5,7 +5,7 @@ const defaultFncConfig = {
   trigger: 'http',
   handler: 'index.handler',
   methods: ['GET'],
-}
+};
 /**
  * result {
  *    ...functionGroup
@@ -35,7 +35,7 @@ module.exports = (context, options) => {
 
     // string represent function path
     if (_.isString(value)) {
-      customConfig.path = value
+      customConfig.path = value;
     }
 
     if (_.isObject(value)) {
@@ -54,7 +54,7 @@ module.exports = (context, options) => {
     ...functionGroup,
     realRootPath,
     functionArr,
-  }
+  };
 
   return result;
-}
+};

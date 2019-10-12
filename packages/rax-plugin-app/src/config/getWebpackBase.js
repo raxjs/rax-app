@@ -39,7 +39,7 @@ module.exports = (context) => {
     .options(babelConfig)
     .end()
     .use('loader')
-    .loader(require.resolve('../loaders/AppConfigLoader'))
+    .loader(require.resolve('../loaders/AppConfigLoader'));
 
   config.module.rule('jsx')
     .test(/\.(js|mjs|jsx)$/)
