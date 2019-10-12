@@ -1,4 +1,4 @@
-const build = require('./build');;
+const build = require('./build');
 
 const pluginApp = (api, options = {}) => {
   const { context, onHook } = api;
@@ -6,10 +6,10 @@ const pluginApp = (api, options = {}) => {
   const { entry } = options;
 
   if (command === 'build') {
-    onHook('after.build', ({ err, stats }) => {
+    onHook('after.build', () => {
       build({ rootDir, entry });
       build({ rootDir, entry, outDir: 'dist', shouldMinify: true });
-    })
+    });
   }
 };
 

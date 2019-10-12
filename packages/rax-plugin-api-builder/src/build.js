@@ -1,5 +1,4 @@
 const rollup = require('rollup');
-const memory = require('rollup-plugin-memory');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const typescript = require('rollup-plugin-typescript');
@@ -13,9 +12,10 @@ function getExtension(format) {
   let ext = '.js';
   switch (format) {
     case 'esm': ext = '.mjs';
-      break;
-  }
-  return ext;
+      return ext;
+    default:
+      return ext;
+  };
 }
 
 async function build({ rootDir, entry = 'src/index.ts', shouldMinify = false, format = 'cjs', outDir = 'lib'}) {
@@ -43,9 +43,9 @@ async function build({ rootDir, entry = 'src/index.ts', shouldMinify = false, fo
             modules: false,
             loose: true,
             targets: {
-              browsers: ['last 2 versions', 'IE >= 9']
-            }
-          }]
+              browsers: ['last 2 versions', 'IE >= 9'],
+            },
+          }],
         ],
       }),
       replace({
@@ -56,10 +56,10 @@ async function build({ rootDir, entry = 'src/index.ts', shouldMinify = false, fo
           loops: false,
           keep_fargs: false,
           unsafe: true,
-          pure_getters: true
-        }
-      }) : null
-    ]
+          pure_getters: true,
+        },
+      }) : null,
+    ],
   });
 
   if (shouldMinify) {
@@ -71,7 +71,7 @@ async function build({ rootDir, entry = 'src/index.ts', shouldMinify = false, fo
     });
 
     const size = gzipSize.fileSync(file, {
-      level: 6
+      level: 6,
     });
 
     console.log(file, `${(size / 1024).toPrecision(3)}kb (gzip)`);
