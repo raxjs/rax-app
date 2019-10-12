@@ -7,7 +7,6 @@ const getEntries = require('./getEntries');
 module.exports = (context) => {
   const { userConfig } = context;
   const config = getWebBase(context);
-  console.log(config.toConfig().externals);
 
   config.entryPoints.clear();
 
