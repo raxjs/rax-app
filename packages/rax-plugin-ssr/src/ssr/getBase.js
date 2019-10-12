@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const { getWebBase } = require('rax-plugin-app');
 
 const getEntries = require('./getEntries');
@@ -6,6 +7,7 @@ const getEntries = require('./getEntries');
 module.exports = (context) => {
   const { userConfig } = context;
   const config = getWebBase(context);
+  console.log(config.toConfig().externals);
 
   config.entryPoints.clear();
 
@@ -13,7 +15,8 @@ module.exports = (context) => {
     config.module.rule(tag)
       .use('babel')
         .tap(options => {
-          options.presets = options.presets.map(v => {
+          const res = _.cloneDeep(options);
+          res.presets = options.presets.map(v => {
             if (Array.isArray(v) && v[0].indexOf('@babel/preset-env')) {
               const args = {
                 ... v[1],
@@ -28,7 +31,7 @@ module.exports = (context) => {
             return v;
           })
 
-          return options;
+          return res;
         });
   });
 
