@@ -39,7 +39,7 @@ module.exports = function() {
         pagePath: '${pagePath}'
       };
 
-      const contentElement = createElement(Shell, null, createElement(Component));
+      const contentElement = createElement(Shell, shellData, createElement(Component, pageData));
 
       const initialHtml = renderer.renderToString(contentElement, {
         defaultUnit: 'rpx'
@@ -93,12 +93,6 @@ module.exports = function() {
       if (!props || typeof props !== 'object') {
         const message = '"getInitialProps()" should resolve to an object. But found "' + props + '" instead.';
         throw new Error(message);
-      }
-
-      if (Component.defaultProps) {
-        Component.defaultProps = Object.assign({}, props, Component.defaultProps);
-      } else {
-        Component.defaultProps = props;
       }
 
       return props;
