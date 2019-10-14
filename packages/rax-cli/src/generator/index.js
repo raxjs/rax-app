@@ -42,6 +42,7 @@ module.exports = function(template, args) {
   new TemplateProcesser(template)
     .use(ejsRender(ejsData))
     .use(renameFile)
+    .ignore(args.projectFeatures.includes('serverless') ? [] : ['src/api'])
     .done(projectDir);
 
   process.chdir(projectDir);

@@ -20,6 +20,9 @@
     <%_ if (projectFeatures.includes('ssr')) { -%>
     "rax-plugin-ssr": "^0.2.0",
     <%_ } -%>
+    <%_ if (projectFeatures.includes('serverless')) { -%>
+    "rax-plugin-faas": "^0.1.0",
+    <%_ } -%>
     "rax-plugin-app": "^0.2.0",
     "rax-scripts": "^2.0.0"
   }

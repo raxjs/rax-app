@@ -8,11 +8,18 @@ module.exports = class TemplateProcesser {
     this.template = template;
     this.fns = [];
     this.target = process.cwd();
+    this.ignoreList = [];
   }
 
   // use a middleware `fn`
   use(fn) {
     this.fns.push(fn);
+    return this;
+  }
+
+  // ignore files
+  ignore(fileList) {
+    this.ignoreList = fileList.map((file) => path.resolve(this.template, file));
     return this;
   }
 
@@ -56,7 +63,7 @@ module.exports = class TemplateProcesser {
   _processFiles() {
     try {
       const fns = this.fns;
-      const files = getFiles(this.template);
+      const files = getFiles(this.template, this.ignoreList);
 
       for (let i = 0; i < fns.length; i++) {
         const fn = fns[i];
@@ -70,25 +77,27 @@ module.exports = class TemplateProcesser {
   }
 };
 
-function getFiles(dir) {
+function getFiles(target, ignored) {
   const files = [];
 
   function fileMapGenerator(projectDir) {
     easyfile.readdir(projectDir).forEach(filename => {
       const currPath = path.join(projectDir, filename);
 
-      if (easyfile.isFile(currPath)) {
-        files.push({
-          content: fs.readFileSync(currPath, 'utf-8'),
-          name: path.relative(dir, currPath),
-        });
-      } else {
-        fileMapGenerator(currPath);
+      if (!ignored.includes(currPath)) {
+        if (easyfile.isFile(currPath)) {
+          files.push({
+            content: fs.readFileSync(currPath, 'utf-8'),
+            name: path.relative(target, currPath),
+          });
+        } else {
+          fileMapGenerator(currPath);
+        }
       }
     });
   }
 
-  fileMapGenerator(dir);
+  fileMapGenerator(target);
 
   return files;
 }
