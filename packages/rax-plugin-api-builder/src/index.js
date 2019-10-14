@@ -1,6 +1,6 @@
 const build = require('./build');
 
-const pluginApp = (api, options = {}) => {
+const pluginApiBuilder = (api, options = {}) => {
   const { context, onHook } = api;
   const { command, rootDir } = context;
   const { entry } = options;
@@ -13,4 +13,4 @@ const pluginApp = (api, options = {}) => {
   }
 };
 
-module.exports = pluginApp;
+module.exports = pluginApiBuilder;

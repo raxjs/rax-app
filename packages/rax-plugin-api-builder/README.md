@@ -14,7 +14,7 @@ npm install --save-dev rax-plugin-api-builder
 {
   "plugins": [
     [
-      "rax-plugin-api-builder"
+      "rax-plugin-api-builder",
       {
         "entry": "src/index.ts"
       }
