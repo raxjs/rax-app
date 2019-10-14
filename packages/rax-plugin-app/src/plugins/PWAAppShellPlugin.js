@@ -17,15 +17,14 @@ const interopRequire = (obj) => {
 module.exports = class PWAAppShellPlugin {
 
   apply(compiler) {
-    let appConfig;
     const config = compiler.options;
+    const appJSON = path.resolve(config.context, 'src/app.json');
 
-    try {
-      const appJSON = path.resolve(config.context, 'src/app.json');
-      appConfig = JSON.parse(readFileSync(appJSON, 'utf-8'));
-    } catch (e) {
-      throw new Error('Please make sure your project has app.json!');
+    if (!existsSync(appJSON)){
+      return;
     }
+
+    const appConfig = JSON.parse(readFileSync(appJSON, 'utf-8'));
 
     // Only Web projects are supported. Effective when the user set shell
     if (config.target !== 'web' || !appConfig.shell) return;
