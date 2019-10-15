@@ -45,7 +45,10 @@ module.exports = (context) => {
     .test(/\.(js|mjs|jsx)$/)
     .use('babel')
     .loader(require.resolve('babel-loader'))
-    .options(babelConfig);
+    .options(babelConfig)
+    .end()
+    .use('platform')
+    .loader(require.resolve('rax-compile-config/src/platformLoader'));
 
   config.module.rule('tsx')
     .test(/\.(ts|tsx)?$/)
@@ -57,7 +60,10 @@ module.exports = (context) => {
     .loader(require.resolve('ts-loader'))
     .options({
       transpileOnly: true,
-    });
+    })
+    .end()
+    .use('platform')
+    .loader(require.resolve('rax-compile-config/src/platformLoader'));;
 
   config.module.rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
@@ -78,28 +84,23 @@ module.exports = (context) => {
   if (command === 'dev') {
     config.mode('development');
     config.devtool('inline-module-source-map');
-
-    config.module.rule('jsx')
-      .use('babel')
-      .tap(opt => addHotLoader(opt));
-
-    config.module.rule('tsx')
-      .use('babel')
-      .tap(opt => addHotLoader(opt));
   } else if (command === 'build') {
     config.mode('production');
 
     config.optimization
-      .minimizer('uglify')
-      .use(UglifyJSPlugin, [{
-        cache: true,
-        sourceMap: true,
-      }])
-      .end()
-      .minimizer('optimizeCSS')
-      .use(OptimizeCSSAssetsPlugin, [{
-        canPrint: true,
-      }]);
+      .minimize(false)
+
+    // config.optimization
+    //   .minimizer('uglify')
+    //   .use(UglifyJSPlugin, [{
+    //     cache: true,
+    //     sourceMap: true,
+    //   }])
+    //   .end()
+    //   .minimizer('optimizeCSS')
+    //   .use(OptimizeCSSAssetsPlugin, [{
+    //     canPrint: true,
+    //   }]);
 
     // max size: 100k/entry
     config.performance
@@ -111,9 +112,3 @@ module.exports = (context) => {
 
   return config;
 };
-
-function addHotLoader(originConfig) {
-  return babelMerge.all([{
-    plugins: [require.resolve('rax-hot-loader/babel')],
-  }, originConfig]);
-}
