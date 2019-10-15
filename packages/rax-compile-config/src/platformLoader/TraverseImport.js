@@ -82,8 +82,8 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       err.column = err.loc.column + 1;
 
       // remove trailing "(LINE:COLUMN)" acorn message and add in esprima syntax error message start
-      err.message = `Line ${  err.lineNumber  }: ${  err.message.replace(/ \((\d+):(\d+)\)$/, '')
-      // add codeframe
+      err.message = `Line ${err.lineNumber}: ${err.message.replace(/ \((\d+):(\d+)\)$/, '')
+        // add codeframe
       }\n\n${
         codeFrame(inputSource, err.lineNumber, err.column, { highlightCode: true })}`;
     }
@@ -110,6 +110,20 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
         options.name.indexOf(node.arguments[0].value) !== -1
       ) {
         path.replaceWith(objectExpressionMethod(options.platform));
+      }
+    },
+    MemberExpression(path) {
+      // fix babel-plugin-minify-dead-code-elimination bug. 
+      // only remove like: var isWeex = false; if(isWeex){ xxx }
+      // don't remove like: var _universalEnv = {isWeex: false}; if(_universalEnv.isWeex){ xxx }
+      // change _universalEnv.isWeex to false
+      const { node } = path;
+      if (node.object.name === '_universalEnv') {
+        if (node.property.name === platformMap[options.platform]) {
+          path.replaceWith(types.Identifier('true'));
+        } else {
+          path.replaceWith(types.Identifier('false'));
+        }
       }
     },
     ImportDeclaration(path) {
