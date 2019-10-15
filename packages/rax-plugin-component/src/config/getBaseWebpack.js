@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const Chain = require('webpack-chain');
 const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const babelConfig = getBabelConfig({
@@ -67,16 +67,11 @@ module.exports = (context) => {
     config.mode('production');
 
     config.optimization
-      .minimizer('uglify')
-        .use(UglifyJSPlugin, [{
-          cache: true,
-          sourceMap: true,
-        }])
+      .minimizer('terser')
+        .use(TerserPlugin)
         .end()
       .minimizer('optimizeCSS')
-        .use(OptimizeCSSAssetsPlugin, [{
-          canPrint: true,
-        }]);
+        .use(OptimizeCSSAssetsPlugin);
   }
 
   return config;

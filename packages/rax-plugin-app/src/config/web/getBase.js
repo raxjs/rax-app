@@ -22,9 +22,9 @@ module.exports = (context) => {
   ['jsx', 'tsx'].forEach(tag => {
     config.module.rule(tag)
       .use('platform')
-      .options({
-        platform: 'web',
-      });
+        .options({
+          platform: 'web',
+        });
   });
 
   config.plugin('document')

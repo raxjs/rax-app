@@ -1,15 +1,8 @@
-/* eslint-disable new-cap */
 const babelParser = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const types = require('@babel/types');
 const generate = require('@babel/generator').default;
 const codeFrame = require('@babel/code-frame').default;
-
-// import * as babylon from 'babylon';
-// import traverse from 'babel-traverse';
-// import * as types from 'babel-types';
-// import generate from 'babel-generator';
-// import codeFrame from 'babel-code-frame';
 
 module.exports = function traverseImport(options, inputSource, sourceMapOption) {
   let specified; // Collector import specifiers
