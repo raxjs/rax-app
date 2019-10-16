@@ -86,12 +86,12 @@ module.exports = (context) => {
     config.devtool('inline-module-source-map');
   } else if (command === 'build') {
     
-    // It's a plugin to improve tree-shaking
-    // https://github.com/vincentdchan/webpack-deep-scope-analysis-plugin
+    config.mode('production');
+
+    // // It's a plugin to improve tree-shaking
+    // // https://github.com/vincentdchan/webpack-deep-scope-analysis-plugin
     config.plugin('webpackDeepScopeAnalysis')
       .use(WebpackDeepScopeAnalysisPlugin);
-
-    config.mode('production');
 
     config.optimization
       .minimizer('terser')
