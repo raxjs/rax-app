@@ -19,6 +19,20 @@ function ejsRender(data) {
   };
 }
 
+// get ignore files of template
+function getIgnore(scaffoldType, features) {
+  let list = [];
+  if (scaffoldType === 'lite') {
+    list = list.concat(['src/components', 'src/pages', 'src/app.json.ejs']);
+  }
+
+  if (!features.includes('serverless')) {
+    list = list.concat(['src/api']);
+  }
+
+  return list;
+}
+
 /**
  * Template generator.
  * @param  {String} template - describe the template path
@@ -27,6 +41,7 @@ function ejsRender(data) {
  * @param  {String} args.directoryName - The folder name
  * @param  {String} args.projectName - Kebabcased project name
  * @param  {String} args.projectType - Kebabcased project type
+ * @param  {String} args.scaffoldType - The application type
  * @param  {String} args.projectAuthor - The name of project author
  * @param  {String} args.projectTargets- The build targets of project
  * @param  {String} args.projectFeatures- The features of project
@@ -42,7 +57,7 @@ module.exports = function(template, args) {
   new TemplateProcesser(template)
     .use(ejsRender(ejsData))
     .use(renameFile)
-    .ignore(args.projectFeatures.includes('serverless') ? [] : ['src/api'])
+    .ignore(getIgnore(args.scaffoldType, args.projectFeatures))
     .done(projectDir);
 
   process.chdir(projectDir);
