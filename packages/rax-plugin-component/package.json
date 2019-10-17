@@ -6,12 +6,12 @@
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alibaba/rax.git"
+    "url": "git+https://github.com/raxjs/rax-scripts.git"
   },
   "bugs": {
-    "url": "https://github.com/alibaba/rax/issues"
+    "url": "https://github.com/raxjs/rax-scripts/issues"
   },
-  "homepage": "https://github.com/alibaba/rax#readme",
+  "homepage": "https://github.com/raxjs/rax-scripts#readme",
   "peerDependencies": {
     "rax": "^1.0.0"
   },
