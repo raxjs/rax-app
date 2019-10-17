@@ -1,6 +1,6 @@
 {
   "name": "rax-template",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Rax project template.",
   "files": [
     "template"

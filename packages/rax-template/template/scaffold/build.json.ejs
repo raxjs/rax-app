@@ -5,7 +5,7 @@
     [
       "rax-plugin-app",
       {
-        "targets": ["<%- projectTargets.join('", "') %>"]
+        "targets": [<%_ if (scaffoldType === 'lite') { -%>"web"<%_ } else { -%>"<%- projectTargets.join('", "') %>"<%_ } -%>]
       }
     ]<%_ if (isServerless) { -%>,<%_ } %>
     <%_ if (isServerless) { -%>

@@ -10,7 +10,12 @@
     "rax-server-renderer": "^1.1.0",
     <%_ } -%>
     "rax": "^1.0.8",
+    <%_ if (scaffoldType === 'standard') { -%>
     "rax-app": "^0.2.0",
+    <%_ } -%>
+    <%_ if (scaffoldType === 'lite') { -%>
+    "driver-universal": "^2.0.0",
+    <%_ } -%>
     "rax-image": "^1.0.3",
     "rax-link": "^1.0.1",
     "rax-text": "^1.0.0",
