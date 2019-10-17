@@ -21,13 +21,10 @@ function ejsRender(data) {
 
 // get ignore files of template
 function getIgnore(scaffoldType, features) {
-  let list = [];
-  if (scaffoldType === 'lite') {
-    list = list.concat(['src/components', 'src/pages', 'src/app.json.ejs']);
-  }
+  const list = scaffoldType === 'lite' ? ['src/components', 'src/pages', 'src/app.json.ejs'] : [];
 
   if (!features.includes('serverless')) {
-    list = list.concat(['src/api']);
+    list.push('src/api');
   }
 
   return list;
