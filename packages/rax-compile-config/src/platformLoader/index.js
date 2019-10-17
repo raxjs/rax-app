@@ -37,7 +37,7 @@ function mergeSourceMap(map, inputMap) {
     // single source file to a single output file.
     const source = outputMapConsumer.sources[0];
 
-    inputMapConsumer.eachMapping(function(mapping) {
+    inputMapConsumer.eachMapping(function (mapping) {
       const generatedPosition = outputMapConsumer.generatedPositionFor({
         line: mapping.generatedLine,
         column: mapping.generatedColumn,
@@ -65,7 +65,7 @@ function mergeSourceMap(map, inputMap) {
   }
 }
 
-module.exports = function(inputSource, inputSourceMap) {
+module.exports = function (inputSource, inputSourceMap) {
   this.cacheable();
   const callback = this.async();
 
@@ -74,6 +74,11 @@ module.exports = function(inputSource, inputSourceMap) {
   const sourceMapTarget = path.basename(resourcePath);
 
   const options = Object.assign({ name: 'universal-env' }, loaderOptions);
+
+  if (!options.platform) {
+    callback(null, inputSource);
+    return;
+  }
 
   if (!Array.isArray(options.name)) {
     options.name = [options.name];
