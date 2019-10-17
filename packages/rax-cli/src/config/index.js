@@ -21,7 +21,7 @@ const promptQuestion = [
   },
   {
     type: 'list',
-    name: 'projectType',
+    name: 'scaffoldType',
     message: 'What\'s your application type?',
     when(answers) {
       return answers.projectType === 'scaffold';
@@ -29,20 +29,20 @@ const promptQuestion = [
     choices: [
       {
         name: 'Standard App (The complete solution for application that works multi-platform)',
-        value: 'scaffold',
+        value: 'standard',
       },
       {
         name: 'Lite App (The simplest possible setup)',
         value: 'lite',
       },
     ],
-    default: 'scaffold',
+    default: 'standard',
   },
   {
     type: 'checkbox',
     name: 'projectTargets',
     when(answers) {
-      return answers.projectType === 'scaffold' || answers.projectType === 'component';
+      return (answers.projectType === 'scaffold' && answers.scaffoldType === 'standard') || answers.projectType === 'component';
     },
     validate(targets) {
       if (targets && targets.length > 0) return true;
@@ -77,7 +77,8 @@ const promptQuestion = [
         name: 'server side rendering (ssr)',
         value: 'ssr',
         disabled: (answers) => {
-          return !answers.projectTargets.includes('web');
+          // Lite app is not support SSR
+          return answers.scaffoldType === 'lite' || !answers.projectTargets.includes('web');
         },
       },
       {

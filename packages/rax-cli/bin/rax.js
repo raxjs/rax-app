@@ -130,6 +130,7 @@ function createProject(name, verbose, template, userAnswers) {
   process.chdir(root);
 
   cli.init({
+    ...userAnswers,
     root,
     projectName,
     projectType: userAnswers.projectType,

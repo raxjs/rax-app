@@ -42,6 +42,7 @@ module.exports = {
       projectName: '',
       projectAuthor: '',
       projectType: 'scaffold',
+      scaffoldType: 'standard',
       projectTargets: ['web'],
       projectFeatures: [],
       projectAliyunId: '',
