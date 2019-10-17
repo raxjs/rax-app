@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/raxjs/rax-scripts/issues"
   },
-  "homepage": "https://github.com/raxjs/rax-scripts#readme",
+  "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-plugin-component#readme",
   "peerDependencies": {
     "rax": "^1.0.0"
   },
