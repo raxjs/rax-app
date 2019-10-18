@@ -6,7 +6,6 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin').default;
 const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
 
 const babelConfig = getBabelConfig({
@@ -85,13 +84,7 @@ module.exports = (context) => {
     config.mode('development');
     config.devtool('inline-module-source-map');
   } else if (command === 'build') {
-    
     config.mode('production');
-
-    // // It's a plugin to improve tree-shaking
-    // // https://github.com/vincentdchan/webpack-deep-scope-analysis-plugin
-    config.plugin('webpackDeepScopeAnalysis')
-      .use(WebpackDeepScopeAnalysisPlugin);
 
     config.optimization
       .minimizer('terser')

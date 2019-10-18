@@ -49,7 +49,6 @@
     "webpack": "^4.27.1",
     "webpack-bundle-analyzer": "^3.4.1",
     "webpack-chain": "^6.0.0",
-    "webpack-deep-scope-plugin": "^1.6.2",
     "webpack-sources": "^1.3.0"
   }
 }
