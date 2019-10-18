@@ -68,7 +68,14 @@ module.exports = (context) => {
 
     config.optimization
       .minimizer('terser')
-        .use(TerserPlugin)
+        .use(TerserPlugin, [{
+          terserOptions: {
+            output: {
+              comments: false,
+            },
+          },
+          extractComments: false,
+        }])
         .end()
       .minimizer('optimizeCSS')
         .use(OptimizeCSSAssetsPlugin);
