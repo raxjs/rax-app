@@ -6,10 +6,10 @@
 	"main": "src/index.js",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/alibaba/rax.git"
+		"url": "git+https://github.com/raxjs/rax-scripts.git"
 	},
 	"bugs": {
-		"url": "https://github.com/alibaba/rax/issues"
+		"url": "https://github.com/raxjs/rax-scripts/issues"
 	},
 	"homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-plugin-api-builder#readme",
 	"peerDependencies": {
