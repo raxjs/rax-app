@@ -1,6 +1,6 @@
 {
   "name": "rax-template",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Rax project template.",
   "files": [
     "template"
@@ -10,12 +10,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alibaba/rax.git"
+    "url": "git+https://github.com/raxjs/rax-scripts.git"
   },
   "bugs": {
-    "url": "https://github.com/alibaba/rax/issues"
+    "url": "https://github.com/raxjs/rax-scripts/issues"
   },
-  "homepage": "https://github.com/alibaba/rax#readme",
+  "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-template#readme",
   "license": "BSD-3-Clause",
   "publishConfig": {
     "access": "public"

@@ -1,17 +1,17 @@
 {
   "name": "rax-plugin-multi-pages",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "rax app base plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alibaba/rax.git"
+    "url": "git+https://github.com/raxjs/rax-scripts.git"
   },
   "bugs": {
-    "url": "https://github.com/alibaba/rax/issues"
+    "url": "https://github.com/raxjs/rax-scripts/issues"
   },
-  "homepage": "https://github.com/alibaba/rax#readme",
+  "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-plugin-multi-pages#readme",
   "peerDependencies": {
     "rax-plugin-app": "^0.2.0"
   },

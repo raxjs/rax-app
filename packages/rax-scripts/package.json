@@ -1,6 +1,6 @@
 {
   "name": "rax-scripts",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "license": "BSD-3-Clause",
   "description": "Project scripts for Rax.",
   "bin": {
@@ -12,12 +12,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/alibaba/rax.git"
+    "url": "git+ssh://git@github.com/raxjs/rax-scripts.git"
   },
   "bugs": {
-    "url": "https://github.com/alibaba/rax/issues"
+    "url": "https://github.com/raxjs/rax-scripts/issues"
   },
-  "homepage": "https://github.com/alibaba/rax#readme",
+  "homepage": "https://github.com/raxjs/rax-scripts#readme",
   "engines": {
     "npm": ">=3.0.0"
   },

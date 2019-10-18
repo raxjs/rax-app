@@ -4,14 +4,13 @@ const babelMerge = require('babel-merge');
 const defaultOptions = {
   disableJSXPlus: process.env.DISABLE_JSX_PLUS,
   styleSheet: false,
-  hot: false,
 };
 
 let logOnce = true;
 
 module.exports = (userOptions = {}) => {
   const options = Object.assign({}, defaultOptions, userOptions);
-  const { hot, styleSheet, disableJSXPlus, custom = {} } = options;
+  const { styleSheet, disableJSXPlus, custom = {} } = options;
 
   const baseConfig = {
     presets: [
@@ -68,6 +67,7 @@ module.exports = (userOptions = {}) => {
         require.resolve('@babel/plugin-proposal-class-properties'),
         { loose: true },
       ],
+      require.resolve('babel-plugin-minify-dead-code-elimination'),
     ],
   };
 
@@ -97,12 +97,6 @@ module.exports = (userOptions = {}) => {
       plugins: [
         [require.resolve('babel-plugin-transform-jsx-stylesheet'), { retainClassName: true }],
       ],
-    });
-  }
-
-  if (hot) {
-    configArr.push({
-      plugins: [require.resolve('rax-hot-loader/babel')],
     });
   }
 
