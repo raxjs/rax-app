@@ -74,6 +74,9 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       plugins: [
         'jsx',
         'typescript',
+        'classProperties',
+        'objectRestSpread',
+        'optionalCatchBinding',
       ],
     });
   } catch (err) {
@@ -113,7 +116,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       }
     },
     MemberExpression(path) {
-      // fix babel-plugin-minify-dead-code-elimination bug. 
+      // fix babel-plugin-minify-dead-code-elimination bug.
       // only remove like: var isWeex = false; if(isWeex){ xxx }
       // don't remove like: var _universalEnv = {isWeex: false}; if(_universalEnv.isWeex){ xxx }
       // change _universalEnv.isWeex to false
