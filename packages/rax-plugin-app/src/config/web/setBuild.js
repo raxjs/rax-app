@@ -1,4 +1,3 @@
-
 module.exports = (config) => {
   ['jsx', 'tsx'].forEach(tag => {
     config.module.rule(tag)
@@ -7,5 +6,4 @@ module.exports = (config) => {
         platform: 'web',
       });
   });
-  return config;
 };
