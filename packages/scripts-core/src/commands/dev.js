@@ -3,6 +3,7 @@ const chalk = require('chalk');
 const deepmerge = require('deepmerge');
 const address = require('address');
 const WebpackDevServer = require('webpack-dev-server');
+const consoleClear = require('console-clear');
 
 const log = require('../core/log');
 const Context = require('../core/Context');
@@ -79,8 +80,8 @@ module.exports = async function({
         });
       });
 
-      console.log(chalk.green('Starting the development server at:'));
-      console.log('   ', chalk.underline.white(serverUrl));
+      consoleClear(true);
+      console.log('Compiling...');
 
       await applyHook(`after.${command}`, {
         url: serverUrl,

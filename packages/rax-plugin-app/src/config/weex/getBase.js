@@ -18,6 +18,14 @@ module.exports = (context) => {
     },
   ]);
 
+  ['jsx', 'tsx'].forEach(tag => {
+    config.module.rule(tag)
+      .use('platform')
+      .options({
+        platform: 'weex',
+      });
+  });
+
   config.plugin('weexFrame')
     .use(WeexFrameworkBanner);
 
