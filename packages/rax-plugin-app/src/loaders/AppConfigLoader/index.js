@@ -16,7 +16,7 @@ const getDepPath = require('./getDepPath');
       "source": "shell/index",
       "component": fn
     },
-    "hydrate": false  
+    "hydrate": false
   }
  */
 module.exports = function (appJSON) {
@@ -27,6 +27,14 @@ module.exports = function (appJSON) {
   if (!appConfig.routes || !Array.isArray(appConfig.routes)) {
     throw new Error('routes should be an array in app.json.');
   }
+
+  appConfig.routes = appConfig.routes.filter(route => {
+    if (Array.isArray(route.targets) && !route.targets.includes(type)) {
+      return false;
+    }
+
+    return true;
+  });
 
   const assembleRoutes = appConfig.routes.map((route) => {
     if (!route.path || !route.source) {

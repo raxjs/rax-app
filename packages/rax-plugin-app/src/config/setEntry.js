@@ -15,6 +15,15 @@ module.exports = (config, context, type) => {
     .use('loader')
     .tap(() => ({ type }));
 
+
+  ['jsx', 'tsx'].forEach(tag => {
+    config.module.rule(tag)
+      .use('platform')
+      .options({
+        platform: type,
+      });
+  });
+
   if (isDev) {
     entryConfig.add(hmrClient);
   }
