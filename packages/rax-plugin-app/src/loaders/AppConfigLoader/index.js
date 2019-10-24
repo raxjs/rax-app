@@ -28,8 +28,8 @@ module.exports = function (appJSON) {
     throw new Error('routes should be an array in app.json.');
   }
 
-  appConfig.routes = appConfig.routes.filter(v => {
-    if (Array.isArray(v.targets) && !v.targets.includes(type)) {
+  appConfig.routes = appConfig.routes.filter(route => {
+    if (Array.isArray(route.targets) && !route.targets.includes(type)) {
       return false;
     }
 

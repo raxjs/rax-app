@@ -5,7 +5,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 
 const getMpOuput = require('./config/miniapp/getOutputPath');
 
-module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {}) => {
+module.exports = ({ registerConfig, context, onHook }, options = {}) => {
   const { targets = [] } = options;
 
   let mpBuildErr = null;
@@ -13,13 +13,8 @@ module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {
   targets.forEach(target => {
     if (target === 'weex' || target === 'web') {
       const getBase = require(`./config/${target}/getBase`);
-      const setBuild = require(`./config/${target}/setBuild`);
 
       registerConfig(target, getBase(context));
-
-      chainWebpack((config) => {
-        setBuild(config.getConfig(target), context);
-      });
     }
 
     if (target === 'miniapp') {
