@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const { getRouteName } = require('rax-compile-config');
 const { getOptions } = require('loader-utils');
 const getDepPath = require('./getDepPath');
@@ -16,7 +17,7 @@ const getDepPath = require('./getDepPath');
       "source": "shell/index",
       "component": fn
     },
-    "hydrate": false  
+    "hydrate": false
   }
  */
 module.exports = function (appJSON) {
@@ -24,9 +25,17 @@ module.exports = function (appJSON) {
   const { type } = options;
   const appConfig = JSON.parse(appJSON);
 
-  if (!appConfig.routes || !Array.isArray(appConfig.routes)) {
+  if (!appConfig.routes || !_.isArray(appConfig.routes)) {
     throw new Error('routes should be an array in app.json.');
   }
+
+  appConfig.routes = appConfig.routes.filter(v => {
+    if (_.isArray(v.targets) && !_.includes(v.targets, type)) {
+      return false;
+    }
+
+    return true;
+  });
 
   const assembleRoutes = appConfig.routes.map((route) => {
     if (!route.path || !route.source) {
