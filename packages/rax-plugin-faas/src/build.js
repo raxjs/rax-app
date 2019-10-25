@@ -23,7 +23,7 @@ module.exports = (api, functionConfig, options) => {
   });
 
   onHook('after.build', () => {
-    const faasPath = path.resolve(rootDir, outputDir, 'serverless');
+    const faasPath = path.resolve(rootDir, outputDir, 'api');
     fs.ensureDirSync(faasPath);
     generateYaml(functionConfig, faasPath);
     funcBuilder(api, functionConfig);

@@ -1,6 +1,7 @@
 module.exports.handler = function (request, response, context) {
-  response.setStatusCode(200);
+  // Accept requests from different domains, https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('content-type', 'application/json');
+  response.setStatusCode(200);
   response.send(JSON.stringify({ account: "<%= projectAuthor %>" }));
 };

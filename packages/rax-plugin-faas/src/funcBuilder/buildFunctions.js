@@ -12,7 +12,7 @@ module.exports = async (context, functions) => {
   for (let i = 0; i < names.length; i++) {
     const name = names[i];
     const { src, dependencies } = functions[name];
-    const funcsDir = path.resolve(rootDir, outputDir, 'serverless', name);
+    const funcsDir = path.resolve(rootDir, outputDir, 'api', name);
 
     // copy function file
     await copy(src, funcsDir);
