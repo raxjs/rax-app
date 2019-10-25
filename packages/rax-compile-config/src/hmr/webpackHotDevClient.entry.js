@@ -4,7 +4,7 @@ const stripAnsi = require('strip-ansi');
 const formatWebpackMessages = require('./formatWebpackMessages');
 
 let wsProtocol = 'ws';
-if (window.location.protocol === 'https') {
+if (window.location.protocol === 'https:') {
   wsProtocol = 'wss';
 }
 const wsUrl = `${wsProtocol}://${window.location.hostname}:${window.location.port}/sockjs-node/websocket`;
