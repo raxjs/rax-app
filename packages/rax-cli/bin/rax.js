@@ -16,7 +16,10 @@ const semver = require('semver');
 const cli = require('../src/');
 const pkg = require('../package.json');
 
-updateNotifier({pkg}).notify();
+updateNotifier({
+  pkg,
+  updateCheckInterval: 0,
+}).notify();
 
 if (!semver.satisfies(process.version, '>=8')) {
   const message = `You are currently running Node.js ${
