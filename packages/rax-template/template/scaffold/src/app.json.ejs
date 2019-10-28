@@ -3,6 +3,9 @@
   "routes": [
     {
       "path": "/",
+      <%_ if (isSSR) { -%>
+      "name": "home",
+      <%_ } -%>
       "source": "pages/Home/index"
     }
   ],
