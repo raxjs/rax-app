@@ -15,7 +15,7 @@ module.exports = async(api, options = {}) => {
   const { context, log } = api;
   const { rootDir, userConfig } = context;
   const { outputDir } = userConfig;
-  const { targets = [] } = options;
+  const { targets = [], miniapp = {} } = options;
   const BUILD_DIR = path.resolve(rootDir, outputDir);
   const enableTypescript = fs.existsSync(path.join(rootDir, 'tsconfig.json'));
 
@@ -39,7 +39,7 @@ module.exports = async(api, options = {}) => {
       log.info('component', 'Starting build miniapp lib');
       if (enableTypescript) {
         runSequence(...getTasks(enableTypescript, buildMiniapp), async() => {
-          const mpErr = await mpBuild(context, 'lib/miniappTemp/index');
+          const mpErr = await mpBuild(context, 'lib/miniappTemp/index', miniapp);
 
           log.info('component', 'Remove temp directory');
           fs.removeSync(path.join(BUILD_DIR, 'miniappTemp'));
@@ -49,7 +49,7 @@ module.exports = async(api, options = {}) => {
           }
         });
       } else {
-        const mpErr = await mpBuild(context);
+        const mpErr = await mpBuild(context, null, miniapp);
 
         if (mpErr) {
           resolve(mpErr);
