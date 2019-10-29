@@ -7,6 +7,7 @@ const { getBabelConfig } = require('rax-compile-config');
 
 const {
   JS_FILES_PATTERN,
+  TS_FILES_PATTERN,
   OTHER_FILES_PATTERN,
   IGNORE_PATTERN,
 } = require('./filePatterns');
@@ -20,17 +21,17 @@ const babelConfig = getBabelConfig({
   },
 });
 
-const { api, options, watch } = params;
+const { api, compileMiniappTS, callback = (done) =>{done();} } = params;
 
-const { targets = [] } = options;
 const { context, log } = api;
-const { rootDir, userConfig } = context;
+const { rootDir, userConfig, command } = context;
 const { outputDir, devOutputDir } = userConfig;
 
-const enableTypescript = fs.existsSync(path.join(rootDir, 'tsconfig.json'));
-const buildMiniapp = ~targets.indexOf('miniapp');
+const isDev = command === 'dev';
 
-const BUILD_DIR = path.resolve(rootDir, watch ? devOutputDir : outputDir);
+const enableTypescript = fs.existsSync(path.join(rootDir, 'tsconfig.json'));
+
+const BUILD_DIR = path.resolve(rootDir, isDev ? devOutputDir : outputDir);
 
 function clean(done) {
   log.info('component', `Cleaning build directory ${BUILD_DIR}`);
@@ -116,55 +117,43 @@ function miniappCopyOther() {
     });
 }
 
-if (watch) { // watch lib
-  // if (enableTypescript) {
-  //   return [
-  //     'clean',
-  //     [
-  //       'js',
-  //       'ts',
-  //       'copyOther',
-  //     ],
-  //   ];
-  // }
+if (isDev) {
+  watch([JS_FILES_PATTERN], { ignore: IGNORE_PATTERN }, compileJs);
+  watch([OTHER_FILES_PATTERN], { ignore: IGNORE_PATTERN }, copyOther);
 
-  // return [
-  //   'clean',
-  //   [
-  //     'js',
-  //     'copyOther',
-  //   ],
-  // ];
+  if (enableTypescript) {
+    watch([TS_FILES_PATTERN], { ignore: IGNORE_PATTERN }, compileTs);
+  }
+  log.info('component', 'Watching file changes');
+}
 
-} else { // build lib
-  let tasks = [
+let tasks = [
+  clean,
+  parallel(
+    compileJs,
+    copyOther,
+  ),
+];
+
+if (enableTypescript) {
+  tasks = [
     clean,
     parallel(
       compileJs,
+      compileTs,
       copyOther,
     ),
   ];
-
-  if (enableTypescript) {
-    if (buildMiniapp) {
-      tasks = [
-        miniappClean,
-        parallel(
-          miniappTs,
-          miniappCopyOther,
-        ),
-      ];
-    }
-
-    tasks = [
-      clean,
-      parallel(
-        compileJs,
-        compileTs,
-        copyOther,
-      ),
-    ];
-  }
-
-  exports.default = series(...tasks);
 }
+
+if (compileMiniappTS) {
+  tasks = [
+    miniappClean,
+    parallel(
+      miniappTs,
+      miniappCopyOther,
+    ),
+  ];
+}
+
+exports.default = series(...tasks, callback);
