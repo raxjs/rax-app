@@ -7,7 +7,7 @@ const { dev, build } = require('scripts-core');
 const packageInfo = require('../package.json');
 
 program
-  .version(packageInfo.version)
+  .version(packageInfo.version);
 
 program
   .command('start')
