@@ -26,6 +26,14 @@ module.exports = (context) => {
     .use('css')
       .loader(require.resolve('stylesheet-loader'));
 
+  config.module.rule('less')
+    .test(/\.less?$/)
+    .use('css')
+      .loader(require.resolve('stylesheet-loader'))
+      .end()
+    .use('less')
+      .loader(require.resolve('less-loader'));
+
   setUserConfig(config, context, 'weex');
 
   return config;
