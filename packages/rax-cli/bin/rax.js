@@ -1,23 +1,22 @@
 #!/usr/bin/env node
 
-// Update notifications
 const updateNotifier = require('update-notifier');
 const fs = require('fs');
 const path = require('path');
 const execSync = require('child_process').execSync;
 const spawn = require('cross-spawn');
 const inquirer = require('inquirer');
-const argv = require('minimist')(process.argv.slice(2));
-
-// Check node version
 const chalk = require('chalk');
 const semver = require('semver');
+const argv = require('minimist')(process.argv.slice(2));
 
 const cli = require('../src/');
 const pkg = require('../package.json');
 
+// notify package update
 updateNotifier({pkg}).notify();
 
+// Check node version
 if (!semver.satisfies(process.version, '>=8')) {
   const message = `You are currently running Node.js ${
     chalk.red(process.version)  }.\n` +
@@ -33,25 +32,35 @@ if (!semver.satisfies(process.version, '>=8')) {
   process.exit(1);
 }
 
-const RAX_PACKAGE_JSON_PATH = path.resolve(
-  process.cwd(),
-  'node_modules',
-  'rax',
-  'package.json'
-);
 
-checkForVersionArgument();
+/**
+ * check version
+ * usage: rax -v or rax --version
+ */
+if (argv._.length === 0 && (argv.v || argv.version)) {
+  console.log(`rax-cli: ${  pkg.version}`);
+  try {
+    const RAX_PACKAGE_JSON_PATH = path.resolve(
+      process.cwd(),
+      'node_modules',
+      'rax',
+      'package.json'
+    );
+    console.log(`rax: ${require(RAX_PACKAGE_JSON_PATH).version}`);
+  } catch (e) {
+    console.log('rax: n/a - not inside a Rax project directory');
+  }
+  process.exit();
+}
 
-// minimist api
+// check commands
 const commands = argv._;
-
 if (commands.length === 0) {
   console.error(
     'You did not pass any commands, did you mean to run `rax init`?'
   );
   process.exit(1);
 }
-
 switch (commands[0]) {
   case 'init':
     if (!commands[1]) {
@@ -72,6 +81,9 @@ switch (commands[0]) {
     break;
 }
 
+/**
+ * rax init
+ */
 function init(name, verbose, template) {
   Promise.resolve(fs.existsSync(name))
     .then(function(dirExists) {
@@ -91,6 +103,7 @@ function init(name, verbose, template) {
     });
 }
 
+// check directory is exist
 function createAfterConfirmation(name) {
   const property = {
     type: 'confirm',
@@ -155,18 +168,6 @@ function createProject(name, verbose, template, userAnswers) {
     }
     console.log(chalk.white(`   ${  pkgManager  } start`));
   });
-}
-
-function checkForVersionArgument() {
-  if (argv._.length === 0 && (argv.v || argv.version)) {
-    console.log(`rax-cli: ${  pkg.version}`);
-    try {
-      console.log(`rax: ${require(RAX_PACKAGE_JSON_PATH).version}`);
-    } catch (e) {
-      console.log('rax: n/a - not inside a Rax project directory');
-    }
-    process.exit();
-  }
 }
 
 function shouldUseYarn() {
