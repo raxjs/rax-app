@@ -3,9 +3,6 @@
   "author": "<%= projectAuthor %>",
   "scripts": {
     "build": "rax-scripts build",
-    <%_ if (projectFeatures.includes('ssr')) { -%>
-    "debug": "NODE_OPTIONS='--inspect-brk' rax-scripts start",
-    <%_ } -%>
     "start": "rax-scripts start"
   },
   "dependencies": {
