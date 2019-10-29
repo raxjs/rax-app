@@ -77,6 +77,8 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
         'classProperties',
         'objectRestSpread',
         'optionalCatchBinding',
+        'dynamicImport',
+        'decorators-legacy',
       ],
     });
   } catch (err) {

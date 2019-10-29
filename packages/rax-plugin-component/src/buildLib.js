@@ -1,91 +1,50 @@
-
-
 const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs-extra');
 
-const gulp = require('gulp');
-const runSequence = require('run-sequence').use(gulp);
-
-const { registerTasks } = require('./gulpConfig');
+const gulpCompile = require('./gulp/compile');
+const gulpParams = require('./gulp/params');
 
 const mpBuild = require('./config/miniapp/build');
 
 module.exports = async(api, options = {}) => {
   const { context, log } = api;
-  const { rootDir, userConfig } = context;
-  const { outputDir } = userConfig;
+  const { rootDir, userConfig, command } = context;
+  const { outputDir, devOutputDir } = userConfig;
   const { targets = [], miniapp = {} } = options;
-  const BUILD_DIR = path.resolve(rootDir, outputDir);
+
+  const isDev = command === 'dev';
+
   const enableTypescript = fs.existsSync(path.join(rootDir, 'tsconfig.json'));
+  const buildMiniapp = ~targets.indexOf('miniapp');
+
+  const BUILD_DIR = path.resolve(rootDir, isDev ? devOutputDir : outputDir);
 
   log.info('component', chalk.green('Build start... '));
-  registerTasks({ api, gulp });
 
-  fs.removeSync(BUILD_DIR);
+  // set gulpParams
+  gulpParams.api = api;
+  gulpParams.options = options;
 
-  return new Promise((resolve) => {
-    const buildMiniapp = ~targets.indexOf('miniapp');
+  gulpCompile();
 
-    fs.removeSync(path.join(BUILD_DIR, 'miniappTemp'));
+  if (buildMiniapp) {
+    if (enableTypescript) {
+      gulpParams.compileMiniappTS = true;
+      gulpParams.callback = async() => {
+        const mpErr = await mpBuild(context, 'lib/miniappTemp/index', miniapp);
+        fs.removeSync(path.join(BUILD_DIR, 'miniappTemp'));
 
-    // build web & weex
-    runSequence(...getTasks(enableTypescript), async() => {
-      if (!buildMiniapp) {
-        return resolve();
+        return mpErr;
+
+      };
+      gulpCompile();
+    } else {
+      const mpErr = await mpBuild(context, null, miniapp);
+
+      if (mpErr) {
+        return mpErr;
       }
-
-      // build miniapp
-      log.info('component', 'Starting build miniapp lib');
-      if (enableTypescript) {
-        runSequence(...getTasks(enableTypescript, buildMiniapp), async() => {
-          const mpErr = await mpBuild(context, 'lib/miniappTemp/index', miniapp);
-
-          log.info('component', 'Remove temp directory');
-          fs.removeSync(path.join(BUILD_DIR, 'miniappTemp'));
-
-          if (mpErr) {
-            resolve(mpErr);
-          }
-        });
-      } else {
-        const mpErr = await mpBuild(context, null, miniapp);
-
-        if (mpErr) {
-          resolve(mpErr);
-        }
-      }
-    });
-  });
-};
-
-function getTasks(enableTS, buildMiniapp) {
-  if (enableTS) {
-    if (buildMiniapp) {
-      return [
-        'miniappClean',
-        [
-          'miniappTs',
-          'miniappCopyOther',
-        ],
-      ];
     }
-
-    return [
-      'clean',
-      [
-        'js',
-        'ts',
-        'copyOther',
-      ],
-    ];
   }
-
-  return [
-    'clean',
-    [
-      'js',
-      'copyOther',
-    ],
-  ];
-}
+};

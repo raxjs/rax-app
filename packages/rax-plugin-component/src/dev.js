@@ -17,7 +17,7 @@ module.exports = (api, options = {}) => {
   targets.forEach(target => {
     if (target === 'weex' || target === 'web') {
       const getDev = require(`./config/${target}/getDev`);
-      const config = getDev(context);
+      const config = getDev(context, options);
       registerConfig('component', config);
     }
   });
