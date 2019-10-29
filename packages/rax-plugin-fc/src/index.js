@@ -30,7 +30,7 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
         handler: `${route.name}.render`,
         methods: ['GET'],
         path: '.',
-      }
+      };
     });
 
     const output = path.resolve(root, 'build/server');
@@ -51,13 +51,13 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
       // 删除默认的 dev server
       ssrConfig.devServer.delete('before');
 
-      const dist = path.resolve(root, 'build')
+      const dist = path.resolve(root, 'build');
       if (!fs.existsSync(dist)) {
-        fs.mkdirSync(dist)
+        fs.mkdirSync(dist);
       }
 
       if (!fs.existsSync(output)) {
-        fs.mkdirSync(output)
+        fs.mkdirSync(output);
       }
 
       generateYaml({
@@ -71,7 +71,7 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
         funCmd = `fun local start -d ${options.debugPort || 9229}`;
       }
 
-      shell.exec(`cd ${output} && npx ${funCmd}`, { async: true })
+      shell.exec(`cd ${output} && npx ${funCmd}`, { async: true });
     }
   });
 };
