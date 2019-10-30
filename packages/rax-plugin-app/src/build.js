@@ -6,7 +6,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 const getMpOuput = require('./config/miniapp/getOutputPath');
 
 module.exports = ({ registerConfig, context, onHook }, options = {}) => {
-  const { targets = [] } = options;
+  const { targets = [], miniapp = {} } = options;
 
   let mpBuildErr = null;
 
@@ -20,7 +20,7 @@ module.exports = ({ registerConfig, context, onHook }, options = {}) => {
     if (target === 'miniapp') {
       const mpBuild = require('./config/miniapp/build');
       onHook('after.build', async() => {
-        const mpInfo = await mpBuild(context);
+        const mpInfo = await mpBuild(context, miniapp);
         if (mpInfo.err || mpInfo.stats.hasErrors()) {
           mpBuildErr = mpInfo;
         }
