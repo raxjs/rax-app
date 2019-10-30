@@ -11,7 +11,7 @@ module.exports = async(api, options = {}) => {
   const { context, log } = api;
   const { rootDir, userConfig, command } = context;
   const { outputDir, devOutputDir } = userConfig;
-  const { targets = [] } = options;
+  const { targets = [], miniapp = {} } = options;
 
   const isDev = command === 'dev';
 
@@ -32,7 +32,7 @@ module.exports = async(api, options = {}) => {
     if (enableTypescript) {
       gulpParams.compileMiniappTS = true;
       gulpParams.callback = async() => {
-        const mpErr = await mpBuild(context, 'lib/miniappTemp/index');
+        const mpErr = await mpBuild(context, 'lib/miniappTemp/index', miniapp);
         fs.removeSync(path.join(BUILD_DIR, 'miniappTemp'));
 
         return mpErr;
@@ -40,7 +40,7 @@ module.exports = async(api, options = {}) => {
       };
       gulpCompile();
     } else {
-      const mpErr = await mpBuild(context);
+      const mpErr = await mpBuild(context, null, miniapp);
 
       if (mpErr) {
         return mpErr;
