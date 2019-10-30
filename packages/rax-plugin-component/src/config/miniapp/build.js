@@ -22,7 +22,7 @@ module.exports = (context, customEntry, options) => {
           stats,
         });
       },
-    });
+    }, options);
     jsx2mp.build(buildOptions);
-  }, options);
+  });
 };
