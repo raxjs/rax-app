@@ -7,7 +7,7 @@ const getMpOuput = require('./config/miniapp/getOutputPath');
 const mpDev = require('./config/miniapp/dev');
 
 module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {}) => {
-  const { targets = [] } = options;
+  const { targets = [], miniapp = {} } = options;
 
   let devUrl = '';
   let devCompletedArr = [];
@@ -15,7 +15,7 @@ module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {
   if (~targets.indexOf('miniapp')) {
     if (targets.length > 1) {
       onHook('after.dev', () => {
-        mpDev(context, (args) => {
+        mpDev(context, miniapp, (args) => {
           devCompletedArr.push(args);
           if (devCompletedArr.length === 2) {
             devCompileLog();
@@ -23,7 +23,7 @@ module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {
         });
       });
     } else {
-      mpDev(context, (args) => {
+      mpDev(context, miniapp, (args) => {
         devCompletedArr.push(args);
         devCompileLog();
       });

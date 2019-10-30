@@ -17,7 +17,7 @@ module.exports = (api, options = {}) => {
 
   targets.forEach(target => {
     if (target === 'weex' || target === 'web') {
-      const config = getDistConfig(context);
+      const config = getDistConfig(context, options);
       registerConfig('component', config);
     }
   });

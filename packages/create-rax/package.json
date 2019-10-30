@@ -1,0 +1,17 @@
+{
+  "name": "create-rax",
+  "version": "0.1.4",
+  "description": "Creator alias for rax.",
+  "bin": {
+    "create": "bin/create.js"
+  },
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-scripts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-scripts/issues"
+  },
+  "homepage": "https://github.com/raxjs/rax-scripts#readme"
+}
