@@ -5,9 +5,7 @@ const defaultUserConfig = require('./config/user/default.config');
 const dev = require('./dev');
 const build = require('./build');
 
-const gulpConfig = require('./gulpConfig');
-
-const PluginComponent = (api, options = {}) => {
+module.exports = (api, options = {}) => {
   if (!(options.targets && options.targets.length)) {
     console.error(chalk.red('rax-plugin-component need to set targets, e.g. ["rax-plugin-component", targets: ["web", "weex"]]'));
     console.log();
@@ -25,7 +23,3 @@ const PluginComponent = (api, options = {}) => {
     build(api, options);
   }
 };
-
-PluginComponent.gulpConfig = gulpConfig;
-
-module.exports = PluginComponent;
