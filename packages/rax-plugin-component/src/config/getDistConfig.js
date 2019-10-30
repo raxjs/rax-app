@@ -15,7 +15,16 @@ module.exports = (context, options) => {
   config.entry('index')
     .add(path.resolve(rootDir, 'src/index'));
 
-  config.externals(nodeExternals());
+
+  config.externals([
+    function(ctx, request, callback) {
+      if (request.indexOf('@weex-module') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
+      callback();
+    },
+    nodeExternals(),
+  ]);
 
   if (options.forceInline) {
     config.module.rule('css')
