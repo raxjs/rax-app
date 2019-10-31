@@ -14,6 +14,8 @@
   "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-plugin-fc#readme",
   "dependencies": {
     "address": "^1.1.2",
+    "fs-extra": "^8.1.0",
+    "js-yaml": "^3.13.1",
     "shelljs": "^0.8.3"
   }
 }
