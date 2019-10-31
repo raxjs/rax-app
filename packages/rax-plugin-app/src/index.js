@@ -27,11 +27,5 @@ const pluginApp = (api, options = {}) => {
 };
 
 pluginApp.getWebBase = require('./config/web/getBase');
-pluginApp.setWebDev = require('./config/web/setDev');
-pluginApp.setWebBuild = require('./config/web/setBuild');
-
-pluginApp.getWeexBase = require('./config/weex/getBase');
-pluginApp.setWeexDev = require('./config/weex/setDev');
-pluginApp.setWeexBuild = require('./config/weex/setBuild');
 
 module.exports = pluginApp;

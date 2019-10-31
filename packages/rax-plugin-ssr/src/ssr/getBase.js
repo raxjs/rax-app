@@ -47,6 +47,14 @@ module.exports = (context) => {
 
   config.target('node');
 
+  ['jsx', 'tsx'].forEach(tag => {
+    config.module.rule(tag)
+      .use('platform')
+      .options({
+        platform: 'node',
+      });
+  });
+
   config.output
     .filename('server/[name].js')
     .libraryTarget('commonjs2');

@@ -11,13 +11,13 @@ module.exports = (api, options = {}) => {
   const { registerConfig, context, onHook } = api;
   const { rootDir, userConfig } = context;
   const { devWatchLib } = userConfig;
-  const { targets = [] } = options;
+  const { targets = [], miniapp = {} } = options;
 
   // set dev config
   targets.forEach(target => {
     if (target === 'weex' || target === 'web') {
       const getDev = require(`./config/${target}/getDev`);
-      const config = getDev(context);
+      const config = getDev(context, options);
       registerConfig('component', config);
     }
   });
@@ -70,7 +70,7 @@ module.exports = (api, options = {}) => {
   if (~targets.indexOf('miniapp')) {
     if (targets.length > 1) {
       onHook('after.dev', () => {
-        mpDev(context, (args) => {
+        mpDev(context, miniapp, (args) => {
           devCompletedArr.push(args);
           if (devCompletedArr.length === 2) {
             devCompileLog();
@@ -78,7 +78,7 @@ module.exports = (api, options = {}) => {
         });
       });
     } else {
-      mpDev(context, (args) => {
+      mpDev(context, miniapp, (args) => {
         devCompletedArr.push(args);
         devCompileLog();
       });

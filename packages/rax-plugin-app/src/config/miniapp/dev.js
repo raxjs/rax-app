@@ -3,21 +3,18 @@ const jsx2mp = require('jsx2mp-cli');
 
 const getOutputPath = require('./getOutputPath');
 
-module.exports = (context, devCompileLog) => {
+module.exports = (context, options, devCompileLog) => {
   const outputPath = getOutputPath(context);
   fs.removeSync(outputPath);
 
-  jsx2mp.watch({
-    webpackConfig: {
-      output: {
-        path: outputPath,
-      },
-    },
+  const devOptions = Object.assign({
+    distDirectory: outputPath,
     afterCompiled: (err, stats) => {
       devCompileLog({
         err,
         stats,
       });
     },
-  });
+  }, options);
+  jsx2mp.watch(devOptions);
 };

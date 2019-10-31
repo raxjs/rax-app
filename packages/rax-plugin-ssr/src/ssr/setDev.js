@@ -50,7 +50,7 @@ module.exports = (config, context) => {
     const pathName = getRouteName(route, rootDir);
     let routePath = route.path;
     if (isMultiPages) {
-      routePath = new RegExp(`/pages/${pathName}\\/?((?!\\.(js|html|css|json)).)*$`);
+      routePath = `/pages/${pathName}`;
     }
     routes.push({
       path: routePath,
