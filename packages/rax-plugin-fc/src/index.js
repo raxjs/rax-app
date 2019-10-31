@@ -8,10 +8,6 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
   const { command, onHook } = context;
 
   chainWebpack((config) => {
-    if (command !== 'build' && command !== 'dev') {
-      return;
-    }
-
     const ssrConfig = config.getConfig('ssr');
 
     const root = context.rootDir;
