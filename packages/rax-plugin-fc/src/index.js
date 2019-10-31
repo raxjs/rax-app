@@ -60,18 +60,30 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
         fs.mkdirSync(output);
       }
 
-      generateYaml({
-        name: packageJSON.name,
-        functionArr: fns,
-      }, output);
+      let hasStartFun = false;
 
-      let funCmd = 'fun local start';
+      // 在 compile 后触发，避免日志被覆盖
+      onHook('after.devCompile', async() => {
+        // 避免每次代码变更都触发 fun 的启动
+        if (hasStartFun) {
+          return;
+        }
 
-      if (options.debug) {
-        funCmd = `fun local start -d ${options.debugPort || 9229}`;
-      }
+        generateYaml({
+          name: packageJSON.name,
+          functionArr: fns,
+        }, output);
+  
+        let funCmd = 'fun local start';
+  
+        if (options.debug) {
+          funCmd = `fun local start -d ${options.debugPort || 9229}`;
+        }
+  
+        shell.exec(`cd ${output} && npx ${funCmd}`, { async: true });
 
-      shell.exec(`cd ${output} && npx ${funCmd}`, { async: true });
+        hasStartFun = true;
+      });
     }
   });
 };
