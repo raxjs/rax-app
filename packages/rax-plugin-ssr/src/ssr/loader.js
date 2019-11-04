@@ -73,17 +73,24 @@ module.exports = function() {
 
     ${renderHtmlFnc}
 
-    export async function render(req, res) {
+    async function render(req, res) {
       const html = await renderToHTML(req, res);
 
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(html);
     }
 
-    export async function renderToHTML(req, res) {
+    async function renderToHTML(req, res) {
       const html = await renderComponentToHTML(req, res, Page);
       return html;
     }
+
+    export {
+      render,
+      renderToHTML
+    };
+
+    export default render;
 
     async function getInitialProps(Component, ctx) {
       if (!Component.getInitialProps) return null;
