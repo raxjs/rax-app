@@ -27,8 +27,16 @@ module.exports = ({ context, chainWebpack, onHook }) => {
           entries.forEach(({ entryName }) => {
             app.get(`/pages/${entryName}`, function(req, res) {
               const htmlPath = path.resolve(rootDir, outputDir, `web/${entryName}.html`);
-              const outPut = memFs.readFileSync(htmlPath).toString();
-              res.send(outPut);
+              // wait for compiling
+              const checkFile = () => {
+                if (memFs.existsSync(htmlPath)) {
+                  const outPut = memFs.readFileSync(htmlPath).toString();
+                  res.send(outPut);
+                } else {
+                  setTimeout(checkFile, 1000);
+                }
+              };
+              checkFile();
             });
           });
         });
