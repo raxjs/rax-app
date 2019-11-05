@@ -4,7 +4,7 @@
     {
       "path": "/",
       <%_ if (isSSR) { -%>
-      "name": "home",<%# as function name %>
+      "name": "home",<%# When SSR Project is deployed as function (FaaS), name will be used as function name %>
       <%_ } -%>
       "source": "pages/Home/index"
     }
