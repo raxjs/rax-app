@@ -2,7 +2,7 @@ const yaml = require('js-yaml');
 const fs = require('fs-extra');
 
 module.exports = (functionConfig, targetPath) => {
-  const { functionArr } = functionConfig;
+  const { functionArr, runtime } = functionConfig;
   const yamlPath = targetPath || functionConfig.realRootPath;
 
   const yamlObj = {
@@ -22,7 +22,7 @@ module.exports = (functionConfig, targetPath) => {
       Type: 'Aliyun::Serverless::Function',
       Properties: {
         Handler: fnc.handler,
-        Runtime: 'nodejs8',
+        Runtime: runtime || 'nodejs8',
         CodeUri: fnc.path,
       },
       Events: {

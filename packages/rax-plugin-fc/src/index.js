@@ -36,6 +36,7 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
         generateYaml({
           name: packageJSON.name,
           functionArr: fns,
+          runtime: options.runtime,
         }, output);
       });
     }
