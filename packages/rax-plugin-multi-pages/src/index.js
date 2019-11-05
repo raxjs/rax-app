@@ -18,10 +18,18 @@ module.exports = ({ context, chainWebpack, onHook }) => {
     targets = context.__configArr.map(v => v.name);
 
     if (~targets.indexOf('web')) {
-      setEntry(config.getConfig('web'), context, entries, 'web');
+      const webConfig = config.getConfig('web');
+
+      setEntry(webConfig, context, entries, 'web');
+
+      webConfig.plugin('document').tap(args => {
+        return [{
+          ...args[0],
+          isMultiple: true,
+        }];
+      });
 
       if (command === 'dev' && process.env.RAX_SSR !== 'true') {
-        const webConfig = config.getConfig('web');
         webConfig.devServer.set('before', (app, devServer) => {
           const memFs = devServer.compiler.compilers[0].outputFileSystem;
           entries.forEach(({ entryName }) => {
