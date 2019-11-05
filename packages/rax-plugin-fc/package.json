@@ -1,7 +1,7 @@
 {
   "name": "rax-plugin-fc",
   "version": "0.1.0",
-  "description": "rax fc plugins",
+  "description": "Rax Aliyun Function Compute Plugin",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
   "repository": {
