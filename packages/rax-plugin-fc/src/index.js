@@ -41,10 +41,10 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
     }
 
     if (command === 'dev') {
-      // 构建到本地，交给 fun 使用
+      // write to dist for fun
       ssrConfig.devServer.set('writeToDisk', true);
 
-      // 删除默认的 dev server
+      // delete default dev server
       ssrConfig.devServer.delete('before');
 
       const dist = path.resolve(root, 'build');
@@ -58,9 +58,8 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
 
       let hasStartFun = false;
 
-      // 在 compile 后触发，避免日志被覆盖
+      // start fun after compile to avoid logs be cleared
       onHook('after.devCompile', async() => {
-        // 避免每次代码变更都触发 fun 的启动
         if (hasStartFun) {
           return;
         }

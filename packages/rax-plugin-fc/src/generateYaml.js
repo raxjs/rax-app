@@ -6,7 +6,9 @@ module.exports = (functionConfig, targetPath) => {
   const yamlPath = targetPath || functionConfig.realRootPath;
 
   const yamlObj = {
+    // https://github.com/ninghao/aliyun-ros#rostemplateformatversion%E5%BF%85%E9%9C%80
     ROSTemplateFormatVersion: '2015-09-01',
+    // https://github.com/alibaba/funcraft/blob/master/docs/specs/2018-04-03-zh-cn.md
     Transform: 'Aliyun::Serverless-2018-04-03',
     Resources: {
       [functionConfig.name]: {
