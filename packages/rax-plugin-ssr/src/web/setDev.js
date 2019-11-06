@@ -1,4 +1,5 @@
 const { hmrClient } = require('rax-compile-config');
+const setPublicPath = require('../setPublicPath');
 
 module.exports = (config) => {
   const allEntries = config.entryPoints.entries();
@@ -10,6 +11,8 @@ module.exports = (config) => {
   }
 
   config.devServer.delete('before');
+
+  setPublicPath(config);
 
   return config;
 };
