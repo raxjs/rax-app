@@ -1,12 +1,17 @@
 const _ = require('lodash');
 const { getWebBase } = require('rax-plugin-app');
-
+const setPublicPath = require('../setPublicPath');
 const getEntries = require('./getEntries');
 
 // Can‘t clone webpack chain object, so generate a new chain and reset config
 module.exports = (context) => {
-  const { userConfig } = context;
+  const { userConfig, command } = context;
+
   const config = getWebBase(context);
+
+  if (command === 'dev') {
+    setPublicPath(config);
+  }
 
   config.entryPoints.clear();
 
