@@ -1,0 +1,17 @@
+{
+  "name": "rax-plugin-now",
+  "version": "0.1.0",
+  "description": "Rax plugin for deploy app with ZEIT Now",
+  "license": "BSD-3-Clause",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-scripts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-scripts/issues"
+  },
+  "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-plugin-now#readme",
+  "dependencies": {
+  }
+}
