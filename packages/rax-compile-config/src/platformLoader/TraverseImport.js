@@ -84,7 +84,6 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
         'exportNamespaceFrom',
         'optionalCatchBinding',
         'throwExpressions',
-        'pipelineOperator',
       ],
     });
   } catch (err) {
