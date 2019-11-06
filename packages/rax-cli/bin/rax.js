@@ -55,6 +55,8 @@ if (argv._.length === 0 && (argv.v || argv.version)) {
 
 // check commands
 const commands = argv._;
+let createInCurrent = true;
+
 if (commands.length === 0) {
   console.error(
     'You did not pass any commands, did you mean to run `rax init`?'
@@ -63,14 +65,14 @@ if (commands.length === 0) {
 }
 switch (commands[0]) {
   case 'init':
-    if (!commands[1]) {
-      console.error(
-        'Usage: rax init <ProjectName> [--verbose]'
-      );
-      process.exit(1);
-    } else {
-      init(commands[1], argv.verbose, argv.template);
+    if (argv.h) {
+      console.log();
+      console.log('Usage: rax init <ProjectName> [--verbose]');
+      console.log();
+      process.exit();
     }
+
+    init(commands[1], argv.verbose, argv.template);
     break;
   default:
     console.error(
@@ -84,42 +86,16 @@ switch (commands[0]) {
 /**
  * rax init
  */
-function init(name, verbose, template) {
-  Promise.resolve(fs.existsSync(name))
-    .then(function(dirExists) {
-      if (dirExists) {
-        return createAfterConfirmation(name, verbose);
-      }
-    })
-    .then(function() {
-      return askProjectInformaction(name, verbose);
-    })
-    .then(function(answers) {
-      return createProject(name, verbose, template, answers);
-    })
-    .catch(function(err) {
-      console.error('Error occured', err.stack);
-      process.exit(1);
-    });
-}
+async function init(name, verbose, template) {
+  let projectName = name;
+  createInCurrent = !projectName;
+  if (!projectName) {
+    projectName = path.dirname(process.cwd()).split(path.sep).pop();
+  }
 
-// check directory is exist
-function createAfterConfirmation(name) {
-  const property = {
-    type: 'confirm',
-    name: 'continueWhileDirectoryExists',
-    message: `Directory ${  name  } already exists. Continue?`,
-    default: false,
-  };
+  const answers = await askProjectInformaction();
 
-  return inquirer.prompt(property).then(function(answers) {
-    if (answers && answers.continueWhileDirectoryExists) {
-      return true;
-    } else {
-      console.log('Project initialization canceled.');
-      process.exit(1);
-    }
-  });
+  createProject(name, verbose, template, answers);
 }
 
 function askProjectInformaction() {
@@ -128,23 +104,26 @@ function askProjectInformaction() {
 
 function createProject(name, verbose, template, userAnswers) {
   const pkgManager = shouldUseYarn() ? 'yarn' : 'npm';
-  const root = path.resolve(name);
   const projectName = name;
   const autoInstallModules = userAnswers.autoInstallModules;
 
+  let rootDir = process.cwd();
+  if (!createInCurrent) {
+    rootDir = path.resolve(name);
+    if (!fs.existsSync(rootDir)) {
+      fs.mkdirSync(rootDir);
+    }
+    process.chdir(rootDir);
+  }
+
   console.log(
     'Creating a new Rax project in',
-    root
+    rootDir
   );
-
-  if (!fs.existsSync(root)) {
-    fs.mkdirSync(root);
-  }
-  process.chdir(root);
 
   cli.init({
     ...userAnswers,
-    root,
+    root: rootDir,
     projectName,
     projectType: userAnswers.projectType,
     projectFeatures: userAnswers.projectFeatures || [],
@@ -162,7 +141,9 @@ function createProject(name, verbose, template, userAnswers) {
     }
   }).then(function(isAutoInstalled) {
     console.log(chalk.white.bold('To run your app:'));
-    console.log(chalk.white(`   cd ${  projectName}`));
+    if (!createInCurrent) {
+      console.log(chalk.white(`   cd ${  projectName}`));
+    }
     if (!isAutoInstalled) {
       console.log(chalk.white(`   ${  pkgManager === 'npm' ? 'npm install' : 'yarn'}`));
     }
