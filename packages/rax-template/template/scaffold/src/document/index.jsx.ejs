@@ -28,7 +28,7 @@ function Document(props) {
         {
           scripts.map(
             (src, index) => <script src={`${publicPath}${src}`} key={`script_${index}`}>
-              {/* eslint-disable-next-line react/react-in-jsx-scope */}
+              {/* self-closing script element will not work in HTML */}
             </script>
           )
         }
@@ -56,7 +56,7 @@ function Document(props) {
         <div id="root" />
         {scripts.map(
           (src, index) => <script src={`${publicPath}${src}`} key={`script_${index}`}>
-            {/* eslint-disable-next-line react/react-in-jsx-scope */}
+            {/* self-closing script element does will work in HTML */}
           </script>
         )}
       </body>
