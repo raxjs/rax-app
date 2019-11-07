@@ -16,14 +16,22 @@ function Document(props) {
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover"/>
         <title><%= npmName %></title>
-        {styles.map((src) => <link rel="stylesheet" href={`${publicPath}${src}`} />)}
+        {styles.map((src, index) => <link rel="stylesheet" href={`${publicPath}${src}`} key={`style_${index}`} />)}
       </head>
       <body>
         {/* root container */}
         <div id="root" dangerouslySetInnerHTML={{ __html: initialHtml || '' }} />
         {/* initial data from server side */}
-        <script data-from="server" dangerouslySetInnerHTML={{__html: 'window.__INITIAL_DATA__=' + initialData}} />
-        {scripts.map((src) => <script src={`${publicPath}${src}`} />)}
+        <script data-from="server" dangerouslySetInnerHTML={{__html: 'window.__INITIAL_DATA__=' + initialData}}>
+          {/* eslint-disable-next-line react/react-in-jsx-scope */}
+        </script>
+        {
+          scripts.map(
+            (src, index) => <script src={`${publicPath}${src}`} key={`script_${index}`}>
+              {/* eslint-disable-next-line react/react-in-jsx-scope */}
+            </script>
+          )
+        }
       </body>
     </html>
   );
@@ -41,12 +49,16 @@ function Document(props) {
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover"/>
         <title><%= npmName %></title>
-        {styles.map((src) => <link rel="stylesheet" href={`${publicPath}${src}`} />)}
+        {styles.map((src, key) => <link rel="stylesheet" href={`${publicPath}${src}`} key={`style_${index}`} />)}
       </head>
       <body>
         {/* root container */}
         <div id="root" />
-        {scripts.map((src) => <script src={`${publicPath}${src}`} />)}
+        {scripts.map(
+          (src, index) => <script src={`${publicPath}${src}`} key={`script_${index}`}>
+            {/* eslint-disable-next-line react/react-in-jsx-scope */}
+          </script>
+        )}
       </body>
     </html>
   );

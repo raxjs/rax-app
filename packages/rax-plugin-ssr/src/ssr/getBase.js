@@ -20,6 +20,11 @@ module.exports = (context) => {
       .use('babel')
         .tap(options => {
           const res = _.cloneDeep(options);
+          // transfor jsx to html for better ssr performance
+          res.plugins = [
+            require.resolve('babel-plugin-transform-jsx-to-html'),
+            ...options.plugins,
+          ];
           res.presets = options.presets.map(v => {
             if (Array.isArray(v) && v[0].indexOf('@babel/preset-env')) {
               const args = {
