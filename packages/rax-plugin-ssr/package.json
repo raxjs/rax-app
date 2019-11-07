@@ -1,6 +1,6 @@
 {
   "name": "rax-plugin-ssr",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "rax ssr plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",

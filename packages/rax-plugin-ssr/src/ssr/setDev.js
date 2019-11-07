@@ -69,8 +69,7 @@ module.exports = (config, context) => {
         process.once('unhandledRejection', (error) => printErrorStack(error, bundleContent));
 
         try {
-          const mod = eval(bundleContent); // eslint-disable-line
-          const page = mod.default || mod;
+          const page = eval(bundleContent); // eslint-disable-line
           page.render(req, res);
         } catch (error) {
           printErrorStack(error, bundleContent);
