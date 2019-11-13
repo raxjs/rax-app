@@ -23,8 +23,6 @@ function Document(props) {
         <div id="root" dangerouslySetInnerHTML={{ __html: initialHtml || '' }} />
         {/* initial data from server side */}
         <script data-from="server" dangerouslySetInnerHTML={{__html: 'window.__INITIAL_DATA__=' + initialData}} />
-          {/* eslint-disable-next-line react/react-in-jsx-scope */}
-        </script>
         {
           scripts.map(
             (src, index) => <script src={`${publicPath}${src}`} key={`script_${index}`}>
