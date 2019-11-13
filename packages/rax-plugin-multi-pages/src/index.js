@@ -31,20 +31,22 @@ module.exports = ({ context, chainWebpack, onHook }) => {
 
       if (command === 'dev' && process.env.RAX_SSR !== 'true') {
         webConfig.devServer.set('before', (app, devServer) => {
-          const memFs = devServer.compiler.compilers[0].outputFileSystem;
+          const compiler = devServer.compiler.compilers[0];
+          const memFs = compiler.outputFileSystem;
+
           entries.forEach(({ entryName }) => {
             app.get(`/pages/${entryName}`, function(req, res) {
               const htmlPath = path.resolve(rootDir, outputDir, `web/${entryName}.html`);
-              // wait for compiling
-              const checkFile = () => {
-                if (memFs.existsSync(htmlPath)) {
+
+              if (memFs.existsSync(htmlPath)) {
+                const outPut = memFs.readFileSync(htmlPath).toString();
+                res.send(outPut);
+              } else {
+                compiler.hooks.afterCompile.tap('sendHtml', () => {
                   const outPut = memFs.readFileSync(htmlPath).toString();
                   res.send(outPut);
-                } else {
-                  setTimeout(checkFile, 1000);
-                }
-              };
-              checkFile();
+                });
+              }
             });
           });
         });
