@@ -54,7 +54,7 @@ function Document(props) {
         <div id="root" />
         {scripts.map(
           (src, index) => <script src={`${publicPath}${src}`} key={`script_${index}`}>
-            {/* self-closing script element does will work in HTML */}
+            {/* self-closing script element will not work in HTML */}
           </script>
         )}
       </body>
