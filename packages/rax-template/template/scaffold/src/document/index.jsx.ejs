@@ -22,7 +22,7 @@ function Document(props) {
         {/* root container */}
         <div id="root" dangerouslySetInnerHTML={{ __html: initialHtml || '' }} />
         {/* initial data from server side */}
-        <script data-from="server" dangerouslySetInnerHTML={{__html: 'window.__INITIAL_DATA__=' + initialData}}>
+        <script data-from="server" dangerouslySetInnerHTML={{__html: 'window.__INITIAL_DATA__=' + initialData}} />
           {/* eslint-disable-next-line react/react-in-jsx-scope */}
         </script>
         {
