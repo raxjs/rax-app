@@ -79,6 +79,11 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
         'optionalCatchBinding',
         'dynamicImport',
         'decorators-legacy',
+        'asyncGenerators',
+        'exportDefaultFrom',
+        'exportNamespaceFrom',
+        'optionalCatchBinding',
+        'throwExpressions',
       ],
     });
   } catch (err) {
