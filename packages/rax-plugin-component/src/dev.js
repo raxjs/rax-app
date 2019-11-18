@@ -7,15 +7,17 @@ const { handleWebpackErr } = require('rax-compile-config');
 const watchLib = require('./watchLib');
 const mpDev = require('./config/miniapp/dev');
 
+const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./contants');
+
 module.exports = (api, options = {}) => {
   const { registerConfig, context, onHook } = api;
   const { rootDir, userConfig } = context;
   const { devWatchLib } = userConfig;
-  const { targets = [], miniapp = {} } = options;
+  const { targets = [] } = options;
 
   // set dev config
   targets.forEach(target => {
-    if (target === 'weex' || target === 'web') {
+    if (target === WEEX || target === WEB) {
       const getDev = require(`./config/${target}/getDev`);
       const config = getDev(context, options);
       registerConfig('component', config);
@@ -45,13 +47,13 @@ module.exports = (api, options = {}) => {
     console.log(chalk.green('Rax development server has been started:'));
     console.log();
 
-    if (~targets.indexOf('web')) {
+    if (~targets.indexOf(WEB)) {
       console.log(chalk.green('[Web] Development server at:'));
       console.log('   ', chalk.underline.white(devUrl));
       console.log();
     }
 
-    if (~targets.indexOf('weex')) {
+    if (~targets.indexOf(WEEX)) {
       const weexUrl = `${devUrl}/weex/index.js?wh_weex=true`;
       console.log(chalk.green('[Weex] Development server at:'));
       console.log('   ', chalk.underline.white(weexUrl));
@@ -60,17 +62,24 @@ module.exports = (api, options = {}) => {
       console.log();
     }
 
-    if (~targets.indexOf('miniapp')) {
-      console.log(chalk.green('[Miniapp] Use miniapp developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(path.resolve(rootDir, 'demo/miniapp')));
+    if (~targets.indexOf(MINIAPP)) {
+      console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
+      console.log('   ', chalk.underline.white(path.resolve(rootDir, `demo/${MINIAPP}`)));
+      console.log();
+    }
+
+    if (~targets.indexOf(WECHAT_MINIPROGRAM)) {
+      console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
+      console.log('   ', chalk.underline.white(path.resolve(rootDir, 'demo/wechat-miniprogram')));
       console.log();
     }
   }
 
-  if (~targets.indexOf('miniapp')) {
-    if (targets.length > 1) {
+  if (~targets.indexOf(MINIAPP)) {
+    const config = options[MINIAPP] || {};
+    if (targets.length > 2) {
       onHook('after.dev', () => {
-        mpDev(context, miniapp, (args) => {
+        mpDev(context, config, (args) => {
           devCompletedArr.push(args);
           if (devCompletedArr.length === 2) {
             devCompileLog();
@@ -78,7 +87,28 @@ module.exports = (api, options = {}) => {
         });
       });
     } else {
-      mpDev(context, miniapp, (args) => {
+      mpDev(context, config, (args) => {
+        devCompletedArr.push(args);
+        devCompileLog();
+      });
+    }
+  }
+
+  if (~targets.indexOf(WECHAT_MINIPROGRAM)) {
+    const config = Object.assign({
+      platform: 'wechat',
+    }, options[WECHAT_MINIPROGRAM]);
+    if (targets.length > 2) {
+      onHook('after.dev', () => {
+        mpDev(context, config, (args) => {
+          devCompletedArr.push(args);
+          if (devCompletedArr.length === 2) {
+            devCompileLog();
+          }
+        });
+      });
+    } else {
+      mpDev(context, config, (args) => {
         devCompletedArr.push(args);
         devCompileLog();
       });
@@ -95,7 +125,7 @@ module.exports = (api, options = {}) => {
     devUrl = args.url;
     devCompletedArr.push(args);
     // run miniapp build while targets have web or weex, for log control
-    if (~targets.indexOf('miniapp')) {
+    if (~targets.indexOf(MINIAPP) > -1 || ~targets.indexOf(WECHAT_MINIPROGRAM) > -1) {
       if (devCompletedArr.length === 2) {
         devCompileLog();
       }

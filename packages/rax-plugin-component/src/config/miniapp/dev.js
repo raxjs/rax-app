@@ -2,9 +2,19 @@ const fs = require('fs-extra');
 const jsx2mp = require('jsx2mp-cli');
 const path = require('path');
 
-module.exports = (context, options, devCompileLog) => {
+module.exports = (context, options = {}, devCompileLog) => {
   const { rootDir } = context;
-  const outputPath = path.resolve(rootDir, 'demo/miniapp/components/Target');
+  let dirName;
+  switch(options.platform) {
+    case 'wechat':
+      dirName = 'wechat-miniprogram';
+      break;
+    case 'ali':
+    default:
+      dirName = 'miniapp';
+      break;
+  }
+  const outputPath = path.resolve(rootDir, `demo/${dirName}/components/Target`);
 
   fs.removeSync(outputPath);
 
@@ -14,7 +24,6 @@ module.exports = (context, options, devCompileLog) => {
     workDirectory: process.cwd(),
     distDirectory: outputPath,
     enableWatch: true,
-    platform: 'ali',
     afterCompiled: (err, stats) => {
       devCompileLog({
         err,

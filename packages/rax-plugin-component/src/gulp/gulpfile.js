@@ -21,7 +21,15 @@ const babelConfig = getBabelConfig({
   },
 });
 
-const { api, compileMiniappTS, callback = (done) =>{done();} } = params;
+const {
+  api,
+  compileMiniappTS,
+  compileAliMiniappTS,
+  compileWechatMiniProgramTS,
+  callback = done => {
+    done();
+  },
+} = params;
 
 const { context, log } = api;
 const { rootDir, userConfig, command } = context;
@@ -51,7 +59,6 @@ function compileJs() {
     });
 }
 
-
 const tsProject = ts.createProject('tsconfig.json', {
   skipLibCheck: true,
   declaration: true,
@@ -62,7 +69,8 @@ const tsProject = ts.createProject('tsconfig.json', {
 // for ts/tsx.
 function compileTs() {
   log.info('component', 'Compiling typescript files');
-  return tsProject.src()
+  return tsProject
+    .src()
     .pipe(tsProject())
     .pipe(babel(babelConfig))
     .pipe(dest(BUILD_DIR))
@@ -82,12 +90,16 @@ function copyOther() {
 
 // for miniapp build
 const buildTemp = path.resolve(rootDir, outputDir, 'miniappTemp');
+// for wechat miniprogram build
+const buildWechatTemp = path.resolve(rootDir, outputDir, 'wechatTemp');
 
-function miniappClean(done) {
-  log.info('component', `Cleaning miniapp build directory ${buildTemp}`);
-  fs.removeSync(buildTemp);
-  log.info('component', 'Build directory has been Cleaned');
-  done();
+function miniappClean(filePath) {
+  return function(done) {
+    log.info('component', `Cleaning build directory ${filePath}`);
+    fs.removeSync(filePath);
+    log.info('component', 'Build directory has been Cleaned');
+    done();
+  };
 }
 
 const miniappTsProject = ts.createProject('tsconfig.json', {
@@ -98,23 +110,28 @@ const miniappTsProject = ts.createProject('tsconfig.json', {
 });
 
 //  build ts/tsx to miniapp
-function miniappTs() {
-  log.info('component', 'Compiling typescript files for miniapp');
-  return miniappTsProject.src()
-    .pipe(miniappTsProject())
-    .pipe(dest(buildTemp))
-    .on('end', () => {
-      log.info('component', 'Typescript files have been compiled');
-    });
+function miniappTs(filePath, target = 'ali miniapp') {
+  return function() {
+    log.info('component', `Compiling typescript files for ${target}`);
+    return miniappTsProject
+      .src()
+      .pipe(miniappTsProject())
+      .pipe(dest(filePath))
+      .on('end', () => {
+        log.info('component', 'Typescript files have been compiled');
+      });
+  };
 }
 
-function miniappCopyOther() {
-  log.info('component', 'Copy other files for miniapp');
-  return src([OTHER_FILES_PATTERN], { ignore: IGNORE_PATTERN })
-    .pipe(dest(buildTemp))
-    .on('end', () => {
-      log.info('component', 'Other Files have been copied');
-    });
+function miniappCopyOther(filePath, target = 'ali miniapp') {
+  return function() {
+    log.info('component', `Copy other files for ${target}`);
+    return src([OTHER_FILES_PATTERN], { ignore: IGNORE_PATTERN })
+      .pipe(dest(filePath))
+      .on('end', () => {
+        log.info('component', 'Other Files have been copied');
+      });
+  };
 }
 
 if (isDev) {
@@ -127,33 +144,29 @@ if (isDev) {
   log.info('component', 'Watching file changes');
 }
 
-let tasks = [
-  clean,
-  parallel(
-    compileJs,
-    copyOther,
-  ),
-];
+let tasks = [clean, parallel(compileJs, copyOther)];
 
 if (enableTypescript) {
-  tasks = [
-    clean,
-    parallel(
-      compileJs,
-      compileTs,
-      copyOther,
-    ),
-  ];
+  tasks = [clean, parallel(compileJs, compileTs, copyOther)];
 }
 
 if (compileMiniappTS) {
-  tasks = [
-    miniappClean,
-    parallel(
-      miniappTs,
-      miniappCopyOther,
-    ),
-  ];
+  if (compileAliMiniappTS) {
+    tasks = [
+      miniappClean(buildTemp),
+      parallel(miniappTs(buildTemp), miniappCopyOther(buildTemp)),
+    ];
+  } else {
+    tasks = [];
+  }
+
+  if (compileWechatMiniProgramTS) {
+    tasks = [
+      ...tasks,
+      miniappClean(buildWechatTemp),
+      parallel(miniappTs(buildWechatTemp), miniappCopyOther(buildWechatTemp)),
+    ];
+  }
 }
 
 exports.default = series(...tasks, callback);
