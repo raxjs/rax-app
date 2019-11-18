@@ -29,7 +29,7 @@ module.exports = ({ registerConfig, context, onHook }, options = {}) => {
           break;
         case MINIAPP:
         default:
-          config = options[MINIAPP] || {}
+          config = options[MINIAPP] || {};
           break;
       }
       onHook('after.build', async() => {
