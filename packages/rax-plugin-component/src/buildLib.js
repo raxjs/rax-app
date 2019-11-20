@@ -6,17 +6,19 @@ const gulpCompile = require('./gulp/compile');
 const gulpParams = require('./gulp/params');
 
 const mpBuild = require('./config/miniapp/build');
+const { MINIAPP, WECHAT_MINIPROGRAM } = require('./contants');
 
-module.exports = async(api, options = {}) => {
+module.exports = async (api, options = {}) => {
   const { context, log } = api;
   const { rootDir, userConfig, command } = context;
   const { outputDir, devOutputDir } = userConfig;
-  const { targets = [], miniapp = {} } = options;
+  const { targets = [] } = options;
 
   const isDev = command === 'dev';
 
   const enableTypescript = fs.existsSync(path.join(rootDir, 'tsconfig.json'));
-  const buildMiniapp = ~targets.indexOf('miniapp');
+  const buildMiniapp = ~targets.indexOf(MINIAPP);
+  const buildWechatMiniProgram = ~targets.indexOf(WECHAT_MINIPROGRAM);
 
   const BUILD_DIR = path.resolve(rootDir, isDev ? devOutputDir : outputDir);
 
@@ -28,22 +30,49 @@ module.exports = async(api, options = {}) => {
 
   gulpCompile();
 
-  if (buildMiniapp) {
+  if (buildMiniapp || buildWechatMiniProgram) {
     if (enableTypescript) {
       gulpParams.compileMiniappTS = true;
-      gulpParams.callback = async() => {
-        const mpErr = await mpBuild(context, 'lib/miniappTemp/index', miniapp);
-        fs.removeSync(path.join(BUILD_DIR, 'miniappTemp'));
+      gulpParams.compileAliMiniappTS = buildMiniapp;
+      gulpParams.compileWechatMiniProgramTS = buildWechatMiniProgram;
+      gulpParams.callback = async () => {
+        if (buildMiniapp) {
+          const config = options[MINIAPP] || {};
+          const result = await mpBuild(context, 'lib/miniappTemp/index', config);
+          fs.removeSync(path.join(BUILD_DIR, 'miniappTemp'));
+          if (result.err) {
+            return result;
+          }
+        }
 
-        return mpErr;
-
+        if (buildWechatMiniProgram) {
+          const config = Object.assign({
+            platform: 'wechat',
+          }, options[WECHAT_MINIPROGRAM]);
+          const result = await mpBuild(context, 'lib/wechatTemp/index', config);
+          fs.removeSync(path.join(BUILD_DIR, 'wechatTemp'));
+          if (result.err) {
+            return result;
+          }
+        }
       };
       gulpCompile();
     } else {
-      const mpErr = await mpBuild(context, null, miniapp);
-
-      if (mpErr) {
-        return mpErr;
+      if (buildMiniapp) {
+        const config = options[MINIAPP] || {};
+        const result = await mpBuild(context, null, config);
+        if (result.err) {
+          return result;
+        }
+      }
+      if (buildWechatMiniProgram) {
+        const config = Object.assign({
+          platform: 'wechat',
+        }, options[WECHAT_MINIPROGRAM]);
+        const result = await mpBuild(context, null, config);
+        if (result.err) {
+          return result;
+        }
       }
     }
   }
