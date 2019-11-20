@@ -54,11 +54,12 @@ module.exports = function (appJSON) {
     `;
     const importComponent = `() => () => interopRequire(require('${getDepPath(route.source, this.rootContext)}'))`;
 
-    return `routes.push({
-      path: '${route.path}',
-      source: '${route.source}',
-      component: ${type === 'web' ? dynamicImportComponent : importComponent}
-    });`;
+    return `routes.push(
+      {
+        ...${JSON.stringify(route)},
+        component: ${type === 'web' ? dynamicImportComponent : importComponent}
+      }
+    );`;
   }).join('\n');
 
   let processShell;

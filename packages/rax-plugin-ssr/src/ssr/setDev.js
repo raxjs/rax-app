@@ -70,8 +70,7 @@ module.exports = (config, context) => {
 
         try {
           const mod = eval(bundleContent); // eslint-disable-line
-          const page = mod.default || mod;
-          page.render(req, res);
+          mod.render(req, res);
         } catch (error) {
           printErrorStack(error, bundleContent);
         }

@@ -23,6 +23,7 @@ module.exports = class UniversalDocumentPlugin {
       this.insertScript = options.insertScript;
     }
 
+    this.isMultiple = options.isMultiple;
     this.documentPath = options.path;
   }
 
@@ -52,10 +53,11 @@ module.exports = class UniversalDocumentPlugin {
       Object.keys(entryObj).forEach(entry => {
         const files = compilation.entrypoints.get(entry).getFiles();
         const fileName = files.filter(v => ~v.indexOf('.js'));
+        const styleFileName = fileName[0].replace('.js', '.css');
         // get document html string
         const pageSource = `<!DOCTYPE html>${  renderToString(createElement(documentElement, {
           publicPath,
-          styles: [],
+          styles: this.isMultiple ? [styleFileName] : [],
           scripts: fileName,
         }))}`;
 

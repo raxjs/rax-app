@@ -1,12 +1,17 @@
 const _ = require('lodash');
 const { getWebBase } = require('rax-plugin-app');
-
+const setPublicPath = require('../setPublicPath');
 const getEntries = require('./getEntries');
 
 // Can‘t clone webpack chain object, so generate a new chain and reset config
 module.exports = (context) => {
-  const { userConfig } = context;
+  const { userConfig, command } = context;
+
   const config = getWebBase(context);
+
+  if (command === 'dev') {
+    setPublicPath(config);
+  }
 
   config.entryPoints.clear();
 
@@ -15,6 +20,11 @@ module.exports = (context) => {
       .use('babel')
         .tap(options => {
           const res = _.cloneDeep(options);
+          // transfor jsx to html for better ssr performance
+          res.plugins = [
+            require.resolve('babel-plugin-transform-jsx-to-html'),
+            ...options.plugins,
+          ];
           res.presets = options.presets.map(v => {
             if (Array.isArray(v) && v[0].indexOf('@babel/preset-env')) {
               const args = {
