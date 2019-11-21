@@ -5,6 +5,7 @@ const { readFileSync, existsSync, unlinkSync } = require('fs');
 const { createElement } = require('rax');
 const { DocumentContext } = require('rax-document');
 const { renderToString } = require('rax-server-renderer');
+const { handleWebpackErr } = require('rax-compile-config');
 
 const getSSRBaseConfig = require('../config/ssr/getBase');
 
@@ -41,7 +42,8 @@ module.exports = class UniversalDocumentPlugin {
 
     // Compile Document
     compiler.hooks.beforeCompile.tapAsync(PLUGIN_NAME, (compilation, callback) => {
-      webpack(documentWebpackConfig).run(() => {
+      webpack(documentWebpackConfig).run((err, stats) => {
+        handleWebpackErr(err, stats);
         callback();
       });
     });
@@ -55,7 +57,6 @@ module.exports = class UniversalDocumentPlugin {
         const files = compilation.entrypoints.get(entry).getFiles();
         const assets = getAssetsForPage(files, publicPath);
 
-        debugger;
         const context = {
           styles: this.isMultiple ? assets.styles: [],
           scripts: assets.scripts,
