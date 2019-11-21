@@ -1,6 +1,6 @@
 {
   "name": "rax-plugin-app",
-  "version": "0.2.12",
+  "version": "1.0.0",
   "description": "rax app base plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
@@ -13,7 +13,8 @@
   },
   "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-plugin-app#readme",
   "peerDependencies": {
-    "rax": "^1.0.0"
+    "rax": "^1.0.0",
+    "rax-document": "^0.1.0"
   },
   "dependencies": {
     "@babel/core": "7.2.0",

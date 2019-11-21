@@ -43,7 +43,7 @@ function setCSSRule(configRule, context, value, target) {
           });
     }
 
-    if (target === 'web') {
+    if (target === 'web' || target === 'node') {
       configRule
         .use('css')
           .loader(require.resolve('stylesheet-loader'))
@@ -106,5 +106,11 @@ function setCSSRule(configRule, context, value, target) {
         .use('postcss')
           .loader(require.resolve('postcss-loader'))
           .options(postcssConfig);
+  } else if (target === 'node' && !value) {
+    // Do not generate CSS file, it will be build by web complier
+    configRule
+      .use('ignorecss')
+        .loader(require.resolve('../../../loaders/ignoreLoader'))
+        .end();
   }
 }

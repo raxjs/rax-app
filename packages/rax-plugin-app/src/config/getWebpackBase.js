@@ -1,20 +1,18 @@
 const webpack = require('webpack');
 const Chain = require('webpack-chain');
-const fs = require('fs-extra');
-const path = require('path');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
 
-const babelConfig = getBabelConfig({
-  styleSheet: true,
-});
-
-module.exports = (context) => {
+module.exports = (context, options = {}) => {
   const { rootDir, command } = context;
   const config = new Chain();
+
+  const babelConfig = getBabelConfig({
+    styleSheet: true,
+    ...options,
+  });
 
   config.target('web');
   config.context(rootDir);
@@ -71,11 +69,6 @@ module.exports = (context) => {
 
   config.plugin('caseSensitivePaths')
     .use(CaseSensitivePathsPlugin);
-
-  if (fs.existsSync(path.resolve(rootDir, 'src/public'))) {
-    config.plugin('copyWebpackPlugin')
-      .use(CopyWebpackPlugin, [[{ from: 'src/public', to: 'public' }]]);
-  }
 
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);

@@ -13,8 +13,6 @@ module.exports = function() {
     absoluteShellPath,
     absolutePagePath,
     absoluteAppJSONPath,
-    publicPath,
-    pageName,
     pagePath,
     styles = [],
     scripts = [],
@@ -32,6 +30,7 @@ module.exports = function() {
 
       const shellData = await getInitialProps(Shell, ctx);
       const pageData = await getInitialProps(Component, ctx);
+      const documentData = await getInitialProps(Document, ctx);
 
       const initialData = {
         shellData,
@@ -45,17 +44,19 @@ module.exports = function() {
         defaultUnit: 'rpx'
       });
 
-      const documentProps = {
+      const context = {
         initialHtml: initialHtml,
-        initialData: JSON.stringify(initialData),
-        publicPath: '${publicPath}',
-        pageName: '${pageName}',
+        initialData: initialData,
         styles: ${JSON.stringify(styles)},
         scripts: ${JSON.stringify(scripts)}
       };
 
       await getInitialProps(Document, ctx);
-      const documentElement = createElement(Document, documentProps);;
+      
+      const documentElement = createElement(DocumentContext.Provider, {
+        value: context
+      }, createElement(Document, documentData));
+
       const html = '<!doctype html>' + renderer.renderToString(documentElement);
 
       return html;
@@ -65,7 +66,8 @@ module.exports = function() {
   const source = `
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
-
+    import { DocumentContext } from 'rax-document';
+    
     import Page from '${absolutePagePath}';
     import Document from '${absoluteDocumentPath}';
     import appJSON from '${absoluteAppJSONPath}';
