@@ -7,7 +7,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 const watchLib = require('./watchLib');
 const mpDev = require('./config/miniapp/dev');
 
-const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./contants');
+const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = (api, options = {}) => {
   const { registerConfig, context, onHook } = api;
