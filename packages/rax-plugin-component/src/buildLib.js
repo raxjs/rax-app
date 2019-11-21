@@ -6,7 +6,7 @@ const gulpCompile = require('./gulp/compile');
 const gulpParams = require('./gulp/params');
 
 const mpBuild = require('./config/miniapp/build');
-const { MINIAPP, WECHAT_MINIPROGRAM } = require('./contants');
+const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = async (api, options = {}) => {
   const { context, log } = api;

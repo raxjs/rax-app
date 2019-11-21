@@ -4,7 +4,7 @@ const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
 
 const getMpOuput = require('./config/miniapp/getOutputPath');
-const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./contants');
+const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = ({ registerConfig, context, onHook }, options = {}) => {
   const { targets = [] } = options;
