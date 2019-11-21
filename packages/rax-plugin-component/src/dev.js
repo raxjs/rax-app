@@ -125,7 +125,7 @@ module.exports = (api, options = {}) => {
     devUrl = args.url;
     devCompletedArr.push(args);
     // run miniapp build while targets have web or weex, for log control
-    if (~targets.indexOf(MINIAPP) > -1 || ~targets.indexOf(WECHAT_MINIPROGRAM) > -1) {
+    if (~targets.indexOf(MINIAPP) || ~targets.indexOf(WECHAT_MINIPROGRAM)) {
       if (devCompletedArr.length === 2) {
         devCompileLog();
       }

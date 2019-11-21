@@ -18,7 +18,7 @@ module.exports = ({ registerConfig, context, onHook }, options = {}) => {
       registerConfig(target, getBase(context));
     }
 
-    if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > -1) {
+    if (~[MINIAPP, WECHAT_MINIPROGRAM].indexOf(target)) {
       const mpBuild = require('./config/miniapp/build');
       let config;
       switch(target) {
