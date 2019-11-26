@@ -20,7 +20,7 @@ module.exports = class PWAAppShellPlugin {
     const config = compiler.options;
     const appJSON = path.resolve(config.context, 'src/app.json');
 
-    if (!existsSync(appJSON)){
+    if (!existsSync(appJSON)) {
       return;
     }
 
@@ -50,6 +50,39 @@ module.exports = class PWAAppShellPlugin {
         output: Object.assign({}, config.output, { libraryTarget: 'commonjs2' }),
         plugins: config.plugins.filter(plugin => plugin !== this),
       });
+
+      try {
+        /**
+         * rax-compile-config platformLoader will translate universal-env
+         * @example isWeb=true
+         * 
+         * before:
+         * import { isWeb, isWeex } from 'universal-env';
+         *
+         * after:
+         * const isWeb = true;
+         * const isWeex = false
+         * 
+         * App shell will be rendered with Node.js, Some code in wrong environment will throw error.
+         * Find platformLoader 'web' env and translate to the right environment 'node'
+         */
+        const rules = config.module.rules;
+        for (let i = 0, l = rules.length; i < l; i++) {
+          const rulesTestStr = rules[i].test.toString();
+          // Find jsx and tsx rule
+          if (rulesTestStr.indexOf('jsx') > -1 || rulesTestStr.indexOf('tsx') > -1) {
+            // Find platformLoader
+            const platformLoaderIdx = rules[i].use.findIndex(opt => opt.loader.indexOf('platformLoader') > -1);
+            // If it contains platformLoader and target env is 'web', change to 'node'
+            if (platformLoaderIdx > -1 && rules[i].use[platformLoaderIdx].options.platform === 'web') {
+              newConfig.module.rules[i].use[platformLoaderIdx].options = { platform: 'node' };
+            }
+          }
+        }
+      } catch (err) {
+        // ignore
+      }
+
       webpack(newConfig).run(() => {
         callback();
       });
@@ -57,29 +90,38 @@ module.exports = class PWAAppShellPlugin {
 
     // Render into index.html
     compiler.hooks.emit.tapAsync(NAME, (compilation, callback) => {
+      try {
+        const tempCode = readFileSync(outputFile, 'utf-8');
+        const tempFn = new Function('require', 'module', tempCode); // eslint-disable-line
+        const tempModule = { exports: {} };
+        tempFn(require, tempModule);
 
-      const tempCode = readFileSync(outputFile, 'utf-8');
-      const tempFn = new Function('require', 'module', tempCode); // eslint-disable-line
-      const tempModule = { exports: {} };
-      tempFn(require, tempModule);
+        if (Object.keys(tempModule.exports).length === 0) {
+          throw new Error('Please make sure exports app shell component!');
+        }
 
-      if (Object.keys(tempModule.exports).length === 0) {
-        throw new Error('Please make sure exports app shell component!');
+        const AppShell = interopRequire(tempModule.exports);
+        const content = renderToString(createElement(AppShell, {}));
+
+        // Pre-render App-Shell renderToString element to index.html
+        const entryObj = compilation.options.entry;
+        Object.keys(entryObj).forEach(entry => {
+          const pageHtmlValue = compilation.assets[`web/${entry}.html`].source();
+          compilation.assets[`web/${entry}.html`] = new RawSource(pageHtmlValue.replace(
+            /<div(.*?) id="root">(.*?)<\/div>/,
+            `<div id="root">${content}</div>`
+          ));
+        });
+        callback();
+      } catch (err) {
+        console.error('\n App Shell `renderToString` failed with Node.js: \n This issue usually happens because when app shell is rendered on the server.');
+        if (err.message.indexOf('document') > -1 || err.message.indexOf('window') > -1) {
+          console.error('It does not have a document or window object on the server side and those objects are only available on the browser.');
+          console.error('Try to call the document or window functions in or after componentDidMount.');
+        }
+        console.error('Detail: \n');
+        throw err;
       }
-
-      const AppShell = interopRequire(tempModule.exports);
-      const content = renderToString(createElement(AppShell, {}));
-
-      // Pre-render App-Shell renderToString element to index.html
-      const entryObj = compilation.options.entry;
-      Object.keys(entryObj).forEach(entry => {
-        const pageHtmlValue = compilation.assets[`web/${entry}.html`].source();
-        compilation.assets[`web/${entry}.html`] = new RawSource(pageHtmlValue.replace(
-          /<div(.*?) id="root">(.*?)<\/div>/,
-          `<div id="root">${content}</div>`
-        ));
-      });
-      callback();
     });
 
     // Delete temp files
