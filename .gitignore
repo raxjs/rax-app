@@ -15,6 +15,7 @@ databases
 build
 .vscode/
 .tmp/
+.history
 
 npmrc
 

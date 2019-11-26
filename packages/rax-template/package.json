@@ -1,13 +1,16 @@
 {
-  "name": "rax-template",
-  "version": "0.3.11",
-  "description": "Rax project template.",
+  "name": "@ali/motor-rax-template",
+  "version": "0.0.1",
+  "description": "Motor Rax project template.",
   "files": [
     "template"
   ],
   "keywords": [
     "rax"
   ],
+  "publishConfig": {
+    "registry": "http://registry.npm.alibaba-inc.com"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/raxjs/rax-scripts.git"
@@ -17,9 +20,6 @@
   },
   "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-template#readme",
   "license": "BSD-3-Clause",
-  "publishConfig": {
-    "access": "public"
-  },
   "materialConfig": {
     "type": "rax"
   }
