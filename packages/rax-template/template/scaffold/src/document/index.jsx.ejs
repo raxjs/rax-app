@@ -1,32 +1,32 @@
 import { createElement } from 'rax';
 <%_ if (projectFeatures.includes('ssr')) { -%>
-import { Root, Data, Styles, Scripts } from 'rax-document';
+import { Document, Root, Data, Styles, Scripts } from 'rax-document';
 <%_ } else { -%>
-import { Root, Styles, Scripts } from 'rax-document';
+import { Document, Root, Styles, Scripts } from 'rax-document';
 <%_ } -%>
 
-function Document() {
+export default (props) => {
   return (
-    <html>
-      <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover"/>
-        <title>ssr-document-demo</title>
-        <Styles />
-      </head>
-      <body>
-        {/* root container */}
-        <Root />
-        <%_ if (projectFeatures.includes('ssr')) { -%>
-        {/* initial data from server side */}
-        <%_ } -%>
-        <%_ if (projectFeatures.includes('ssr')) { -%>
-        <Data />
-        <%_ } -%>
-        <Scripts />
-      </body>
-    </html>
+    <Document {...props}>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover"/>
+          <title>ssr-document-demo</title>
+          <Styles />
+        </head>
+        <body>
+          {/* root container */}
+          <Root />
+          <%_ if (projectFeatures.includes('ssr')) { -%>
+          {/* initial data from server side */}
+          <%_ } -%>
+          <%_ if (projectFeatures.includes('ssr')) { -%>
+          <Data />
+          <%_ } -%>
+          <Scripts />
+        </body>
+      </html>
+    </Document>
   );
 }
-
-export default Document;
