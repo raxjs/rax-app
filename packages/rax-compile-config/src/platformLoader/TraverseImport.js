@@ -11,6 +11,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
   const platformMap = {
     weex: 'isWeex',
     web: 'isWeb',
+    kraken: 'isKraken',
     node: 'isNode',
     miniapp: 'isMiniApp',
     WeChatMiniprogram: 'isWeChatMiniprogram',
