@@ -59,6 +59,10 @@ const promptQuestion = [
         value: 'weex',
       },
       {
+        name: 'Kraken',
+        value: 'kraken',
+      },
+      {
         name: 'MiniApp',
         value: 'miniapp',
       },

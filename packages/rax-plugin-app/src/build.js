@@ -4,7 +4,7 @@ const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
 
 const getMpOuput = require('./config/miniapp/getOutputPath');
-const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
+const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = ({ registerConfig, context, onHook }, options = {}) => {
   const { targets = [] } = options;
@@ -12,7 +12,7 @@ module.exports = ({ registerConfig, context, onHook }, options = {}) => {
   let mpBuildErr = null;
 
   targets.forEach(target => {
-    if (target === WEEX || target === WEB) {
+    if (target === KRAKEN || target === WEEX || target === WEB) {
       const getBase = require(`./config/${target}/getBase`);
 
       registerConfig(target, getBase(context));
@@ -21,7 +21,7 @@ module.exports = ({ registerConfig, context, onHook }, options = {}) => {
     if (~[MINIAPP, WECHAT_MINIPROGRAM].indexOf(target)) {
       const mpBuild = require('./config/miniapp/build');
       let config;
-      switch(target) {
+      switch (target) {
         case WECHAT_MINIPROGRAM:
           config = Object.assign({
             platform: 'wechat',
@@ -32,7 +32,7 @@ module.exports = ({ registerConfig, context, onHook }, options = {}) => {
           config = options[MINIAPP] || {};
           break;
       }
-      onHook('after.build', async() => {
+      onHook('after.build', async () => {
         const mpInfo = await mpBuild(context, config);
         if (mpInfo.err || mpInfo.stats.hasErrors()) {
           mpBuildErr = mpInfo;
@@ -68,6 +68,12 @@ module.exports = ({ registerConfig, context, onHook }, options = {}) => {
     if (~targets.indexOf(WEEX)) {
       console.log(chalk.green('[Weex] Bundle at:'));
       console.log('   ', chalk.underline.white(path.resolve(rootDir, outputDir, WEEX)));
+      console.log();
+    }
+
+    if (~targets.indexOf(KRAKEN)) {
+      console.log(chalk.green('[Kraken] Bundle at:'));
+      console.log('   ', chalk.underline.white(path.resolve(rootDir, outputDir, KRAKEN)));
       console.log();
     }
 
