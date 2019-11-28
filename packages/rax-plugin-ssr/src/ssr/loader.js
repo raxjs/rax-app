@@ -67,7 +67,7 @@ module.exports = function() {
   const source = `
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
-    
+
     import Page from '${absolutePagePath}';
     import Document from '${absoluteDocumentPath}';
     import appJSON from '${absoluteAppJSONPath}';
