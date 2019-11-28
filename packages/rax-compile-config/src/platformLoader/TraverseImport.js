@@ -11,6 +11,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
   const platformMap = {
     weex: 'isWeex',
     web: 'isWeb',
+    kraken: 'isKraken',
     node: 'isNode',
     miniapp: 'isMiniApp',
     WeChatMiniprogram: 'isWeChatMiniprogram',
@@ -30,11 +31,11 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
   function variableDeclarationMethod(name, value) {
     return types.VariableDeclaration(
       'const', [
-        types.variableDeclarator(
-          types.Identifier(name),
-          types.BooleanLiteral(value)
-        ),
-      ]
+      types.variableDeclarator(
+        types.Identifier(name),
+        types.BooleanLiteral(value)
+      ),
+    ]
     );
   }
 
@@ -94,7 +95,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       // remove trailing "(LINE:COLUMN)" acorn message and add in esprima syntax error message start
       err.message = `Line ${err.lineNumber}: ${err.message.replace(/ \((\d+):(\d+)\)$/, '')
         // add codeframe
-      }\n\n${
+        }\n\n${
         codeFrame(inputSource, err.lineNumber, err.column, { highlightCode: true })}`;
     }
 
@@ -159,11 +160,11 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
             if (specObj.imported === '*') {
               path.insertAfter(types.VariableDeclaration(
                 'const', [
-                  types.variableDeclarator(
-                    types.Identifier(specObj.local),
-                    objectExpressionMethod(options.platform)
-                  ),
-                ]
+                types.variableDeclarator(
+                  types.Identifier(specObj.local),
+                  objectExpressionMethod(options.platform)
+                ),
+              ]
               ));
             } else {
               const newNodeInit = specObj.imported === platformMap[options.platform];
