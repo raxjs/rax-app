@@ -9,6 +9,8 @@ const { handleWebpackErr } = require('rax-compile-config');
 const getDistConfig = require('./config/getDistConfig');
 const buildLib = require('./buildLib');
 
+const { WEB, WEEX } = require('./constants');
+
 module.exports = (api, options = {}) => {
   const { registerConfig, context, onHook } = api;
   const { targets = [] } = options;
@@ -16,7 +18,7 @@ module.exports = (api, options = {}) => {
   const { distDir, outputDir } = userConfig;
 
   targets.forEach(target => {
-    if (target === 'weex' || target === 'web') {
+    if (target === WEEX || target === WEB) {
       const config = getDistConfig(context, options);
       registerConfig('component', config);
     }

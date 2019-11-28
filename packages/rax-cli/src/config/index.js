@@ -51,16 +51,20 @@ const promptQuestion = [
     message: 'Do you want to build to these targets?',
     choices: [
       {
-        name: 'web',
+        name: 'Web',
         value: 'web',
       },
       {
-        name: 'weex',
+        name: 'Weex',
         value: 'weex',
       },
       {
-        name: 'miniapp',
+        name: 'MiniApp',
         value: 'miniapp',
+      },
+      {
+        name: 'WeChat Mini Program',
+        value: 'wechat-miniprogram',
       },
     ],
     default: false,

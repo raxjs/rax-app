@@ -35,6 +35,7 @@ module.exports = (userOptions = {}) => {
         require.resolve('@babel/preset-react'), {
           'pragma': 'createElement',
           'pragmaFrag': 'Fragment',
+          'throwIfNamespace': false,
         },
       ],
     ],

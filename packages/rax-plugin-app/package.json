@@ -1,6 +1,6 @@
 {
   "name": "rax-plugin-app",
-  "version": "1.0.0",
+  "version": "0.2.18",
   "description": "rax app base plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",

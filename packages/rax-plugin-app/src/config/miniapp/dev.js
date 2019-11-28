@@ -4,7 +4,7 @@ const jsx2mp = require('jsx2mp-cli');
 const getOutputPath = require('./getOutputPath');
 
 module.exports = (context, options, devCompileLog) => {
-  const outputPath = getOutputPath(context);
+  const outputPath = getOutputPath(context, options);
   fs.removeSync(outputPath);
 
   const devOptions = Object.assign({

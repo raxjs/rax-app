@@ -11,7 +11,7 @@ const traverseImport = require('./TraverseImport');
  *
  * @example
  *
- * ../evn-loader/lib/index?isWeex=true
+ * ../env-loader/lib/index?isWeex=true
  *
  * `import { isWeex, isWeb } from 'universal-env'`;
  *
