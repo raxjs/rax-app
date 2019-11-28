@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = (config, context) => {
-  const { rootDir, command } = context;
+  const { rootDir } = context;
   const appEntry = path.resolve(rootDir, 'src/app.js');
   const entryConfig = config.entry('index');
 
