@@ -13,8 +13,7 @@
   },
   "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-plugin-app#readme",
   "peerDependencies": {
-    "rax": "^1.0.0",
-    "rax-document": "^0.1.0"
+    "rax": "^1.0.0"
   },
   "dependencies": {
     "@babel/core": "7.2.0",

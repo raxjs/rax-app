@@ -28,13 +28,15 @@ module.exports = (config, context) => {
 
     const query = {
       pagePath: route.path,
+      pageName: entry,
       absoluteDocumentPath,
       absoluteShellPath,
       absoluteAppPath,
       absolutePagePath,
       absoluteAppJSONPath,
-      styles: inlineStyle ? [] : [`${publicPath}web/${entry}.css`],
-      scripts: isMultiPages ? [`${publicPath}web/${entry}.js`] : [`${publicPath}web/${entry}.js`, `${publicPath}web/index.js`],
+      publicPath,
+      styles: inlineStyle ? [] : [`web/${entry}.css`],
+      scripts: isMultiPages ? [`web/${entry}.js`] : [`web/${entry}.js`, 'web/index.js'],
     };
 
     entries[entry] = `${SSRLoader}?${qs.stringify(query)}!${absolutePagePath}`;

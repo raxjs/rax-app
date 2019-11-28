@@ -3,7 +3,6 @@ const webpack = require('webpack');
 const { RawSource } = require('webpack-sources');
 const { readFileSync, existsSync, unlinkSync } = require('fs');
 const { createElement } = require('rax');
-const { DocumentContext } = require('rax-document');
 const { renderToString } = require('rax-server-renderer');
 const { handleWebpackErr } = require('rax-compile-config');
 
@@ -55,16 +54,15 @@ module.exports = class UniversalDocumentPlugin {
       
       Object.keys(entryObj).forEach(entry => {
         const files = compilation.entrypoints.get(entry).getFiles();
-        const assets = getAssetsForPage(files, publicPath);
+        const assets = getAssetsForPage(files);
 
-        const context = {
+        const documentProps = {
+          publicPath,
           styles: this.isMultiple ? assets.styles: [],
           scripts: assets.scripts,
         };
 
-        const documentElement = createElement(DocumentContext.Provider, {
-          value: context,
-        }, createElement(Document, null));
+        const documentElement = createElement(Document, documentProps);
 
         // get document html string
         const pageSource = `<!DOCTYPE html>${renderToString(documentElement)}`;
@@ -107,7 +105,6 @@ function getWebpackConfigForDocument(documentPath, dest) {
   
   webpackChainConfig.externals({
     rax: 'rax',
-    'rax-document': 'rax-document',
   });
 
   const documentWebpackConfig = webpackChainConfig.toConfig();
@@ -152,17 +149,17 @@ function loadDocument(documentPath, insertScript) {
  * @param {*} files 
  * @param {*} publicPath 
  */
-function getAssetsForPage(files, publicPath) {
+function getAssetsForPage(files) {
   const fileNames = files.filter(v => ~v.indexOf('.js'));
 
   const styles = [];
   if (fileNames && fileNames[0]) {
     // get the css file name by the entry bundle name
     const styleFileName = fileNames[0].replace('.js', '.css');
-    styles.push(`${publicPath}${styleFileName}`);
+    styles.push(styleFileName);
   }
 
-  const scripts = fileNames.map(script => `${publicPath}${script}`);
+  const scripts = fileNames.map(script => script);
 
   return {
     scripts,
