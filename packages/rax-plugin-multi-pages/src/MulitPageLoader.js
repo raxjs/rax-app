@@ -25,7 +25,7 @@ module.exports = function() {
         // process Shell.getInitialProps
         // use global props comProps as shell default props
         const shellProps = {...comProps};
-        if (withSSR && window.__INITIAL_DATA__.shellData !== null) {
+        if (withSSR && window.__INITIAL_DATA__ && window.__INITIAL_DATA__.shellData !== null) {
           Object.assign(shellProps, window.__INITIAL_DATA__.shellData);
         } else if (Shell.getInitialProps) {
           Object.assign(shellProps, await Shell.getInitialProps());
@@ -40,7 +40,7 @@ module.exports = function() {
     appRender = `
       const renderApp = async function() {
         // process App.getInitialProps
-        if (withSSR && window.__INITIAL_DATA__.pageData !== null) {
+        if (withSSR && window.__INITIAL_DATA__ && window.__INITIAL_DATA__.pageData !== null) {
           Object.assign(comProps, window.__INITIAL_DATA__.pageData);
         } else if (Component.getInitialProps) {
           Object.assign(comProps, await Component.getInitialProps());
