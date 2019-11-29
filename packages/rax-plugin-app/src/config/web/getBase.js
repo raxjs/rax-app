@@ -1,7 +1,3 @@
-const fs = require('fs-extra');
-const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-
 const UniversalDocumentPlugin = require('../../plugins/UniversalDocumentPlugin');
 const PWAAppShellPlugin = require('../../plugins/PWAAppShellPlugin');
 const getWebpackBase = require('../getWebpackBase');
@@ -9,7 +5,6 @@ const setEntry = require('../setEntry');
 const setUserConfig = require('../user/setConfig');
 
 module.exports = (context) => {
-  const { rootDir } = context;
   const config = getWebpackBase(context);
   setEntry(config, context, 'web');
 
@@ -24,13 +19,9 @@ module.exports = (context) => {
     },
   ]);
 
-  if (fs.existsSync(path.resolve(rootDir, 'src/public'))) {
-    config.plugin('copyWebpackPlugin')
-      .use(CopyWebpackPlugin, [[{ from: 'src/public', to: 'public' }]]);
-  }
-
   config.plugin('document')
     .use(UniversalDocumentPlugin, [{
+      context,
       path: 'src/document/index.jsx',
     }]);
 

@@ -17,6 +17,10 @@ module.exports = class UniversalDocumentPlugin {
       throw new Error('Please specify document file location with the path attribute');
     }
 
+    if (options.context) {
+      this.context = options.context;
+    }
+
     // for internal weex publish
     if (options.publicPath) {
       this.publicPath = options.publicPath;
@@ -37,7 +41,7 @@ module.exports = class UniversalDocumentPlugin {
     const absoluteOutputPath = path.join(config.output.path, TEMP_FLIE_NAME);
     const publicPath = this.publicPath ? this.publicPath : config.output.publicPath;
 
-    const documentWebpackConfig = getWebpackConfigForDocument(absoluteDocumentPath, config.output.path);
+    const documentWebpackConfig = getWebpackConfigForDocument(this.context, absoluteDocumentPath, config.output.path);
 
     // Compile Document
     compiler.hooks.beforeCompile.tapAsync(PLUGIN_NAME, (compilation, callback) => {
@@ -90,10 +94,8 @@ module.exports = class UniversalDocumentPlugin {
  * @param {*} documentPath  document source path
  * @param {*} dest dest path
  */
-function getWebpackConfigForDocument(documentPath, dest) {
-  const webpackChainConfig = getSSRBaseConfig({
-    isSSR: true,
-  });
+function getWebpackConfigForDocument(context, documentPath, dest) {
+  const webpackChainConfig = getSSRBaseConfig(context);
 
   webpackChainConfig
     .entry('document')
