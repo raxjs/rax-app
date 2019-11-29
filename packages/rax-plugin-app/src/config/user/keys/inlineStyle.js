@@ -95,15 +95,15 @@ function setCSSRule(configRule, context, value, target) {
       .end()
       .oneOf('normal')
       .use('css')
-        .loader(require.resolve('css-loader'))
-        // reference: https://github.com/webpack-contrib/css-loader/tree/v2.1.1#localidentname
-          .options(
-            modules ? {
-              importLoaders: 2,
-              modules: true,
-              localIdentName: '[name]__[local]--[hash:base64:5]',
-            } : {})
-          .end()
+      .loader(require.resolve('css-loader'))
+      // reference: https://github.com/webpack-contrib/css-loader/tree/v2.1.1#localidentname
+        .options(
+          modules ? {
+            importLoaders: 2,
+            modules: true,
+            localIdentName: '[name]__[local]--[hash:base64:5]',
+          } : {})
+        .end()
       .use('postcss')
         .loader(require.resolve('postcss-loader'))
         .options(postcssConfig);
