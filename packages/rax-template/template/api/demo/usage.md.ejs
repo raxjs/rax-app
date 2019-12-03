@@ -5,7 +5,7 @@ order: 1
 
 本 Demo 演示基础用法
 
-```jsx
+````jsx
 import { createElement, render } from 'rax';
 import DriverUniversal from 'driver-universal';
 import View from 'rax-view';
@@ -22,5 +22,5 @@ function App () {
   return <View><Text onClick={handleClick}>Click</Text></View>;
 }
 
-render(<App />, null, { driver: DriverUniversal });
-```
+render(<App />, mountNode, { driver: DriverUniversal });
+````
