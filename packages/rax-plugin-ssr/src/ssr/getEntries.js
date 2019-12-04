@@ -34,9 +34,8 @@ module.exports = (config, context) => {
       absoluteAppPath,
       absolutePagePath,
       absoluteAppJSONPath,
-      publicPath,
-      styles: inlineStyle ? [] : [`web/${entry}.css`],
-      scripts: isMultiPages ? [`web/${entry}.js`] : [`web/${entry}.js`, 'web/index.js'],
+      styles: inlineStyle ? [] : [`${publicPath}web/${entry}.css`],
+      scripts: isMultiPages ? [`${publicPath}web/${entry}.js`] : [`${publicPath}web/${entry}.js`, `${publicPath}web/index.js`],
     };
 
     entries[entry] = `${SSRLoader}?${qs.stringify(query)}!${absolutePagePath}`;

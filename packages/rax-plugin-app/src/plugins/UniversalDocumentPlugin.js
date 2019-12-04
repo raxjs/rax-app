@@ -58,18 +58,23 @@ module.exports = class UniversalDocumentPlugin {
       
       Object.keys(entryObj).forEach(entry => {
         const files = compilation.entrypoints.get(entry).getFiles();
-        const assets = getAssetsForPage(files);
+        const assets = getAssetsForPage(files, publicPath);
 
-        const documentProps = {
-          publicPath,
-          styles: this.isMultiple ? assets.styles: [],
-          scripts: assets.scripts,
+        const DocumentContextProvider = function() {};
+        DocumentContextProvider.prototype.getChildContext = function() {
+          return {
+            __styles: this.isMultiple ? assets.styles: [],
+            __scripts: assets.scripts,
+          };
+        };
+        DocumentContextProvider.prototype.render = function() {
+          return createElement(Document);
         };
 
-        const documentElement = createElement(Document, documentProps);
+        const DocumentContextProviderElement = createElement(DocumentContextProvider);
 
         // get document html string
-        const pageSource = `<!DOCTYPE html>${renderToString(documentElement)}`;
+        const pageSource = `<!DOCTYPE html>${renderToString(DocumentContextProviderElement)}`;
 
         // insert html file
         compilation.assets[`web/${entry}.html`] = new RawSource(pageSource);
@@ -151,17 +156,17 @@ function loadDocument(documentPath, insertScript) {
  * @param {*} files 
  * @param {*} publicPath 
  */
-function getAssetsForPage(files) {
+function getAssetsForPage(files, publicPath) {
   const fileNames = files.filter(v => ~v.indexOf('.js'));
 
   const styles = [];
   if (fileNames && fileNames[0]) {
     // get the css file name by the entry bundle name
     const styleFileName = fileNames[0].replace('.js', '.css');
-    styles.push(styleFileName);
+    styles.push(publicPath + styleFileName);
   }
 
-  const scripts = fileNames.map(script => script);
+  const scripts = fileNames.map(script => publicPath + script);
 
   return {
     scripts,
