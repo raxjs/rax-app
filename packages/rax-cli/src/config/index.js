@@ -82,7 +82,7 @@ const promptQuestion = [
     message: 'Do you want to enable these features?',
     choices: [
       {
-        name: 'server side rendering (ssr)',
+        name: 'server side rendering (SSR)',
         value: 'ssr',
         disabled: (answers) => {
           // Lite app is not support SSR
