@@ -106,7 +106,6 @@ module.exports = class Context {
 
   registerConfig(name, chainConfig) {
     chainConfig.getConfig = this.getNamedConfig;
-
     this.__configArr.push({
       name,
       chainConfig,
