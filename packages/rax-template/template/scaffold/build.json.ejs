@@ -3,14 +3,14 @@
 {
   "plugins": [
     [
-      "rax-plugin-app",
+      "build-plugin-rax-app",
       {
         "targets": [<%_ if (scaffoldType === 'lite') { -%>"web"<%_ } else { -%>"<%- projectTargets.join('", "') %>"<%_ } -%>]
       }
     ]<%_ if (isServerless) { -%>,<%_ } %>
     <%_ if (isServerless) { -%>
     [
-      "rax-plugin-faas",
+      "build-plugin-rax-faas",
       {
         "aliyunConfig": {
           "id": "<%= projectAliyunId %>",
@@ -28,7 +28,7 @@
       }
     ]<%_ } -%><%_ if (isSSR) { -%>,<%_ } %>
     <%_ if (isSSR) { -%>
-    "rax-plugin-ssr"
+    "build-plugin-rax-ssr"
     <%_ } -%>
   ]
 }

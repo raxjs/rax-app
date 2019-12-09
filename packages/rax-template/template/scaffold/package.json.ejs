@@ -2,8 +2,8 @@
   "name": "<%= npmName %>",
   "author": "<%= projectAuthor %>",
   "scripts": {
-    "build": "rax-scripts build",
-    "start": "rax-scripts start"
+    "build": "build-scripts build",
+    "start": "build-scripts start"
   },
   "dependencies": {
     <%_ if (projectFeatures.includes('ssr')) { -%>
@@ -23,12 +23,12 @@
   },
   "devDependencies": {
     <%_ if (projectFeatures.includes('ssr')) { -%>
-    "rax-plugin-ssr": "^0.3.0",
+    "build-plugin-rax-ssr": "^0.1.0",
     <%_ } -%>
     <%_ if (projectFeatures.includes('serverless')) { -%>
-    "rax-plugin-faas": "^0.1.0",
+    "build-plugin-rax-faas": "^0.1.0",
     <%_ } -%>
-    "rax-plugin-app": "^0.2.0",
-    "rax-scripts": "^2.0.0"
+    "build-plugin-rax-app": "^0.1.0",
+    "@alib/build-scripts": "^0.1.0"
   }
 }

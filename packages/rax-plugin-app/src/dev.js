@@ -6,7 +6,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 const getMpOuput = require('./config/miniapp/getOutputPath');
 const mpDev = require('./config/miniapp/dev');
 
-const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
+const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {}) => {
   const { targets = [] } = options;
@@ -55,7 +55,7 @@ module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {
   }
 
   targets.forEach(target => {
-    if (target === WEEX || target === WEB) {
+    if (target === KRAKEN || target === WEEX || target === WEB) {
       const getBase = require(`./config/${target}/getBase`);
       const setDev = require(`./config/${target}/setDev`);
 
@@ -67,7 +67,7 @@ module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {
     }
   });
 
-  onHook('after.devCompile', async(args) => {
+  onHook('after.devCompile', async (args) => {
     devUrl = args.url;
     devCompletedArr.push(args);
     // run miniapp build while targets have web or weex, for log control
@@ -112,7 +112,16 @@ module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {
       console.log(chalk.green('[Weex] Development server at:'));
       console.log('   ', chalk.underline.white(weexUrl));
       console.log();
-      qrcode.generate(weexUrl, {small: true});
+      qrcode.generate(weexUrl, { small: true });
+      console.log();
+    }
+
+    if (~targets.indexOf(KRAKEN)) {
+      const krakenURL = `${devUrl}/kraken/index.js`;
+      console.log(chalk.green('[Kraken] Development server at:'));
+      console.log('   ', chalk.underline.white(krakenURL));
+      console.log(chalk.green('[Kraken] Run Kraken Playground App:'));
+      console.log('   ', chalk.underline.white(`kraken -u ${krakenURL}`));
       console.log();
     }
 

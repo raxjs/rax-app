@@ -40,14 +40,14 @@ function Document(props) {
     scripts
   } = props;
 
-  
+
   return (
     <html>
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover"/>
         <title><%= npmName %></title>
-        {styles.map((src, key) => <link rel="stylesheet" href={`${publicPath}${src}`} key={`style_${index}`} />)}
+        {styles.map((src, index) => <link rel="stylesheet" href={`${publicPath}${src}`} key={`style_${index}`} />)}
       </head>
       <body>
         {/* root container */}
