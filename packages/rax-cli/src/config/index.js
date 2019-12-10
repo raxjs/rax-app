@@ -67,7 +67,7 @@ const promptQuestion = [
         value: 'miniapp',
       },
       {
-        name: 'WeChat Mini Program',
+        name: 'WeChat MiniProgram',
         value: 'wechat-miniprogram',
       },
     ],

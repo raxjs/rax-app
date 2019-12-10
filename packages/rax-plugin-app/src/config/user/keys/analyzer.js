@@ -7,6 +7,6 @@ module.exports = (config, context) => {
   if(analyzer){
     // reference: https://www.npmjs.com/package/webpack-bundle-analyzer
     config.plugin('BundleAnalyzerPlugin')
-      .use(BundleAnalyzerPlugin);
+      .use(BundleAnalyzerPlugin, [{ analyzerPort: 'auto' }]);
   }
 };
