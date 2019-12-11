@@ -199,7 +199,7 @@ function tryApplyUpdates(onHotUpdateSuccess) {
       },
       function(err) {
         handleApplyUpdates(err, null);
-      }
+      },
     );
   }
 }
