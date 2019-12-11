@@ -7,7 +7,7 @@ const SSRLoader = require.resolve('./loader');
 module.exports = (config, context) => {
   const { rootDir, userConfig } = context;
   const { plugins, inlineStyle } = userConfig;
-  const isMultiPages = !!~plugins.indexOf('rax-plugin-multi-pages');
+  const isMultiPages = !!~plugins.indexOf('build-plugin-rax-multi-pages');
 
   const publicPath = config.output.get('publicPath');
   const appSrc = path.resolve(rootDir, 'src');

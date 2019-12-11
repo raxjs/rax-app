@@ -34,7 +34,7 @@ function printErrorStack(error, bundleContent) {
 module.exports = (config, context) => {
   const { rootDir, userConfig } = context;
   const { plugins } = userConfig;
-  const isMultiPages = !!~plugins.indexOf('rax-plugin-multi-pages');
+  const isMultiPages = !!~plugins.indexOf('build-plugin-rax-multi-pages');
 
   config.mode('development');
 
