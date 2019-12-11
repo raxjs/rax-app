@@ -13,7 +13,7 @@ function getDepPath(rootDir, com) {
 
 module.exports = (config, context, entries, type) => {
   const { rootDir, command } = context;
-  const isDev = command === 'dev';
+  const isDev = command === 'start';
 
   config.entryPoints.clear();
 
