@@ -33,9 +33,9 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       'const', [
         types.variableDeclarator(
           types.Identifier(name),
-          types.BooleanLiteral(value)
+          types.BooleanLiteral(value),
         ),
-      ]
+      ],
     );
   }
 
@@ -59,8 +59,8 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       properties.push(
         types.objectProperty(
           types.Identifier(platformMap[p]),
-          types.booleanLiteral(p === platformName)
-        )
+          types.booleanLiteral(p === platformName),
+        ),
       );
     });
 
@@ -162,15 +162,15 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
                 'const', [
                   types.variableDeclarator(
                     types.Identifier(specObj.local),
-                    objectExpressionMethod(options.platform)
+                    objectExpressionMethod(options.platform),
                   ),
-                ]
+                ],
               ));
             } else {
               const newNodeInit = specObj.imported === platformMap[options.platform];
               let newNode = variableDeclarationMethod(
                 specObj.imported,
-                newNodeInit
+                newNodeInit,
               );
 
               path.insertAfter(newNode);
@@ -182,7 +182,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
               if (specObj.imported !== specObj.local) {
                 newNode = variableDeclarationMethod(
                   specObj.local,
-                  newNodeInit
+                  newNodeInit,
                 );
                 path.insertAfter(newNode);
               }

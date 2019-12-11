@@ -49,8 +49,8 @@ module.exports = class SnapshotPlugin {
       compilation.assets['web/index.html'] = new RawSource(
         minify(
           compilation.assets['web/index.html'].source().replace('<script ', `<script>${processSnapshot}</script><script `),
-          { minifyJS: true }
-        )
+          { minifyJS: true },
+        ),
       );
       callback();
     });
