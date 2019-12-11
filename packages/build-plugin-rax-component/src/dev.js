@@ -16,13 +16,21 @@ module.exports = (api, options = {}) => {
   const { targets = [] } = options;
 
   // set dev config
+  let startDev = false;
   targets.forEach(target => {
     if (target === WEEX || target === WEB) {
       const getDev = require(`./config/${target}/getDev`);
       const config = getDev(context, options);
       registerTask(`component-demo-${target}`, config);
+      startDev = true;
     }
   });
+
+  if (!startDev) {
+    const getDev = require(`./config/web/getDev`);
+    const config = getDev(context, options);
+    registerTask(`component-demo-web`, config);
+  }
 
   let devUrl = '';
   let devCompletedArr = [];
