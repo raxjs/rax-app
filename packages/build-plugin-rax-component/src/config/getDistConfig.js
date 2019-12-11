@@ -1,9 +1,7 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
 const getBaseWebpack = require('./getBaseWebpack');
-const setUserConfig = require('./user/setConfig');
 
 module.exports = (context, options) => {
   const config = getBaseWebpack(context);
@@ -94,8 +92,6 @@ module.exports = (context, options) => {
     .use(MiniCssExtractPlugin, [{
       filename: '[name].css',
     }]);
-
-  // setUserConfig(config, context, 'weex');
 
   return config;
 };

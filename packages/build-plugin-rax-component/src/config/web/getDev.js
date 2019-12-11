@@ -1,9 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { hmrClient } = require('rax-compile-config');
-
 const getBaseWebpack = require('../getBaseWebpack');
-const setUserConfig = require('../user/setConfig');
 
 module.exports = (context, options) => {
   const config = getBaseWebpack(context);
@@ -86,8 +84,6 @@ module.exports = (context, options) => {
       inject: true,
       template: path.resolve(__dirname, '../demo.html'),
     }]);
-
-  // setUserConfig(config, context, 'web');
 
   return config;
 };

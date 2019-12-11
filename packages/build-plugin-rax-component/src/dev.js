@@ -11,7 +11,7 @@ const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = (api, options = {}) => {
   const { registerTask, context, onHook } = api;
-  const { command, rootDir, userConfig } = context;
+  const { rootDir, userConfig } = context;
   const { devWatchLib } = userConfig;
   const { targets = [] } = options;
 

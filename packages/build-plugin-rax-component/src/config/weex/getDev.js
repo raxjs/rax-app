@@ -1,10 +1,7 @@
-
 const path = require('path');
 const { hmrClient } = require('rax-compile-config');
 const WeexFrameworkBanner = require('../../plugins/WeexFrameworkBannerPlugin');
-
 const getBaseWebpack = require('../getBaseWebpack');
-const setUserConfig = require('../user/setConfig');
 
 module.exports = (context) => {
   const config = getBaseWebpack(context);
@@ -33,8 +30,6 @@ module.exports = (context) => {
       .end()
     .use('less')
       .loader(require.resolve('less-loader'));
-
-  // setUserConfig(config, context, 'weex');
 
   return config;
 };
