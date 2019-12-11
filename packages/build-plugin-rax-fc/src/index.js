@@ -4,12 +4,10 @@ const shell = require('shelljs');
 
 const generateYaml = require('./generateYaml');
 
-module.exports = ({ chainWebpack, context }, options = {}) => {
+module.exports = ({ onGetWebpackConfig, context }, options = {}) => {
   const { command, onHook } = context;
 
-  chainWebpack((config) => {
-    const ssrConfig = config.getConfig('ssr');
-
+  onGetWebpackConfig('ssr', (config) => {
     const root = context.rootDir;
     const appJSON = require(path.resolve(root, 'src/app.json'));
     const packageJSON = require(path.resolve(root, 'package.json'));
@@ -32,7 +30,7 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
     const output = path.resolve(root, 'build/server');
 
     if (command === 'build') {
-      onHook('after.build', () => {
+      onHook('after.build.compile', () => {
         generateYaml({
           name: packageJSON.name,
           functionArr: fns,
@@ -41,12 +39,12 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
       });
     }
 
-    if (command === 'dev') {
+    if (command === 'start') {
       // write to dist for fun
-      ssrConfig.devServer.set('writeToDisk', true);
+      config.devServer.set('writeToDisk', true);
 
       // delete default dev server
-      ssrConfig.devServer.delete('before');
+      config.devServer.delete('before');
 
       const dist = path.resolve(root, 'build');
       if (!fs.existsSync(dist)) {
@@ -60,7 +58,7 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
       let hasStartFun = false;
 
       // start fun after compile to avoid logs be cleared
-      onHook('after.devCompile', async() => {
+      onHook('after.start.compile', async() => {
         if (hasStartFun) {
           return;
         }
@@ -69,13 +67,13 @@ module.exports = ({ chainWebpack, context }, options = {}) => {
           name: packageJSON.name,
           functionArr: fns,
         }, output);
-  
+
         let funCmd = 'fun local start';
-  
+
         if (options.debug) {
           funCmd = `fun local start -d ${options.debugPort || 9229}`;
         }
-  
+
         shell.exec(`cd ${output} && npx ${funCmd}`, { async: true });
 
         hasStartFun = true;
