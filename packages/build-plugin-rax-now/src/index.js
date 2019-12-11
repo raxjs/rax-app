@@ -1,12 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
-module.exports = ({ chainWebpack, context }) => {
+module.exports = ({ onGetWebpackConfig, context }) => {
   const { command, onHook } = context;
 
-  chainWebpack((config) => {
-    const ssrConfig = config.getConfig('ssr');
-
+  onGetWebpackConfig('ssr', (config) => {
     const root = context.rootDir;
     const appJSON = require(path.resolve(root, 'src/app.json'));
     const packageJSON = require(path.resolve(root, 'package.json'));
@@ -39,16 +37,22 @@ module.exports = ({ chainWebpack, context }) => {
       fs.mkdirSync(dest);
     }
 
-    onHook(`after.${command}`, () => {
-      fs.writeFileSync(`${dest}/now.json`, JSON.stringify(nowJSON, null, 2), 'utf-8');
-    });
+    if (command === 'build') {
+      onHook('after.build.compile', () => {
+        fs.writeFileSync(`${dest}/now.json`, JSON.stringify(nowJSON, null, 2), 'utf-8');
+      });
+    }
 
-    if (command === 'dev') {
+    if (command === 'start') {
+      onHook('after.start.devServer', () => {
+        fs.writeFileSync(`${dest}/now.json`, JSON.stringify(nowJSON, null, 2), 'utf-8');
+      });
+
       // write files to disk for now dev
-      ssrConfig.devServer.set('writeToDisk', true);
+      config.devServer.set('writeToDisk', true);
 
       // delete the default dev server
-      ssrConfig.devServer.delete('before');
+      config.devServer.delete('before');
     }
   });
 };
