@@ -8,7 +8,7 @@ module.exports = (api, options) => {
   const { command } = context;
   const functionConfig = generateFunctionConfig(api.context, options);
 
-  if (command === 'dev') {
+  if (command === 'start') {
     dev(api, functionConfig);
   }
 

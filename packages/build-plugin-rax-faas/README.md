@@ -1,6 +1,6 @@
-# rax-plugin-faas [![npm](https://img.shields.io/npm/v/rax-plugin-faas.svg)](https://www.npmjs.com/package/rax-plugin-faas)
+# build-plugin-rax-faas [![npm](https://img.shields.io/npm/v/build-plugin-rax-faas.svg)](https://www.npmjs.com/package/build-plugin-rax-faas)
 
-`rax-scripts` plugin for FaaS, the plugin based on Function Compute of Alibaba cloud.
+`build-scripts` plugin for FaaS, the plugin based on Function Compute of Alibaba cloud.
 
 The plugin support following features:
 
@@ -12,7 +12,7 @@ The plugin support following features:
 
 ### Dependencies
 
-Rax-plugin-faas based on Function Compute of Alibaba cloud, so you need install `docker` and `@alicloud/fun` first:
+build-plugin-rax-faas based on Function Compute of Alibaba cloud, so you need install `docker` and `@alicloud/fun` first:
 
 About docker instructions of installation, you can found in the [docker docs](https://docs.docker.com/install/).
 
@@ -22,27 +22,27 @@ Then install `@alicloud/fun` to your devDependencies:
 $ npm install @alicloud/fun -D
 ```
 
-And you need install `rax-plugin-faas` to your devDependencies:
+And you need install `build-plugin-rax-faas` to your devDependencies:
 
 ```bash
-$ npm install rax-plugin-faas -D
+$ npm install build-plugin-rax-faas -D
 ```
 
 ## Configure
 
-Add `rax-plugin-faas` to `build.json` like:
+Add `build-plugin-rax-faas` to `build.json` like:
 
 ```json
 {
   "plugins": [
     [
-      "rax-plugin-app",
+      "build-plugin-rax-app",
       {
         "targets": ["web", "weex"]
       }
     ],
     [
-      "rax-plugin-faas",
+      "build-plugin-rax-faas",
       {
         "aliyunConfig": {   // Your function compute config
           "id": "xxxxxxxx",
