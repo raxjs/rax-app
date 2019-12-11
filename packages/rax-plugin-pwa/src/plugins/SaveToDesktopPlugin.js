@@ -81,7 +81,7 @@ module.exports = class SaveToDesktopPlugin {
         compilation.assets['web/manifest.json'] = new RawSource(JSON.stringify(manifestJSONValue));
         // Generate Html tags
         compilation.assets['web/index.html'] = new RawSource(
-          compilation.assets['web/index.html'].source().replace('<head>', `<head>${tags}`)
+          compilation.assets['web/index.html'].source().replace('<head>', `<head>${tags}`),
         );
         callback();
       });

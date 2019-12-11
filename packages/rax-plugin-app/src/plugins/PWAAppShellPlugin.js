@@ -109,7 +109,7 @@ module.exports = class PWAAppShellPlugin {
           const pageHtmlValue = compilation.assets[`web/${entry}.html`].source();
           compilation.assets[`web/${entry}.html`] = new RawSource(pageHtmlValue.replace(
             /<div(.*?) id="root">(.*?)<\/div>/,
-            `<div id="root">${content}</div>`
+            `<div id="root">${content}</div>`,
           ));
         });
         callback();

@@ -10,7 +10,7 @@ module.exports = class Context {
   constructor({
     command,
     rootDir = process.cwd(),
-    args = {} }
+    args = {} },
   ) {
     this.getProjectFile = this.getProjectFile.bind(this);
     this.getUserConfig = this.getUserConfig.bind(this);

@@ -27,7 +27,7 @@ class WeexFrameworkBannerPlugin {
               compilation.assets[file] = new ConcatSource(
                 frameworkComment,
                 '\n',
-                compilation.assets[file]
+                compilation.assets[file],
               );
             });
           }
@@ -51,7 +51,7 @@ class WeexFrameworkBannerPlugin {
               compilation.assets[file] = new ConcatSource(
                 frameworkComment,
                 '\n',
-                compilation.assets[file]
+                compilation.assets[file],
               );
             });
           });
