@@ -4,7 +4,7 @@ module.exports = `/**
 * required with your website.
 *
 * This file is auto generated, Please do not edit it directly,
-* make changes to your rax-plugin-pwa config and rebuild your
+* make changes to your build-plugin-rax-pwa config and rebuild your
 * project.
 *
 */
