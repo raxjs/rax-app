@@ -139,7 +139,7 @@ function interopRequire(obj) {
 
 /**
  * load Document after webpack compilation
- * @param {*} documentPath document output path
+ * @param {*} fileContent document output
  * @param {*} insertScript 
  */
 function loadDocument(fileContent, insertScript) {
