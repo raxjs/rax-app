@@ -44,6 +44,6 @@ if (module.hot) {
   });
 }
 `,
-    inputMap
+    inputMap,
   );
 };

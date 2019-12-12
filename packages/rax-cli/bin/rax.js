@@ -44,7 +44,7 @@ if (argv._.length === 0 && (argv.v || argv.version)) {
       process.cwd(),
       'node_modules',
       'rax',
-      'package.json'
+      'package.json',
     );
     console.log(`rax: ${require(RAX_PACKAGE_JSON_PATH).version}`);
   } catch (e) {
@@ -59,7 +59,7 @@ let createInCurrent = true;
 
 if (commands.length === 0) {
   console.error(
-    'You did not pass any commands, did you mean to run `rax init`?'
+    'You did not pass any commands, did you mean to run `rax init`?',
   );
   process.exit(1);
 }
@@ -77,7 +77,7 @@ switch (commands[0]) {
   default:
     console.error(
       'Command `%s` unrecognized.',
-      commands[0]
+      commands[0],
     );
     process.exit(1);
     break;
@@ -118,7 +118,7 @@ function createProject(name, verbose, template, userAnswers) {
 
   console.log(
     'Creating a new Rax project in',
-    rootDir
+    rootDir,
   );
 
   cli.init({
