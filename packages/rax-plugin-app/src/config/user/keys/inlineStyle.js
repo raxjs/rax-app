@@ -105,8 +105,8 @@ function setCSSRule(configRule, context, value, target) {
         } : {})
       .end()
       .use('postcss')
-        .loader(require.resolve('postcss-loader'))
-        .options(postcssConfig);
+      .loader(require.resolve('postcss-loader'))
+      .options(postcssConfig);
   } else if (target === NODE && !value) {
     // Do not generate CSS file, it will be built by web complier
     configRule
