@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-module.exports = ({ onGetWebpackConfig, context }) => {
-  const { command, onHook } = context;
+module.exports = ({ onGetWebpackConfig, context, onHook }) => {
+  const { command } = context;
 
   onGetWebpackConfig('ssr', (config) => {
     const root = context.rootDir;
