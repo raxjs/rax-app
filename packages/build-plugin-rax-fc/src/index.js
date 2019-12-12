@@ -4,8 +4,8 @@ const shell = require('shelljs');
 
 const generateYaml = require('./generateYaml');
 
-module.exports = ({ onGetWebpackConfig, context }, options = {}) => {
-  const { command, onHook } = context;
+module.exports = ({ onGetWebpackConfig, context, onHook }, options = {}) => {
+  const { command } = context;
 
   onGetWebpackConfig('ssr', (config) => {
     const root = context.rootDir;
