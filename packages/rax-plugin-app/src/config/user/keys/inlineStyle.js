@@ -103,7 +103,7 @@ function setCSSRule(configRule, context, value, target) {
           modules: true,
           localIdentName: '[name]__[local]--[hash:base64:5]',
         } : {})
-        .end()
+      .end()
       .use('postcss')
         .loader(require.resolve('postcss-loader'))
         .options(postcssConfig);
