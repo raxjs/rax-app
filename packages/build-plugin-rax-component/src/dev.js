@@ -14,22 +14,53 @@ module.exports = (api, options = {}) => {
   const { rootDir, userConfig } = context;
   const { devWatchLib } = userConfig;
   const { targets = [] } = options;
-
+  
+  const asyncTask = [];
+  const selfDevTargets = [];
+  const customDevTargets = [];
   // set dev config
-  let startDev = false;
   targets.forEach(target => {
-    if (target === WEEX || target === WEB) {
+    if ([WEB, WEEX].indexOf(target) > - 1) {
       const getDev = require(`./config/${target}/getDev`);
       const config = getDev(context, options);
+      selfDevTargets.push(target);
       registerTask(`component-demo-${target}`, config);
-      startDev = true;
+    } else if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > - 1) {
+      const getDev = require(`./config/miniapp/getDev`);
+      const config = getDev(context, options, target);
+      if (target === WECHAT_MINIPROGRAM) {
+        options[target].platform = 'wechat';
+      }
+      if (options[target].buildType === 'runtime') {
+        selfDevTargets.push(target);
+        registerTask(`component-demo-${target}`, config);
+      } else {
+        customDevTargets.push(target);
+      }
     }
   });
 
-  if (!startDev) {
-    const getDev = require(`./config/web/getDev`);
-    const config = getDev(context, options);
-    registerTask(`component-demo-web`, config);
+  customDevTargets.forEach(target => {
+    if (selfDevTargets.length) {
+      onHook('after.start.devServer', () => {
+        mpDev(context, options[target], (args) => {
+          devCompletedArr.push(args);
+        });
+      });
+    } else {
+      asyncTask.push(new Promise(resolve => {
+        mpDev(context, options[target], (args) => {
+          devCompletedArr.push(args);
+          resolve();
+        });
+      }));
+    }
+  });
+
+  if (asyncTask.length) {
+    Promise.all(asyncTask).then(() => {
+      devCompileLog();
+    });
   }
 
   let devUrl = '';
