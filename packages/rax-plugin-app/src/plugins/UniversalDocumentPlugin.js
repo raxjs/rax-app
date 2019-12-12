@@ -139,18 +139,18 @@ function interopRequire(obj) {
 
 /**
  * load Document after webpack compilation
- * @param {*} fileContent document output
+ * @param {*} content document output
  * @param {*} insertScript 
  */
-function loadDocument(fileContent, insertScript) {
-  let content  = fileContent;
+function loadDocument(content, insertScript) {
+  let fileContent  = content;
 
   if (insertScript) {
     const insertStr = `\n<script dangerouslySetInnerHTML={{__html: "${this.insertScript}"}} />`;
-    content = content.replace(/(<body[^>]*>)/, `$1${insertStr}`);
+    fileContent = fileContent.replace(/(<body[^>]*>)/, `$1${insertStr}`);
   }
 
-  const tempFn = new Function('require', 'module', content); // eslint-disable-line
+  const tempFn = new Function('require', 'module', fileContent); // eslint-disable-line
   const tempModule = { exports: {} };
   tempFn(require, tempModule);
 
