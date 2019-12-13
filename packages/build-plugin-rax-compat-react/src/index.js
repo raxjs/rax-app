@@ -1,13 +1,11 @@
-module.exports = ({ context, chainWebpack }) => {
-  chainWebpack((config) => {
-    const targets = context.__configArr.map(v => v.name);
+module.exports = ({ onGetWebpackConfig, getValue }) => {
+  const targets = getValue('targets');
 
-    if (~targets.indexOf('web')) {
-      const webConfig = config.getConfig('web');
-      webConfig.resolve.alias
+  if (targets.includes('web')) {
+    onGetWebpackConfig('web', (config) => {
+      config.resolve.alias
         .set('react', 'rax/lib/compat')
         .set('react-dom', 'rax-dom');
-
 
       ['jsx', 'tsx'].forEach(tag => {
         config.module.rule(tag)
@@ -18,6 +16,6 @@ module.exports = ({ context, chainWebpack }) => {
             replace: 'import { createElement } from',
           });
       });
-    }
-  });
+    });
+  }
 };
