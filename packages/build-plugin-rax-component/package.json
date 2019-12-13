@@ -49,8 +49,5 @@
     "webpack-chain": "^6.0.0",
     "webpack-node-externals": "^1.7.2",
     "webpack-sources": "^1.4.3"
-  },
-  "__npminstall_done": "Thu Dec 12 2019 14:46:25 GMT+0800 (GMT+08:00)",
-  "_from": "build-plugin-rax-component@0.0.1-1",
-  "_resolved": "https://registry.npm.alibaba-inc.com/build-plugin-rax-component/download/build-plugin-rax-component-0.0.1-1.tgz"
+  }
 }
