@@ -6,7 +6,7 @@ const pluginApiBuilder = (api, options = {}) => {
   const { entry } = options;
 
   if (command === 'build') {
-    onHook('after.build', () => {
+    onHook('after.build.compile', () => {
       build({ rootDir, entry });
       build({ rootDir, entry, outDir: 'dist', shouldMinify: true });
     });

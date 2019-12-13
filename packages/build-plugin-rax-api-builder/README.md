@@ -1,10 +1,10 @@
-# rax-plugin-api-builder
+# build-plugin-rax-api-builder
 Build the compressed dist directory
 
 ## Installation
 
 ```bash
-npm install --save-dev rax-plugin-api-builder
+npm install --save-dev build-plugin-rax-api-builder
 ```
 
 
@@ -14,7 +14,7 @@ npm install --save-dev rax-plugin-api-builder
 {
   "plugins": [
     [
-      "rax-plugin-api-builder",
+      "build-plugin-rax-api-builder",
       {
         "entry": "src/index.ts"
       }
