@@ -28,11 +28,11 @@ const promptQuestion = [
     },
     choices: [
       {
-        name: 'Standard SPA App (The complete solution for SPA application that works multi-platform)',
+        name: 'Standard SPA App (The complete solution for single-page application that works multi-platform)',
         value: 'spa-standard',
       },
       {
-        name: 'Standard MPA App (The complete solution for MPA application that works multi-platform)',
+        name: 'Standard MPA App (The complete solution for multi-page application that works multi-platform)',
         value: 'mpa-standard',
       },
       {
