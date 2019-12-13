@@ -6,41 +6,40 @@ const getEntries = require('./getEntries');
 const setEntry = require('./setEntry');
 const setDevServer = require('./setDevServer');
 
-module.exports = ({ context, chainWebpack, onHook }) => {
+module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) => {
   const { command } = context;
   const entries = getEntries(context);
 
-  let targets = [];
+  const targets = getValue('targets');
+  setValue('raxMpa', true);
 
-  chainWebpack((config) => {
-    targets = context.__configArr.map(v => v.name);
+  if (targets.includes('web')) {
+    onGetWebpackConfig('web', (config) => {
+      if (command === 'start' && process.env.RAX_SSR !== 'true') {
+        setDevServer({
+          config,
+          context,
+          targets,
+          entries,
+        });
+      }
 
-    if (command === 'dev' && process.env.RAX_SSR !== 'true') {
-      setDevServer({
-        config,
-        context,
-        targets,
-        entries,
-      });
-    }
+      setEntry(config, context, entries, 'web');
 
-    if (targets.includes('web')) {
-      const webConfig = config.getConfig('web');
-
-      setEntry(webConfig, context, entries, 'web');
-
-      webConfig.plugin('document').tap(args => {
+      config.plugin('document').tap(args => {
         return [{
           ...args[0],
           isMultiple: true,
         }];
       });
-    }
+    });
+  }
 
-    if (targets.includes('weex')) {
-      setEntry(config.getConfig('weex'), context, entries, 'weex');
-    }
-  });
+  if (targets.includes('weex')) {
+    onGetWebpackConfig('weex', config => {
+      setEntry(config, context, entries, 'weex');
+    });
+  }
 
   onHook('after.devCompile', async({ url, err, stats }) => {
     consoleClear(true);
