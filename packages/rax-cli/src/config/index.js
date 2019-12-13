@@ -28,8 +28,12 @@ const promptQuestion = [
     },
     choices: [
       {
-        name: 'Standard App (The complete solution for application that works multi-platform)',
-        value: 'standard',
+        name: 'Standard SPA App (The complete solution for single-page application that works multi-platform)',
+        value: 'spa-standard',
+      },
+      {
+        name: 'Standard MPA App (The complete solution for multi-page application that works multi-platform)',
+        value: 'mpa-standard',
       },
       {
         name: 'Lite App (The simplest possible setup)',
@@ -42,7 +46,7 @@ const promptQuestion = [
     type: 'checkbox',
     name: 'projectTargets',
     when(answers) {
-      return (answers.projectType === 'scaffold' && answers.scaffoldType === 'standard') || answers.projectType === 'component';
+      return (answers.projectType === 'scaffold' && (answers.scaffoldType === 'spa-standard' || answers.scaffoldType === 'mpa-standard')) || answers.projectType === 'component';
     },
     validate(targets) {
       if (targets && targets.length > 0) return true;
