@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 const path = require('path');
 const deepmerge = require('deepmerge');
-const plugin = require('rax-plugin-component');
+const plugin = require('build-plugin-rax-component');
 
 const defaultUserConfig = require('./defaultUserConfig');
 
