@@ -1,0 +1,14 @@
+{
+  "name": "build-plugin-rax-pwa",
+  "version": "0.1.0",
+  "description": "Rax PWA plugins",
+  "license": "BSD-3-Clause",
+  "main": "src/index.js",
+  "dependencies": {
+    "html-minifier": "^4.0.0",
+    "jimp": "^0.6.4",
+    "lodash.template": "^4.5.0",
+    "mime": "^2.4.4",
+    "webpack-sources": "^1.4.3"
+  }
+}
