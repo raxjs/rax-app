@@ -1,15 +1,15 @@
-# rax-plugin-api [![npm](https://img.shields.io/npm/v/rax-plugin-api.svg)](https://www.npmjs.com/package/rax-plugin-api)
+# build-plugin-rax-api [![npm](https://img.shields.io/npm/v/build-plugin-rax-api.svg)](https://www.npmjs.com/package/build-plugin-rax-api)
 
 `rax-scripts` plugin which contains base configuration of rax universal api.
 
-This is based on `rax-plugin-component`.
+This is based on `build-plugin-rax-component`.
 
 ## Usage
 
 ```json
 {
   "plugins": [
-    "rax-plugin-api"
+    "build-plugin-rax-api"
   ]
 }
 ```

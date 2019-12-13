@@ -15,6 +15,6 @@
   "dependencies": {
     "chalk": "^2.4.2",
     "deepmerge": "^4.0.0",
-    "rax-plugin-component": "^0.1.9"
+    "build-plugin-rax-component": "^0.1.0"
   }
 }
