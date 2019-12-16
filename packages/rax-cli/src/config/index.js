@@ -40,7 +40,7 @@ const promptQuestion = [
         value: 'lite',
       },
     ],
-    default: 'standard',
+    default: 'spa-standard',
   },
   {
     type: 'checkbox',
