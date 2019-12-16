@@ -1,12 +1,15 @@
 {
   "name": "rax-cli",
-  "version": "2.1.14",
+  "version": "2.2.0",
   "license": "BSD-3-Clause",
   "description": "Command line interface for Rax",
   "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/raxjs/rax-scripts.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npm.alibaba-inc.com"
   },
   "bugs": {
     "url": "https://github.com/raxjs/rax-scripts/issues"
@@ -19,6 +22,7 @@
     "npm": ">=4.0.0"
   },
   "dependencies": {
+    "rax-template": "0.4.0",
     "chalk": "^2.4.1",
     "cross-spawn": "^6.0.5",
     "easyfile": "^0.1.1",
