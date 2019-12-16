@@ -80,7 +80,7 @@ module.exports = (context) => {
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);
 
-  if (command === 'dev') {
+  if (command === 'start') {
     config.mode('development');
     config.devtool('inline-module-source-map');
   } else if (command === 'build') {

@@ -17,9 +17,13 @@ module.exports = (config, context) => {
         const outPut = memFs.readFileSync(htmlPath).toString();
         res.send(outPut);
       } else {
-        compiler.hooks.afterCompile.tap('sendHtml', () => {
-          const outPut = memFs.readFileSync(htmlPath).toString();
-          res.send(outPut);
+        compiler.hooks.done.tap('sendHtml', () => {
+          try {
+            const outPut = memFs.readFileSync(htmlPath).toString();
+            res.send(outPut);
+          } catch(e) {
+            console.log('html path is not found');
+          }
         });
       }
     });

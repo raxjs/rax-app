@@ -6,7 +6,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 const getMpOuput = require('./config/miniapp/getOutputPath');
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
-module.exports = ({ registerConfig, context, onHook }, options = {}) => {
+module.exports = ({ registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
 
   let mpBuildErr = null;
@@ -15,10 +15,10 @@ module.exports = ({ registerConfig, context, onHook }, options = {}) => {
     if (target === KRAKEN || target === WEEX || target === WEB) {
       const getBase = require(`./config/${target}/getBase`);
 
-      registerConfig(target, getBase(context));
+      registerTask(target, getBase(context));
     }
 
-    if (~[MINIAPP, WECHAT_MINIPROGRAM].indexOf(target)) {
+    if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
       const mpBuild = require('./config/miniapp/build');
       let config;
       switch (target) {
@@ -32,7 +32,7 @@ module.exports = ({ registerConfig, context, onHook }, options = {}) => {
           config = options[MINIAPP] || {};
           break;
       }
-      onHook('after.build', async () => {
+      onHook('after.build.compile', async () => {
         const mpInfo = await mpBuild(context, config);
         if (mpInfo.err || mpInfo.stats.hasErrors()) {
           mpBuildErr = mpInfo;
@@ -41,7 +41,7 @@ module.exports = ({ registerConfig, context, onHook }, options = {}) => {
     }
   });
 
-  onHook('after.build', ({ err, stats }) => {
+  onHook('after.build.compile', ({ err, stats }) => {
     const { rootDir, userConfig } = context;
     const { outputDir } = userConfig;
 
@@ -59,31 +59,31 @@ module.exports = ({ registerConfig, context, onHook }, options = {}) => {
     console.log(chalk.green('Rax build finished:'));
     console.log();
 
-    if (~targets.indexOf(WEB)) {
+    if (targets.includes(WEB)) {
       console.log(chalk.green('[Web] Bundle at:'));
       console.log('   ', chalk.underline.white(path.resolve(rootDir, outputDir, WEB)));
       console.log();
     }
 
-    if (~targets.indexOf(WEEX)) {
+    if (targets.includes(WEEX)) {
       console.log(chalk.green('[Weex] Bundle at:'));
       console.log('   ', chalk.underline.white(path.resolve(rootDir, outputDir, WEEX)));
       console.log();
     }
 
-    if (~targets.indexOf(KRAKEN)) {
+    if (targets.includes(KRAKEN)) {
       console.log(chalk.green('[Kraken] Bundle at:'));
       console.log('   ', chalk.underline.white(path.resolve(rootDir, outputDir, KRAKEN)));
       console.log();
     }
 
-    if (~targets.indexOf(MINIAPP)) {
+    if (targets.includes(MINIAPP)) {
       console.log(chalk.green('[Ali Miniapp] Bundle at:'));
       console.log('   ', chalk.underline.white(getMpOuput(context)));
       console.log();
     }
 
-    if (~targets.indexOf(WECHAT_MINIPROGRAM)) {
+    if (targets.includes(WECHAT_MINIPROGRAM)) {
       console.log(chalk.green('[WeChat MiniProgram] Bundle at:'));
       console.log('   ', chalk.underline.white(getMpOuput(context, {
         platform: 'wechat',

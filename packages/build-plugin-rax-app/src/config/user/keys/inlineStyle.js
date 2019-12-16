@@ -1,41 +1,47 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { WEB, WEEX, KRAKEN } = require('../../../constants');
 
-module.exports = (config, context, value, target) => {
-  setCSSRule(config.module.rule('css').test(/\.css?$/), context, value, target);
-  setCSSRule(config.module.rule('less').test(/\.less?$/), context, value, target);
+module.exports = {
+  defaultValue: true,
+  validation: 'boolean',
+  configWebpack: (config, value, context) => {
+    const { taskName } = context;
 
-  if (target === KRAKEN || target === WEEX || value) {
-    config.module.rule('less')
-      .use('less')
-      .loader(require.resolve('less-loader'));
-  } else if (target === WEB && !value) {
-    config.module.rule('less')
-      .oneOf('raw')
-      .use('less')
-      .loader(require.resolve('less-loader'))
-      .end()
-      .end()
-      .oneOf('normal')
-      .use('less')
-      .loader(require.resolve('less-loader'));
+    setCSSRule(config.module.rule('css').test(/\.css?$/), context, value);
+    setCSSRule(config.module.rule('less').test(/\.less?$/), context, value);
 
-    config.plugin('minicss')
-      .use(MiniCssExtractPlugin, [{
-        filename: 'web/[name].css',
-      }]);
-  }
+    if (taskName === KRAKEN || taskName === WEEX || value) {
+      config.module.rule('less')
+        .use('less')
+        .loader(require.resolve('less-loader'));
+    } else if (taskName === WEB && !value) {
+      config.module.rule('less')
+        .oneOf('raw')
+        .use('less')
+        .loader(require.resolve('less-loader'))
+        .end()
+        .end()
+        .oneOf('normal')
+        .use('less')
+        .loader(require.resolve('less-loader'));
+
+      config.plugin('minicss')
+        .use(MiniCssExtractPlugin, [{
+          filename: 'web/[name].css',
+        }]);
+    }
+  },
 };
 
-function setCSSRule(configRule, context, value, target) {
-  const { userConfig } = context;
+function setCSSRule(configRule, context, value) {
+  const { userConfig, taskName } = context;
   const { extraStyle = {} } = userConfig;
   const { cssModules = {} } = extraStyle;
   const { modules, resourceQuery } = cssModules;
 
   // enbale inlineStyle
-  if (target === KRAKEN || target === WEEX || value) {
-    if (target === KRAKEN || target === WEEX) {
+  if (taskName === KRAKEN || taskName === WEEX || value) {
+    if (taskName === KRAKEN || taskName === WEEX) {
       configRule
         .use('css')
         .loader(require.resolve('stylesheet-loader'))
@@ -44,7 +50,7 @@ function setCSSRule(configRule, context, value, target) {
         });
     }
 
-    if (target === WEB) {
+    if (taskName === WEB) {
       configRule
         .use('css')
         .loader(require.resolve('stylesheet-loader'))
@@ -62,7 +68,7 @@ function setCSSRule(configRule, context, value, target) {
         });
     }
     // disable inlineStyle
-  } else if (target === WEB && !value) {
+  } else if (taskName === WEB && !value) {
     // extract css file in web while inlineStyle is disabled
 
     const postcssConfig = {

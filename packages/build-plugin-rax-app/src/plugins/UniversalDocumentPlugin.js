@@ -25,12 +25,14 @@ module.exports = class UniversalDocumentPlugin {
 
     this.isMultiple = options.isMultiple;
     this.documentPath = options.path;
+    this.command = options.command;
   }
 
   apply(compiler) {
     compiler.hooks.emit.tapAsync('UniversalDocumentPlugin', (compilation, callback) => {
       const config = compilation.options;
       const publicPath = this.publicPath ? this.publicPath : config.output.publicPath;
+      const command = this.command;
 
       const filename = path.resolve(config.context, this.documentPath);
       if (!existsSync(filename)) throw new Error(`File ${filename} is not exists, please check.`);
@@ -53,12 +55,13 @@ module.exports = class UniversalDocumentPlugin {
       Object.keys(entryObj).forEach(entry => {
         const files = compilation.entrypoints.get(entry).getFiles();
         const fileName = files.filter(v => ~v.indexOf('.js'));
-        const styleFileName = fileName[0].replace('.js', '.css');
+        const styleFileName = files.filter(v => ~v.indexOf('.css'));
         // get document html string
         const pageSource = `<!DOCTYPE html>${  renderToString(createElement(documentElement, {
           publicPath,
-          styles: this.isMultiple ? [styleFileName] : [],
+          styles: this.isMultiple && styleFileName.length ? styleFileName : [],
           scripts: fileName,
+          command,
         }))}`;
 
         // insert html file

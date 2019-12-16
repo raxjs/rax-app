@@ -5,7 +5,7 @@ const { hmrClient } = require('rax-compile-config');
 
 module.exports = (config, context, type) => {
   const { rootDir, command } = context;
-  const isDev = command === 'dev';
+  const isDev = command === 'start';
 
   // SPA
   const appEntry = path.resolve(rootDir, 'src/app.js');
@@ -14,6 +14,7 @@ module.exports = (config, context, type) => {
   config.module.rule('appJSON')
     .use('loader')
     .tap(() => ({ type }));
+
 
   ['jsx', 'tsx'].forEach(tag => {
     config.module.rule(tag)

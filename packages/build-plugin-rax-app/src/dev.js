@@ -8,16 +8,16 @@ const mpDev = require('./config/miniapp/dev');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
-module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {}) => {
+module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook }, options = {}) => {
   const { targets = [] } = options;
 
   let devUrl = '';
   let devCompletedArr = [];
 
-  if (~targets.indexOf(MINIAPP)) {
+  if (targets.includes(MINIAPP)) {
     const config = options[MINIAPP] || {};
     if (targets.length > 2) {
-      onHook('after.dev', () => {
+      onHook('after.start.devServer', () => {
         mpDev(context, config, (args) => {
           devCompletedArr.push(args);
           if (devCompletedArr.length === 2) {
@@ -33,12 +33,12 @@ module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {
     }
   }
 
-  if (~targets.indexOf(WECHAT_MINIPROGRAM)) {
+  if (targets.includes(WECHAT_MINIPROGRAM)) {
     const config = Object.assign({
       platform: 'wechat',
     }, options[WECHAT_MINIPROGRAM]);
     if (targets.length > 2) {
-      onHook('after.dev', () => {
+      onHook('after.start.devServer', () => {
         mpDev(context, config, (args) => {
           devCompletedArr.push(args);
           if (devCompletedArr.length === 2) {
@@ -59,19 +59,19 @@ module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {
       const getBase = require(`./config/${target}/getBase`);
       const setDev = require(`./config/${target}/setDev`);
 
-      registerConfig(target, getBase(context));
+      registerTask(target, getBase(context));
 
-      chainWebpack((config) => {
-        setDev(config.getConfig(target), context);
+      onGetWebpackConfig(target, (config) => {
+        setDev(config, context);
       });
     }
   });
 
-  onHook('after.devCompile', async (args) => {
+  onHook('after.start.compile', async (args) => {
     devUrl = args.url;
     devCompletedArr.push(args);
     // run miniapp build while targets have web or weex, for log control
-    if (~targets.indexOf(MINIAPP) || ~targets.indexOf(WECHAT_MINIPROGRAM)) {
+    if (targets.includes(MINIAPP) || targets.includes(WECHAT_MINIPROGRAM)) {
       if (devCompletedArr.length === 2) {
         devCompileLog();
       }
@@ -98,17 +98,20 @@ module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {
       return;
     }
 
+    // hide log in mpa
+    const raxMpa = getValue('raxMpa');
+    if (raxMpa) return;
     console.log(chalk.green('Rax development server has been started:'));
     console.log();
 
-    if (~targets.indexOf(WEB)) {
+    if (targets.includes(WEB)) {
       console.log(chalk.green('[Web] Development server at:'));
       console.log('   ', chalk.underline.white(devUrl));
       console.log();
     }
 
-    if (~targets.indexOf(WEEX)) {
-      const weexUrl = `${devUrl}/weex/index.js?wh_weex=true`;
+    if (targets.includes(WEEX)) {
+      const weexUrl = `${devUrl}weex/index.js?wh_weex=true`;
       console.log(chalk.green('[Weex] Development server at:'));
       console.log('   ', chalk.underline.white(weexUrl));
       console.log();
@@ -116,8 +119,8 @@ module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {
       console.log();
     }
 
-    if (~targets.indexOf(KRAKEN)) {
-      const krakenURL = `${devUrl}/kraken/index.js`;
+    if (targets.includes(KRAKEN)) {
+      const krakenURL = `${devUrl}kraken/index.js`;
       console.log(chalk.green('[Kraken] Development server at:'));
       console.log('   ', chalk.underline.white(krakenURL));
       console.log(chalk.green('[Kraken] Run Kraken Playground App:'));
@@ -125,13 +128,13 @@ module.exports = ({ chainWebpack, registerConfig, context, onHook }, options = {
       console.log();
     }
 
-    if (~targets.indexOf(MINIAPP)) {
+    if (targets.includes(MINIAPP)) {
       console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
       console.log('   ', chalk.underline.white(getMpOuput(context)));
       console.log();
     }
 
-    if (~targets.indexOf(WECHAT_MINIPROGRAM)) {
+    if (targets.includes(WECHAT_MINIPROGRAM)) {
       console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
       console.log('   ', chalk.underline.white(getMpOuput(context, {
         platform: 'wechat',
