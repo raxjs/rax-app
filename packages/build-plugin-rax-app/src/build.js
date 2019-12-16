@@ -12,14 +12,15 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
   let mpBuildErr = null;
 
   targets.forEach(target => {
-    if (target === KRAKEN || target === WEEX || target === WEB) {
-      const getBase = require(`./config/${target}/getBase`);
+    if (target === KRAKEN || target === WEEX || target === WEB || target === WECHAT_MINIPROGRAM && options[target].buildType === 'runtime') {
+      const type = target === WECHAT_MINIPROGRAM ? 'miniapp/runtime' : target;
+      const getBase = require(`./config/${type}/getBase`);
 
-      registerTask(target, getBase(context));
+      registerTask(target, getBase(context, target));
     }
 
     if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
-      const mpBuild = require('./config/miniapp/build');
+      const mpBuild = require('./config/miniapp/compile/build');
       let config;
       switch (target) {
         case WECHAT_MINIPROGRAM:
@@ -32,10 +33,12 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
           config = options[MINIAPP] || {};
           break;
       }
-      onHook('after.build.compile', async () => {
-        const mpInfo = await mpBuild(context, config);
-        if (mpInfo.err || mpInfo.stats.hasErrors()) {
-          mpBuildErr = mpInfo;
+      onHook('after.build.compile', async() => {
+        if (options[target].buildType === 'build') {
+          const mpInfo = await mpBuild(context, config);
+          if (mpInfo.err || mpInfo.stats.hasErrors()) {
+            mpBuildErr = mpInfo;
+          }
         }
       });
     }
