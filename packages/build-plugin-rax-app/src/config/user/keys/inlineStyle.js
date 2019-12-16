@@ -1,5 +1,15 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { WEB, WEEX, KRAKEN } = require('../../../constants');
+const { WEB, WEEX, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../../../constants');
+
+const webStandardList = [
+  WEB,
+  MINIAPP,
+  WECHAT_MINIPROGRAM
+];
+
+const inlineStandardList = [
+  WEEX, KRAKEN
+];
 
 module.exports = {
   defaultValue: true,
@@ -10,11 +20,11 @@ module.exports = {
     setCSSRule(config.module.rule('css').test(/\.css?$/), context, value);
     setCSSRule(config.module.rule('less').test(/\.less?$/), context, value);
 
-    if (taskName === KRAKEN || taskName === WEEX || value) {
+    if (inlineStandardList.includes(taskName) || value) {
       config.module.rule('less')
         .use('less')
         .loader(require.resolve('less-loader'));
-    } else if (taskName === WEB && !value) {
+    } else if (webStandardList.includes(taskName) && !value) {
       config.module.rule('less')
         .oneOf('raw')
         .use('less')
@@ -27,7 +37,7 @@ module.exports = {
 
       config.plugin('minicss')
         .use(MiniCssExtractPlugin, [{
-          filename: 'web/[name].css',
+          filename: `${taskName}/[name].css`,
         }]);
     }
   },
@@ -38,10 +48,11 @@ function setCSSRule(configRule, context, value) {
   const { extraStyle = {} } = userConfig;
   const { cssModules = {} } = extraStyle;
   const { modules, resourceQuery } = cssModules;
-
+  const isInlineStandard = inlineStandardList.includes(taskName);
+  const isWebStandard = webStandardList.includes(taskName);
   // enbale inlineStyle
-  if (taskName === KRAKEN || taskName === WEEX || value) {
-    if (taskName === KRAKEN || taskName === WEEX) {
+  if (isInlineStandard || value) {
+    if (isInlineStandard) {
       configRule
         .use('css')
         .loader(require.resolve('stylesheet-loader'))
@@ -50,7 +61,7 @@ function setCSSRule(configRule, context, value) {
         });
     }
 
-    if (taskName === WEB) {
+    if (isWebStandard) {
       configRule
         .use('css')
         .loader(require.resolve('stylesheet-loader'))
@@ -68,7 +79,7 @@ function setCSSRule(configRule, context, value) {
         });
     }
     // disable inlineStyle
-  } else if (taskName === WEB && !value) {
+  } else if (isWebStandard && !value) {
     // extract css file in web while inlineStyle is disabled
 
     const postcssConfig = {
