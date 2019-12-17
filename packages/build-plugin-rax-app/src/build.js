@@ -34,7 +34,7 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
           break;
       }
       onHook('after.build.compile', async() => {
-        if (options[target].buildType === 'build') {
+        if (!(options[target] && options[target].buildType === 'runtime')) {
           const mpInfo = await mpBuild(context, config);
           if (mpInfo.err || mpInfo.stats.hasErrors()) {
             mpBuildErr = mpInfo;
