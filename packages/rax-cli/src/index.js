@@ -42,7 +42,7 @@ module.exports = {
       projectName: '',
       projectAuthor: '',
       projectType: 'scaffold',
-      scaffoldType: 'standard',
+      scaffoldType: 'spa-standard',
       projectTargets: ['web'],
       projectFeatures: [],
       projectAliyunId: '',
