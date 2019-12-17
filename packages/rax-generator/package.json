@@ -1,6 +1,6 @@
 {
   "name": "rax-generator",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Rax template generator.",
   "main": "src/index.js",
   "keywords": [
