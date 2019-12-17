@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const { RawSource } = require('webpack-sources');
-const { readFileSync, existsSync, unlinkSync } = require('fs');
 const { createElement } = require('rax');
 const { renderToString } = require('rax-server-renderer');
 const { handleWebpackErr } = require('rax-compile-config');
@@ -38,22 +37,47 @@ module.exports = class UniversalDocumentPlugin {
   apply(compiler) {
     const config = compiler.options;
     const absoluteDocumentPath = path.resolve(config.context , this.documentPath);
-    const absoluteOutputPath = path.join(config.output.path, TEMP_FLIE_NAME);
     const publicPath = this.publicPath ? this.publicPath : config.output.publicPath;
 
     const documentWebpackConfig = getWebpackConfigForDocument(this.context, absoluteDocumentPath, config.output.path);
 
-    // Compile Document
-    compiler.hooks.beforeCompile.tapAsync(PLUGIN_NAME, (compilation, callback) => {
-      webpack(documentWebpackConfig).run((err, stats) => {
-        handleWebpackErr(err, stats);
+    let fileDependencies = [];
+    let documentContent;
+
+    // Executed while initializing the compilation, right before emitting the compilation event.
+    compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
+
+      // Add file dependencies of child compiler to parent compilerto keep them watched
+      compilation.hooks.additionalChunkAssets.tap(PLUGIN_NAME, () => {
+        const childCompilerDependencies = fileDependencies;
+
+        childCompilerDependencies.forEach(fileDependency => {
+          compilation.compilationDependencies.add(fileDependency);
+        });
+      });
+    });
+
+    // Executed before finishing the compilation.
+    compiler.hooks.make.tapAsync(PLUGIN_NAME, (mainCompilation, callback) => {
+      const childCompiler = webpack(documentWebpackConfig);
+      childCompiler.parentCompilation = mainCompilation;
+
+      // Run as child to get child compilation
+      childCompiler.runAsChild((err, entries, childCompilation) => {
+        if (err) {
+          handleWebpackErr(err);
+        } else {
+          fileDependencies = childCompilation.fileDependencies;
+          documentContent = childCompilation.assets[TEMP_FLIE_NAME].source();
+        }
+
         callback();
       });
     });
 
     // Render into index.html
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
-      const Document = loadDocument(absoluteOutputPath, this.insertScript);
+      const Document = loadDocument(documentContent, this.insertScript);
       const entryObj = config.entry;
       
       Object.keys(entryObj).forEach(entry => {
@@ -75,20 +99,14 @@ module.exports = class UniversalDocumentPlugin {
 
         // get document html string
         const pageSource = `<!DOCTYPE html>${renderToString(DocumentContextProviderElement)}`;
+
         // insert html file
         compilation.assets[`web/${entry}.html`] = new RawSource(pageSource);
+
+        delete compilation.assets[TEMP_FLIE_NAME];
       });
 
       callback();
-    });
-
-    // Delete temp file
-    compiler.hooks.done.tap(PLUGIN_NAME, () => {
-      if (config.mode === 'production' || !config.mode) {
-        if (existsSync(absoluteOutputPath)) {
-          unlinkSync(absoluteOutputPath);
-        }
-      }
     });
   }
 };
@@ -124,13 +142,11 @@ function interopRequire(obj) {
 
 /**
  * load Document after webpack compilation
- * @param {*} documentPath document output path
+ * @param {*} content document output
  * @param {*} insertScript 
  */
-function loadDocument(documentPath, insertScript) {
-  if (!existsSync(documentPath)) throw new Error(`File ${documentPath} is not exists, please check.`);
-      
-  let fileContent = readFileSync(documentPath, 'utf-8');
+function loadDocument(content, insertScript) {
+  let fileContent  = content;
 
   if (insertScript) {
     const insertStr = `\n<script dangerouslySetInnerHTML={{__html: "${this.insertScript}"}} />`;
