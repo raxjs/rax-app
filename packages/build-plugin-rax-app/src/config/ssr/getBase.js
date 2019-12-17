@@ -28,7 +28,7 @@ module.exports = (context) => {
           register.configWebpack(config, value, {
             ...context,
             taskName: 'node',
-          })
+          });
         }
       });
     },
