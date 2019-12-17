@@ -1,10 +1,8 @@
 {
-  "name": "rax-template",
-  "version": "0.4.1",
-  "description": "Rax project template.",
-  "files": [
-    "template"
-  ],
+  "name": "rax-generator",
+  "version": "0.0.1",
+  "description": "Rax template generator.",
+  "main": "src/index.js",
   "keywords": [
     "rax"
   ],
@@ -17,10 +15,20 @@
   },
   "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-template#readme",
   "license": "BSD-3-Clause",
+  "scripts": {
+    "lint": "ejslint src/template/*/*"
+  },
   "publishConfig": {
     "access": "public"
   },
   "materialConfig": {
     "type": "rax"
+  },
+  "dependencies": {
+    "easyfile": "^0.1.1",
+    "ejs": "^2.6.2"
+  },
+  "devDependencies": {
+    "ejs-lint": "^0.3.0"
   }
 }

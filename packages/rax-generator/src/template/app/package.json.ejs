@@ -9,14 +9,14 @@
     <%_ if (projectFeatures.includes('ssr')) { -%>
     "rax-server-renderer": "^1.1.0",
     <%_ } -%>
-    "rax": "^1.0.8",
-    <%_ if (scaffoldType === 'spa-standard' || scaffoldType === 'mpa-standard') { -%>
+    "rax": "^1.1.0",
+    <%_ if (appType === 'spa' || appType === 'mpa') { -%>
     "rax-app": "^0.2.0",
     <%_ } -%>
-    <%_ if (scaffoldType === 'lite' || scaffoldType === 'mpa-standard') { -%>
-    "driver-universal": "^2.0.0",
+    <%_ if (appType === 'lite' || appType === 'mpa') { -%>
+    "driver-universal": "^3.0.0",
     <%_ } -%>
-    "rax-image": "^1.0.3",
+    "rax-image": "^2.0.0",
     "rax-link": "^1.0.1",
     "rax-text": "^1.0.0",
     "rax-view": "^1.0.0"
@@ -25,10 +25,10 @@
     <%_ if (projectFeatures.includes('ssr')) { -%>
     "build-plugin-rax-ssr": "^0.1.0",
     <%_ } -%>
-    <%_ if (projectFeatures.includes('serverless')) { -%>
+    <%_ if (projectFeatures.includes('faas')) { -%>
     "build-plugin-rax-faas": "^0.1.0",
     <%_ } -%>
-    <%_ if (scaffoldType === 'mpa-standard') { -%>
+    <%_ if (appType === 'mpa') { -%>
     "build-plugin-rax-multi-pages": "^0.1.2",
     <%_ } %>
     "build-plugin-rax-app": "^0.2.0",

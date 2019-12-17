@@ -29,18 +29,14 @@ import MyComponent from '<%= npmName %>';
 ## Example
 
 ```
-import {createElement, Component, render} from 'rax';
+import {createElement, render} from 'rax';
 import View from 'rax-view';
 
-class App extends Component {
-  render() {
-    return (
-      <View>
-      	{ /* your code */ }
-      </View>
-    );
-  }
+function App {
+  return (
+    <View>
+      { /* your code */ }
+    </View>
+  );
 }
-
-render(<App />);
 ```
