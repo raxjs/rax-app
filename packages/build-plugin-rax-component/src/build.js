@@ -20,11 +20,12 @@ module.exports = (api, options = {}) => {
   targets.forEach(target => {
     if (target === WEEX || target === WEB) {
       const config = getDistConfig(context, options);
+      api.modifyUserConfig('outputDir', 'build');
       registerTask(`component-build-${target}`, config);
     }
   });
 
-  onHook('after.build', async({ err, stats }) => {
+  onHook('after.build.compile', async({ err, stats }) => {
     consoleClear(true);
 
     const libBuildErr = await buildLib(api, options);

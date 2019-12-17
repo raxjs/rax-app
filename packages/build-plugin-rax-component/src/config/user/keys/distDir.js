@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  defaultValue: '/',
+  defaultValue: 'build',
   validation: 'string',
   configWebpack: (config, value, context) => {
     const { rootDir } = context;

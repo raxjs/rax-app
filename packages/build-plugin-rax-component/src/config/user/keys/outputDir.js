@@ -1,11 +1,12 @@
 const path = require('path');
 
 module.exports = {
-  defaultValue: 'build',
+  defaultValue: 'lib',
   validation: 'string',
   configWebpack: (config, value, context) => {
-    const { rootDir } = context;
-
-    config.output.path(path.resolve(rootDir, value));
+    const { command, rootDir } = context;
+    if (command === 'build') {
+      config.output.path(path.resolve(rootDir, value));
+    }
   },
 };
