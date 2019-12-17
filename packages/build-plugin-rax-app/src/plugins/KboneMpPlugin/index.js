@@ -111,35 +111,30 @@ function getAssetPath(
 /**
  * 读取用户配置并合并
  * @param {object} defaultConfig
- * @param {object} appConfig
+ * @param {object} passedOptions
  */
-function mergeConfig(defaultConfig, appConfig) {
+function mergeConfig(defaultConfig, passedOptions = {}) {
   // TODO: to be finished
+  const { entries = [] } = passedOptions
+  const router = {};
+  entries.forEach(({entryName, path}) => {
+    router[entryName] = [path];
+  });
+
   const config = {
-    router: {
-      index: appConfig.routes.map(route => route.path)
-    },
-    entry: appConfig.routes[0].path
+    router,
+    entry: entries[0] && entries[0].path
   };
   return Object.assign({}, defaultConfig, config);
 }
 
 class MpPlugin {
-  constructor() {
-    this.options = defaultConfig;
+  constructor(passedOptions) {
+    this.options = mergeConfig(defaultConfig, passedOptions);
   }
 
   apply(compiler) {
-    const config = compiler.options;
-    const appJSON = path.resolve(config.context, 'src/app.json');
-
-    if (!existsSync(appJSON)){
-      return;
-    }
-
-    const appConfig = JSON.parse(readFileSync(appJSON, 'utf-8'));
-
-    const options = mergeConfig(this.options, appConfig);
+    const options = this.options;
     const generateConfig = options.generate || {};
 
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
