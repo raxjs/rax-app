@@ -1,6 +1,6 @@
 module.exports = {
   WEB: 'web',
-  NODE: 'NODE',
+  NODE: 'node',
   WEEX: 'weex',
   KRAKEN: 'kraken',
   MINIAPP: 'miniapp',

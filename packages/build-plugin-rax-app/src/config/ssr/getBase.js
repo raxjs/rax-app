@@ -2,6 +2,7 @@ const getWebpackBase = require('../getWebpackBase');
 const setUserConfig = require('../user/setConfig');
 
 module.exports = (context) => {
+  const { userConfig } = context;
   const config = getWebpackBase(context, {
     isSSR: true,
   });
@@ -19,6 +20,19 @@ module.exports = (context) => {
       });
   });
 
-  setUserConfig(config, context, 'node');
+  setUserConfig({
+    registerUserConfig: (registers) => {
+      registers.forEach((register) => {
+        if (register.configWebpack) {
+          const value = userConfig[register.name] || register.defaultValue;
+          register.configWebpack(config, value, {
+            ...context,
+            taskName: 'node',
+          })
+        }
+      });
+    },
+  });
+
   return config;
 };
