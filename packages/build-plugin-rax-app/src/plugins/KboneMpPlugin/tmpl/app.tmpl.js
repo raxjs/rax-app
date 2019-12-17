@@ -1,11 +1,11 @@
 /* INIT_FUNCTION */
-
+/* global appConfig,App,getCurrentPages */
 const LIFE_CYCLE_METHODS = [
   "onLaunch",
   "onShow",
   "onHide",
   "onError",
-  "onPageNotFound"
+  "onPageNotFound",
 ];
 const extraConfig = {};
 for (const key in appConfig) {
@@ -28,7 +28,7 @@ App({
     const currentPage = pages[pages.length - 1];
     if (currentPage && currentPage.window) {
       currentPage.window.$$trigger("error", {
-        event: err
+        event: err,
       });
     }
 
@@ -38,5 +38,5 @@ App({
     if (appConfig.onPageNotFound) appConfig.onPageNotFound.call(this, options);
   },
 
-  ...extraConfig
+  ...extraConfig,
 });

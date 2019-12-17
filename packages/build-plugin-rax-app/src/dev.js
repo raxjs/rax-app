@@ -152,6 +152,6 @@ function getConfig(target) {
   if ([WEB, WEEX].indexOf(target) > -1) {
     return [require(`./config/${target}/getBase`), require(`./config/${target}/setDev`)];
   } else {
-    return [require(`./config/miniapp/runtime/getBase`)]
+    return [require(`./config/miniapp/runtime/getBase`)];
   }
 }

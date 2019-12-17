@@ -4,11 +4,11 @@ const { WEB, WEEX, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../../../con
 const webStandardList = [
   WEB,
   MINIAPP,
-  WECHAT_MINIPROGRAM
+  WECHAT_MINIPROGRAM,
 ];
 
 const inlineStandardList = [
-  WEEX, KRAKEN
+  WEEX, KRAKEN,
 ];
 
 module.exports = {
