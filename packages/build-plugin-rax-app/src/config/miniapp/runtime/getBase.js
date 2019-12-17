@@ -1,17 +1,14 @@
 const getWebpackBase = require('../../getWebpackBase');
-const setEntry = require('../../setEntry');
+const getEntries = require('./getEntries');
+const setEntry = require('./setEntry');
 const KboneMpPlugin = require('../../../plugins/KboneMpPlugin');
 
 module.exports = (context, target) => {
   const { command } = context;
   const config = getWebpackBase(context);
-  setEntry(config, context, target);
 
-  config.module
-    .rule("entryFile")
-    .test(/app\.(js|jsx|ts|tsx)$/)
-    .use('wrapCreateApp')
-      .loader(require.resolve('../../../loaders/KboneEntryLoader'));
+  const entries = getEntries(context);
+  setEntry(config, context, entries);
 
   config.output
     .filename(`${target}/common/[name].js`)

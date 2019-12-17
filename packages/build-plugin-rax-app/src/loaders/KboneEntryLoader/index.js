@@ -1,27 +1,31 @@
 const babel = require('@babel/core');
+const { getBabelConfig } = require('rax-compile-config');
 
-module.exports = function (content) {
-  const parserOpts = {
-    plugins: [
-      'classProperties',
-      'jsx',
-      'typescript',
-      'trailingFunctionCommas',
-      'asyncFunctions',
-      'exponentiationOperator',
-      'asyncGenerators',
-      'objectRestSpread',
-      ['decorators', { decoratorsBeforeExport: false }],
-      'dynamicImport',
-    ], // Support all plugins
-  };
+const babelConfig = getBabelConfig();
 
-  const { code } = babel.transformSync(content, {
-    plugins: [
-      require('./babel-plugin-wrap-runapp')
-    ],
-    parserOpts: parserOpts
-  });
+module.exports = function() {
+
+  const source = `
+    import { render, createElement } from 'rax';
+    import Component from '${this.resourcePath}';
+    import DriverUniversal from 'driver-universal';
+
+    const comProps = {};
+
+    function Entry() {
+      return createElement(Component, comProps);
+    }
+
+    export default async function createApp() {
+      // process App.getInitialProps
+      if (Component.getInitialProps) {
+        Object.assign(comProps, await Component.getInitialProps());
+      }
+      render(createElement(Entry), null, { driver: DriverUniversal });
+    }
+  `;
+
+  const { code } = babel.transformSync(source, babelConfig);
 
   return code;
-}
+};
