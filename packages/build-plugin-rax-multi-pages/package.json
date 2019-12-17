@@ -1,0 +1,19 @@
+{
+  "name": "build-plugin-rax-multi-pages",
+  "version": "0.1.2",
+  "description": "rax app base plugins",
+  "license": "BSD-3-Clause",
+  "main": "src/index.js",
+  "peerDependencies": {
+    "build-plugin-rax-app": "^0.1.0"
+  },
+  "dependencies": {
+    "@babel/core": "7.2.0",
+    "chalk": "^2.4.2",
+    "console-clear": "^1.1.1",
+    "fs-extra": "^8.1.0",
+    "handlebars": "^4.5.1",
+    "loader-utils": "^1.1.0",
+    "rax-compile-config": "^0.2.0"
+  }
+}

@@ -7,7 +7,9 @@
       {
         "targets": [<%_ if (scaffoldType === 'lite') { -%>"web"<%_ } else { -%>"<%- projectTargets.join('", "') %>"<%_ } -%>]
       }
-    ]<%_ if (isServerless) { -%>,<%_ } %>
+    ]<%_ if (scaffoldType === 'mpa-standard') { -%>,<%_ } %>
+    <%_ if (scaffoldType === 'mpa-standard') { -%>
+    "build-plugin-rax-multi-pages"<%_ } %><%_ if (isServerless) { -%>,<%_ } %>
     <%_ if (isServerless) { -%>
     [
       "build-plugin-rax-faas",
