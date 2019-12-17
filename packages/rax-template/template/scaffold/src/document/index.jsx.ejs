@@ -19,8 +19,6 @@ function Document() {
         <Root />
         <%_ if (projectFeatures.includes('ssr')) { -%>
         {/* initial data from server side */}
-        <%_ } -%>
-        <%_ if (projectFeatures.includes('ssr')) { -%>
         <Data />
         <%_ } -%>
         <Script />
