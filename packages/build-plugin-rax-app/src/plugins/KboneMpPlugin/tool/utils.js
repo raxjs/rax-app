@@ -129,5 +129,5 @@ module.exports = {
   recursiveMkdir,
   copyFile,
   copyDir,
-  md5File
+  md5File,
 };

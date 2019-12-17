@@ -10,7 +10,7 @@ const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants'
 
 const asyncTask = [];
 
-module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
+module.exports = ({ onGetWebpackConfig, getValue, registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
   let devUrl = '';
   let devCompletedArr = [];
@@ -152,6 +152,6 @@ function getConfig(target) {
   if ([WEB, WEEX].indexOf(target) > -1) {
     return [require(`./config/${target}/getBase`), require(`./config/${target}/setDev`)];
   } else {
-    return [require(`./config/miniapp/runtime/getBase`)]
+    return [require(`./config/miniapp/runtime/getBase`)];
   }
 }

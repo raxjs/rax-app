@@ -1,3 +1,4 @@
+/* global Component */
 const mp = require("miniprogram-render");
 
 const { Event, cache, tool } = mp.$$adapter;
@@ -28,11 +29,11 @@ Component({
   properties: {
     name: {
       type: String,
-      value: ""
-    }
+      value: "",
+    },
   },
   options: {
-    addGlobalClass: true // 开启全局样式
+    addGlobalClass: true, // 开启全局样式
   },
   attached() {
     const nodeId = this.dataset.privateNodeId;
@@ -70,7 +71,7 @@ Component({
       this.compConfig,
       this.domNode.behavior,
       this.domNode,
-      data
+      data,
     );
 
     // 执行一次 setData
@@ -96,7 +97,7 @@ Component({
         this.domNode.behavior,
         this.domNode,
         newData,
-        this.data
+        this.data,
       );
 
       this.setData(newData);
@@ -114,10 +115,10 @@ Component({
           name: eventName,
           target: domNode,
           eventPhase: Event.AT_TARGET,
-          detail: evt && evt.detail
+          detail: evt && evt.detail,
         }),
-        currentTarget: domNode
+        currentTarget: domNode,
       });
-    }
-  }
+    },
+  },
 });

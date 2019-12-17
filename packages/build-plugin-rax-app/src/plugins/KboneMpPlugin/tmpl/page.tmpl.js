@@ -1,4 +1,6 @@
+/* global wx,Page,init */
 const mp = require("miniprogram-render");
+/* eslint-disable  import/no-absolute-path */
 const config = require("/* CONFIG_PATH */");
 
 /* INIT_FUNCTION */
@@ -15,7 +17,7 @@ function dealWithPage(evt, window, value) {
     url = mp.$$adapter.tool.completeURL(url, window.location.origin);
 
     const options = {
-      url: `/pages/webview/index?url=${encodeURIComponent(url)}`
+      url: `/pages/webview/index?url=${encodeURIComponent(url)}`,
     };
     if (type === "jump") wx.redirectTo(options);
     else if (type === "open") wx.navigateTo(options);
@@ -27,8 +29,8 @@ function dealWithPage(evt, window, value) {
     }/redirect?url=${encodeURIComponent(url)}`;
     const options = {
       url: `/pages/${value}/index?type=${type}&targeturl=${encodeURIComponent(
-        targeturl
-      )}`
+        targeturl,
+      )}`,
     };
     if (window.$$miniprogram.isTabBarPage(`/pages/${value}/index`))
       wx.switchTab(options);
@@ -43,16 +45,17 @@ Page({
     bodyClass: "h5-body miniprogram-root",
     bodyStyle: "",
     rootFontSize: "12px",
-    pageStyle: ""
+    pageStyle: "",
   },
   onLoad(query) {
     const pageName = mp.$$adapter.tool.getPageName(this.route);
-    const pageConfig = (this.pageConfig = config.pages[pageName] || {});
+    this.pageConfig = config.pages[pageName] || {};
+    const pageConfig = this.pageConfig;
 
     if (pageConfig.loadingText) {
       wx.showLoading({
         title: pageConfig.loadingText,
-        mask: true
+        mask: true,
       });
     }
 
@@ -87,7 +90,7 @@ Page({
     ) {
       // 处理页面参数，只有当页面是其他页面打开或跳转时才处理
       this.window.$$miniprogram.init(
-        query.targeturl ? decodeURIComponent(query.targeturl) : null
+        query.targeturl ? decodeURIComponent(query.targeturl) : null,
       );
 
       if (query.search)
@@ -122,7 +125,7 @@ Page({
       const domNode = this.document.body;
       const data = {
         bodyClass: `${domNode.className || ""} h5-body miniprogram-root`, // 增加默认 class
-        bodyStyle: domNode.style.cssText || ""
+        bodyStyle: domNode.style.cssText || "",
       };
 
       if (
@@ -142,7 +145,7 @@ Page({
 
     init(this.window, this.document);
     this.setData({
-      pageId: this.pageId
+      pageId: this.pageId,
     });
     this.app = this.window.createApp();
     this.window.$$trigger("load");
@@ -152,7 +155,7 @@ Page({
     // 方便调试
     global.$$runtime = {
       window: this.window,
-      document: this.document
+      document: this.document,
     };
     this.window.$$trigger("wxshow");
   },
@@ -206,7 +209,7 @@ Page({
 
       return shareOptions;
     }
-  }
+  },
   /* PAGE_SCROLL_FUNCTION */
   /* REACH_BOTTOM_FUNCTION */
   /* PULL_DOWN_REFRESH_FUNCTION */

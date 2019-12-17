@@ -2,29 +2,29 @@ module.exports = {
   origin: "",
   entry: "/",
   router: {
-    index: ["/"]
+    index: ["/"],
   },
   redirect: {
     notFound: "none",
-    accessDenied: "none"
+    accessDenied: "none",
   },
   generate: {
-    autoBuildNpm: true
+    autoBuildNpm: true,
   },
   app: {
-    navigationBarTitleText: "Rax App 1.0"
+    navigationBarTitleText: "Rax App 1.0",
   },
   appExtraConfig: {},
   global: {
     rem: true,
     pageStyle: true,
-    extra: {}
+    extra: {},
   },
   pages: {},
   optimization: {
     styleValueReduce: 5000,
-    attrValueReduce: 5000
+    attrValueReduce: 5000,
   },
   projectConfig: {},
-  packageConfig: {}
+  packageConfig: {},
 };
