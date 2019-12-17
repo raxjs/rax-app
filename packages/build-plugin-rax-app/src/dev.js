@@ -10,7 +10,7 @@ const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants'
 
 const asyncTask = [];
 
-module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
+module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook }, options = {}) => {
   const { targets = [] } = options;
   let devUrl = '';
   let devCompletedArr = [];
@@ -65,7 +65,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
     });
   }
 
-  onHook('after.devCompile', async (args) => {
+  onHook('after.start.compile', async (args) => {
     devUrl = args.url;
     devCompletedArr.push(args);
     // run miniapp build while targets have web or weex, for log control
