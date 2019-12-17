@@ -20,8 +20,13 @@ module.exports = (context) => {
       });
   });
 
+  // Map user config in build.json to webpack config.
+  // In the normal entry task, `registerUserConfig` is provide by `scripts-core`.
+  // But here we get webpack config for SSR to render `Document` in sub webpack compiler.
+  // To avoid pass `registerUserConfig` layer by layer, here we reimplement the `registerUserConfig`
   setUserConfig({
     registerUserConfig: (registers) => {
+      // Each registers define how keys in build.json be mapped to webpack config, they are defined in `../user/keys`
       registers.forEach((register) => {
         if (register.configWebpack) {
           const value = userConfig[register.name] || register.defaultValue;
