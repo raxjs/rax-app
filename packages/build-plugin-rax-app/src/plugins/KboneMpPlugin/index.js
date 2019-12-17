@@ -118,7 +118,8 @@ function mergeConfig(defaultConfig, appConfig) {
   const config = {
     router: {
       index: appConfig.routes.map(route => route.path)
-    }
+    },
+    entry: appConfig.routes[0].path
   };
   return Object.assign({}, defaultConfig, config);
 }
