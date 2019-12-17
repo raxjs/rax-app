@@ -3,7 +3,7 @@ const tagList = require("./tag-list");
 
 const replaceRegexp = new RegExp(
   `(\\W|\\b)(${["html", ...tagList].join("|")})(\\W|\\b)`,
-  "ig"
+  "ig",
 );
 const prefixRegexp = /[a-zA-Z0-9:.#_-]/;
 const suffixRegexp = /[a-zA-Z0-9_-]/;
@@ -48,7 +48,7 @@ const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
             } else {
               return all;
             }
-          }
+          },
         );
 
         // 处理 * 号选择器
@@ -56,7 +56,7 @@ const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
           if ($2[0] === "=") return all;
 
           tagList.forEach(tagName =>
-            selectors.push(`${$1}.h5-${tagName}${$2}`)
+            selectors.push(`${$1}.h5-${tagName}${$2}`),
           );
 
           selectors.push(`${$1}page${$2}`);
@@ -75,7 +75,7 @@ const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
 module.exports = function(code) {
   code = postcss([replaceTagNamePlugin]).process(code, {
     from: undefined, // 主要是不想看到那个 warning
-    map: null
+    map: null,
   });
 
   return code.css;

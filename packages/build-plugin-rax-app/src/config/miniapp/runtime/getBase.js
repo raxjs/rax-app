@@ -4,7 +4,6 @@ const setEntry = require('./setEntry');
 const KboneMpPlugin = require('../../../plugins/KboneMpPlugin');
 
 module.exports = (context, target) => {
-  const { command } = context;
   const config = getWebpackBase(context);
 
   const entries = getEntries(context);
@@ -22,7 +21,7 @@ module.exports = (context, target) => {
         return callback(null, "undefined");
       }
       callback();
-    }
+    },
   ]);
 
   config.plugin("MpPlugin").use(KboneMpPlugin, [{ entries }]);

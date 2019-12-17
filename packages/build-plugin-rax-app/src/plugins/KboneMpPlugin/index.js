@@ -1,5 +1,5 @@
 const path = require("path");
-const { readFileSync, existsSync } = require("fs");
+const { readFileSync } = require("fs");
 const { spawn } = require("child_process");
 const ConcatSource = require("webpack-sources").ConcatSource;
 const ModuleFilenameHelpers = require("webpack/lib/ModuleFilenameHelpers");
@@ -13,27 +13,27 @@ const defaultConfig = require('./defaultConfig');
 const PluginName = "MpPlugin";
 const appJsTmpl = readFileSync(
   path.resolve(__dirname, "./tmpl/app.tmpl.js"),
-  "utf8"
+  "utf8",
 );
 const pageJsTmpl = readFileSync(
   path.resolve(__dirname, "./tmpl/page.tmpl.js"),
-  "utf8"
+  "utf8",
 );
 const appDisplayWxssTmpl = readFileSync(
   path.resolve(__dirname, "./tmpl/app.display.tmpl.wxss"),
-  "utf8"
+  "utf8",
 );
 const appExtraWxssTmpl = readFileSync(
   path.resolve(__dirname, "./tmpl/app.extra.tmpl.wxss"),
-  "utf8"
+  "utf8",
 );
 const appWxssTmpl = readFileSync(
   path.resolve(__dirname, "./tmpl/app.tmpl.wxss"),
-  "utf8"
+  "utf8",
 );
 const customComponentJsTmpl = readFileSync(
   path.resolve(__dirname, "./tmpl/custom-component.tmpl.js"),
-  "utf8"
+  "utf8",
 );
 const projectConfigJsonTmpl = require("./tmpl/project.config.tmpl.json");
 const packageConfigJsonTmpl = require("./tmpl/package.tmpl.json");
@@ -44,7 +44,7 @@ const globalVars = [
   "HTMLElement",
   "localStorage",
   "sessionStorage",
-  "location"
+  "location",
 ];
 
 /**
@@ -53,7 +53,7 @@ const globalVars = [
 function addFile(compilation, filename, content) {
   compilation.assets[`wechat-miniprogram/${filename}`] = {
     source: () => content,
-    size: () => Buffer.from(content).length
+    size: () => Buffer.from(content).length,
   };
 }
 
@@ -66,26 +66,26 @@ function wrapChunks(compilation, chunks, globalVarsConfig) {
       if (ModuleFilenameHelpers.matchObject({ test: /\.js$/ }, fileName)) {
         // 页面 js
         const headerContent =
-          "module.exports = function(window, document) {const App = function(options) {window.appOptions = options};" +
-          globalVars.map(item => `var ${item} = window.${item}`).join(";") +
-          ";";
+          `module.exports = function(window, document) {const App = function(options) {window.appOptions = options};${
+            globalVars.map(item => `var ${item} = window.${item}`).join(";")
+          };`;
         let customHeaderContent = globalVarsConfig
           .map(
             item =>
               `var ${item[0]} = ${
-                item[1] ? item[1] : "window['" + item[0] + "']"
-              }`
+                item[1] ? item[1] : `window['${  item[0]  }']`
+              }`,
           )
           .join(";");
         customHeaderContent = customHeaderContent
-          ? customHeaderContent + ";"
+          ? `${customHeaderContent  };`
           : "";
         const footerContent = "}";
 
         compilation.assets[fileName] = new ConcatSource(
           headerContent + customHeaderContent,
           compilation.assets[fileName],
-          footerContent
+          footerContent,
         );
       }
     });
@@ -99,12 +99,12 @@ function getAssetPath(
   assetPathPrefix,
   filePath,
   assetsSubpackageMap,
-  selfFilePath
+  selfFilePath,
 ) {
   if (assetsSubpackageMap[filePath]) assetPathPrefix = ""; // 依赖在分包内，不需要补前缀
   return `${assetPathPrefix}./${path.relative(
     path.dirname(`wechat-miniprogram/${selfFilePath}`),
-    filePath
+    filePath,
   )}`;
 }
 
@@ -115,7 +115,7 @@ function getAssetPath(
  */
 function mergeConfig(defaultConfig, passedOptions = {}) {
   // TODO: to be finished
-  const { entries = [] } = passedOptions
+  const { entries = [] } = passedOptions;
   const router = {};
   entries.forEach(({entryName, path}) => {
     router[entryName] = [path];
@@ -123,7 +123,7 @@ function mergeConfig(defaultConfig, passedOptions = {}) {
 
   const config = {
     router,
-    entry: entries[0] && entries[0].path
+    entry: entries[0] && entries[0].path,
   };
   return Object.assign({}, defaultConfig, config);
 }
@@ -184,7 +184,7 @@ class MpPlugin {
           // 调整 css 内容
           if (ext === "css") {
             compilation.assets[filePath] = new RawSource(
-              adjustCss(compilation.assets[filePath].source())
+              adjustCss(compilation.assets[filePath].source()),
             );
           }
         });
@@ -223,7 +223,7 @@ class MpPlugin {
       Object.keys(wxCustomComponents).forEach(key => {
         if (typeof wxCustomComponents[key] === "string") {
           wxCustomComponents[key] = {
-            path: wxCustomComponents[key]
+            path: wxCustomComponents[key],
           };
         }
       });
@@ -231,11 +231,12 @@ class MpPlugin {
       // 处理各个入口页面
       for (const entryName of entryNames) {
         const assets = assetsMap[entryName];
-        const pageConfig = (pageConfigMap[entryName] = Object.assign(
+        pageConfigMap[entryName] = Object.assign(
           {},
           globalConfig,
-          pageConfigMap[entryName] || {}
-        ));
+          pageConfigMap[entryName] || {},
+        );
+        const pageConfig = pageConfigMap[entryName];
         const addPageScroll = pageConfig && pageConfig.windowScroll;
         const pageBackgroundColor =
           pageConfig &&
@@ -249,7 +250,7 @@ class MpPlugin {
         const pageExtraConfig = (pageConfig && pageConfig.extra) || {};
         const packageName = subpackagesMap[entryName];
         const pageRoute = `${
-          packageName ? packageName + "/" : ""
+          packageName ? `${packageName  }/` : ""
         }pages/${entryName}/index`;
         const assetPathPrefix = packageName ? "../" : "";
 
@@ -261,16 +262,16 @@ class MpPlugin {
             `function init(window, document) {window.onload = null;${assets.js
               .map(
                 js =>
-                  "require('" +
-                  getAssetPath(
-                    assetPathPrefix,
-                    js,
-                    assetsSubpackageMap,
-                    `${pageRoute}.js`
-                  ) +
-                  "')(window, document)"
+                  `require('${
+                    getAssetPath(
+                      assetPathPrefix,
+                      js,
+                      assetsSubpackageMap,
+                      `${pageRoute}.js`,
+                    )
+                  }')(window, document)`,
               )
-              .join(";")}}`
+              .join(";")}}`,
           );
         let pageScrollFunction = "";
         let reachBottomFunction = "";
@@ -303,7 +304,7 @@ class MpPlugin {
           pageWxmlContent =
             `<page-meta ${rem ? 'root-font-size="{{rootFontSize}}"' : ""} ${
               pageStyle ? 'page-style="{{pageStyle}}"' : ""
-            }></page-meta>` + pageWxmlContent;
+            }></page-meta>${  pageWxmlContent}`;
         }
         addFile(compilation, `${pageRoute}.wxml`, pageWxmlContent);
 
@@ -315,14 +316,14 @@ class MpPlugin {
                 assetPathPrefix,
                 css,
                 assetsSubpackageMap,
-                `${pageRoute}.wxss`
-              )}";`
+                `${pageRoute}.wxss`,
+              )}";`,
           )
           .join("\n");
         if (pageBackgroundColor)
           pageWxssContent =
-            `page { background-color: ${pageBackgroundColor}; }\n` +
-            pageWxssContent;
+            `page { background-color: ${pageBackgroundColor}; }\n${
+              pageWxssContent}`;
         addFile(compilation, `${pageRoute}.wxss`, adjustCss(pageWxssContent));
 
         // 页面 json
@@ -330,8 +331,8 @@ class MpPlugin {
           ...pageExtraConfig,
           enablePullDownRefresh: !!pullDownRefresh,
           usingComponents: {
-            element: "miniprogram-element"
-          }
+            element: "miniprogram-element",
+          },
         };
         if (wxCustomComponentRoot) {
           pageJson.usingComponents[
@@ -357,18 +358,18 @@ class MpPlugin {
         addFile(
           compilation,
           "pages/webview/index.js",
-          "Page({data:{url:''},onLoad: function(query){this.setData({url:decodeURIComponent(query.url)})}})"
+          "Page({data:{url:''},onLoad: function(query){this.setData({url:decodeURIComponent(query.url)})}})",
         );
         addFile(
           compilation,
           "pages/webview/index.wxml",
-          '<web-view src="{{url}}"></web-view>'
+          '<web-view src="{{url}}"></web-view>',
         );
         addFile(compilation, "pages/webview/index.wxss", "");
         addFile(
           compilation,
           "pages/webview/index.json",
-          '{"usingComponents":{}}'
+          '{"usingComponents":{}}',
         );
         pages.push("pages/webview/index");
       }
@@ -384,22 +385,21 @@ class MpPlugin {
           `const fakeWindow = {};const fakeDocument = {};${appAssets.js
             .map(
               js =>
-                "require('" +
-                getAssetPath("", js, assetsSubpackageMap, "", "app.js") +
-                "')(fakeWindow, fakeDocument)"
+                `require('${
+                  getAssetPath("", js, assetsSubpackageMap, "", "app.js")
+                }')(fakeWindow, fakeDocument)`,
             )
-            .join(";")};const appConfig = fakeWindow.appOptions || {};`
+            .join(";")};const appConfig = fakeWindow.appOptions || {};`,
         );
         addFile(compilation, "app.js", appJsContent);
 
         // app wxss
         const appWxssConfig = generateConfig.appWxss || "default";
+        const wxssTmpl = appWxssConfig === "display" ? appDisplayWxssTmpl : appWxssTmpl;
         let appWxssContent =
           appWxssConfig === "none"
             ? ""
-            : appWxssConfig === "display"
-            ? appDisplayWxssTmpl
-            : appWxssTmpl;
+            : wxssTmpl;
         if (appAssets.css.length) {
           appWxssContent += `\n${appAssets.css
             .map(
@@ -409,14 +409,14 @@ class MpPlugin {
                   css,
                   assetsSubpackageMap,
                   "",
-                  "app.wxss"
-                )}";`
+                  "app.wxss",
+                )}";`,
             )
             .join("\n")}`;
         }
         appWxssContent = adjustCss(appWxssContent);
         if (appWxssConfig !== "none" && appWxssConfig !== "display") {
-          appWxssContent += "\n" + appExtraWxssTmpl;
+          appWxssContent += `\n${  appExtraWxssTmpl}`;
         }
         addFile(compilation, "app.wxss", appWxssContent);
 
@@ -428,13 +428,13 @@ class MpPlugin {
           subpackages.push({
             name: packageName,
             root: packageName,
-            pages: pages.map(entryName => `pages/${entryName}/index`)
+            pages: pages.map(entryName => `pages/${entryName}/index`),
           });
         });
         Object.keys(preloadRuleConfig).forEach(entryName => {
           const packageName = subpackagesMap[entryName];
           const pageRoute = `${
-            packageName ? packageName + "/" : ""
+            packageName ? `${packageName  }/` : ""
           }pages/${entryName}/index`;
           preloadRule[pageRoute] = preloadRuleConfig[entryName];
         });
@@ -444,7 +444,7 @@ class MpPlugin {
           window: options.app || {},
           subpackages,
           preloadRule,
-          ...userAppJson
+          ...userAppJson,
         };
         if (tabBarConfig.list && tabBarConfig.list.length) {
           const tabBar = Object.assign({}, tabBarConfig);
@@ -455,7 +455,7 @@ class MpPlugin {
             if (iconPathName)
               _.copyFile(
                 item.iconPath,
-                path.resolve(outputPath, `../images/${iconPathName}`)
+                path.resolve(outputPath, `../images/${iconPathName}`),
               );
             const selectedIconPathName = item.selectedIconPath
               ? _.md5File(item.selectedIconPath) +
@@ -464,7 +464,7 @@ class MpPlugin {
             if (selectedIconPathName)
               _.copyFile(
                 item.selectedIconPath,
-                path.resolve(outputPath, `../images/${selectedIconPathName}`)
+                path.resolve(outputPath, `../images/${selectedIconPathName}`),
               );
             tabBarMap[`/pages/${item.pageName}/index`] = true;
 
@@ -474,7 +474,7 @@ class MpPlugin {
               iconPath: iconPathName ? `./images/${iconPathName}` : "",
               selectedIconPath: selectedIconPathName
                 ? `./images/${selectedIconPathName}`
-                : ""
+                : "",
             };
           });
 
@@ -484,7 +484,7 @@ class MpPlugin {
             tabBar.custom = true;
             _.copyDir(
               customTabBarDir,
-              path.resolve(outputPath, "../custom-tab-bar")
+              path.resolve(outputPath, "../custom-tab-bar"),
             );
           }
 
@@ -497,12 +497,12 @@ class MpPlugin {
         const userProjectConfigJson = options.projectConfig || {};
         // 这里需要深拷贝，不然数组相同引用指向一直 push
         const projectConfigJson = JSON.parse(
-          JSON.stringify(projectConfigJsonTmpl)
+          JSON.stringify(projectConfigJsonTmpl),
         );
         const projectConfigJsonContent = JSON.stringify(
           _.merge(projectConfigJson, userProjectConfigJson),
           null,
-          "\t"
+          "\t",
         );
         addFile(compilation, "project.config.json", projectConfigJsonContent);
 
@@ -512,7 +512,7 @@ class MpPlugin {
           const sitemapConfigJsonContent = JSON.stringify(
             userSitemapConfigJson,
             null,
-            "\t"
+            "\t",
           );
           addFile(compilation, "sitemap.json", sitemapConfigJsonContent);
         }
@@ -529,44 +529,44 @@ class MpPlugin {
 
           for (const pathItem of pathList) {
             // 将每个 route 转成正则并进行序列化
-            if (!pathItem || typeof pathItem !== "string") continue;
+            if (pathItem && typeof pathItem === "string") {
+              const keys = [];
+              const regexp = pathToRegexp(pathItem, keys);
+              const pattern = regexp.valueOf();
 
-            const keys = [];
-            const regexp = pathToRegexp(pathItem, keys);
-            const pattern = regexp.valueOf();
-
-            pathObjList.push({
-              regexp: pattern.source,
-              options: `${pattern.global ? "g" : ""}${
-                pattern.ignoreCase ? "i" : ""
-              }${pattern.multiline ? "m" : ""}`
-            });
+              pathObjList.push({
+                regexp: pattern.source,
+                options: `${pattern.global ? "g" : ""}${
+                  pattern.ignoreCase ? "i" : ""
+                }${pattern.multiline ? "m" : ""}`,
+              });
+            }
           }
           router[key] = pathObjList;
         });
       }
       const configJsContent =
-        "module.exports = " +
-        JSON.stringify(
-          {
-            origin: options.origin || "https://miniprogram.default",
-            entry: options.entry || "/",
-            router,
-            runtime: Object.assign(
-              {
-                subpackagesMap,
-                tabBarMap,
-                usingComponents: wxCustomComponentConfig.usingComponents || {}
-              },
-              options.runtime || {}
-            ),
-            pages: pageConfigMap,
-            redirect: options.redirect || {},
-            optimization: options.optimization || {}
-          },
-          null,
-          "\t"
-        );
+        `module.exports = ${
+          JSON.stringify(
+            {
+              origin: options.origin || "https://miniprogram.default",
+              entry: options.entry || "/",
+              router,
+              runtime: Object.assign(
+                {
+                  subpackagesMap,
+                  tabBarMap,
+                  usingComponents: wxCustomComponentConfig.usingComponents || {},
+                },
+                options.runtime || {},
+              ),
+              pages: pageConfigMap,
+              redirect: options.redirect || {},
+              optimization: options.optimization || {},
+            },
+            null,
+            "\t",
+          )}`;
       addFile(compilation, "config.js", configJsContent);
 
       // package.json
@@ -575,7 +575,7 @@ class MpPlugin {
       const packageConfigJsonContent = JSON.stringify(
         _.merge(packageConfigJson, userPackageConfigJson),
         null,
-        "\t"
+        "\t",
       );
       addFile(compilation, "package.json", packageConfigJsonContent);
 
@@ -586,7 +586,7 @@ class MpPlugin {
       if (wxCustomComponentRoot) {
         _.copyDir(
           wxCustomComponentRoot,
-          path.resolve(outputPath, "../custom-component/components")
+          path.resolve(outputPath, "../custom-component/components"),
         );
 
         const realUsingComponents = {};
@@ -595,14 +595,14 @@ class MpPlugin {
           key =>
             (realUsingComponents[
               key
-            ] = `components/${wxCustomComponents[key].path}`)
+            ] = `components/${wxCustomComponents[key].path}`),
         );
 
         // custom-component/index.js
         addFile(
           compilation,
           "custom-component/index.js",
-          customComponentJsTmpl
+          customComponentJsTmpl,
         );
 
         // custom-component/index.wxml
@@ -615,12 +615,12 @@ class MpPlugin {
               return `<${key} wx:${
                 index === 0 ? "if" : "elif"
               }="{{name === '${key}'}}" id="{{id}}" class="{{class}}" style="{{style}}" ${props
-                .map(name => name + '="{{' + name + '}}"')
+                .map(name => `${name  }="{{${  name  }}}"`)
                 .join(" ")} ${events
-                .map(name => "bind" + name + '="on' + name + '"')
+                .map(name => `bind${  name  }="on${  name  }"`)
                 .join(" ")}><slot/></${key}>`;
             })
-            .join("\n")
+            .join("\n"),
         );
 
         // custom-component/index.wxss
@@ -633,11 +633,11 @@ class MpPlugin {
           JSON.stringify(
             {
               component: true,
-              usingComponents: realUsingComponents
+              usingComponents: realUsingComponents,
             },
             null,
-            "\t"
-          )
+            "\t",
+          ),
         );
       }
 
@@ -657,7 +657,7 @@ class MpPlugin {
           (chunks, callback) => {
             wrapChunks(compilation, chunks, globalVarsConfig);
             callback();
-          }
+          },
         );
       }
     });
@@ -668,7 +668,7 @@ class MpPlugin {
       const autoBuildNpm = generateConfig.autoBuildNpm || false;
       const outputPath = path.resolve(
         stats.compilation.outputOptions.path,
-        "wechat-miniprogram"
+        "wechat-miniprogram",
       );
 
       let callbackExecuted = false;
@@ -679,7 +679,7 @@ class MpPlugin {
         ["miniprogram-element", "miniprogram-render"].forEach(name => {
           _.copyDir(
             path.resolve(outputPath, `./node_modules/${name}/src`),
-            path.resolve(outputPath, `./miniprogram_npm/${name}`)
+            path.resolve(outputPath, `./miniprogram_npm/${name}`),
           );
         });
         if (!callbackExecuted) {
@@ -697,8 +697,8 @@ class MpPlugin {
       res.on("close", code => {
         console.log(
           chalk.green(
-            `Built deps for Wechat Miniprogram ${!code ? "success" : "failed"}`
-          )
+            `Built deps for Wechat Miniprogram ${!code ? "success" : "failed"}`,
+          ),
         );
         if (!code) build();
       });

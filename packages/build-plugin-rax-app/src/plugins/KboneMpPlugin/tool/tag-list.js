@@ -99,5 +99,5 @@ module.exports = [
   "wbr",
   "strike",
   "details",
-  "summary"
+  "summary",
 ];

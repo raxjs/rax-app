@@ -1,4 +1,5 @@
 const path = require('path');
+
 const EntryLoader = require.resolve('../../../loaders/KboneEntryLoader');
 
 function getDepPath(rootDir, com) {
