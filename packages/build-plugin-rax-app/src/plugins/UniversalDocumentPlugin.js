@@ -99,8 +99,11 @@ module.exports = class UniversalDocumentPlugin {
 
         // get document html string
         const pageSource = `<!DOCTYPE html>${renderToString(DocumentContextProviderElement)}`;
+
         // insert html file
         compilation.assets[`web/${entry}.html`] = new RawSource(pageSource);
+
+        delete compilation.assets[TEMP_FLIE_NAME];
       });
 
       callback();
