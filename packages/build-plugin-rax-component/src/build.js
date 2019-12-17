@@ -20,7 +20,7 @@ module.exports = (api, options = {}) => {
   targets.forEach(target => {
     if (target === WEEX || target === WEB) {
       const config = getDistConfig(context, options);
-      registerTask('component', config);
+      registerTask(`component-build-${target}`, config);
     }
   });
 
