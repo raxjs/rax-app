@@ -12,7 +12,7 @@ const buildLib = require('./buildLib');
 const { WEB, WEEX } = require('./constants');
 
 module.exports = (api, options = {}) => {
-  const { registerTask, context, onHook } = api;
+  const { registerTask, modifyUserConfig, context, onHook } = api;
   const { targets = [] } = options;
   const { rootDir, userConfig } = context;
   const { distDir, outputDir } = userConfig;
@@ -20,7 +20,7 @@ module.exports = (api, options = {}) => {
   targets.forEach(target => {
     if (target === WEEX || target === WEB) {
       const config = getDistConfig(context, options);
-      api.modifyUserConfig('outputDir', 'build');
+      modifyUserConfig('outputDir', 'build');
       registerTask(`component-build-${target}`, config);
     }
   });
