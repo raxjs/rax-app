@@ -10,10 +10,10 @@
     "rax-server-renderer": "^1.1.0",
     <%_ } -%>
     "rax": "^1.0.8",
-    <%_ if (scaffoldType === 'standard') { -%>
+    <%_ if (scaffoldType === 'spa-standard' || scaffoldType === 'mpa-standard') { -%>
     "rax-app": "^0.2.0",
     <%_ } -%>
-    <%_ if (scaffoldType === 'lite') { -%>
+    <%_ if (scaffoldType === 'lite' || scaffoldType === 'mpa-standard') { -%>
     "driver-universal": "^2.0.0",
     <%_ } -%>
     "rax-image": "^1.0.3",
@@ -28,7 +28,10 @@
     <%_ if (projectFeatures.includes('serverless')) { -%>
     "build-plugin-rax-faas": "^0.1.0",
     <%_ } -%>
-    "build-plugin-rax-app": "^0.1.0",
+    <%_ if (scaffoldType === 'mpa-standard') { -%>
+    "build-plugin-rax-multi-pages": "^0.1.2",
+    <%_ } %>
+    "build-plugin-rax-app": "^0.2.0",
     "@alib/build-scripts": "^0.1.0"
   }
 }
