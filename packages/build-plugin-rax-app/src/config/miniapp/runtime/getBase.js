@@ -1,13 +1,13 @@
 const getWebpackBase = require('../../getWebpackBase');
-const getEntries = require('./getEntries');
+const getAppConfig = require('./getAppConfig');
 const setEntry = require('./setEntry');
 const KboneMpPlugin = require('../../../plugins/KboneMpPlugin');
 
 module.exports = (context, target) => {
   const config = getWebpackBase(context);
 
-  const entries = getEntries(context);
-  setEntry(config, context, entries);
+  const appConfig = getAppConfig(context);
+  setEntry(config, context, appConfig.routes);
 
   config.output
     .filename(`${target}/common/[name].js`)
@@ -24,7 +24,7 @@ module.exports = (context, target) => {
     },
   ]);
 
-  config.plugin("MpPlugin").use(KboneMpPlugin, [{ entries, target }]);
+  config.plugin("MpPlugin").use(KboneMpPlugin, [{ ...appConfig, target }]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
 

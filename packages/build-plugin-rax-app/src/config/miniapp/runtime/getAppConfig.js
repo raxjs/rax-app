@@ -5,22 +5,18 @@ const { getRouteName } = require('rax-compile-config');
 module.exports = (context) => {
   const { rootDir } = context;
 
-  // MPA
-  let routes = [];
-
+  let config = {};
   try {
-    routes = fs.readJsonSync(path.resolve(rootDir, 'src/app.json')).routes;
+    config = fs.readJsonSync(path.resolve(rootDir, 'src/app.json'));
   } catch (e) {
     console.error(e);
     throw new Error('routes in app.json must be array');
   }
 
-  return routes.map((route) => {
-    const entryName = getRouteName(route, rootDir);
+  config.routes = config.routes.map(route => ({
+    entryName: getRouteName(route, rootDir),
+    ...route
+  }))
 
-    return {
-      entryName,
-      ...route,
-    };
-  });
+  return config;
 };

@@ -3,10 +3,12 @@ const { MINIAPP, WECHAT_MINIPROGRAM } = require("../../constants");
 module.exports = {
   [MINIAPP]: {
     name: 'Alibaba MiniApp',
-    ext: "acss"
+    css: "acss",
+    xml: "axml"
   },
   [WECHAT_MINIPROGRAM]: {
     name: 'Wechat MiniProgram',
-    ext: "wxss"
+    css: "wxss",
+    xml: "wxml"
   }
 };

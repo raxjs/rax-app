@@ -117,15 +117,21 @@ function getAssetPath(
  */
 function mergeConfig(defaultConfig, passedOptions = {}) {
   // TODO: to be finished
-  const { entries = [] } = passedOptions;
+  const { routes = [], window, tabBar, subpackages, preloadRule, ...appExtraConfig } = passedOptions;
   const router = {};
-  entries.forEach(({entryName, path}) => {
+  routes.forEach(({ entryName, path }) => {
     router[entryName] = [path];
   });
 
   const config = {
     router,
-    entry: entries[0] && entries[0].path,
+    entry: routes[0] && routes[0].path,
+    generate: {
+      ...defaultConfig.generate,
+      tabBar
+    },
+    app: window,
+    appExtraConfig
   };
   return Object.assign({}, defaultConfig, config);
 }
