@@ -10,7 +10,7 @@ const chalk = require('chalk');
 const semver = require('semver');
 const argv = require('minimist')(process.argv.slice(2));
 
-const cli = require('../src/');
+const generator = require('rax-generator');
 const pkg = require('../package.json');
 
 // notify package update
@@ -99,7 +99,7 @@ async function init(name, verbose, template) {
 }
 
 function askProjectInformaction() {
-  return inquirer.prompt(cli.config.promptQuestion);
+  return inquirer.prompt(generator.config.promptQuestion);
 }
 
 function createProject(name, verbose, template, userAnswers) {
@@ -121,18 +121,12 @@ function createProject(name, verbose, template, userAnswers) {
     rootDir,
   );
 
-  cli.init({
-    ...userAnswers,
+  generator.init({
     root: rootDir,
     projectName,
-    projectType: userAnswers.projectType,
-    projectFeatures: userAnswers.projectFeatures || [],
-    projectAuthor: userAnswers.projectAuthor || '',
-    projectTargets: userAnswers.projectTargets || [],
-    projectAliyunId: userAnswers.projectAliyunId,
-    projectServerlessRegion: userAnswers.projectServerlessRegion,
     verbose,
     template,
+    ...userAnswers,
   }).then(function(directory) {
     if (autoInstallModules) {
       return install(directory, verbose);

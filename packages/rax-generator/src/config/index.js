@@ -5,11 +5,11 @@ const promptQuestion = [
     message: 'What\'s your project type?',
     choices: [
       {
-        name: 'App (Build application that works multi-platform)',
-        value: 'scaffold',
+        name: 'App (Build universal application)',
+        value: 'app',
       },
       {
-        name: 'Component (Build component for application include web)',
+        name: 'Component (Build universal component)',
         value: 'component',
       },
       {
@@ -17,42 +17,45 @@ const promptQuestion = [
         value: 'api',
       },
     ],
-    default: 'scaffold',
+    default: 'app',
+  },
+  {
+    type: 'input',
+    name: 'projectAuthor',
+    message: 'What\'s author\'s name?',
+    default: 'rax',
   },
   {
     type: 'list',
-    name: 'scaffoldType',
+    name: 'appType',
     message: 'What\'s your application type?',
     when(answers) {
-      return answers.projectType === 'scaffold';
+      return answers.projectType === 'app';
     },
     choices: [
       {
-        name: 'Standard SPA App (The complete solution for single-page application that works multi-platform)',
-        value: 'spa-standard',
+        name: 'Single-page application (SPA)',
+        value: 'spa',
       },
       {
-        name: 'Standard MPA App (The complete solution for multi-page application that works multi-platform)',
-        value: 'mpa-standard',
+        name: 'Multi-page application (MPA)',
+        value: 'mpa',
       },
       {
-        name: 'Lite App (The simplest possible setup)',
+        name: 'Create lite application (The simplest project setup)',
         value: 'lite',
       },
     ],
-    default: 'spa-standard',
+    default: 'spa',
   },
   {
     type: 'checkbox',
     name: 'projectTargets',
-    when(answers) {
-      return (answers.projectType === 'scaffold' && (answers.scaffoldType === 'spa-standard' || answers.scaffoldType === 'mpa-standard')) || answers.projectType === 'component';
-    },
     validate(targets) {
       if (targets && targets.length > 0) return true;
       return 'Choose at least one of target.';
     },
-    message: 'Do you want to build to these targets?',
+    message: 'Choose targets your project want to run?',
     choices: [
       {
         name: 'Web',
@@ -63,74 +66,68 @@ const promptQuestion = [
         value: 'weex',
       },
       {
-        name: 'Kraken',
-        value: 'kraken',
-      },
-      {
-        name: 'MiniApp',
+        name: 'Alibaba MiniApp',
         value: 'miniapp',
       },
       {
         name: 'WeChat MiniProgram',
         value: 'wechat-miniprogram',
       },
+      {
+        name: 'Kraken (Flutter)',
+        value: 'kraken',
+      },
     ],
-    default: false,
+    default: ['web'],
   },
   {
     type: 'checkbox',
     name: 'projectFeatures',
     when(answers) {
-      return answers.projectType === 'scaffold';
+      return answers.projectType === 'app';
     },
     message: 'Do you want to enable these features?',
     choices: [
       {
-        name: 'server side rendering (ssr)',
+        name: 'Server-side rendering (SSR)',
         value: 'ssr',
         disabled: (answers) => {
           // Lite app is not support SSR
-          return answers.scaffoldType === 'lite' || !answers.projectTargets.includes('web');
+          return answers.appType === 'lite' || !answers.projectTargets.includes('web');
         },
       },
       {
-        name: 'serverless solution (FaaS)',
-        value: 'serverless',
+        name: 'Aliyun Function Compute (FaaS)',
+        value: 'faas',
       },
     ],
     default: false,
   },
   {
     type: 'input',
-    name: 'projectAuthor',
-    message: 'What\'s author\'s name?',
-    default: 'rax',
-  },
-  {
-    type: 'input',
     name: 'projectAliyunId',
-    message: 'What\'s alibaba cloud account id?',
+    message: 'What\'s your aliyun account id?',
     when(answers) {
       const features = answers.projectFeatures;
-      return features && features.includes('serverless');
+      return features && features.includes('faas');
     },
     validate(val) {
       if (val && val.trim()) return true;
-      return 'Input your alibaba cloud account id.';
+      return 'Input your aliyun account id.';
     },
     default: '',
   },
   {
     type: 'input',
-    name: 'projectServerlessRegion',
-    message: 'What\'s serverless region?',
+    name: 'projectAliyunRegion',
+    message: 'What\'s your aliyun region?',
     when(answers) {
       const features = answers.projectFeatures;
-      return features && features.includes('serverless');
+      return features && features.includes('faas');
     },
     validate(val) {
       if (val && val.trim()) return true;
-      return 'Input your serverless region.';
+      return 'Input your aliyun region.';
     },
     default: 'cn-hangzhou',
   },

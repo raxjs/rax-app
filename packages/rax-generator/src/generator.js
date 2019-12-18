@@ -13,17 +13,22 @@ function ejsRender(data) {
   return (files) => {
     files.forEach(file => {
       if (/\.ejs$/.test(file.name)) {
-        file.content = ejs.render(file.content, data);
+        try {
+          file.content = ejs.render(file.content, data);
+        } catch (error) {
+          console.error(`\nError occurs when compiling "${file.name}" file.`);
+          console.error(error);
+        }
       }
     });
   };
 }
 
 // get ignore files of template
-function getIgnore(scaffoldType, features) {
-  const list = scaffoldType === 'lite' ? ['src/components', 'src/pages', 'src/app.json.ejs'] : [];
+function getIgnore(appType, features) {
+  const list = appType === 'lite' ? ['src/components', 'src/pages', 'src/app.json.ejs'] : [];
 
-  if (!features.includes('serverless')) {
+  if (Array.isArray(features) && !features.includes('faas')) {
     list.push('src/api');
   }
 
@@ -38,10 +43,10 @@ function getIgnore(scaffoldType, features) {
  * @param  {String} args.directoryName - The folder name
  * @param  {String} args.projectName - Kebabcased project name
  * @param  {String} args.projectType - Kebabcased project type
- * @param  {String} args.scaffoldType - The application type
+ * @param  {String} args.appType - The application type
  * @param  {String} args.projectAuthor - The name of project author
- * @param  {String} args.projectTargets- The build targets of project
- * @param  {String} args.projectFeatures- The features of project
+ * @param  {Array} args.projectTargets- The build targets of project
+ * @param  {Array} args.projectFeatures- The features of project
  * @return {Promise}
  */
 module.exports = function(template, args) {
@@ -54,7 +59,7 @@ module.exports = function(template, args) {
   new TemplateProcesser(template)
     .use(ejsRender(ejsData))
     .use(renameFile)
-    .ignore(getIgnore(args.scaffoldType, args.projectFeatures))
+    .ignore(getIgnore(args.appType, args.projectFeatures))
     .done(projectDir);
 
   process.chdir(projectDir);

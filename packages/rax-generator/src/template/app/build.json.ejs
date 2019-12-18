@@ -1,0 +1,33 @@
+<%_ const hasSSR = projectFeatures.includes('ssr') -%>
+<%_ const hasFaaS = projectFeatures.includes('faas') -%>
+{
+  "plugins": [
+    [
+      "build-plugin-rax-app",
+      {
+        "targets": ["<%- projectTargets.join('", "') %>"]
+      }
+    ]<%_ if (hasSSR) { -%>,
+    "build-plugin-rax-ssr"<%_ } -%><%_ if (appType === 'mpa') { -%>,
+    "build-plugin-rax-multi-pages"<%_ } %><%_ if (hasFaaS) { -%>,
+    [
+      "build-plugin-rax-faas",
+      {
+        "aliyunConfig": {
+          "id": "<%= projectAliyunId %>",
+          "region": "<%= projectAliyunRegion %>"
+        },
+        "functionGroup": {
+          "name": "api",
+          "root": "src/api",
+          "functions": {
+            "user": {
+              "path": "user"
+            }
+          }
+        }
+      }
+    ]<%_ } -%>
+
+  ]
+}
