@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const path = require('path');
 const Chain = require('webpack-chain');
 const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
@@ -13,7 +14,7 @@ const babelConfig = getBabelConfig({
 });
 
 module.exports = (context) => {
-  const { rootDir, command } = context;
+  const { rootDir, command, pkg } = context;
 
   const config = new Chain();
 
@@ -31,34 +32,44 @@ module.exports = (context) => {
     },
   ]);
 
-  config.resolve.extensions
-    .merge(['.js', '.json', '.jsx', '.ts', '.tsx', '.html']);
+  config.resolve.extensions.merge(['.js', '.json', '.jsx', '.ts', '.tsx', '.html']);
 
-  config.module.rule('jsx')
+  config.module
+    .rule('jsx')
     .test(/\.(js|mjs|jsx)$/)
     .use('babel')
-      .loader(require.resolve('babel-loader'))
-      .options(babelConfig);
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig);
 
-  config.module.rule('tsx')
+  config.module
+    .rule('tsx')
     .test(/\.tsx?$/)
     .use('babel')
-      .loader(require.resolve('babel-loader'))
-      .options(babelConfig)
-      .end()
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig)
+    .end()
     .use('ts')
-      .loader(require.resolve('ts-loader'));
+    .loader(require.resolve('ts-loader'));
 
-  config.module.rule('assets')
+  config.module
+    .rule('md')
+    .test(/\.md$/)
+    .use('babel')
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig)
+    .end()
+    .use('markdown-loader')
+    .loader(require.resolve('../loaders/MarkdownLoader/index'));
+
+  config.module
+    .rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
     .use('source')
-      .loader(require.resolve('image-source-loader'));
+    .loader(require.resolve('image-source-loader'));
 
-  config.plugin('caseSensitivePaths')
-    .use(CaseSensitivePathsPlugin);
+  config.plugin('caseSensitivePaths').use(CaseSensitivePathsPlugin);
 
-  config.plugin('noError')
-    .use(webpack.NoEmitOnErrorsPlugin);
+  config.plugin('noError').use(webpack.NoEmitOnErrorsPlugin);
 
   if (command === 'start') {
     config.mode('development');
@@ -68,18 +79,22 @@ module.exports = (context) => {
 
     config.optimization
       .minimizer('terser')
-        .use(TerserPlugin, [{
+      .use(TerserPlugin, [
+        {
           terserOptions: {
             output: {
               comments: false,
             },
           },
           extractComments: false,
-        }])
-        .end()
+        },
+      ])
+      .end()
       .minimizer('optimizeCSS')
-        .use(OptimizeCSSAssetsPlugin);
+      .use(OptimizeCSSAssetsPlugin);
   }
+
+  config.resolve.alias.set(pkg.name, path.resolve(rootDir, 'src/index'));
 
   return config;
 };
