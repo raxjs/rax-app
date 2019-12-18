@@ -1,7 +1,7 @@
 {
   "name": "<%= npmName %>",
   "author": "<%= projectAuthor %>",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "",
   "main": "lib/index.js",
   "module": "src/index.js",
@@ -14,18 +14,27 @@
     "start": "build-scripts start",
     "build": "build-scripts build"
   },
-  "pre-commit": ["lint"],
+  "miniappConfig": {
+    "main": "lib/miniapp/index",
+    "main:wechat": "lib/wechat-miniprogram/index"
+  },
   "keywords": [
-    "Rax"
+    "Rax",
+    "rax-component"
   ],
   "engines": {
     "npm": ">=3.0.0"
   },
+  "dependencies": {
+    "rax-text": "^1.0.0",
+    "rax-view": "^1.0.0"
+  },
+  "peerDependencies": {
+    "rax": "^1.1.0"
+  },
   "devDependencies": {
     "driver-universal": "^3.0.0",
-    "rax": "^1.0.8",
-    "rax-text": "^1.0.1",
-    "rax-view": "^1.0.2",
+    "rax": "^1.1.0",
     "build-plugin-rax-component": "^0.1.0",
     "@alib/build-scripts": "^0.1.0"
   }
