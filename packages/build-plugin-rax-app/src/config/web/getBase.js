@@ -21,6 +21,7 @@ module.exports = (context) => {
 
   config.plugin('document')
     .use(UniversalDocumentPlugin, [{
+      context,
       path: 'src/document/index.jsx',
       command,
     }]);
