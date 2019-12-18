@@ -24,7 +24,7 @@ module.exports = (context, target) => {
     },
   ]);
 
-  config.plugin("MpPlugin").use(KboneMpPlugin, [{ entries }]);
+  config.plugin("MpPlugin").use(KboneMpPlugin, [{ entries, target }]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
 

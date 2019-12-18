@@ -38,7 +38,6 @@ const customComponentJsTmpl = readFileSync(
 const projectConfigJsonTmpl = require("./tmpl/project.config.tmpl.json");
 const packageConfigJsonTmpl = require("./tmpl/package.tmpl.json");
 
-process.env.isMiniprogram = true;
 const globalVars = [
   "navigator",
   "HTMLElement",
@@ -47,8 +46,8 @@ const globalVars = [
   "location",
 ];
 
-function addFile(compilation, filename, content) {
-  compilation.assets[`wechat-miniprogram/${filename}`] = {
+function addFile(compilation, target, filename, content) {
+  compilation.assets[`${target}/${filename}`] = {
     source: () => content,
     size: () => Buffer.from(content).length,
   };
@@ -59,8 +58,8 @@ function wrapChunks(compilation, chunks, globalVarsConfig) {
     chunk.files.forEach(fileName => {
       if (ModuleFilenameHelpers.matchObject({ test: /\.js$/ }, fileName)) {
         const headerContent =
-          `module.exports = function(window, document) {const App = function(options) {window.appOptions = options};${ 
-            globalVars.map(item => `var ${item} = window.${item}`).join(";") 
+          `module.exports = function(window, document) {const App = function(options) {window.appOptions = options};${
+            globalVars.map(item => `var ${item} = window.${item}`).join(";")
           };`;
         let customHeaderContent = globalVarsConfig
           .map(
@@ -91,7 +90,7 @@ function getAssetPath(
   assetsSubpackageMap,
   selfFilePath,
 ) {
-  if (assetsSubpackageMap[filePath]) assetPathPrefix = ""; 
+  if (assetsSubpackageMap[filePath]) assetPathPrefix = "";
   return `${assetPathPrefix}./${path.relative(
     path.dirname(`wechat-miniprogram/${selfFilePath}`),
     filePath,
@@ -138,10 +137,10 @@ class MpPlugin {
       const wxCustomComponentRoot = wxCustomComponentConfig.root;
       const wxCustomComponents = wxCustomComponentConfig.usingComponents || {};
       const pages = [];
-      const subpackagesMap = {}; 
-      const assetsMap = {}; 
-      const assetsReverseMap = {}; 
-      const assetsSubpackageMap = {}; 
+      const subpackagesMap = {};
+      const assetsMap = {};
+      const assetsReverseMap = {};
+      const assetsSubpackageMap = {};
       const tabBarMap = {};
 
       for (const entryName of entryNames) {
@@ -237,13 +236,13 @@ class MpPlugin {
             `function init(window, document) {window.onload = null;${assets.js
               .map(
                 js =>
-                  `require('${ 
+                  `require('${
                     getAssetPath(
                       assetPathPrefix,
                       js,
                       assetsSubpackageMap,
                       `${pageRoute}.js`,
-                    ) 
+                    )
                   }')(window, document)`,
               )
               .join(";")}}`,
@@ -267,7 +266,7 @@ class MpPlugin {
           .replace("/* PAGE_SCROLL_FUNCTION */", pageScrollFunction)
           .replace("/* REACH_BOTTOM_FUNCTION */", reachBottomFunction)
           .replace("/* PULL_DOWN_REFRESH_FUNCTION */", pullDownRefreshFunction);
-        addFile(compilation, `${pageRoute}.js`, pageJsContent);
+        addFile(compilation, target, `${pageRoute}.js`, pageJsContent);
 
         let pageWxmlContent = `<element wx:if="{{pageId}}" class="{{bodyClass}}" style="{{bodyStyle}}" data-private-node-id="e-body" data-private-page-id="{{pageId}}" ${
           wxCustomComponentRoot
@@ -280,7 +279,7 @@ class MpPlugin {
               pageStyle ? 'page-style="{{pageStyle}}"' : ""
             }></page-meta>${  pageWxmlContent}`;
         }
-        addFile(compilation, `${pageRoute}.wxml`, pageWxmlContent);
+        addFile(compilation, target, `${pageRoute}.wxml`, pageWxmlContent);
 
         let pageWxssContent = assets.css
           .map(
@@ -295,9 +294,9 @@ class MpPlugin {
           .join("\n");
         if (pageBackgroundColor)
           pageWxssContent =
-            `page { background-color: ${pageBackgroundColor}; }\n${ 
+            `page { background-color: ${pageBackgroundColor}; }\n${
               pageWxssContent}`;
-        addFile(compilation, `${pageRoute}.wxss`, adjustCss(pageWxssContent));
+        addFile(compilation, target, `${pageRoute}.wxss`, adjustCss(pageWxssContent));
 
         const pageJson = {
           ...pageExtraConfig,
@@ -315,7 +314,7 @@ class MpPlugin {
           pageJson.onReachBottomDistance = reachBottomDistance;
         }
         const pageJsonContent = JSON.stringify(pageJson, null, "\t");
-        addFile(compilation, `${pageRoute}.json`, pageJsonContent);
+        addFile(compilation, target, `${pageRoute}.json`, pageJsonContent);
 
         if (!packageName) pages.push(pageRoute);
       }
@@ -326,18 +325,18 @@ class MpPlugin {
           options.redirect.accessDenied === "webview")
       ) {
         addFile(
-          compilation,
+          compilation, target,
           "pages/webview/index.js",
           "Page({data:{url:''},onLoad: function(query){this.setData({url:decodeURIComponent(query.url)})}})",
         );
         addFile(
-          compilation,
+          compilation, target,
           "pages/webview/index.wxml",
           '<web-view src="{{url}}"></web-view>',
         );
-        addFile(compilation, "pages/webview/index.wxss", "");
+        addFile(compilation, target, "pages/webview/index.wxss", "");
         addFile(
-          compilation,
+          compilation, target,
           "pages/webview/index.json",
           '{"usingComponents":{}}',
         );
@@ -355,13 +354,13 @@ class MpPlugin {
           `const fakeWindow = {};const fakeDocument = {};${appAssets.js
             .map(
               js =>
-                `require('${ 
-                  getAssetPath("", js, assetsSubpackageMap, "", "app.js") 
+                `require('${
+                  getAssetPath("", js, assetsSubpackageMap, "", "app.js")
                 }')(fakeWindow, fakeDocument)`,
             )
             .join(";")};const appConfig = fakeWindow.appOptions || {};`,
         );
-        addFile(compilation, "app.js", appJsContent);
+        addFile(compilation, target, "app.js", appJsContent);
 
         // app wxss
         const appWxssConfig = generateConfig.appWxss || "default";
@@ -391,7 +390,7 @@ class MpPlugin {
         if (appWxssConfig !== "none" && appWxssConfig !== "display") {
           appWxssContent += `\n${  appExtraWxssTmpl}`;
         }
-        addFile(compilation, "app.wxss", appWxssContent);
+        addFile(compilation, target, "app.wxss", appWxssContent);
 
         // app json
         const subpackages = [];
@@ -463,7 +462,7 @@ class MpPlugin {
           appJson.tabBar = tabBar;
         }
         const appJsonContent = JSON.stringify(appJson, null, "\t");
-        addFile(compilation, "app.json", appJsonContent);
+        addFile(compilation, target, "app.json", appJsonContent);
 
         // project.config.json
         const userProjectConfigJson = options.projectConfig || {};
@@ -475,7 +474,7 @@ class MpPlugin {
           null,
           "\t",
         );
-        addFile(compilation, "project.config.json", projectConfigJsonContent);
+        addFile(compilation, target, "project.config.json", projectConfigJsonContent);
 
         // sitemap.json
         const userSitemapConfigJson = options.sitemapConfig;
@@ -485,7 +484,7 @@ class MpPlugin {
             null,
             "\t",
           );
-          addFile(compilation, "sitemap.json", sitemapConfigJsonContent);
+          addFile(compilation, target, "sitemap.json", sitemapConfigJsonContent);
         }
       }
 
@@ -515,7 +514,7 @@ class MpPlugin {
         });
       }
       const configJsContent =
-        `module.exports = ${ 
+        `module.exports = ${
           JSON.stringify(
             {
               origin: options.origin || "https://miniprogram.default",
@@ -536,7 +535,7 @@ class MpPlugin {
             null,
             "\t",
           )}`;
-      addFile(compilation, "config.js", configJsContent);
+      addFile(compilation, target, "config.js", configJsContent);
 
       // package.json
       const userPackageConfigJson = options.packageConfig || {};
@@ -546,10 +545,10 @@ class MpPlugin {
         null,
         "\t",
       );
-      addFile(compilation, "package.json", packageConfigJsonContent);
+      addFile(compilation, target, "package.json", packageConfigJsonContent);
 
       // node_modules
-      addFile(compilation, "node_modules/.miniprogram", "");
+      addFile(compilation, target, "node_modules/.miniprogram", "");
 
       if (wxCustomComponentRoot) {
         _.copyDir(
@@ -568,14 +567,14 @@ class MpPlugin {
 
         // custom-component/index.js
         addFile(
-          compilation,
+          compilation, target,
           "custom-component/index.js",
           customComponentJsTmpl,
         );
 
         // custom-component/index.wxml
         addFile(
-          compilation,
+          compilation, target,
           "custom-component/index.wxml",
           names
             .map((key, index) => {
@@ -592,11 +591,11 @@ class MpPlugin {
         );
 
         // custom-component/index.wxss
-        addFile(compilation, "custom-component/index.wxss", "");
+        addFile(compilation, target, "custom-component/index.wxss", "");
 
         // custom-component/index.json
         addFile(
-          compilation,
+          compilation, target,
           "custom-component/index.json",
           JSON.stringify(
             {

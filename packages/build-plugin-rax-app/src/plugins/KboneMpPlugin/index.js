@@ -9,6 +9,8 @@ const chalk = require('chalk');
 const adjustCss = require("./tool/adjust-css");
 const _ = require("./tool/utils");
 const defaultConfig = require('./defaultConfig');
+const { MINIAPP, WECHAT_MINIPROGRAM } = require('../../constants');
+const adapter = require('./adapter');
 
 const PluginName = "MpPlugin";
 const appJsTmpl = readFileSync(
@@ -19,16 +21,16 @@ const pageJsTmpl = readFileSync(
   path.resolve(__dirname, "./tmpl/page.tmpl.js"),
   "utf8",
 );
-const appDisplayWxssTmpl = readFileSync(
-  path.resolve(__dirname, "./tmpl/app.display.tmpl.wxss"),
+const appDisplayCssTmpl = readFileSync(
+  path.resolve(__dirname, "./tmpl/app.display.tmpl.css"),
   "utf8",
 );
-const appExtraWxssTmpl = readFileSync(
-  path.resolve(__dirname, "./tmpl/app.extra.tmpl.wxss"),
+const appExtraCssTmpl = readFileSync(
+  path.resolve(__dirname, "./tmpl/app.extra.tmpl.css"),
   "utf8",
 );
-const appWxssTmpl = readFileSync(
-  path.resolve(__dirname, "./tmpl/app.tmpl.wxss"),
+const appCssTmpl = readFileSync(
+  path.resolve(__dirname, "./tmpl/app.tmpl.css"),
   "utf8",
 );
 const customComponentJsTmpl = readFileSync(
@@ -131,10 +133,12 @@ function mergeConfig(defaultConfig, passedOptions = {}) {
 class MpPlugin {
   constructor(passedOptions) {
     this.options = mergeConfig(defaultConfig, passedOptions);
+    this.target = passedOptions.target || MINIAPP;
   }
 
   apply(compiler) {
     const options = this.options;
+    const target = this.target;
     const generateConfig = options.generate || {};
 
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
@@ -395,7 +399,7 @@ class MpPlugin {
 
         // app wxss
         const appWxssConfig = generateConfig.appWxss || "default";
-        const wxssTmpl = appWxssConfig === "display" ? appDisplayWxssTmpl : appWxssTmpl;
+        const wxssTmpl = appWxssConfig === "display" ? appDisplayCssTmpl : appCssTmpl;
         let appWxssContent =
           appWxssConfig === "none"
             ? ""
@@ -416,7 +420,7 @@ class MpPlugin {
         }
         appWxssContent = adjustCss(appWxssContent);
         if (appWxssConfig !== "none" && appWxssConfig !== "display") {
-          appWxssContent += `\n${  appExtraWxssTmpl}`;
+          appWxssContent += `\n${  appExtraCssTmpl}`;
         }
         addFile(compilation, "app.wxss", appWxssContent);
 
@@ -668,7 +672,7 @@ class MpPlugin {
       const autoBuildNpm = generateConfig.autoBuildNpm || false;
       const outputPath = path.resolve(
         stats.compilation.outputOptions.path,
-        "wechat-miniprogram",
+        target,
       );
 
       let callbackExecuted = false;
@@ -687,7 +691,7 @@ class MpPlugin {
         }
       };
       let res = null;
-      console.log(chalk.green("Start building deps for Wechat Miniprogram..."));
+      console.log(chalk.green(`Start building deps for ${adapter[target].name}...`));
 
       if (autoBuildNpm === "yarn") {
         res = spawn("yarn", ["install", "--production"], { cwd: outputPath });
@@ -697,10 +701,10 @@ class MpPlugin {
       res.on("close", code => {
         console.log(
           chalk.green(
-            `Built deps for Wechat Miniprogram ${!code ? "success" : "failed"}`,
+            `Built deps for ${adapter[target].name} ${!code ? "success" : "failed"}`,
           ),
         );
-        if (!code) build();
+        if (!code && target === WECHAT_MINIPROGRAM) build();
       });
 
       callback();
