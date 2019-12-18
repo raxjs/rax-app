@@ -20,6 +20,7 @@ module.exports = (api, options = {}) => {
   targets.forEach(target => {
     if (target === WEEX || target === WEB) {
       const config = getDistConfig(context, options);
+      // compress and minify all files
       modifyUserConfig('outputDir', 'build');
       registerTask(`component-build-${target}`, config);
     }
