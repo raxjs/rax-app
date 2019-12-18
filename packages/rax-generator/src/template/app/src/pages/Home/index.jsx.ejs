@@ -1,5 +1,5 @@
-<%_ const isServerless = projectFeatures.includes('serverless') -%>
-import { createElement<%_ if (isServerless) { -%>, useState, useEffect<%_ } -%> } from 'rax';
+<%_ const isFaaS = projectFeatures.includes('faas') -%>
+import { createElement<%_ if (isFaaS) { -%>, useState, useEffect<%_ } -%> } from 'rax';
 import View from 'rax-view';
 import Text from 'rax-text';
 
@@ -8,7 +8,7 @@ import styles from './index.css';
 import Logo from '../../components/Logo';
 
 export default function Home() {
-<%_ if (isServerless) { -%>
+<%_ if (isFaaS) { -%>
   const [account, setAccount] = useState('');
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function Home() {
     <View style={styles.home}>
       <Logo />
       <Text style={styles.title}>Welcome to Your Rax App</Text>
-      <%_ if (isServerless) { -%>
+      <%_ if (isFaaS) { -%>
       <Text style={styles.info}>Current user: {account}</Text>
       <%_ } -%>
       <Text style={styles.info}>More information about Rax</Text>
