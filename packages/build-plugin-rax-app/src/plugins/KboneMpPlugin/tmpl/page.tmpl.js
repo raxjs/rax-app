@@ -1,4 +1,4 @@
-/* global wx,Page,init */
+/* global APINamespace,TARGET, Page,init */
 const mp = require("miniprogram-render");
 /* eslint-disable  import/no-absolute-path */
 const config = require("/* CONFIG_PATH */");
@@ -19,8 +19,8 @@ function dealWithPage(evt, window, value) {
     const options = {
       url: `/pages/webview/index?url=${encodeURIComponent(url)}`,
     };
-    if (type === "jump") wx.redirectTo(options);
-    else if (type === "open") wx.navigateTo(options);
+    if (type === "jump") APINamespace.redirectTo(options);
+    else if (type === "open") APINamespace.navigateTo(options);
   } else if (value === "error") {
     console.error(`page not found: ${evt.url}`);
   } else if (value !== "none") {
@@ -33,9 +33,9 @@ function dealWithPage(evt, window, value) {
       )}`,
     };
     if (window.$$miniprogram.isTabBarPage(`/pages/${value}/index`))
-      wx.switchTab(options);
-    else if (type === "jump") wx.redirectTo(options);
-    else if (type === "open") wx.navigateTo(options);
+      APINamespace.switchTab(options);
+    else if (type === "jump") APINamespace.redirectTo(options);
+    else if (type === "open") APINamespace.navigateTo(options);
   }
 }
 
@@ -53,9 +53,10 @@ Page({
     const pageConfig = this.pageConfig;
 
     if (pageConfig.loadingText) {
-      wx.showLoading({
+      APINamespace.showLoading({
         title: pageConfig.loadingText,
-        mask: true,
+        content: pageConfig.loadingText,
+        mask: true
       });
     }
 
@@ -103,7 +104,7 @@ Page({
 
     // 处理分享显示
     if (!pageConfig.share) {
-      wx.hideShareMenu();
+      APINamespace.hideShareMenu();
     }
 
     // 处理 document 更新
@@ -137,11 +138,16 @@ Page({
     });
 
     // 处理 selectorQuery 获取
-    this.window.$$createSelectorQuery = () => wx.createSelectorQuery().in(this);
+    this.window.$$createSelectorQuery = () => APINamespace.createSelectorQuery().in(this);
 
     // 处理 intersectionObserver 获取
-    this.window.$$createIntersectionObserver = options =>
-      wx.createIntersectionObserver(this, options);
+    this.window.$$createIntersectionObserver = options => {
+      if (TARGET === 'miniapp') {
+        my.createIntersectionObserver(options);
+      } else {
+        wx.createIntersectionObserver(this, options);
+      }
+    }
 
     init(this.window, this.document);
     this.setData({
@@ -160,7 +166,7 @@ Page({
     this.window.$$trigger("wxshow");
   },
   onReady() {
-    if (this.pageConfig.loadingText) wx.hideLoading();
+    if (this.pageConfig.loadingText) APINamespace.hideLoading();
     this.window.$$trigger("wxready");
   },
   onHide() {
