@@ -39,7 +39,7 @@ module.exports = class UniversalDocumentPlugin {
     const absoluteDocumentPath = path.resolve(config.context , this.documentPath);
     const publicPath = this.publicPath ? this.publicPath : config.output.publicPath;
 
-    // Get output dir from filename instand of hard code.
+    // Get output dir from filename instead of hard code.
     const outputFileName = compiler.options.output.filename;
     // web/[name].js => web
     const targetOutputDir = path.dirname(outputFileName);
