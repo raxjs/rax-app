@@ -15,11 +15,12 @@ function checkVersion(folder, callback) {
   if (existsSync(folder)) {
     const packages = readdirSync(folder)
       // ignore dot files.
-      .filter((filename) => filename[0] != '.');
+      .filter((filename) => filename[0] !== '.');
     console.log('[PUBLISH] Start check with following packages:');
-    console.log(packages.map(p => '- ' + p).join('\n'));
+    console.log(packages.map(p => `- ${p}`).join('\n'));
 
     let finishCount = 0;
+    // eslint-disable-next-line
     function finish() {
       finishCount++;
       if (finishCount === packages.length) {
@@ -98,7 +99,7 @@ function publish(pkg, workDir, version, shouldBuild, tag) {
   // npm publish
   spawnSync('npm', [
     'publish',
-    '--tag=' + tag,
+    `--tag=${tag}`,
     // use default registry
   ], {
     stdio: 'inherit',
@@ -122,8 +123,8 @@ function checkVersionAndPublish() {
     }
 
     for (let i = 0; i < ret.length; i++) {
-      const { name, workDir, local } = ret[i];
-      const tag = ret[i].tag = isPrerelease(local) ? 'beta' : 'latest';
+      const { name, local } = ret[i];
+      const tag = ret[i].tag = isPrerelease(local) ? 'beta' : 'latest';  // eslint-disable-line
       console.log(`--- ${name}@${local} current tag: ${tag} ---`);
     }
 
