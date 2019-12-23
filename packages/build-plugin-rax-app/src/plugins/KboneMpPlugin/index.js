@@ -443,6 +443,7 @@ function handleConfigJS(compilation, subpackagesMap, tabBarMap, pageConfigMap, c
     `module.exports = ${
       JSON.stringify(
         {
+          target,
           origin: origin || 'https://miniapp.default',
           entry: entry || '/',
           router: processedRouter,
