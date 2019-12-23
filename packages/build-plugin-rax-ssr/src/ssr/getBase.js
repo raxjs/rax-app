@@ -80,5 +80,15 @@ module.exports = (context) => {
   }
 
   config.module.rules.delete('appJSON');
+
+  config.externals([
+    function (ctx, request, callback) {
+      if (request.indexOf('@weex-module') !== -1) {
+        return callback(null, 'undefined');
+      }
+      callback();
+    },
+  ]);
+  
   return config;
 };

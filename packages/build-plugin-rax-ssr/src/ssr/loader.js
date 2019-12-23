@@ -23,11 +23,7 @@ module.exports = function() {
   const shellStr = hasShell ? `import Shell from '${absoluteShellPath}'` : 'const Shell = function (props) { return props.children };';
 
   const renderHtmlFnc = `
-    async function renderComponentToHTML(req, res, Component) {
-      const ctx = {
-        req,
-        res
-      };
+    async function renderComponentToHTML(Component, ctx) {
 
       const shellData = await getInitialProps(Shell, ctx);
       const pageData = await getInitialProps(Component, ctx);
@@ -87,13 +83,25 @@ module.exports = function() {
     }
 
     async function renderToHTML(req, res) {
-      const html = await renderComponentToHTML(req, res, Page);
+      const html = await renderComponentToHTML(Page, {
+        req,
+        res
+      });
       return html;
+    }
+
+    // Handler for Midway FaaS and Koa
+    async function renderWithCtx(ctx) {
+      const html = await renderComponentToHTML(Page, ctx);
+
+      ctx.set('Content-Type', 'text/html; charset=utf-8');
+      ctx.body = html;
     }
 
     export {
       render,
-      renderToHTML
+      renderToHTML,
+      renderWithCtx
     };
 
     export default render;
