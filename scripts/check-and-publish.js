@@ -61,7 +61,7 @@ function checkVersionExists(pkg, version, retry = 0) {
     `http://registry.npmjs.com/${encodeURIComponent(pkg)}/${encodeURIComponent(
       version,
     )}`,
-    { timeout: TIMEOUT }
+    { timeout: TIMEOUT },
   )
     .then(res => res.status === 200)
     .catch(err => {
