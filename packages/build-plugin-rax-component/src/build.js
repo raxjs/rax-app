@@ -26,24 +26,24 @@ module.exports = (api, options = {}) => {
     }
   });
 
-  onHook('before.build.load', async({ err, stats }) => {
+  onHook('before.build.load', async() => {
     consoleClear(true);
     
     const libBuildErr = await buildLib(api, options);
 
     if (libBuildErr) {
-      err = libBuildErr.err;
-      stats = libBuildErr.stats;
+      console.error(chalk.red('Build Lib error'));
+      console.log(libBuildErr.stats);
+      console.log(libBuildErr.err);
     }
-
-    if (!handleWebpackErr(err, stats)) {
-      return;
-    }
-
   });
 
   onHook('after.build.compile', async({ err, stats }) => {
     consoleClear(true);
+
+    if (!handleWebpackErr(err, stats)) {
+      return;
+    }
 
     console.log(chalk.green('Rax Component build finished:'));
     console.log();
