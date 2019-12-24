@@ -4,20 +4,12 @@ const { handleWebpackErr } = require("rax-compile-config");
 
 module.exports = (api, options = {}) => {
   const { registerTask, context, onHook } = api;
-  const { userConfig } = context;
-  const { devWatchLib } = userConfig;
 
   // set dev config
   const getDev = require(`./config/getDev`);
   const config = getDev(context, options);
 
   registerTask(`component-multi-demo-portal`, config);
-
-  if (devWatchLib) {
-    onHook("after.start.devServer", () => {
-      // watchLib(api, options);
-    });
-  }
 
   let devUrl = "";
   let devCompletedArr = [];

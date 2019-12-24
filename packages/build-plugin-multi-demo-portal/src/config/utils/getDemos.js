@@ -40,7 +40,6 @@ module.exports = function(rootDir) {
 
     demos.push({
       ...demo,
-      // css,html 代码片段暂不处理
       code: htmlDecode(hljs.highlight("javascript", demo.js).value),
     });
   });
