@@ -49,6 +49,25 @@ const promptQuestion = [
     default: 'spa',
   },
   {
+    type: 'list',
+    name: 'componentType',
+    message: 'What\'s your component type?',
+    when(answers) {
+      return answers.projectType === 'component';
+    },
+    choices: [
+      {
+        name: 'Create lite component(A simple component which can support miniapp)',
+        value: 'lite',
+      },
+      {
+        name: 'Create Rax UI component',
+        value: 'raxui',
+      },
+    ],
+    default: 'lite',
+  },
+  {
     type: 'checkbox',
     name: 'projectTargets',
     validate(targets) {

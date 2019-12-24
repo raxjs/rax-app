@@ -6,6 +6,8 @@
         "type": "rax",
         "targets": ["<%- projectTargets.join('", "') %>"]
       }
-    ]
+    ]<%_ if (componentType === 'raxui') { _%>,
+    "build-plugin-multi-demo-portal"
+    <%_ } %>
   ]
 }

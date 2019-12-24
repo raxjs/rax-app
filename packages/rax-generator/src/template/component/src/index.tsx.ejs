@@ -1,0 +1,52 @@
+<%_ if (componentType === 'raxui') { -%>
+import { createElement, EventHandler } from 'rax';
+import View from 'rax-view';
+import Text from 'rax-text';
+import { StyledComponentProps, useStyles } from '@rax-ui/styles';
+import StyleProvider from './style/index.tsx';
+
+export interface MyComponentProps extends StyledComponentProps<any> {
+  className?: string;
+  style?: object;
+  onChange?(value: any, event: EventHandler<any>): void;
+}
+
+const MyComponent = (props: MyComponentProps) => {
+  const { onChange, style = {}, ...others } = props;
+
+  // 样式
+  const styles = useStyles(StyleProvider, others, (classNames) => {
+    return {
+      myComponent: {
+        ...classNames('my--component'),
+        ...style,
+      },
+      myText: classNames('my--text'),
+    };
+  });
+
+  const handleClick = () => {};
+
+  return (
+    <View style={styles.myComponent} onClick={handleClick}>
+      <Text style={styles.myText}>Hello World!</Text>
+    </View>
+  );
+};
+
+export default MyComponent;
+<%_ } else { -%>
+import { createElement } from 'rax';
+import View from 'rax-view';
+import Text from 'rax-text';
+
+const MyComponent = () => {
+  return (
+    <View>
+      <Text>Hello World!</Text>
+    </View>
+  );
+};
+
+export default MyComponent;
+<%_ } -%>
