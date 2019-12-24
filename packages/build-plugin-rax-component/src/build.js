@@ -26,9 +26,9 @@ module.exports = (api, options = {}) => {
     }
   });
 
-  onHook('after.build.compile', async({ err, stats }) => {
+  onHook('before.build.load', async({ err, stats }) => {
     consoleClear(true);
-
+    
     const libBuildErr = await buildLib(api, options);
 
     if (libBuildErr) {
@@ -39,6 +39,11 @@ module.exports = (api, options = {}) => {
     if (!handleWebpackErr(err, stats)) {
       return;
     }
+
+  });
+
+  onHook('after.build.compile', async({ err, stats }) => {
+    consoleClear(true);
 
     console.log(chalk.green('Rax Component build finished:'));
     console.log();
