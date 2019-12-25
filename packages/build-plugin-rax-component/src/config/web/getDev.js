@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { hmrClient } = require('rax-compile-config');
 const getBaseWebpack = require('../getBaseWebpack');
-const getDemos = require('../utils/getDemos');
+const getDemos = require('../getDemos');
 
 module.exports = (context, options) => {
   const config = getBaseWebpack(context);
