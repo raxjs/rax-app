@@ -6,12 +6,20 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
+function tenantizeExtensions(tenant, extensions) {
+  return [
+    ...tenant ? extensions.map((ext) => `.${tenant}${ext}`) : [],
+    ...extensions,
+  ];
+}
+
 const babelConfig = getBabelConfig({
   styleSheet: true,
   custom: {
     ignore: ['**/**/*.d.ts'],
   },
 });
+
 
 module.exports = (context) => {
   const { rootDir, command, pkg } = context;
@@ -32,7 +40,7 @@ module.exports = (context) => {
     },
   ]);
 
-  config.resolve.extensions.merge(['.js', '.json', '.jsx', '.ts', '.tsx', '.html']);
+  config.resolve.extensions.merge(tenantizeExtensions('web', ['.js', '.json', '.jsx', '.ts', '.tsx', '.html']));
 
   config.module
     .rule('jsx')

@@ -29,5 +29,11 @@ module.exports = (context) => {
   config.plugin('PWAAppShell')
     .use(PWAAppShellPlugin);
 
+  const extensions = config.toConfig().resolve.extensions;
+  config.resolve.extensions.clear();
+  tenantizeExtensions('web', extensions).forEach((ext) => {
+    config.resolve.extensions.add(ext);
+  });
+
   return config;
 };

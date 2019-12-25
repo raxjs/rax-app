@@ -20,5 +20,11 @@ module.exports = (context) => {
   config.plugin('weexFrame')
     .use(WeexFrameworkBanner);
 
+  const extensions = config.toConfig().resolve.extensions;
+  config.resolve.extensions.clear();
+  tenantizeExtensions('weex', extensions).forEach((ext) => {
+    config.resolve.extensions.add(ext);
+  });
+
   return config;
 };
