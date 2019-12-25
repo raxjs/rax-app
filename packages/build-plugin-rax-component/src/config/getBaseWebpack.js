@@ -94,7 +94,9 @@ module.exports = (context) => {
       .use(OptimizeCSSAssetsPlugin);
   }
 
-  config.resolve.alias.set(pkg.name, path.resolve(rootDir, 'src/index'));
+  if (pkg.name) {
+    config.resolve.alias.set(pkg.name, path.resolve(rootDir, 'src/index'));
+  }
 
   return config;
 };
