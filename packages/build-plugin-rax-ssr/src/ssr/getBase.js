@@ -83,6 +83,7 @@ module.exports = (context) => {
 
   config.externals([
     function (ctx, request, callback) {
+      // Prevent bundling weex moudles
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, 'undefined');
       }
