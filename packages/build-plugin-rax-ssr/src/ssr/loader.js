@@ -91,7 +91,7 @@ module.exports = function() {
     }
 
     // Handler for Midway FaaS and Koa
-    async function renderWithCtx(ctx) {
+    async function renderWithContext(ctx) {
       const html = await renderComponentToHTML(Page, ctx);
 
       ctx.set('Content-Type', 'text/html; charset=utf-8');
@@ -101,7 +101,7 @@ module.exports = function() {
     export {
       render,
       renderToHTML,
-      renderWithCtx
+      renderWithContext
     };
 
     export default render;
