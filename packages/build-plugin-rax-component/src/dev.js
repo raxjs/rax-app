@@ -3,7 +3,7 @@ const qrcode = require('qrcode-terminal');
 const chalk = require('chalk');
 const path = require('path');
 const { handleWebpackErr } = require('rax-compile-config');
-const getDemos = require('./config/utils/getDemos');
+const getDemos = require('./config/getDemos');
 
 const watchLib = require('./watchLib');
 const mpDev = require('./config/miniapp/dev');
