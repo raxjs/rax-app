@@ -28,8 +28,6 @@ module.exports = async (api, options = {}) => {
   gulpParams.api = api;
   gulpParams.options = options;
 
-  gulpCompile();
-
   if (buildMiniapp || buildWechatMiniProgram) {
     if (enableTypescript) {
       gulpParams.compileMiniappTS = true;
@@ -75,5 +73,7 @@ module.exports = async (api, options = {}) => {
         }
       }
     }
+  } else {
+    gulpCompile();
   }
 };
