@@ -158,11 +158,6 @@ Page({
     this.window.$$trigger("wxload", { event: query });
   },
   onShow() {
-    // 方便调试
-    global.$$runtime = {
-      window: this.window,
-      document: this.document,
-    };
     this.window.$$trigger("wxshow");
   },
   onReady() {
@@ -170,7 +165,6 @@ Page({
     this.window.$$trigger("wxready");
   },
   onHide() {
-    global.$$runtime = null;
     this.window.$$trigger("wxhide");
   },
   onUnload() {
@@ -180,7 +174,6 @@ Page({
     this.document.body.$$recycle(); // 回收 dom 节点
 
     mp.destroyPage(this.pageId);
-    global.$$runtime = null;
 
     this.pageConfig = null;
     this.pageId = null;
