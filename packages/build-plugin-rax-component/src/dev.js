@@ -3,6 +3,7 @@ const qrcode = require('qrcode-terminal');
 const chalk = require('chalk');
 const path = require('path');
 const { handleWebpackErr } = require('rax-compile-config');
+const getDemos = require('./config/getDemos');
 
 const watchLib = require('./watchLib');
 const mpDev = require('./config/miniapp/dev');
@@ -17,18 +18,19 @@ module.exports = (api, options = {}) => {
 
   let devUrl = '';
   let devCompletedArr = [];
+  const demos = getDemos(rootDir);
 
   const asyncTask = [];
   const selfDevTargets = [];
   const customDevTargets = [];
   // set dev config
-  targets.forEach(target => {
-    if ([WEB, WEEX].indexOf(target) > - 1) {
+  targets.forEach((target) => {
+    if ([WEB, WEEX].indexOf(target) > -1) {
       const getDev = require(`./config/${target}/getDev`);
       const config = getDev(context, options);
       selfDevTargets.push(target);
       registerTask(`component-demo-${target}`, config);
-    } else if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > - 1) {
+    } else if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > -1) {
       options[target] = options[target] || {};
       addMpPlatform(target, options[target]);
       if (options[target].buildType === 'runtime') {
@@ -70,7 +72,7 @@ module.exports = (api, options = {}) => {
     });
   }
 
-  onHook('after.start.compile', async(args) => {
+  onHook('after.start.compile', async (args) => {
     devUrl = args.url;
     devCompletedArr.push(args);
     // run miniapp build while targets have web or weex, for log control
@@ -101,18 +103,21 @@ module.exports = (api, options = {}) => {
     console.log();
 
     if (~targets.indexOf(WEB)) {
-      console.log(chalk.green('[Web] Development server at:'));
-      console.log('   ', chalk.underline.white(devUrl));
+      console.log(chalk.green('[Web] Development pages:'));
+      demos.forEach((demo) => console.log('   ', chalk.underline.white(devUrl + demo.name)));
       console.log();
     }
 
     if (~targets.indexOf(WEEX)) {
-      const weexUrl = `${devUrl}/weex/index.js?wh_weex=true`;
       console.log(chalk.green('[Weex] Development server at:'));
-      console.log('   ', chalk.underline.white(weexUrl));
-      console.log();
-      qrcode.generate(weexUrl, {small: true});
-      console.log();
+
+      demos.forEach((demo) => {
+        const weexUrl = `${devUrl}/weex/${demo.name}.js?wh_weex=true`;
+        console.log('   ', chalk.underline.white(weexUrl));
+        console.log();
+        qrcode.generate(weexUrl, { small: true });
+        console.log();
+      });
     }
 
     if (~targets.indexOf(MINIAPP)) {

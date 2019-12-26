@@ -26,15 +26,20 @@ module.exports = (api, options = {}) => {
     }
   });
 
-  onHook('after.build.compile', async({ err, stats }) => {
+  onHook('before.build.load', async() => {
     consoleClear(true);
-
+    
     const libBuildErr = await buildLib(api, options);
 
     if (libBuildErr) {
-      err = libBuildErr.err;
-      stats = libBuildErr.stats;
+      console.error(chalk.red('Build Lib error'));
+      console.log(libBuildErr.stats);
+      console.log(libBuildErr.err);
     }
+  });
+
+  onHook('after.build.compile', async({ err, stats }) => {
+    consoleClear(true);
 
     if (!handleWebpackErr(err, stats)) {
       return;
