@@ -15,10 +15,6 @@ module.exports = (context) => {
       .add(filePath);
   });
 
-  config.entry('index')
-    .add(hmrClient)
-    .add(path.resolve(rootDir, 'demo/index'));
-
   config.output
     .filename('weex/[name].js');
 
