@@ -16,11 +16,11 @@ module.exports = function() {
       return createElement(Component, comProps);
     }
 
-    export default async function createApp() {
+    export default function createApp() {
       // process App.getInitialProps
-      if (Component.getInitialProps) {
-        Object.assign(comProps, await Component.getInitialProps());
-      }
+      // if (Component.getInitialProps) {
+      //   Object.assign(comProps, await Component.getInitialProps());
+      // }
       render(createElement(Entry), null, { driver: DriverUniversal });
     }
   `;
