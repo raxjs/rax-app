@@ -188,7 +188,7 @@ function handlePageXML (compilation, customComponentRoot, pageConfig, pageRoute,
       : ''
   }></element>`;
 
-  if (rem || pageStyle) {
+  if (target === WECHAT_MINIPROGRAM && (rem || pageStyle)) {
     pageXmlContent =
       `<page-meta ${rem ? 'root-font-size="{{rootFontSize}}"' : ""} ${
         pageStyle ? 'page-style="{{pageStyle}}"' : ""
