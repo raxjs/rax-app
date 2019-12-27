@@ -1,4 +1,3 @@
-const path = require('path');
 const { hmrClient } = require('rax-compile-config');
 const WeexFrameworkBanner = require('../../plugins/WeexFrameworkBannerPlugin');
 const getBaseWebpack = require('../getBaseWebpack');
