@@ -3,7 +3,7 @@
   "version": "3.0.1",
   "license": "BSD-3-Clause",
   "description": "Command line interface for Rax",
-  "main": "bin/rax.js",
+  "main": "./bin/rax.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/raxjs/rax-scripts.git"
