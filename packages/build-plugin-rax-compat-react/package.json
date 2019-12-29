@@ -1,10 +1,7 @@
 {
   "name": "build-plugin-rax-compat-react",
-  "version": "0.1.0",
-  "description": "rax app base plugins",
+  "version": "0.1.1",
+  "description": "A React compatibility plugin for Rax",
   "license": "BSD-3-Clause",
-  "main": "src/index.js",
-  "dependencies": {
-    "string-replace-loader": "^2.2.0"
-  }
+  "main": "src/index.js"
 }
