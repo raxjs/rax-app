@@ -37,9 +37,11 @@ module.exports = ({
             const outPut = memFs.readFileSync(htmlPath).toString();
             res.send(outPut);
           } else {
-            compiler.hooks.afterCompile.tap(`${entryName}SendHtml`, () => {
-              const outPut = memFs.readFileSync(htmlPath).toString();
-              res.send(outPut);
+            compiler.hooks.done.tap(`${entryName}SendHtml`, () => {
+              fs.pathExists(htmlPath, function(exists) {
+                const outPut = memFs.readFileSync(htmlPath).toString();
+                res.send(outPut);
+              });
             });
           }
         });

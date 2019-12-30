@@ -1,4 +1,5 @@
 const path = require('path');
+var fs= require('fs');
 
 module.exports = (config, context) => {
   const { rootDir, userConfig } = context;
@@ -18,12 +19,12 @@ module.exports = (config, context) => {
         res.send(outPut);
       } else {
         compiler.hooks.done.tap('sendHtml', () => {
-          try {
-            const outPut = memFs.readFileSync(htmlPath).toString();
-            res.send(outPut);
-          } catch(e) {
-            console.log('html path is not found');
-          }
+          fs.exists(htmlPath, function(exists) {
+            if (exists) {
+              const outPut = memFs.readFileSync(htmlPath).toString();
+              res.send(outPut);
+            }
+          });
         });
       }
     });
