@@ -103,7 +103,7 @@ const promptQuestion = [
       {
         name: 'Compatibility with React',
         value: 'react',
-      }
+      },
     ],
     default: false,
   },
