@@ -1,5 +1,5 @@
 const path = require('path');
-var fs= require('fs');
+const fs= require('fs');
 
 module.exports = (config, context) => {
   const { rootDir, userConfig } = context;
