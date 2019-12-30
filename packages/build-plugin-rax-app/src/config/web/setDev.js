@@ -17,7 +17,7 @@ module.exports = (config, context) => {
         const outPut = memFs.readFileSync(htmlPath).toString();
         res.send(outPut);
       } else {
-        compiler.hooks.done.tap('sendHtml', handleResponse.bind(this, req, res);
+        compiler.hooks.done.tap('sendHtml', handleResponse.bind(this, req, res));
       }
     });
   });
