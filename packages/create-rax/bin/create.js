@@ -36,9 +36,13 @@ checkRegistry()
     // This way is faster than npm dependence
     spawnSync('npm', ['install', 'rax-cli@latest', '-g', '--registry', registry], {
       stdio: 'inherit',
+      shell: process.platform === 'win32'
     });
 
-    spawnSync('rax', ['init', ...argv], { stdio: 'inherit' });
+    spawnSync('rax', ['init', ...argv], { 
+      stdio: 'inherit',
+      shell: process.platform === 'win32' 
+    });
   })
   .catch(err => {
     console.error(err);
