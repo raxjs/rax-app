@@ -35,11 +35,11 @@ checkRegistry()
     // Install rax-cli manually through fastest registry
     // This way is faster than npm dependence
     spawn.sync('npm', ['install', 'rax-cli@latest', '-g', '--registry', registry], {
-      stdio: 'inherit'
+      stdio: 'inherit',
     });
 
     spawn.sync('rax', ['init', ...argv], { 
-      stdio: 'inherit'
+      stdio: 'inherit',
     });
   })
   .catch(err => {
