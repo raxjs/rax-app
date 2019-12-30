@@ -13,5 +13,8 @@
   "bugs": {
     "url": "https://github.com/raxjs/rax-scripts/issues"
   },
+   "dependencies": {
+    "cross-spawn": "7.0.1"
+  },
   "homepage": "https://github.com/raxjs/rax-scripts#readme"
 }
