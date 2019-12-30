@@ -84,6 +84,25 @@ module.exports = (context, options = {}) => {
   if (command === 'start') {
     config.mode('development');
     config.devtool('inline-module-source-map');
+    
+    // npm start exclude node_modules
+    config.module.rule('appJSON')
+      .type("javascript/auto")
+      .test(/app\.json$/)
+      .exclude.add(/node_modules/).end();
+
+    config.module.rule('jsx')
+      .test(/\.(js|mjs|jsx)$/)
+      .exclude.add(/node_modules/).end();
+
+    config.module.rule('tsx')
+      .test(/\.(ts|tsx)?$/)
+      .exclude.add(/node_modules/).end();
+
+    config.module.rule('assets')
+      .test(/\.(svg|png|webp|jpe?g|gif)$/i)
+      .exclude.add(/node_modules/).end();
+
   } else if (command === 'build') {
     config.mode('production');
 

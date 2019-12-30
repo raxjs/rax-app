@@ -74,6 +74,28 @@ module.exports = (context) => {
   if (command === 'start') {
     config.mode('development');
     config.devtool('inline-module-source-map');
+
+    // npm start exclude node_modules
+    config.module
+      .rule('jsx')
+      .test(/\.(js|mjs|jsx)$/)
+      .exclude.add(/node_modules/).end();
+
+    config.module
+      .rule('tsx')
+      .test(/\.tsx?$/)
+      .exclude.add(/node_modules/).end();
+
+    config.module
+      .rule('md')
+      .test(/\.md$/)
+      .exclude.add(/node_modules/).end();
+
+    config.module
+      .rule('assets')
+      .test(/\.(svg|png|webp|jpe?g|gif)$/i)
+      .exclude.add(/node_modules/).end();
+
   } else if (command === 'build') {
     config.mode('production');
 
