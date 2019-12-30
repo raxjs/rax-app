@@ -1,5 +1,3 @@
-const address = require('address');
-
 module.exports = {
   defaultValue: {
     compress: true,
@@ -8,7 +6,6 @@ module.exports = {
     hot: true,
     quiet: true,
     overlay: false,
-    host: address.ip(),
     port: 9999,
   },
   validation: 'object',
