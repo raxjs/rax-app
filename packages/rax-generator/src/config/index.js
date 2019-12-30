@@ -100,6 +100,10 @@ const promptQuestion = [
         name: 'Aliyun Function Compute (FaaS)',
         value: 'faas',
       },
+      {
+        name: 'Compatibility with React',
+        value: 'react',
+      }
     ],
     default: false,
   },

@@ -29,6 +29,9 @@
     <%_ if (projectFeatures.includes('faas')) { -%>
     "build-plugin-rax-faas": "^0.1.0",
     <%_ } -%>
+    <%_ if (projectFeatures.includes('react')) { -%>
+    "build-plugin-rax-compat-react": "^0.1.0",
+    <%_ } -%>
     <%_ if (appType === 'mpa') { -%>
     "build-plugin-rax-multi-pages": "^0.1.2",
     <%_ } %>
