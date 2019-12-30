@@ -31,20 +31,15 @@ module.exports = ({
 
     if (targets.includes('web')) {
       entries.forEach(({ entryName }) => {
-        app.get(`/pages/${entryName}`, function(req, res) {
+        app.get(`/pages/${entryName}`, function handleResponse(req, res) {
           const htmlPath = path.resolve(rootDir, outputDir, `web/${entryName}.html`);
           if (memFs.existsSync(htmlPath)) {
             const outPut = memFs.readFileSync(htmlPath).toString();
             res.send(outPut);
           } else {
-            compiler.hooks.done.tap(`${entryName}SendHtml`, () => {
-              fs.pathExists(htmlPath, function(exists) {
-                if (exists) {
-                  const outPut = memFs.readFileSync(htmlPath).toString();
-                  res.send(outPut);
-                }
-              });
-            });
+            setTimeout(() => {
+              compiler.hooks.done.tap(`${entryName}SendHtml`, handleResponse.bind(this, req, res));
+            }, 500);
           }
         });
       });

@@ -1,5 +1,4 @@
 const path = require('path');
-const fs= require('fs');
 
 module.exports = (config, context) => {
   const { rootDir, userConfig } = context;
@@ -13,19 +12,14 @@ module.exports = (config, context) => {
     const memFs = compiler.outputFileSystem;
 
     // not match .js .html files
-    app.get(/^\/?((?!\.(js|html|css|json)).)*$/, function(req, res) {
+    app.get(/^\/?((?!\.(js|html|css|json)).)*$/, function handleResponse(req, res) {
       if (memFs.existsSync(htmlPath)) {
         const outPut = memFs.readFileSync(htmlPath).toString();
         res.send(outPut);
       } else {
-        compiler.hooks.done.tap('sendHtml', () => {
-          fs.exists(htmlPath, function(exists) {
-            if (exists) {
-              const outPut = memFs.readFileSync(htmlPath).toString();
-              res.send(outPut);
-            }
-          });
-        });
+        setTimeout(() => {
+          compiler.hooks.done.tap('sendHtml', handleResponse.bind(this, req, res));
+        }, 500);
       }
     });
   });
