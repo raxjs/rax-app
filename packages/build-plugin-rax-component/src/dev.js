@@ -3,6 +3,7 @@ const qrcode = require('qrcode-terminal');
 const chalk = require('chalk');
 const path = require('path');
 const { handleWebpackErr } = require('rax-compile-config');
+const getDemos = require('./config/getDemos');
 
 const watchLib = require('./watchLib');
 const mpDev = require('./config/miniapp/dev');
@@ -14,24 +15,27 @@ module.exports = (api, options = {}) => {
   const { rootDir, userConfig } = context;
   const { devWatchLib } = userConfig;
   const { targets = [] } = options;
-  
+
+  let devUrl = '';
+  let devCompletedArr = [];
+  const demos = getDemos(rootDir);
+
   const asyncTask = [];
   const selfDevTargets = [];
   const customDevTargets = [];
   // set dev config
-  targets.forEach(target => {
-    if ([WEB, WEEX].indexOf(target) > - 1) {
+  targets.forEach((target) => {
+    if ([WEB, WEEX].indexOf(target) > -1) {
       const getDev = require(`./config/${target}/getDev`);
       const config = getDev(context, options);
       selfDevTargets.push(target);
       registerTask(`component-demo-${target}`, config);
-    } else if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > - 1) {
-      const getDev = require(`./config/miniapp/getDev`);
-      const config = getDev(context, options, target);
-      if (target === WECHAT_MINIPROGRAM) {
-        options[target].platform = 'wechat';
-      }
+    } else if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > -1) {
+      options[target] = options[target] || {};
+      addMpPlatform(target, options[target]);
       if (options[target].buildType === 'runtime') {
+        const getDev = require(`./config/miniapp/getDev`);
+        const config = getDev(context, options, target);
         selfDevTargets.push(target);
         registerTask(`component-demo-${target}`, config);
       } else {
@@ -39,7 +43,6 @@ module.exports = (api, options = {}) => {
       }
     }
   });
-
   customDevTargets.forEach(target => {
     if (selfDevTargets.length) {
       onHook('after.start.devServer', () => {
@@ -63,8 +66,21 @@ module.exports = (api, options = {}) => {
     });
   }
 
-  let devUrl = '';
-  let devCompletedArr = [];
+  if (devWatchLib) {
+    onHook('after.start.devServer', () => {
+      watchLib(api, options);
+    });
+  }
+
+  onHook('after.start.compile', async (args) => {
+    devUrl = args.url;
+    devCompletedArr.push(args);
+    // run miniapp build while targets have web or weex, for log control
+    if (devCompletedArr.length === customDevTargets.length + 1) {
+      devCompileLog();
+    }
+  });
+
 
   function devCompileLog() {
     consoleClear(true);
@@ -87,18 +103,21 @@ module.exports = (api, options = {}) => {
     console.log();
 
     if (~targets.indexOf(WEB)) {
-      console.log(chalk.green('[Web] Development server at:'));
-      console.log('   ', chalk.underline.white(devUrl));
+      console.log(chalk.green('[Web] Development pages:'));
+      demos.forEach((demo) => console.log('   ', chalk.underline.white(devUrl + demo.name)));
       console.log();
     }
 
     if (~targets.indexOf(WEEX)) {
-      const weexUrl = `${devUrl}/weex/index.js?wh_weex=true`;
       console.log(chalk.green('[Weex] Development server at:'));
-      console.log('   ', chalk.underline.white(weexUrl));
-      console.log();
-      qrcode.generate(weexUrl, {small: true});
-      console.log();
+
+      demos.forEach((demo) => {
+        const weexUrl = `${devUrl}/weex/${demo.name}.js?wh_weex=true`;
+        console.log('   ', chalk.underline.white(weexUrl));
+        console.log();
+        qrcode.generate(weexUrl, { small: true });
+        console.log();
+      });
     }
 
     if (~targets.indexOf(MINIAPP)) {
@@ -113,63 +132,17 @@ module.exports = (api, options = {}) => {
       console.log();
     }
   }
-
-  if (~targets.indexOf(MINIAPP)) {
-    const config = options[MINIAPP] || {};
-    if (targets.length > 2) {
-      onHook('after.start.devServer', () => {
-        mpDev(context, config, (args) => {
-          devCompletedArr.push(args);
-          if (devCompletedArr.length === 2) {
-            devCompileLog();
-          }
-        });
-      });
-    } else {
-      mpDev(context, config, (args) => {
-        devCompletedArr.push(args);
-        devCompileLog();
-      });
-    }
-  }
-
-  if (~targets.indexOf(WECHAT_MINIPROGRAM)) {
-    const config = Object.assign({
-      platform: 'wechat',
-    }, options[WECHAT_MINIPROGRAM]);
-    if (targets.length > 2) {
-      onHook('after.start.devServer', () => {
-        mpDev(context, config, (args) => {
-          devCompletedArr.push(args);
-          if (devCompletedArr.length === 2) {
-            devCompileLog();
-          }
-        });
-      });
-    } else {
-      mpDev(context, config, (args) => {
-        devCompletedArr.push(args);
-        devCompileLog();
-      });
-    }
-  }
-
-  if (devWatchLib) {
-    onHook('after.start.devServer', () => {
-      watchLib(api, options);
-    });
-  }
-
-  onHook('after.start.compile', async(args) => {
-    devUrl = args.url;
-    devCompletedArr.push(args);
-    // run miniapp build while targets have web or weex, for log control
-    if (~targets.indexOf(MINIAPP) || ~targets.indexOf(WECHAT_MINIPROGRAM)) {
-      if (devCompletedArr.length === 2) {
-        devCompileLog();
-      }
-    } else {
-      devCompileLog();
-    }
-  });
 };
+
+/**
+ * Add mp platform
+ * */
+function addMpPlatform(target, originalConfig = {}) {
+  switch (target) {
+    case WECHAT_MINIPROGRAM:
+      originalConfig.platform = 'wechat';
+      break;
+    default:
+      break;
+  }
+}

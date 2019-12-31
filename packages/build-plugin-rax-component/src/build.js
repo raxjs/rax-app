@@ -12,7 +12,7 @@ const buildLib = require('./buildLib');
 const { WEB, WEEX } = require('./constants');
 
 module.exports = (api, options = {}) => {
-  const { registerTask, context, onHook } = api;
+  const { registerTask, modifyUserConfig, context, onHook } = api;
   const { targets = [] } = options;
   const { rootDir, userConfig } = context;
   const { distDir, outputDir } = userConfig;
@@ -20,19 +20,26 @@ module.exports = (api, options = {}) => {
   targets.forEach(target => {
     if (target === WEEX || target === WEB) {
       const config = getDistConfig(context, options);
-      registerTask('component', config);
+      // compress and minify all files
+      modifyUserConfig('outputDir', 'build');
+      registerTask(`component-build-${target}`, config);
     }
   });
 
-  onHook('after.build', async({ err, stats }) => {
+  onHook('before.build.load', async() => {
     consoleClear(true);
-
+    
     const libBuildErr = await buildLib(api, options);
 
     if (libBuildErr) {
-      err = libBuildErr.err;
-      stats = libBuildErr.stats;
+      console.error(chalk.red('Build Lib error'));
+      console.log(libBuildErr.stats);
+      console.log(libBuildErr.err);
     }
+  });
+
+  onHook('after.build.compile', async({ err, stats }) => {
+    consoleClear(true);
 
     if (!handleWebpackErr(err, stats)) {
       return;

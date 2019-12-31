@@ -13,7 +13,6 @@ module.exports = function() {
     absoluteShellPath,
     absolutePagePath,
     absoluteAppJSONPath,
-    publicPath,
     pageName,
     pagePath,
     styles = [],
@@ -24,14 +23,11 @@ module.exports = function() {
   const shellStr = hasShell ? `import Shell from '${absoluteShellPath}'` : 'const Shell = function (props) { return props.children };';
 
   const renderHtmlFnc = `
-    async function renderComponentToHTML(req, res, Component) {
-      const ctx = {
-        req,
-        res
-      };
+    async function renderComponentToHTML(Component, ctx) {
 
       const shellData = await getInitialProps(Shell, ctx);
       const pageData = await getInitialProps(Component, ctx);
+      const documentData = await getInitialProps(Document, ctx);
 
       const initialData = {
         shellData,
@@ -45,18 +41,24 @@ module.exports = function() {
         defaultUnit: 'rpx'
       });
 
-      const documentProps = {
-        initialHtml: initialHtml,
-        initialData: JSON.stringify(initialData),
-        publicPath: '${publicPath}',
-        pageName: '${pageName}',
-        styles: ${JSON.stringify(styles)},
-        scripts: ${JSON.stringify(scripts)}
+      // This loader is executed after babel, so need to be tansformed to ES5.
+      const DocumentContextProvider = function() {};
+      DocumentContextProvider.prototype.getChildContext = function() {
+        return {
+          __initialHtml: initialHtml,
+          __initialData: JSON.stringify(initialData),
+          __pageName: '${pageName}',
+          __styles: ${JSON.stringify(styles)},
+          __scripts: ${JSON.stringify(scripts)},
+        };
+      };
+      DocumentContextProvider.prototype.render = function() {
+        return createElement(Document, documentData);
       };
 
-      await getInitialProps(Document, ctx);
-      const documentElement = createElement(Document, documentProps);;
-      const html = '<!doctype html>' + renderer.renderToString(documentElement);
+      const DocumentContextProviderElement = createElement(DocumentContextProvider);
+
+      const html = '<!doctype html>' + renderer.renderToString(DocumentContextProviderElement);
 
       return html;
     }
@@ -81,13 +83,25 @@ module.exports = function() {
     }
 
     async function renderToHTML(req, res) {
-      const html = await renderComponentToHTML(req, res, Page);
+      const html = await renderComponentToHTML(Page, {
+        req,
+        res
+      });
       return html;
+    }
+
+    // Handler for Midway FaaS and Koa
+    async function renderWithContext(ctx) {
+      const html = await renderComponentToHTML(Page, ctx);
+
+      ctx.set('Content-Type', 'text/html; charset=utf-8');
+      ctx.body = html;
     }
 
     export {
       render,
-      renderToHTML
+      renderToHTML,
+      renderWithContext
     };
 
     export default render;

@@ -1,11 +1,11 @@
 {
   "name": "build-plugin-rax-ssr",
-  "version": "0.1.1",
+  "version": "1.0.1",
   "description": "rax ssr plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
   "peerDependencies": {
-    "build-plugin-rax-app": "^0.1.0"
+    "build-plugin-rax-app": "^1.0.0"
   },
   "dependencies": {
     "@babel/core": "7.2.0",

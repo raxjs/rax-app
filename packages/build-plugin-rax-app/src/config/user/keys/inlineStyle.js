@@ -124,5 +124,11 @@ function setCSSRule(configRule, context, value) {
       .use('postcss')
       .loader(require.resolve('postcss-loader'))
       .options(postcssConfig);
+  } else if (taskName === NODE && !value) {
+    // Do not generate CSS file, it will be built by web complier
+    configRule
+      .use('ignorecss')
+        .loader(require.resolve('../../../loaders/ignoreLoader'))
+        .end();
   }
 }

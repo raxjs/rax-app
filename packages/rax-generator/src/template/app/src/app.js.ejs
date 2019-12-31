@@ -1,0 +1,39 @@
+<%_ if (appType === 'spa' || appType === 'mpa') { -%>
+import { runApp } from 'rax-app';
+import appConfig from './app.json';
+
+runApp(appConfig);
+<%_ } else { -%>
+<%_ const hasFaaS = projectFeatures.includes('faas') -%>
+import { createElement, render<%_ if (hasFaaS) { -%>, useState, useEffect<%_ } -%> } from 'rax';
+import View from 'rax-view';
+import Text from 'rax-text';
+import UniversalDriver from 'driver-universal';
+
+const App = () => {
+<%_ if (hasFaaS) { -%>
+  const [account, setAccount] = useState('');
+
+  useEffect(() => {
+    fetch(`${__FAAS_API__}/user`)
+      .then(res => {
+        return res.json();
+      })
+      .then(data => {
+        setAccount(data.account);
+      });
+  }, []);
+<%_ } -%>
+
+  return (
+    <View>
+      <Text>Hello World!</Text>
+      <%_ if (hasFaaS) { -%>
+      <Text>Current user: {account}</Text>
+      <%_ } -%>
+    </View>
+  );
+};
+
+render(<App />, null, { driver: UniversalDriver });
+<%_ } -%>
