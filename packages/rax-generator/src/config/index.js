@@ -61,7 +61,7 @@ const promptQuestion = [
         value: 'lite',
       },
       {
-        name: 'Create ui component',
+        name: 'Create UI component (A UI component which contains eslint and multi-theme solution)',
         value: 'ui',
       },
     ],
