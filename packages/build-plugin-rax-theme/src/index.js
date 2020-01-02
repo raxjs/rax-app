@@ -1,4 +1,4 @@
-module.exports = (api, options = {}) => {
+module.exports = (api) => {
   const { onGetWebpackConfig } = api;
 
   onGetWebpackConfig((config) => {
@@ -8,7 +8,7 @@ module.exports = (api, options = {}) => {
       .use('css')
       .loader(require.resolve('stylesheet-loader'))
       .options({
-        theme: true
+        theme: true,
       });
 
     config.module
@@ -20,7 +20,7 @@ module.exports = (api, options = {}) => {
       .use('less')
       .loader(require.resolve('less-loader'))
       .options({
-        theme: true
+        theme: true,
       });
   });
 };
