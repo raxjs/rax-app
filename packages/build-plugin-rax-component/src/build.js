@@ -8,6 +8,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 
 const getDistConfig = require('./config/getDistConfig');
 const buildLib = require('./buildLib');
+const setPlatformExtensions = require('./config/setPlatformExtensions');
 
 const { WEB, WEEX } = require('./constants');
 
@@ -20,6 +21,7 @@ module.exports = (api, options = {}) => {
   targets.forEach(target => {
     if (target === WEEX || target === WEB) {
       const config = getDistConfig(context, options);
+      if(target === WEB) setPlatformExtensions(config, target);
       // compress and minify all files
       modifyUserConfig('outputDir', 'build');
       registerTask(`component-build-${target}`, config);
@@ -28,7 +30,7 @@ module.exports = (api, options = {}) => {
 
   onHook('before.build.load', async() => {
     consoleClear(true);
-    
+
     const libBuildErr = await buildLib(api, options);
 
     if (libBuildErr) {

@@ -3,11 +3,14 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { hmrClient } = require('rax-compile-config');
 const getBaseWebpack = require('../getBaseWebpack');
 const getDemos = require('../getDemos');
+const setPlatformExtensions = require('../setPlatformExtensions');
 
 module.exports = (context, options) => {
   const config = getBaseWebpack(context);
   const { rootDir } = context;
   const demos = getDemos(rootDir);
+
+  setPlatformExtensions(config, 'web');
 
   demos.forEach(({ name, filePath }) => {
     config

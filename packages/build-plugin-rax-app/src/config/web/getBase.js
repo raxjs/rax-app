@@ -2,11 +2,13 @@ const UniversalDocumentPlugin = require('../../plugins/UniversalDocumentPlugin')
 const PWAAppShellPlugin = require('../../plugins/PWAAppShellPlugin');
 const getWebpackBase = require('../getWebpackBase');
 const setEntry = require('../setEntry');
+const setPlatformExtensions = require('../setPlatformExtensions');
 
 module.exports = (context) => {
   const { command } = context;
   const config = getWebpackBase(context);
   setEntry(config, context, 'web');
+  setPlatformExtensions(config, 'web');
 
   config.output.filename('web/[name].js');
 
@@ -28,12 +30,6 @@ module.exports = (context) => {
 
   config.plugin('PWAAppShell')
     .use(PWAAppShellPlugin);
-
-  const extensions = config.toConfig().resolve.extensions;
-  config.resolve.extensions.clear();
-  tenantizeExtensions('web', extensions).forEach((ext) => {
-    config.resolve.extensions.add(ext);
-  });
 
   return config;
 };
