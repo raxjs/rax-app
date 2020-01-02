@@ -1,0 +1,17 @@
+{
+  "name": "build-plugin-rax-theme",
+  "version": "0.0.1-2",
+  "description": "multi demo portal page for rax component developmente",
+  "license": "BSD-3-Clause",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git"
+  },
+  "peerDependencies": {
+    "rax": "^1.0.0"
+  },
+  "dependencies": {
+    "less-loader": "^5.0.0",
+    "stylesheet-loader": "^0.6.5"
+  }
+}
