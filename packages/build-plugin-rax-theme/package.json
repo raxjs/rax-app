@@ -7,9 +7,6 @@
   "repository": {
     "type": "git"
   },
-  "peerDependencies": {
-    "rax": "^1.0.0"
-  },
   "dependencies": {
     "less-loader": "^5.0.0",
     "stylesheet-loader": "^0.6.5"
