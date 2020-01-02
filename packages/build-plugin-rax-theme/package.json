@@ -1,7 +1,7 @@
 {
   "name": "build-plugin-rax-theme",
-  "version": "0.0.1-2",
-  "description": "multi demo portal page for rax component developmente",
+  "version": "0.0.1",
+  "description": "Switching project themes with CSS variables",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
   "repository": {
