@@ -1,8 +1,6 @@
-# @alib/build-scripts [![npm](https://img.shields.io/npm/v/@alib/build-scripts.svg)](https://www.npmjs.com/package/@alib/build-scripts)
+# Rax Scripts
 
-Rax official engineering tool.
-
-`@alib/build-scripts` is based on webpack, supports various scenarios through the plugin system, and provides flexible webpack configuration capabilities based on `webpack-chain`. Users can realize engineering requirements by combining various plugins.
+Rax official engineering tools use `@alib/build-scripts` . `@alib/build-scripts` is based on webpack, supports various scenarios through the plugin system, and provides flexible webpack configuration capabilities based on `webpack-chain`. Users can realize engineering requirements by combining various plugins.
 
 ## Quick start
 
