@@ -48,13 +48,10 @@ module.exports = (config, context) => {
 
   appJSON.routes.forEach((route) => {
     const pathName = getRouteName(route, rootDir);
-    let routePath = route.path;
-    if (isMultiPages) {
-      routePath = `/pages/${pathName}`;
-    }
     routes.push({
-      path: routePath,
+      path: isMultiPages ? `/pages/${pathName}` : route.path,
       component: path.join(distDir, filename.replace('[name]', pathName)),
+      entryName: pathName,
     });
   });
 
@@ -62,6 +59,19 @@ module.exports = (config, context) => {
 
   config.devServer.set('before', (app, devServer) => {
     const memFs = devServer.compiler.compilers[0].outputFileSystem;
+
+    if (isMultiPages) {
+      // Render the page hub provided by build-plugin-rax-multi-pages
+      app.get('/', function(req, res) {
+        const renderPageHub = require('build-plugin-rax-multi-pages/src/renderPageHub');
+        const html = renderPageHub({
+          entries: routes,
+          hasWeb: true,
+        });
+        res.send(html);
+      });
+    }
+
     routes.forEach((route) => {
       app.get(route.path, function(req, res) {
         const bundleContent = memFs.readFileSync(route.component, 'utf8');
