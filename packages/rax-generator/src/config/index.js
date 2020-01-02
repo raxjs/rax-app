@@ -57,15 +57,15 @@ const promptQuestion = [
     },
     choices: [
       {
-        name: 'Create lite component(A simple component which can support miniapp)',
-        value: 'lite',
+        name: 'Create base component(A simple component which can support miniapp)',
+        value: 'base',
       },
       {
         name: 'Create UI component (A UI component which contains multi-theme solution)',
         value: 'ui',
       },
     ],
-    default: 'lite',
+    default: 'base',
   },
   {
     type: 'checkbox',

@@ -37,7 +37,7 @@ function getIgnore(args) {
       'demo/wechat-miniprogram',
       'demo/index.jsx.ejs',
     ];
-  } else if (componentType === 'lite') {
+  } else if (componentType === 'base') {
     list = [
       'demo/basic.md.ejs',
       'demo/advance.md.ejs',
