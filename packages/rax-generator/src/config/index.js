@@ -49,6 +49,25 @@ const promptQuestion = [
     default: 'spa',
   },
   {
+    type: 'list',
+    name: 'componentType',
+    message: 'What\'s your component type?',
+    when(answers) {
+      return answers.projectType === 'component';
+    },
+    choices: [
+      {
+        name: 'Create base component (A simple component which can support miniapp)',
+        value: 'base',
+      },
+      {
+        name: 'Create UI component (A UI component which contains multi-theme solution)',
+        value: 'ui',
+      },
+    ],
+    default: 'base',
+  },
+  {
     type: 'checkbox',
     name: 'projectTargets',
     validate(targets) {
@@ -93,7 +112,10 @@ const promptQuestion = [
         value: 'ssr',
         disabled: (answers) => {
           // Lite app is not support SSR
-          return answers.appType === 'lite' || !answers.projectTargets.includes('web');
+          return (
+            answers.appType === 'lite' ||
+            !answers.projectTargets.includes('web')
+          );
         },
       },
       {
