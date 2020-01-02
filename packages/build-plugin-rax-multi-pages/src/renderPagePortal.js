@@ -11,4 +11,4 @@ module.exports = (config) => {
   const resultContent = compileTemplateContent(config);
   
   return resultContent;
-}
+};
