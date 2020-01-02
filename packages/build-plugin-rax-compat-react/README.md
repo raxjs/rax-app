@@ -7,6 +7,7 @@
 ```json
 {
   "plugins": [
+    ["build-plugin-rax-app", {"targets": ["web"]}],
     "build-plugin-rax-compat-react"
   ]
 }
