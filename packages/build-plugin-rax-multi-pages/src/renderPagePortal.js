@@ -4,7 +4,7 @@ const hbs = require('handlebars');
 
 const MAIN_TEMPLATE = path.join(__dirname, './template/main.hbs');
 
-// This module is also be used in build-plugin-rax-ssr to render page hub.
+// This module is also be used in build-plugin-rax-ssr to render page portal.
 module.exports = (config) => {
   const hbsTemplateContent = fs.readFileSync(MAIN_TEMPLATE, 'utf-8');
   const compileTemplateContent = hbs.compile(hbsTemplateContent);

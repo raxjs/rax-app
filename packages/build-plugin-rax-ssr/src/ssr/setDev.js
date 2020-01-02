@@ -61,10 +61,11 @@ module.exports = (config, context) => {
     const memFs = devServer.compiler.compilers[0].outputFileSystem;
 
     if (isMultiPages) {
-      // Render the page hub provided by build-plugin-rax-multi-pages
+      const renderPagePortal = require('build-plugin-rax-multi-pages/src/renderPagePortal');
+      
+      // Render the page portal provided by build-plugin-rax-multi-pages
       app.get('/', function(req, res) {
-        const renderPageHub = require('build-plugin-rax-multi-pages/src/renderPageHub');
-        const html = renderPageHub({
+        const html = renderPagePortal({
           entries: routes,
           hasWeb: true,
         });

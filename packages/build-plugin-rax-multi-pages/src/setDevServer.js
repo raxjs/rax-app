@@ -1,5 +1,5 @@
 const path = require('path');
-const renderPageHub = require('./renderPageHub');
+const renderPagePortal = require('./renderPagePortal');
 
 module.exports = ({
   config,
@@ -15,7 +15,7 @@ module.exports = ({
     const memFs = compiler.outputFileSystem;
 
     app.get('/', function(req, res) {
-      const resultContent = renderPageHub({
+      const resultContent = renderPagePortal({
         entries,
         hasWeb: targets.includes('web'),
         hasWeex: targets.includes('weex'),
