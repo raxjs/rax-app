@@ -57,7 +57,7 @@ const promptQuestion = [
     },
     choices: [
       {
-        name: 'Create base component(A simple component which can support miniapp)',
+        name: 'Create base component (A simple component which can support miniapp)',
         value: 'base',
       },
       {
