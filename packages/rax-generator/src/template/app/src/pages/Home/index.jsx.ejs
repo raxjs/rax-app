@@ -1,5 +1,6 @@
-<%_ const isFaaS = projectFeatures.includes('faas') -%>
-import { createElement<%_ if (isFaaS) { -%>, useState, useEffect<%_ } -%> } from 'rax';
+<%_ const useFaaS = projectFeatures.includes('faas') -%>
+<%_ const useReact = projectFeatures.includes('react') -%>
+import { createElement<%_ if (useFaaS) { -%>, useState, useEffect<%_ } -%> } from '<%_ if (useReact) { -%>react<%_ } else { -%>rax<%_ } -%>';
 import View from 'rax-view';
 import Text from 'rax-text';
 
@@ -8,7 +9,7 @@ import styles from './index.css';
 import Logo from '../../components/Logo';
 
 export default function Home() {
-<%_ if (isFaaS) { -%>
+<%_ if (useFaaS) { -%>
   const [account, setAccount] = useState('');
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function Home() {
     <View style={styles.home}>
       <Logo />
       <Text style={styles.title}>Welcome to Your Rax App</Text>
-      <%_ if (isFaaS) { -%>
+      <%_ if (useFaaS) { -%>
       <Text style={styles.info}>Current user: {account}</Text>
       <%_ } -%>
       <Text style={styles.info}>More information about Rax</Text>
