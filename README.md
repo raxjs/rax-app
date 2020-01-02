@@ -10,7 +10,7 @@ Install the latest version and initialize the project
 $ npm init rax my-app
 ```
 
-## Install
+## Use by installation
 
 ```bash
 $ npm install @alib/build-scripts --save-dev
