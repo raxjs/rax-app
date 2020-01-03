@@ -90,13 +90,3 @@ Build Progressive web application
 ### build-plugin-rax-ssr
 
 Build  Server-side rendering application (SSR)
-
-
-
-
-
-
-
-
-
-
