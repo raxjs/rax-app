@@ -42,11 +42,7 @@ const packageConfigJsonTmpl = require("./tmpl/package.tmpl.json");
 
 process.env.isMiniprogram = true; // 设置环境变量
 const globalVars = [
-  "navigator",
-  "HTMLElement",
-  "localStorage",
-  "sessionStorage",
-  "location",
+  "HTMLElement"
 ];
 
 /**
@@ -648,7 +644,7 @@ class MpPlugin {
 
           // 记录
           let ext = extMatch[1];
-          ext = (ext === "wxss" || ext === 'css') ? "css" : ext;
+          ext = (ext === 'wxss' || ext === 'css' || ext === 'acss') ? 'css' : ext;
           assets[ext].push(filePath);
 
           // 插入反查表
