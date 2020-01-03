@@ -17,7 +17,7 @@ function checkComponentAttr({ props = [] }, name, domNode, destData, oldData) {
   // 补充 id、class 和 style
   const newId = domNode.id;
   if (!oldData || oldData.id !== newId) destData.id = newId;
-  const newClass = `wx-comp-${name} node-${
+  const newClass = `builtin-component-${name} node-${
     domNode.$$nodeId
   } ${domNode.className || ""}`;
   if (!oldData || oldData.class !== newClass) destData.class = newClass;

@@ -155,21 +155,21 @@ Page({
     });
     this.app = this.window.createApp();
     this.window.$$trigger("load");
-    this.window.$$trigger("wxload", { event: query });
+    this.window.$$trigger("pageLoad", { event: query });
   },
   onShow() {
-    this.window.$$trigger("wxshow");
+    this.window.$$trigger("pageShow");
   },
   onReady() {
     if (this.pageConfig.loadingText) APINamespace.hideLoading();
-    this.window.$$trigger("wxready");
+    this.window.$$trigger("pageReady");
   },
   onHide() {
-    this.window.$$trigger("wxhide");
+    this.window.$$trigger("pageHide");
   },
   onUnload() {
     this.window.$$trigger("beforeunload");
-    this.window.$$trigger("wxunload");
+    this.window.$$trigger("pageUnload");
     if (this.app && this.app.$destroy) this.app.$destroy();
     this.document.body.$$recycle(); // 回收 dom 节点
 

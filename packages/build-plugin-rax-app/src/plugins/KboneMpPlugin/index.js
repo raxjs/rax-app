@@ -648,7 +648,7 @@ class MpPlugin {
 
           // 记录
           let ext = extMatch[1];
-          ext = (ext === "wxss" || ext === 'css') ? "css" : ext;
+          ext = (ext === 'wxss' || ext === 'css' || ext === 'acss') ? 'css' : ext;
           assets[ext].push(filePath);
 
           // 插入反查表
