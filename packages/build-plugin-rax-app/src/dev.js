@@ -113,9 +113,14 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     if (targets.includes(WEEX)) {
       // Use Weex App to scan ip address (mobile phone can't visit localhost).
-      const weexUrl = `${devUrl}weex/index.js?wh_weex=true`.replace(/^http:\/\/localhost/gi, function () {
+      const weexUrl = `${devUrl}weex/index.js?wh_weex=true`.replace(/^http:\/\/localhost/gi, function (match) {
         // Called when matched
-        return `http://${ip.address()}`;
+        try {
+          return `http://${ip.address()}`;
+        } catch (error) {
+          console.log(chalk.yellow(`Get local IP address failed: ${error.toString()}`));
+          return match;
+        }
       });
       console.log(chalk.green('[Weex] Development server at:'));
       console.log('   ', chalk.underline.white(weexUrl));
