@@ -25,8 +25,32 @@ function ejsRender(data) {
 }
 
 // get ignore files of template
-function getIgnore(appType, features) {
-  const list = appType === 'lite' ? ['src/components', 'src/pages', 'src/app.json.ejs'] : [];
+function getIgnore(args) {
+  const { appType, componentType, features } = args;
+  let list = [];
+
+  if (appType === 'lite') {
+    list = ['src/components', 'src/pages', 'src/app.json.ejs'];
+  } else if (componentType === 'ui') {
+    list = [
+      'demo/miniapp',
+      'demo/wechat-miniprogram',
+      'demo/index.jsx.ejs',
+    ];
+  } else if (componentType === 'base') {
+    list = [
+      'demo/basic.md.ejs',
+      'demo/advance.md.ejs',
+      'src/style',
+      'CHANGELOG.md.ejs',
+      'README.en-US.md.ejs',
+      '.commitlintrc.js.ejs',
+      '.eslintrc.js.ejs',
+      '.eslintignore.ejs',
+      '.prettierrc.ejs',
+      '.prettierignore.ejs',
+    ];
+  }
 
   if (Array.isArray(features) && !features.includes('faas')) {
     list.push('src/api');
@@ -49,7 +73,7 @@ function getIgnore(appType, features) {
  * @param  {Array} args.projectFeatures- The features of project
  * @return {Promise}
  */
-module.exports = function(template, args) {
+module.exports = function (template, args) {
   const projectDir = args.root;
   const ejsData = {
     ...args,
@@ -59,7 +83,7 @@ module.exports = function(template, args) {
   new TemplateProcesser(template)
     .use(ejsRender(ejsData))
     .use(renameFile)
-    .ignore(getIgnore(args.appType, args.projectFeatures))
+    .ignore(getIgnore(args))
     .done(projectDir);
 
   process.chdir(projectDir);

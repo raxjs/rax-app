@@ -1,4 +1,3 @@
-const path = require('path');
 const { hmrClient } = require('rax-compile-config');
 const WeexFrameworkBanner = require('../../plugins/WeexFrameworkBannerPlugin');
 const getBaseWebpack = require('../getBaseWebpack');
@@ -14,10 +13,6 @@ module.exports = (context) => {
       .add(hmrClient)
       .add(filePath);
   });
-
-  config.entry('index')
-    .add(hmrClient)
-    .add(path.resolve(rootDir, 'demo/index'));
 
   config.output
     .filename('weex/[name].js');
