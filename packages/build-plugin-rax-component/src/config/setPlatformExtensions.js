@@ -1,5 +1,5 @@
 /**
- * 添加平台特定的文件扩展名
+ * Platform-specific extensions
  * @param config
  * @param platform
  * @returns {*[]}
