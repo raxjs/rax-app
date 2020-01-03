@@ -42,11 +42,7 @@ const packageConfigJsonTmpl = require("./tmpl/package.tmpl.json");
 
 process.env.isMiniprogram = true; // 设置环境变量
 const globalVars = [
-  "navigator",
-  "HTMLElement",
-  "localStorage",
-  "sessionStorage",
-  "location",
+  "HTMLElement"
 ];
 
 /**
