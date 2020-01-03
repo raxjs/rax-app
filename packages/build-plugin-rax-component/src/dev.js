@@ -114,7 +114,10 @@ module.exports = (api, options = {}) => {
 
       demos.forEach((demo) => {
         // Use Weex App to scan ip address (mobile phone can't visit localhost).
-        const weexUrl = `${devUrl.replace(/^http:\/\/localhost/gi, () => `http://${ip.address()}`)}/weex/${demo.name}.js?wh_weex=true`;
+        const weexUrl = `${devUrl}weex/index.js?wh_weex=true`.replace(/^http:\/\/localhost/gi, function () {
+          // Called when matched
+          return `http://${ip.address()}`;
+        });
         console.log('   ', chalk.underline.white(weexUrl));
         console.log();
         qrcode.generate(weexUrl, { small: true });
