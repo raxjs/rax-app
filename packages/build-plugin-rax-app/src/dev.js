@@ -1,3 +1,4 @@
+const ip = require('ip');
 const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const qrcode = require('qrcode-terminal');
@@ -111,7 +112,8 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     }
 
     if (targets.includes(WEEX)) {
-      const weexUrl = `${devUrl}weex/index.js?wh_weex=true`;
+      // Use Weex App to scan ip address (mobile phone can't visit localhost).
+      const weexUrl = `${devUrl.replace(/^http:\/\/localhost/gi, () => `http://${ip.address()}`)}weex/index.js?wh_weex=true`;
       console.log(chalk.green('[Weex] Development server at:'));
       console.log('   ', chalk.underline.white(weexUrl));
       console.log();
