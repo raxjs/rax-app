@@ -1,5 +1,6 @@
-<%_ const hasSSR = projectFeatures.includes('ssr') -%>
-<%_ const hasFaaS = projectFeatures.includes('faas') -%>
+<%_ const useSSR = projectFeatures.includes('ssr') -%>
+<%_ const useFaaS = projectFeatures.includes('faas') -%>
+<%_ const useReact = projectFeatures.includes('react') -%>
 {
   "plugins": [
     [
@@ -7,9 +8,9 @@
       {
         "targets": ["<%- projectTargets.join('", "') %>"]
       }
-    ]<%_ if (hasSSR) { -%>,
+    ]<%_ if (useSSR) { -%>,
     "build-plugin-rax-ssr"<%_ } -%><%_ if (appType === 'mpa') { -%>,
-    "build-plugin-rax-multi-pages"<%_ } %><%_ if (hasFaaS) { -%>,
+    "build-plugin-rax-multi-pages"<%_ } %><%_ if (useFaaS) { -%>,
     [
       "build-plugin-rax-faas",
       {
@@ -27,7 +28,8 @@
           }
         }
       }
-    ]<%_ } -%>
+    ]<%_ } -%><%_ if (useReact) { -%>,
+    "build-plugin-rax-compat-react"<%_ } -%>
 
   ]
 }

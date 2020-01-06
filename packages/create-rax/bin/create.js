@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const { spawnSync } = require('child_process');
 const https = require('https');
+const spawn = require('cross-spawn');
 
 const argv = process.argv.slice(2);
 
@@ -34,11 +34,13 @@ checkRegistry()
 
     // Install rax-cli manually through fastest registry
     // This way is faster than npm dependence
-    spawnSync('npm', ['install', 'rax-cli@latest', '-g', '--registry', registry], {
+    spawn.sync('npm', ['install', 'rax-cli@latest', '-g', '--registry', registry], {
       stdio: 'inherit',
     });
 
-    spawnSync('rax', ['init', ...argv], { stdio: 'inherit' });
+    spawn.sync('rax', ['init', ...argv], { 
+      stdio: 'inherit',
+    });
   })
   .catch(err => {
     console.error(err);

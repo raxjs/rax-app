@@ -4,14 +4,15 @@ import appConfig from './app.json';
 
 runApp(appConfig);
 <%_ } else { -%>
-<%_ const hasFaaS = projectFeatures.includes('faas') -%>
-import { createElement, render<%_ if (hasFaaS) { -%>, useState, useEffect<%_ } -%> } from 'rax';
+<%_ const useFaaS = projectFeatures.includes('faas') -%>
+<%_ const useReact = projectFeatures.includes('react') -%>
+import { createElement, render<%_ if (useFaaS) { -%>, useState, useEffect<%_ } -%> } from '<%_ if (useReact) { -%>react<%_ } else { -%>rax<%_ } -%>';
 import View from 'rax-view';
 import Text from 'rax-text';
 import UniversalDriver from 'driver-universal';
 
 const App = () => {
-<%_ if (hasFaaS) { -%>
+<%_ if (useFaaS) { -%>
   const [account, setAccount] = useState('');
 
   useEffect(() => {
@@ -28,7 +29,7 @@ const App = () => {
   return (
     <View>
       <Text>Hello World!</Text>
-      <%_ if (hasFaaS) { -%>
+      <%_ if (useFaaS) { -%>
       <Text>Current user: {account}</Text>
       <%_ } -%>
     </View>
