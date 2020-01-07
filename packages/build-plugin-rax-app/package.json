@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-app",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "rax app base plugins",
   "main": "src/index.js",
   "scripts": {
@@ -13,8 +13,8 @@
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "rax": "^1.0.0",
-    "@alib/build-scripts": "^0.1.0"
+    "@alib/build-scripts": "^0.1.0",
+    "rax": "^1.0.0"
   },
   "dependencies": {
     "@babel/core": "7.2.0",
@@ -28,6 +28,7 @@
     "deepmerge": "^4.0.0",
     "fs-extra": "^8.1.0",
     "image-source-loader": "^0.6.5",
+    "ip": "^1.1.5",
     "jsx2mp-cli": "^0.2.0",
     "klaw-sync": "^6.0.0",
     "less": "^3.9.0",
