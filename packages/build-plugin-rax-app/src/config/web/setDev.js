@@ -1,11 +1,6 @@
-const path = require('path');
-
 const HTMLAssetPath = 'web/index.html';
 
-module.exports = (config, context) => {
-  const { rootDir, userConfig } = context;
-  const { outputDir } = userConfig;
-
+module.exports = (config) => {
   config.devServer.set('before', (app, devServer) => {
     const compiler = devServer.compiler.compilers[0];
     const httpResponseQueue = [];
@@ -19,6 +14,7 @@ module.exports = (config, context) => {
       }
 
       let res;
+      // eslint-disable-next-line
       while (res = httpResponseQueue.shift()) {
         res.send(fallbackHTMLContent);
       }
