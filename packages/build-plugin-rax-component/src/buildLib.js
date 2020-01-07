@@ -28,8 +28,6 @@ module.exports = async (api, options = {}) => {
   gulpParams.api = api;
   gulpParams.options = options;
 
-  gulpCompile();
-
   if (buildMiniapp || buildWechatMiniProgram) {
     if (enableTypescript) {
       gulpParams.compileMiniappTS = true;
@@ -38,7 +36,7 @@ module.exports = async (api, options = {}) => {
       gulpParams.callback = async () => {
         if (buildMiniapp) {
           const config = options[MINIAPP] || {};
-          const result = await mpBuild(context, 'lib/miniappTemp/index', config);
+          const result = await mpBuild(context, 'src/index', config);
           fs.removeSync(path.join(BUILD_DIR, 'miniappTemp'));
           if (result.err) {
             return result;
@@ -49,7 +47,7 @@ module.exports = async (api, options = {}) => {
           const config = Object.assign({
             platform: 'wechat',
           }, options[WECHAT_MINIPROGRAM]);
-          const result = await mpBuild(context, 'lib/wechatTemp/index', config);
+          const result = await mpBuild(context, 'src/index', config);
           fs.removeSync(path.join(BUILD_DIR, 'wechatTemp'));
           if (result.err) {
             return result;
@@ -75,5 +73,7 @@ module.exports = async (api, options = {}) => {
         }
       }
     }
+  } else {
+    gulpCompile();
   }
 };
