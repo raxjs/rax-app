@@ -63,11 +63,8 @@ module.exports = (config, context) => {
 
   config.devServer.hot(false);
 
-  // This config will overwrite config in other plugin.
+  // There can only be one `before` config, this config will overwrite `before` config in web plugin.
   config.devServer.set('before', (app, devServer) => {
-    // outputFileSystem in devServer is MemoryFileSystem by defalut, but it can also be custom with other file systems.
-    const outputFs = devServer.compiler.compilers[0].outputFileSystem;
-
     // Render the page portal
     if (isMultiPages) {
       app.get('/', function(req, res) {
@@ -78,6 +75,8 @@ module.exports = (config, context) => {
       });
     }
 
+    // outputFileSystem in devServer is MemoryFileSystem by defalut, but it can also be custom with other file systems.
+    const outputFs = devServer.compiler.compilers[0].outputFileSystem;
     routes.forEach((route) => {
       app.get(route.path, function(req, res) {
         const bundleContent = outputFs.readFileSync(route.component, 'utf8');
