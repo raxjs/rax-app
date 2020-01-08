@@ -93,7 +93,7 @@ module.exports = class UniversalDocumentPlugin {
         const DocumentContextProvider = function () { };
         DocumentContextProvider.prototype.getChildContext = function () {
           return {
-            __styles: isMultiple ? assets.styles : [],
+            __styles: isMultiple ? assets.styles : [],  // In SPA, css files is loaded by app-loader dynamicly based on path 
             __scripts: assets.scripts,
           };
         };
@@ -175,23 +175,15 @@ function loadDocument(content, insertScript) {
 
 /**
  * get assets from webpack outputs
- * @param {*} files 
+ * @param {*} files [ 'web/detail.css', 'web/detail.js' ]
  * @param {*} publicPath 
  */
 function getAssetsForPage(files, publicPath) {
-  const fileNames = files.filter(v => ~v.indexOf('.js'));
-
-  const styles = [];
-  if (fileNames && fileNames[0]) {
-    // get the css file name by the entry bundle name
-    const styleFileName = fileNames[0].replace('.js', '.css');
-    styles.push(publicPath + styleFileName);
-  }
-
-  const scripts = fileNames.map(script => publicPath + script);
+  const jsFiles = files.filter(v => ~v.indexOf('.js'));
+  const cssFiles = files.filter(v => ~v.indexOf('.css'));
 
   return {
-    scripts,
-    styles,
+    scripts: jsFiles.map(script => publicPath + script),
+    styles: cssFiles.map(script => publicPath + script),
   };
 }
