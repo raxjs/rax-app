@@ -5,6 +5,7 @@ const { getRouteName } = require('rax-compile-config');
 const ErrorStackParser = require('error-stack-parser');
 const parseErrorStack = require('./parseEvalStackTrace');
 const extractSourceMap = require('./extractSourceMap');
+const renderPagePortal = require('./renderPagePortal');
 
 function printErrorStack(error, bundleContent) {
   const sourcemap = extractSourceMap.getSourceMap(bundleContent);
@@ -57,13 +58,12 @@ module.exports = (config, context) => {
 
   config.devServer.hot(false);
 
+  // This config will overwrite config in other plugin.
   config.devServer.set('before', (app, devServer) => {
     const memFs = devServer.compiler.compilers[0].outputFileSystem;
 
+    // Render the page portal
     if (isMultiPages) {
-      const renderPagePortal = require('build-plugin-rax-multi-pages/src/renderPagePortal');
-      
-      // Render the page portal provided by build-plugin-rax-multi-pages
       app.get('/', function(req, res) {
         const html = renderPagePortal({
           entries: routes,

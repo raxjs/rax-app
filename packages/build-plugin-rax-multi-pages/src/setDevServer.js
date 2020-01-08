@@ -1,5 +1,9 @@
+  
 const path = require('path');
-const renderPagePortal = require('./renderPagePortal');
+const fs = require('fs-extra');
+const hbs = require('handlebars');
+
+const MAIN_TEMPLATE = path.join(__dirname, './template/main.hbs');
 
 module.exports = ({
   config,
@@ -15,7 +19,9 @@ module.exports = ({
     const memFs = compiler.outputFileSystem;
 
     app.get('/', function(req, res) {
-      const resultContent = renderPagePortal({
+      const hbsTemplateContent = fs.readFileSync(MAIN_TEMPLATE, 'utf-8');
+      const compileTemplateContent = hbs.compile(hbsTemplateContent);
+      const resultContent = compileTemplateContent({
         entries,
         hasWeb: targets.includes('web'),
         hasWeex: targets.includes('weex'),
