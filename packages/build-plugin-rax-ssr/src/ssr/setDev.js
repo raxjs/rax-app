@@ -65,7 +65,8 @@ module.exports = (config, context) => {
 
   // This config will overwrite config in other plugin.
   config.devServer.set('before', (app, devServer) => {
-    const memFs = devServer.compiler.compilers[0].outputFileSystem;
+    // outputFileSystem in devServer is MemoryFileSystem by defalut, but it can also be custom with other file systems.
+    const outputFs = devServer.compiler.compilers[0].outputFileSystem;
 
     // Render the page portal
     if (isMultiPages) {
@@ -79,7 +80,7 @@ module.exports = (config, context) => {
 
     routes.forEach((route) => {
       app.get(route.path, function(req, res) {
-        const bundleContent = memFs.readFileSync(route.component, 'utf8');
+        const bundleContent = outputFs.readFileSync(route.component, 'utf8');
 
         process.once('unhandledRejection', (error) => printErrorStack(error, bundleContent));
 
