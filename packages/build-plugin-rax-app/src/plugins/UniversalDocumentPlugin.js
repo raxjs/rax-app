@@ -29,14 +29,14 @@ module.exports = class UniversalDocumentPlugin {
       this.insertScript = options.insertScript;
     }
 
-    this.isMultiple = options.isMultiple;
+    this.inlineStyle = options.context.userConfig.inlineStyle;
     this.documentPath = options.path;
     this.command = options.command;
   }
 
   apply(compiler) {
     const config = compiler.options;
-    const isMultiple = this.isMultiple;
+    const inlineStyle = this.inlineStyle;
     const absoluteDocumentPath = path.resolve(config.context, this.documentPath);
     const publicPath = this.publicPath ? this.publicPath : config.output.publicPath;
 
@@ -97,7 +97,7 @@ module.exports = class UniversalDocumentPlugin {
         const DocumentContextProvider = function () { };
         DocumentContextProvider.prototype.getChildContext = function () {
           return {
-            __styles: isMultiple ? assets.styles : [],
+            __styles: inlineStyle ? [] : assets.styles, // use assets.styles with inlineStyle=false
             __scripts: assets.scripts,
           };
         };
