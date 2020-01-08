@@ -156,7 +156,7 @@ function loadDocument(content, insertScript) {
 
   if (insertScript) {
     // escape characters need to be added to insertStr
-    const insertStr = `\\n<script dangerouslySetInnerHTML={{__html: \\"${insertScript}\\"}} />`;
+    const insertStr = `\\n<script>${insertScript}</script>\\n`;
     fileContent = fileContent.replace(/(<body[^>]*>)/, `$1${insertStr}`);
   }
 
