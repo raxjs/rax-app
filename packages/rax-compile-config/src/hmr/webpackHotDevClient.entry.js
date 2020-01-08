@@ -15,15 +15,15 @@ const connection = new WebSocket(wsUrl);
 // Unlike WebpackDevServer client, we won't try to reconnect
 // to avoid spamming the console. Disconnect usually happens
 // when developer stops the server.
-connection.onclose = function() {
+connection.onclose = function () {
   console.info('The development server has disconnected.\nRefresh the page if necessary.');
 };
 
-connection.onopen = function() {
+connection.onopen = function () {
   console.info('The development server has connected!');
 };
 
-connection.onerror = function() {
+connection.onerror = function () {
   console.info('The development server connect faild!');
 };
 
@@ -120,7 +120,7 @@ function handleAvailableHash(hash) {
 }
 
 // Handle messages from the server.
-connection.onmessage = function(e) {
+connection.onmessage = function (e) {
   const message = JSON.parse(e.data);
   switch (message.type) {
     case 'hash':
@@ -171,7 +171,6 @@ function tryApplyUpdates(onHotUpdateSuccess) {
   }
 
   function handleApplyUpdates(err, updatedModules) {
-    console.log('handleApplyUpdates', err, updatedModules);
     if (err || !updatedModules) {
       window.location.reload();
       return;
@@ -194,10 +193,10 @@ function tryApplyUpdates(onHotUpdateSuccess) {
   // // Webpack 2 returns a Promise instead of invoking a callback
   if (result && result.then) {
     result.then(
-      function(updatedModules) {
+      function (updatedModules) {
         handleApplyUpdates(null, updatedModules);
       },
-      function(err) {
+      function (err) {
         handleApplyUpdates(err, null);
       },
     );
