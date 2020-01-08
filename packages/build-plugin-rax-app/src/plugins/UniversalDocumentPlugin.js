@@ -93,7 +93,7 @@ module.exports = class UniversalDocumentPlugin {
         const DocumentContextProvider = function () { };
         DocumentContextProvider.prototype.getChildContext = function () {
           return {
-            __styles: isMultiple ? assets.styles : [],  // In SPA, css files is loaded by app-loader dynamicly based on path 
+            __styles: assets.styles,
             __scripts: assets.scripts,
           };
         };
