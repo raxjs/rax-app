@@ -29,14 +29,12 @@ module.exports = class UniversalDocumentPlugin {
       this.insertScript = options.insertScript;
     }
 
-    this.isMultiple = options.isMultiple;
     this.documentPath = options.path;
     this.command = options.command;
   }
 
   apply(compiler) {
     const config = compiler.options;
-    const isMultiple = this.isMultiple;
     const absoluteDocumentPath = path.resolve(config.context, this.documentPath);
     const publicPath = this.publicPath ? this.publicPath : config.output.publicPath;
 
@@ -188,8 +186,8 @@ function loadDocument(content, insertScript) {
  * @param {*} publicPath 
  */
 function getAssetsForPage(files, publicPath) {
-  const jsFiles = files.filter(v => ~v.indexOf('.js'));
-  const cssFiles = files.filter(v => ~v.indexOf('.css'));
+  const jsFiles = files.filter(v => /\.js$/i.test(v));
+  const cssFiles = files.filter(v => /\.css$/i.test(v));
 
   return {
     scripts: jsFiles.map(script => publicPath + script),
