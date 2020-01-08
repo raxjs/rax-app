@@ -24,10 +24,6 @@ module.exports = class UniversalDocumentPlugin {
     if (options.publicPath) {
       this.publicPath = options.publicPath;
     }
-    // for internal weex publish
-    if (options.insertScript) {
-      this.insertScript = options.insertScript;
-    }
 
     this.isMultiple = options.isMultiple;
     this.documentPath = options.path;
@@ -83,7 +79,7 @@ module.exports = class UniversalDocumentPlugin {
 
     // Render into index.html
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
-      const Document = loadDocument(documentContent, this.insertScript);
+      const Document = loadDocument(documentContent);
       const entryObj = config.entry;
 
       Object.keys(entryObj).forEach(entry => {
@@ -149,17 +145,9 @@ function interopRequire(obj) {
 /**
  * load Document after webpack compilation
  * @param {*} content document output
- * @param {*} insertScript 
  */
-function loadDocument(content, insertScript) {
+function loadDocument(content) {
   let fileContent = content;
-
-  if (insertScript) {
-    // escape characters need to be added to insertStr
-    // after JSX files are compiled, script tag is injected
-    const insertStr = `\\n<script>${insertScript}</script>\\n`;
-    fileContent = fileContent.replace(/(<body[^>]*>)/, `$1${insertStr}`);
-  }
 
   const tempFn = new Function('require', 'module', fileContent); // eslint-disable-line
   const tempModule = { exports: {} };
