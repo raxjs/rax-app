@@ -1,30 +1,30 @@
-const path = require('path');
+const HTMLAssetPath = 'web/index.html';
 
-module.exports = (config, context) => {
-  const { rootDir, userConfig } = context;
-  const { outputDir } = userConfig;
-
-  // history fall back
-  const htmlPath = path.resolve(rootDir, outputDir, 'web/index.html');
-
+module.exports = (config) => {
   config.devServer.set('before', (app, devServer) => {
     const compiler = devServer.compiler.compilers[0];
-    const memFs = compiler.outputFileSystem;
+    const httpResponseQueue = [];
+    let fallbackHTMLContent;
 
-    // not match .js .html files
-    app.get(/^\/?((?!\.(js|html|css|json)).)*$/, function(req, res) {
-      if (memFs.existsSync(htmlPath)) {
-        const outPut = memFs.readFileSync(htmlPath).toString();
-        res.send(outPut);
+    compiler.hooks.emit.tap('AppHistoryFallback', function (compilation) {
+      if (compilation.assets[HTMLAssetPath]) {
+        fallbackHTMLContent = compilation.assets[HTMLAssetPath].source();
       } else {
-        compiler.hooks.done.tap('sendHtml', () => {
-          try {
-            const outPut = memFs.readFileSync(htmlPath).toString();
-            res.send(outPut);
-          } catch(e) {
-            console.log('html path is not found');
-          }
-        });
+        fallbackHTMLContent = 'Document Not Found.';
+      }
+
+      let res;
+      // eslint-disable-next-line
+      while (res = httpResponseQueue.shift()) {
+        res.send(fallbackHTMLContent);
+      }
+    });
+
+    app.get(/^\/?((?!\.(js|html|css|json)).)*$/, function (req, res) {
+      if (fallbackHTMLContent !== undefined) {
+        res.send(fallbackHTMLContent);
+      } else {
+        httpResponseQueue.push(res);
       }
     });
   });
