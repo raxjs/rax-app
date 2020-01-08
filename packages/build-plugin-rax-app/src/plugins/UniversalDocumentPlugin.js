@@ -45,7 +45,11 @@ module.exports = class UniversalDocumentPlugin {
     // web/[name].js => web
     const targetOutputDir = path.dirname(outputFileName);
 
-    const documentWebpackConfig = getWebpackConfigForDocument(this.context, absoluteDocumentPath, config.output.path);
+    const documentWebpackConfig = getWebpackConfigForDocument(this.context, {
+      entry: absoluteDocumentPath,
+      outputPath: config.output.path,
+      alias: config.resolve.alias, // sync the alias, eg. react, react-dom
+    });
 
     let fileDependencies = [];
     let documentContent;
@@ -119,22 +123,27 @@ module.exports = class UniversalDocumentPlugin {
 
 /**
  * custom webpack config for document
- * @param {*} documentPath  document source path
- * @param {*} dest dest path
+ * @param {*} context build plugin context
+ * @param {*} options options for webpack config
  */
-function getWebpackConfigForDocument(context, documentPath, dest) {
+function getWebpackConfigForDocument(context, options) {
+  const { entry, outputPath, alias } = options;
   const webpackChainConfig = getSSRBaseConfig(context);
 
   webpackChainConfig
     .entry('document')
-    .add(documentPath);
+    .add(entry);
 
   webpackChainConfig.output
-    .path(dest)
+    .path(outputPath)
     .filename(TEMP_FLIE_NAME);
 
   webpackChainConfig.externals({
     rax: 'rax',
+  });
+
+  Object.keys(alias).forEach((key) => {
+    webpackChainConfig.resolve.alias.set(key, alias[key]);
   });
 
   const documentWebpackConfig = webpackChainConfig.toConfig();
