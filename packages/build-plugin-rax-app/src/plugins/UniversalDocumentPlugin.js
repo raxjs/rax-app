@@ -48,7 +48,7 @@ module.exports = class UniversalDocumentPlugin {
     const documentWebpackConfig = getWebpackConfigForDocument(this.context, {
       entry: absoluteDocumentPath,
       outputPath: config.output.path,
-      alias: config.resolve.alias, // sync the alias, eg. react, react-dom
+      alias: config.resolve ? config.resolve.alias : {}, // sync the alias, eg. react, react-dom
     });
 
     let fileDependencies = [];
@@ -124,7 +124,7 @@ module.exports = class UniversalDocumentPlugin {
 /**
  * custom webpack config for document
  * @param {*} context build plugin context
- * @param {*} options options for webpack config
+ * @param {*} options defalut config for webpack
  */
 function getWebpackConfigForDocument(context, options) {
   const { entry, outputPath, alias } = options;
