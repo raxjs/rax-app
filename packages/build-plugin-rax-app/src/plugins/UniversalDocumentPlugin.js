@@ -156,7 +156,7 @@ function loadDocument(content, insertScript) {
 
   if (insertScript) {
     // escape characters need to be added to insertStr
-    // After JSX files are compiled, script tags are injected
+    // after JSX files are compiled, script tag is injected
     const insertStr = `\\n<script>${insertScript}</script>\\n`;
     fileContent = fileContent.replace(/(<body[^>]*>)/, `$1${insertStr}`);
   }
