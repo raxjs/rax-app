@@ -147,9 +147,7 @@ function interopRequire(obj) {
  * @param {*} content document output
  */
 function loadDocument(content) {
-  let fileContent = content;
-
-  const tempFn = new Function('require', 'module', fileContent); // eslint-disable-line
+  const tempFn = new Function('require', 'module', content); // eslint-disable-line
   const tempModule = { exports: {} };
   tempFn(require, tempModule);
 
