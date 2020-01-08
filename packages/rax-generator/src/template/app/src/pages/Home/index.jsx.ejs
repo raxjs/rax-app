@@ -4,7 +4,7 @@ import { createElement<%_ if (useFaaS) { -%>, useState, useEffect<%_ } -%> } fro
 import View from 'rax-view';
 import Text from 'rax-text';
 
-import styles from './index.css';
+import './index.css';
 
 import Logo from '../../components/Logo';
 
@@ -24,14 +24,14 @@ export default function Home() {
 <%_ } -%>
 
   return (
-    <View style={styles.home}>
+    <View className='home'>
       <Logo />
-      <Text style={styles.title}>Welcome to Your Rax App</Text>
+      <Text className='title'>Welcome to Your Rax App</Text>
       <%_ if (useFaaS) { -%>
-      <Text style={styles.info}>Current user: {account}</Text>
+      <Text className='info'>Current user: {account}</Text>
       <%_ } -%>
-      <Text style={styles.info}>More information about Rax</Text>
-      <Text style={styles.info}>Visit https://rax.js.org</Text>
+      <Text className='info'>More information about Rax</Text>
+      <Text className='info'>Visit https://rax.js.org</Text>
     </View>
   );
 }
