@@ -82,9 +82,14 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
   });
 
   function devCompileLog() {
-    consoleClear(true);
     let err = devCompletedArr[0].err;
     let stats = devCompletedArr[0].stats;
+
+    if (!handleWebpackErr(err, stats)) {
+      return;
+    }
+
+    consoleClear(true);
 
     devCompletedArr.forEach((devInfo) => {
       if (devInfo.err || devInfo.stats.hasErrors()) {
@@ -94,10 +99,6 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     });
 
     devCompletedArr = [];
-
-    if (!handleWebpackErr(err, stats)) {
-      return;
-    }
 
     // hide log in mpa
     const raxMpa = getValue('raxMpa');
