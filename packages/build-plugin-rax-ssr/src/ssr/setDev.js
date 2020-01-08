@@ -1,12 +1,14 @@
 
 const path = require('path');
-const fs = require('fs-extra');
-const hbs = require('handlebars');
+const fs = require('fs');
+const ejs = require('ejs');
 const SourceMap = require('source-map');
 const { getRouteName } = require('rax-compile-config');
 const ErrorStackParser = require('error-stack-parser');
 const parseErrorStack = require('./parseEvalStackTrace');
 const extractSourceMap = require('./extractSourceMap');
+
+const MAIN_TEMPLATE = path.join(__dirname, '../template/main.jsx.ejs');
 
 function printErrorStack(error, bundleContent) {
   const sourcemap = extractSourceMap.getSourceMap(bundleContent);
@@ -32,10 +34,6 @@ function printErrorStack(error, bundleContent) {
     parseErrorStack.printError(error.message, mergedErrorStack);
   });
 }
-
-const MAIN_TEMPLATE = path.join(__dirname, '../template/main.hbs');
-const hbsTemplateContent = fs.readFileSync(MAIN_TEMPLATE, 'utf-8');
-const compileTemplateContent = hbs.compile(hbsTemplateContent);
 
 module.exports = (config, context) => {
   const { rootDir, userConfig } = context;
@@ -67,8 +65,10 @@ module.exports = (config, context) => {
   config.devServer.set('before', (app, devServer) => {
     // Render the page portal
     if (isMultiPages) {
+      const templateContent = fs.readFileSync(MAIN_TEMPLATE, 'utf-8');
+
       app.get('/', function(req, res) {
-        const html = compileTemplateContent({
+        const html = ejs.render(templateContent, {
           entries: routes,
         });
         res.send(html);

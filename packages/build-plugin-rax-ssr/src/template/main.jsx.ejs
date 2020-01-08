@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,24 +21,18 @@
     }
   </style>
 </head>
-
 <body>
   <h1>Rax mutiple pages app</h1>
-  {{#if entries.length}}
+  <%_ if (entries.length) { -%>
   <h3>Page list</h3>
   <ul>
-    {{#each entries}}
+    <% entries.forEach(function(entry){ %>
     <li>
-      <div>/pages/{{entryName}}</div>
-      {{#if @root.hasWeb}}
-        <a class="btn" href="/pages/{{entryName}}" target="_blank">Web Preview</a>
-      {{/if}}
-      {{#if @root.hasWeex}}
-        <a class="btn" href="/weex/{{entryName}}.js?wh_weex=true" target="_blank">Weex Preview</a>
-      {{/if}}
+      <div>/pages/<%= entry.entryName %></div>
+      <a class="btn" href="/pages/<%= entry.entryName %>" target="_blank">Web Preview</a>
     </li>
-    {{/each}}
+    <% }); %>
   </ul>
-  {{/if}}
+  <%_ } -%>
 </body>
 </html>

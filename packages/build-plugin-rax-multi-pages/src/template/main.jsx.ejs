@@ -25,16 +25,21 @@
 
 <body>
   <h1>Rax mutiple pages app</h1>
-  {{#if entries.length}}
+  <%_ if (entries.length) { -%>
   <h3>Page list</h3>
   <ul>
-    {{#each entries}}
+    <% entries.forEach(function(entry){ %>
     <li>
-      <div>/pages/{{entryName}}</div>
-      <a class="btn" href="/pages/{{entryName}}" target="_blank">Web Preview</a>
+      <div>/pages/<%= entry.entryName %></div>
+      <%_ if (hasWeb) { -%>
+        <a class="btn" href="/pages/<%= entry.entryName %>" target="_blank">Web Preview</a>
+      <%_ } -%>
+      <%_ if (hasWeex) { -%>
+        <a class="btn" href="/weex/<%= entry.entryName %>.js?wh_weex=true" target="_blank">Weex Preview</a>
+      <%_ } -%>
     </li>
-    {{/each}}
+    <% }); %>
   </ul>
-  {{/if}}
+<%_ } -%>
 </body>
 </html>
