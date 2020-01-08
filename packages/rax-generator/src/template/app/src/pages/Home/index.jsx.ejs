@@ -24,7 +24,7 @@ export default function Home() {
 <%_ } -%>
 
   return (
-    <View className='home'>
+    <View className='home'><%# className can work correctly whether `inlineStyle` is `true` or `false` %>
       <Logo />
       <Text className='title'>Welcome to Your Rax App</Text>
       <%_ if (useFaaS) { -%>
