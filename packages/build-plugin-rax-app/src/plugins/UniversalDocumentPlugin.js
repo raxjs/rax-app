@@ -184,6 +184,6 @@ function getAssetsForPage(files, publicPath) {
 
   return {
     scripts: jsFiles.map(script => publicPath + script),
-    styles: cssFiles.map(script => publicPath + script),
+    styles: cssFiles.map(style => publicPath + style),
   };
 }
