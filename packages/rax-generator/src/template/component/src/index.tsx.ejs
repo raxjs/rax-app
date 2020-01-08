@@ -1,0 +1,51 @@
+<%_ if (componentType === 'ui') { -%>
+import { createElement, EventHandler } from 'rax';
+import View from 'rax-view';
+import Text from 'rax-text';
+import { StyledComponentProps, useStyles } from '@rax-ui/styles';
+import StyleProvider from './style/index';
+
+export interface MyComponentProps extends StyledComponentProps<any> {
+  className?: string;
+  style?: object;
+  onChange?: (value: any, event: EventHandler<any>) => void;
+}
+
+const MyComponent = (props: MyComponentProps) => {
+  const { onChange, style = {}, ...others } = props;
+
+  const styles = useStyles(StyleProvider, others, (classNames) => {
+    return {
+      myComponent: {
+        ...classNames('component'),
+        ...style,
+      },
+      myText: classNames('component--text'),
+    };
+  });
+
+  const handleClick = () => {};
+
+  return (
+    <View style={styles.myComponent} onClick={handleClick}>
+      <Text style={styles.myText}>Hello World!</Text>
+    </View>
+  );
+};
+
+export default MyComponent;
+<%_ } else { -%>
+import { createElement } from 'rax';
+import View from 'rax-view';
+import Text from 'rax-text';
+
+const MyComponent = () => {
+  return (
+    <View>
+      <Text>Hello World!</Text>
+    </View>
+  );
+};
+
+export default MyComponent;
+<%_ } -%>

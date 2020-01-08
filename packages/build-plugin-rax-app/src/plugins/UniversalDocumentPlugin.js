@@ -36,7 +36,8 @@ module.exports = class UniversalDocumentPlugin {
 
   apply(compiler) {
     const config = compiler.options;
-    const absoluteDocumentPath = path.resolve(config.context , this.documentPath);
+    const isMultiple = this.isMultiple;
+    const absoluteDocumentPath = path.resolve(config.context, this.documentPath);
     const publicPath = this.publicPath ? this.publicPath : config.output.publicPath;
 
     // Get output dir from filename instead of hard code.
@@ -84,19 +85,19 @@ module.exports = class UniversalDocumentPlugin {
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
       const Document = loadDocument(documentContent, this.insertScript);
       const entryObj = config.entry;
-      
+
       Object.keys(entryObj).forEach(entry => {
         const files = compilation.entrypoints.get(entry).getFiles();
         const assets = getAssetsForPage(files, publicPath);
 
-        const DocumentContextProvider = function() {};
-        DocumentContextProvider.prototype.getChildContext = function() {
+        const DocumentContextProvider = function () { };
+        DocumentContextProvider.prototype.getChildContext = function () {
           return {
-            __styles: this.isMultiple ? assets.styles: [],
+            __styles: isMultiple ? assets.styles : [],
             __scripts: assets.scripts,
           };
         };
-        DocumentContextProvider.prototype.render = function() {
+        DocumentContextProvider.prototype.render = function () {
           return createElement(Document);
         };
 
@@ -127,11 +128,11 @@ function getWebpackConfigForDocument(context, documentPath, dest) {
   webpackChainConfig
     .entry('document')
     .add(documentPath);
-  
+
   webpackChainConfig.output
     .path(dest)
     .filename(TEMP_FLIE_NAME);
-  
+
   webpackChainConfig.externals({
     rax: 'rax',
   });
@@ -151,10 +152,11 @@ function interopRequire(obj) {
  * @param {*} insertScript 
  */
 function loadDocument(content, insertScript) {
-  let fileContent  = content;
+  let fileContent = content;
 
   if (insertScript) {
-    const insertStr = `\n<script dangerouslySetInnerHTML={{__html: "${this.insertScript}"}} />`;
+    // escape characters need to be added to insertStr
+    const insertStr = `\\n<script dangerouslySetInnerHTML={{__html: \\"${insertScript}\\"}} />`;
     fileContent = fileContent.replace(/(<body[^>]*>)/, `$1${insertStr}`);
   }
 

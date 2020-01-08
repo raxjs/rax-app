@@ -1,9 +1,7 @@
-import { createElement } from 'rax';
-<%_ if (projectFeatures.includes('ssr')) { -%>
-import { Root, Data, Style, Script } from 'rax-document';
-<%_ } else { -%>
-import { Root, Style, Script } from 'rax-document';
-<%_ } -%>
+<%_ const useSSR = projectFeatures.includes('ssr') -%>
+<%_ const useReact = projectFeatures.includes('react') -%>
+import { createElement } from '<%_ if (useReact) { -%>react<%_ } else { -%>rax<%_ } -%>';
+import { Root, Style, Script<%_ if (useSSR) { -%>, Data <%_ } -%>} from 'rax-document';
 
 function Document() {
   return (
@@ -17,7 +15,7 @@ function Document() {
       <body>
         {/* root container */}
         <Root />
-        <%_ if (projectFeatures.includes('ssr')) { -%>
+        <%_ if (useSSR) { -%>
         {/* initial data from server side */}
         <Data />
         <%_ } -%>
