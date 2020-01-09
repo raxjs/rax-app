@@ -26,17 +26,22 @@ function ejsRender(data) {
 
 // get ignore files of template
 function getIgnore(args) {
-  const { appType, componentType, features } = args;
+  const { appType, componentType, features, projectTargets } = args;
   let list = [];
 
   if (appType === 'lite') {
     list = ['src/components', 'src/pages', 'src/app.json.ejs'];
   } else if (componentType === 'ui') {
     list = [
-      'demo/miniapp',
-      'demo/wechat-miniprogram',
       'demo/index.jsx.ejs',
     ];
+
+    if (!~projectTargets.indexOf('miniapp')) {
+      list = [...list, 'demo/miniapp'];
+    }
+    if (!~projectTargets.indexOf('wechat-miniprogram')) {
+      list = [...list, 'demo/wechat-miniprogram'];
+    }
   } else if (componentType === 'base') {
     list = [
       'demo/basic.md.ejs',
@@ -81,10 +86,10 @@ module.exports = function (template, args) {
   };
 
   new TemplateProcesser(template)
-    .use(ejsRender(ejsData))
-    .use(renameFile)
-    .ignore(getIgnore(args))
-    .done(projectDir);
+  .use(ejsRender(ejsData))
+  .use(renameFile)
+  .ignore(getIgnore(args))
+  .done(projectDir);
 
   process.chdir(projectDir);
   return Promise.resolve(projectDir);
