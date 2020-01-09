@@ -1,14 +1,15 @@
-<%_ const isFaaS = projectFeatures.includes('faas') -%>
-import { createElement<%_ if (isFaaS) { -%>, useState, useEffect<%_ } -%> } from 'rax';
+<%_ const useFaaS = projectFeatures.includes('faas') -%>
+<%_ const useReact = projectFeatures.includes('react') -%>
+import { createElement<%_ if (useFaaS) { -%>, useState, useEffect<%_ } -%> } from '<%_ if (useReact) { -%>react<%_ } else { -%>rax<%_ } -%>';
 import View from 'rax-view';
 import Text from 'rax-text';
 
-import styles from './index.css';
+import './index.css';
 
 import Logo from '../../components/Logo';
 
 export default function Home() {
-<%_ if (isFaaS) { -%>
+<%_ if (useFaaS) { -%>
   const [account, setAccount] = useState('');
 
   useEffect(() => {
@@ -23,14 +24,14 @@ export default function Home() {
 <%_ } -%>
 
   return (
-    <View style={styles.home}>
+    <View className='home'><%# className can work correctly whether `inlineStyle` is `true` or `false` %>
       <Logo />
-      <Text style={styles.title}>Welcome to Your Rax App</Text>
-      <%_ if (isFaaS) { -%>
-      <Text style={styles.info}>Current user: {account}</Text>
+      <Text className='title'>Welcome to Your Rax App</Text>
+      <%_ if (useFaaS) { -%>
+      <Text className='info'>Current user: {account}</Text>
       <%_ } -%>
-      <Text style={styles.info}>More information about Rax</Text>
-      <Text style={styles.info}>Visit https://rax.js.org</Text>
+      <Text className='info'>More information about Rax</Text>
+      <Text className='info'>Visit https://rax.js.org</Text>
     </View>
   );
 }

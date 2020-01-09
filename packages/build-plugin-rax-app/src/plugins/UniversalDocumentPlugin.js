@@ -29,14 +29,13 @@ module.exports = class UniversalDocumentPlugin {
       this.insertScript = options.insertScript;
     }
 
-    this.isMultiple = options.isMultiple;
     this.documentPath = options.path;
     this.command = options.command;
   }
 
   apply(compiler) {
     const config = compiler.options;
-    const absoluteDocumentPath = path.resolve(config.context , this.documentPath);
+    const absoluteDocumentPath = path.resolve(config.context, this.documentPath);
     const publicPath = this.publicPath ? this.publicPath : config.output.publicPath;
 
     // Get output dir from filename instead of hard code.
@@ -44,7 +43,11 @@ module.exports = class UniversalDocumentPlugin {
     // web/[name].js => web
     const targetOutputDir = path.dirname(outputFileName);
 
-    const documentWebpackConfig = getWebpackConfigForDocument(this.context, absoluteDocumentPath, config.output.path);
+    const documentWebpackConfig = getWebpackConfigForDocument(this.context, {
+      entry: absoluteDocumentPath,
+      outputPath: config.output.path,
+      alias: config.resolve ? config.resolve.alias : {}, // sync the alias, eg. react, react-dom
+    });
 
     let fileDependencies = [];
     let documentContent;
@@ -84,19 +87,19 @@ module.exports = class UniversalDocumentPlugin {
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
       const Document = loadDocument(documentContent, this.insertScript);
       const entryObj = config.entry;
-      
+
       Object.keys(entryObj).forEach(entry => {
         const files = compilation.entrypoints.get(entry).getFiles();
         const assets = getAssetsForPage(files, publicPath);
 
-        const DocumentContextProvider = function() {};
-        DocumentContextProvider.prototype.getChildContext = function() {
+        const DocumentContextProvider = function () { };
+        DocumentContextProvider.prototype.getChildContext = function () {
           return {
-            __styles: this.isMultiple ? assets.styles: [],
+            __styles: assets.styles,
             __scripts: assets.scripts,
           };
         };
-        DocumentContextProvider.prototype.render = function() {
+        DocumentContextProvider.prototype.render = function () {
           return createElement(Document);
         };
 
@@ -118,22 +121,27 @@ module.exports = class UniversalDocumentPlugin {
 
 /**
  * custom webpack config for document
- * @param {*} documentPath  document source path
- * @param {*} dest dest path
+ * @param {*} context build plugin context
+ * @param {*} options defalut config for webpack
  */
-function getWebpackConfigForDocument(context, documentPath, dest) {
+function getWebpackConfigForDocument(context, options) {
+  const { entry, outputPath, alias } = options;
   const webpackChainConfig = getSSRBaseConfig(context);
 
   webpackChainConfig
     .entry('document')
-    .add(documentPath);
-  
+    .add(entry);
+
   webpackChainConfig.output
-    .path(dest)
+    .path(outputPath)
     .filename(TEMP_FLIE_NAME);
-  
+
   webpackChainConfig.externals({
     rax: 'rax',
+  });
+
+  Object.keys(alias).forEach((key) => {
+    webpackChainConfig.resolve.alias.set(key, alias[key]);
   });
 
   const documentWebpackConfig = webpackChainConfig.toConfig();
@@ -151,10 +159,11 @@ function interopRequire(obj) {
  * @param {*} insertScript 
  */
 function loadDocument(content, insertScript) {
-  let fileContent  = content;
+  let fileContent = content;
 
   if (insertScript) {
-    const insertStr = `\n<script dangerouslySetInnerHTML={{__html: "${this.insertScript}"}} />`;
+    // escape characters need to be added to insertStr
+    const insertStr = `\\n<script dangerouslySetInnerHTML={{__html: \\"${insertScript}\\"}} />`;
     fileContent = fileContent.replace(/(<body[^>]*>)/, `$1${insertStr}`);
   }
 
@@ -173,23 +182,15 @@ function loadDocument(content, insertScript) {
 
 /**
  * get assets from webpack outputs
- * @param {*} files 
+ * @param {*} files [ 'web/detail.css', 'web/detail.js' ]
  * @param {*} publicPath 
  */
 function getAssetsForPage(files, publicPath) {
-  const fileNames = files.filter(v => ~v.indexOf('.js'));
-
-  const styles = [];
-  if (fileNames && fileNames[0]) {
-    // get the css file name by the entry bundle name
-    const styleFileName = fileNames[0].replace('.js', '.css');
-    styles.push(publicPath + styleFileName);
-  }
-
-  const scripts = fileNames.map(script => publicPath + script);
+  const jsFiles = files.filter(v => /\.js$/i.test(v));
+  const cssFiles = files.filter(v => /\.css$/i.test(v));
 
   return {
-    scripts,
-    styles,
+    scripts: jsFiles.map(script => publicPath + script),
+    styles: cssFiles.map(style => publicPath + style),
   };
 }
