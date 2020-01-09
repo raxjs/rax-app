@@ -34,14 +34,7 @@ module.exports = (api, options = {}) => {
     } else if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > -1) {
       options[target] = options[target] || {};
       addMpPlatform(target, options[target]);
-      if (options[target].buildType === 'runtime') {
-        const getDev = require(`./config/miniapp/getDev`);
-        const config = getDev(context, options, target);
-        selfDevTargets.push(target);
-        registerTask(`component-demo-${target}`, config);
-      } else {
-        customDevTargets.push(target);
-      }
+      customDevTargets.push(target);
     }
   });
   customDevTargets.forEach(target => {
