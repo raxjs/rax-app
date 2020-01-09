@@ -1,5 +1,5 @@
 /* global APINamespace,TARGET, Page,init */
-const mp = require("miniprogram-render");
+const mp = require("MINIAPP-RENDER");
 /* eslint-disable  import/no-absolute-path */
 const config = require("/* CONFIG_PATH */");
 

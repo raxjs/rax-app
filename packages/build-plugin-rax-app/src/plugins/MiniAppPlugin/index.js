@@ -142,6 +142,7 @@ function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, 
   let pageJsContent = pageJsTmpl
     .replace(/APINamespace/g, adapter[target].APINamespace)
     .replace(/TARGET/g, `'${target}'`)
+    .replace(/MINIAPP-RENDER/, `miniapp-render/dist/${adapter[target].abbr}`)
     .replace("/* CONFIG_PATH */", `${assetPathPrefix}../../config`)
     .replace(
       '/* INIT_FUNCTION */',
@@ -488,6 +489,10 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
         ] = `components/${customComponents[key].path}`),
     );
 
+    const customComponentJsContent = customComponentJsTmpl
+      .replace(/MINIAPP-RENDER/, `miniapp-render/dist/${adapter[target].abbr}`)
+
+
     // custom-component/index.js
     addFile(
       compilation,
@@ -550,10 +555,10 @@ function installDependencies(autoBuildNpm = false, stats, target, callback) {
   let callbackExecuted = false;
 
   const build = () => {
-    ['miniprogram-element', 'miniprogram-render'].forEach(name => {
+    ['miniapp-element', 'miniapp-render'].forEach(name => {
       _.copyDir(
-        path.resolve(outputPath, `./node_modules/${name}/src`),
-        path.resolve(outputPath, `./miniprogram_npm/${name}`),
+        path.resolve(outputPath, `./node_modules/${name}/dist/wechat`),
+        path.resolve(outputPath, `./miniprogram_npm/${name}/dist/wechat`),
       );
     });
     if (!callbackExecuted) {

@@ -1,5 +1,5 @@
 /* global Component */
-const mp = require("miniprogram-render");
+const mp = require("MINIAPP-RENDER");
 
 const { Event, cache, tool } = mp.$$adapter;
 
