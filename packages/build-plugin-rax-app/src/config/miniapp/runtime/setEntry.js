@@ -1,6 +1,6 @@
 const path = require('path');
 
-const EntryLoader = require.resolve('../../../loaders/KboneEntryLoader');
+const EntryLoader = require.resolve('../../../loaders/MiniAppEntryLoader');
 
 function getDepPath(rootDir, com) {
   if (com[0] === '/') {

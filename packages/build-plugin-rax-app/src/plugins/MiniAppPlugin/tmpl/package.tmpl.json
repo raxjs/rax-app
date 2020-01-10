@@ -1,0 +1,19 @@
+{
+<<<<<<< HEAD:packages/build-plugin-rax-app/src/plugins/KboneMpPlugin/tmpl/package.tmpl.json
+  "name": "rax project",
+  "version": "0.0.1",
+  "description": "rax project",
+  "dependencies": {
+    "miniapp-render": "latest",
+    "miniapp-element": "latest"
+  }
+=======
+	"name": "miniprogram-project",
+	"version": "0.0.1",
+	"description": "miniprogram project",
+	"dependencies": {
+        "miniapp-render": "latest",
+        "miniapp-element": "latest"
+	}
+>>>>>>> 39b1dc29d7e9c1dca0a3840fecd9fbcf2b0e8036:packages/build-plugin-rax-app/src/plugins/MiniAppPlugin/tmpl/package.tmpl.json
+}

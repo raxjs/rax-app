@@ -1,5 +1,9 @@
 /* global Component */
+<<<<<<< HEAD:packages/build-plugin-rax-app/src/plugins/KboneMpPlugin/tmpl/custom-component.tmpl.js
 const render = require("miniapp-render");
+=======
+const mp = require("MINIAPP-RENDER");
+>>>>>>> 39b1dc29d7e9c1dca0a3840fecd9fbcf2b0e8036:packages/build-plugin-rax-app/src/plugins/MiniAppPlugin/tmpl/custom-component.tmpl.js
 
 const { Event, cache, tool } = render.$$adapter;
 

@@ -1,5 +1,9 @@
 /* global APINamespace,TARGET, Page,init */
+<<<<<<< HEAD:packages/build-plugin-rax-app/src/plugins/KboneMpPlugin/tmpl/page.tmpl.js
 const render = require("miniapp-render");
+=======
+const mp = require("MINIAPP-RENDER");
+>>>>>>> 39b1dc29d7e9c1dca0a3840fecd9fbcf2b0e8036:packages/build-plugin-rax-app/src/plugins/MiniAppPlugin/tmpl/page.tmpl.js
 /* eslint-disable  import/no-absolute-path */
 const config = require("/* CONFIG_PATH */");
 

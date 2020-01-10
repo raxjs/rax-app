@@ -145,6 +145,7 @@ function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, 
     )
     .replace(/APINamespace/g, adapter[target].APINamespace)
     .replace(/TARGET/g, `'${target}'`)
+    .replace(/MINIAPP-RENDER/, `miniapp-render/dist/${adapter[target].abbr}`)
     .replace("/* CONFIG_PATH */", `${assetPathPrefix}../../config`)
     .replace(
       "/* INIT_FUNCTION */",
@@ -489,6 +490,10 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
         ] = `components/${customComponents[key].path}`),
     );
 
+    const customComponentJsContent = customComponentJsTmpl
+      .replace(/MINIAPP-RENDER/, `miniapp-render/dist/${adapter[target].abbr}`)
+
+
     // custom-component/index.js
     addFile(
       compilation,
@@ -557,10 +562,6 @@ function installDependencies(autoBuildNpm = false, stats, target, callback) {
     const outputNpmPath = path.resolve(outputPath, adapter[target].npmDirName);
     ensureDirSync(outputNpmPath);
     ['miniapp-element', 'miniapp-render'].forEach(name => {
-      console.log(
-        'path.resolve(__dirname, "node_modules", name)',
-        path.resolve(process.cwd(), "node_modules", name)
-      );
       _.copyDir(
         path.resolve(process.cwd(), "node_modules", name),
         path.resolve(outputPath, adapter[target].npmDirName, name)
