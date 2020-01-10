@@ -1,5 +1,5 @@
 /* global APINamespace,TARGET, Page,init */
-const mp = require("miniprogram-render");
+const render = require("miniapp-render");
 /* eslint-disable  import/no-absolute-path */
 const config = require("/* CONFIG_PATH */");
 
@@ -14,7 +14,7 @@ function dealWithPage(evt, window, value) {
 
   if (value === "webview") {
     // 补全 url
-    url = mp.$$adapter.tool.completeURL(url, window.location.origin);
+    url = render.$$adapter.tool.completeURL(url, window.location.origin);
 
     const options = {
       url: `/pages/webview/index?url=${encodeURIComponent(url)}`,
@@ -48,7 +48,7 @@ Page({
     pageStyle: "",
   },
   onLoad(query) {
-    const pageName = mp.$$adapter.tool.getPageName(this.route);
+    const pageName = render.$$adapter.tool.getPageName(this.route);
     this.pageConfig = config.pages[pageName] || {};
     const pageConfig = this.pageConfig;
 
@@ -60,7 +60,7 @@ Page({
       });
     }
 
-    const mpRes = mp.createPage(this.route, config);
+    const mpRes = render.createPage(this.route, config);
     this.pageId = mpRes.pageId;
     this.window = mpRes.window;
     this.document = mpRes.document;
@@ -173,7 +173,7 @@ Page({
     if (this.app && this.app.$destroy) this.app.$destroy();
     this.document.body.$$recycle(); // 回收 dom 节点
 
-    mp.destroyPage(this.pageId);
+    render.destroyPage(this.pageId);
 
     this.pageConfig = null;
     this.pageId = null;

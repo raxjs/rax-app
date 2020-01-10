@@ -27,6 +27,6 @@ module.exports = (context, target) => {
   config.plugin("MpPlugin").use(KboneMpPlugin, [{ ...appConfig, target }]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
-
+  config.devtool("none")
   return config;
 };

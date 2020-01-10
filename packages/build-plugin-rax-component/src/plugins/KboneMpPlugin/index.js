@@ -641,7 +641,7 @@ class MpPlugin {
       if (hasBuiltNpm || !autoBuildNpm) return callback();
 
       const build = () => {
-        ["miniprogram-element", "miniprogram-render"].forEach(name => {
+        ["miniprogram-element", "miniapp-render"].forEach(name => {
           _.copyDir(
             path.resolve(outputPath, `./node_modules/${name}/src`),
             path.resolve(outputPath, `./miniprogram_npm/${name}`),

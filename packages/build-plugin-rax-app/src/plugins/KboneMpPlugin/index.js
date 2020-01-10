@@ -1,6 +1,5 @@
 const path = require("path");
-const { readFileSync } = require("fs");
-const { spawn } = require("child_process");
+const { readFileSync, ensureDirSync } = require("fs-extra");
 const ConcatSource = require("webpack-sources").ConcatSource;
 const ModuleFilenameHelpers = require("webpack/lib/ModuleFilenameHelpers");
 const { RawSource } = require("webpack-sources");
@@ -36,7 +35,7 @@ const appCssTmpl = readFileSync(
 const customComponentJsTmpl = readFileSync(
   path.resolve(__dirname, "./tmpl/custom-component.tmpl.js"),
   "utf8",
-);
+)
 const projectConfigJsonTmpl = require("./tmpl/project.config.tmpl.json");
 const packageConfigJsonTmpl = require("./tmpl/package.tmpl.json");
 
@@ -140,24 +139,26 @@ function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, 
   const pullDownRefresh = pageConfig && pageConfig.pullDownRefresh;
 
   let pageJsContent = pageJsTmpl
+    .replace(
+      /miniapp-render/g,
+      `miniapp-render/dist/${adapter[target].fileName}/index`
+    )
     .replace(/APINamespace/g, adapter[target].APINamespace)
     .replace(/TARGET/g, `'${target}'`)
     .replace("/* CONFIG_PATH */", `${assetPathPrefix}../../config`)
     .replace(
-      '/* INIT_FUNCTION */',
+      "/* INIT_FUNCTION */",
       `function init(window, document) {window.onload = null;${assets.js
         .map(
           js =>
-            `require('${
-              getAssetPath(
-                assetPathPrefix,
-                js,
-                assetsSubpackageMap,
-                `${pageRoute}.js`,
-              )
-            }')(window, document)`,
+            `require('${getAssetPath(
+              assetPathPrefix,
+              js,
+              assetsSubpackageMap,
+              `${pageRoute}.js`
+            )}')(window, document)`
         )
-        .join(';')}}`,
+        .join(";")}}`
     );
   const pageScrollFunction = addPageScroll ? () =>
   'onPageScroll({ scrollTop }) {if (this.window) {this.window.document.documentElement.scrollTop = scrollTop || 0;this.window.$$trigger("scroll");}},' : '';
@@ -223,8 +224,8 @@ function handlePageJSON(compilation, pageConfig, pageExtraConfig, customComponen
     ...pageExtraConfig,
     enablePullDownRefresh: !!pullDownRefresh,
     usingComponents: {
-      element: 'miniprogram-element',
-    },
+      element: `miniapp-element/dist/${adapter[target].fileName}/index`
+    }
   };
   if (customComponentRoot) {
     pageJson.usingComponents[
@@ -491,8 +492,11 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
     // custom-component/index.js
     addFile(
       compilation,
-      'custom-component/index.js',
-      customComponentJsTmpl,
+      "custom-component/index.js",
+      customComponentJsTmpl.replace(
+        /miniapp-render/g,
+        `miniapp-render/dist/${adapter[target].fileName}/index`
+      ),
       target
     );
 
@@ -550,32 +554,25 @@ function installDependencies(autoBuildNpm = false, stats, target, callback) {
   let callbackExecuted = false;
 
   const build = () => {
-    ['miniprogram-element', 'miniprogram-render'].forEach(name => {
+    const outputNpmPath = path.resolve(outputPath, adapter[target].npmDirName);
+    ensureDirSync(outputNpmPath);
+    ['miniapp-element', 'miniapp-render'].forEach(name => {
+      console.log(
+        'path.resolve(__dirname, "node_modules", name)',
+        path.resolve(process.cwd(), "node_modules", name)
+      );
       _.copyDir(
-        path.resolve(outputPath, `./node_modules/${name}/src`),
-        path.resolve(outputPath, `./miniprogram_npm/${name}`),
+        path.resolve(process.cwd(), "node_modules", name),
+        path.resolve(outputPath, adapter[target].npmDirName, name)
       );
     });
     if (!callbackExecuted) {
       callback();
     }
   };
-  let res = null;
   console.log(chalk.green(`Start building deps for ${adapter[target].name}...`));
 
-  if (autoBuildNpm === 'yarn') {
-    res = spawn('yarn', ['install', '--production'], { cwd: outputPath });
-  } else {
-    res = spawn('npm', ['install', '--production'], { cwd: outputPath });
-  }
-  res.on('close', code => {
-    console.log(
-      chalk.green(
-        `Built deps for ${adapter[target].name} ${!code ? 'success' : 'failed'}`,
-      ),
-    );
-    if (!code && target === WECHAT_MINIPROGRAM) build();
-  });
+  build();
 
   callback();
   callbackExecuted = true;

@@ -1,6 +1,6 @@
 /* global wx,Page,init */
 
-const mp = require("miniprogram-render");
+const mp = require("miniapp-render");
 const config = require("/* CONFIG_PATH */"); // eslint-disable-line
 
 /* INIT_FUNCTION */

@@ -1,6 +1,6 @@
 /* global Component */
 
-const mp = require("miniprogram-render");
+const mp = require("miniapp-render");
 
 const { Event, cache, tool } = mp.$$adapter;
 
@@ -30,7 +30,7 @@ Component({
     },
   },
   options: {
-    addGlobalClass: true, 
+    addGlobalClass: true,
   },
   attached() {
     const nodeId = this.dataset.privateNodeId;

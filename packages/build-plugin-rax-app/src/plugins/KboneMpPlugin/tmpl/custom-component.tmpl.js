@@ -1,7 +1,7 @@
 /* global Component */
-const mp = require("miniprogram-render");
+const render = require("miniapp-render");
 
-const { Event, cache, tool } = mp.$$adapter;
+const { Event, cache, tool } = render.$$adapter;
 
 /**
  * 检查组件属性
