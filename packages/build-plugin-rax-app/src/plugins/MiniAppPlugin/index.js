@@ -139,13 +139,8 @@ function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, 
   const pullDownRefresh = pageConfig && pageConfig.pullDownRefresh;
 
   let pageJsContent = pageJsTmpl
-    .replace(
-      /miniapp-render/g,
-      `miniapp-render/dist/${adapter[target].fileName}/index`
-    )
     .replace(/APINamespace/g, adapter[target].APINamespace)
     .replace(/TARGET/g, `'${target}'`)
-    .replace(/MINIAPP-RENDER/, `miniapp-render/dist/${adapter[target].abbr}`)
     .replace("/* CONFIG_PATH */", `${assetPathPrefix}../../config`)
     .replace(
       "/* INIT_FUNCTION */",
@@ -225,7 +220,7 @@ function handlePageJSON(compilation, pageConfig, pageExtraConfig, customComponen
     ...pageExtraConfig,
     enablePullDownRefresh: !!pullDownRefresh,
     usingComponents: {
-      element: `miniapp-element/dist/${adapter[target].fileName}/index`
+      element: `miniapp-element`
     }
   };
   if (customComponentRoot) {
