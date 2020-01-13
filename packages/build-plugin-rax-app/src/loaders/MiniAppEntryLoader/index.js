@@ -17,10 +17,6 @@ module.exports = function() {
     }
 
     export default function createApp() {
-      // process App.getInitialProps
-      // if (Component.getInitialProps) {
-      //   Object.assign(comProps, await Component.getInitialProps());
-      // }
       render(createElement(Entry), null, { driver: DriverUniversal });
     }
   `;
