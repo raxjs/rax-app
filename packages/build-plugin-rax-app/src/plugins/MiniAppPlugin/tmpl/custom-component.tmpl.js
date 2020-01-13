@@ -4,7 +4,7 @@ const render = require("miniapp-render");
 const { Event, cache, tool } = render.$$adapter;
 
 /**
- * 检查组件属性
+ * Check component attributes
  */
 function checkComponentAttr({ props = [] }, name, domNode, destData, oldData) {
   if (props.length) {
@@ -14,7 +14,7 @@ function checkComponentAttr({ props = [] }, name, domNode, destData, oldData) {
     }
   }
 
-  // 补充 id、class 和 style
+  // Add id, class and style
   const newId = domNode.id;
   if (!oldData || oldData.id !== newId) destData.id = newId;
   const newClass = `builtin-component-${name} node-${
@@ -33,7 +33,7 @@ Component({
     },
   },
   options: {
-    addGlobalClass: true, // 开启全局样式
+    addGlobalClass: true, // Turn global style on
   },
   attached() {
     const nodeId = this.dataset.privateNodeId;
@@ -43,10 +43,10 @@ Component({
     this.nodeId = nodeId;
     this.pageId = pageId;
 
-    // 记录 dom
+    // Record DOM
     this.domNode = cache.getNode(pageId, nodeId);
 
-    // 自定义组件配置
+    // config of custom component
     const config = cache.getConfig();
     this.compConfig =
       (config.runtime &&
@@ -54,12 +54,12 @@ Component({
         config.runtime.usingComponents[this.domNode.behavior]) ||
       {};
 
-    // 监听全局事件
+    // Listen on global event
     this.onSelfNodeUpdate = tool.throttle(this.onSelfNodeUpdate.bind(this));
     this.domNode.$$clearEvent("$$domNodeUpdate");
     this.domNode.addEventListener("$$domNodeUpdate", this.onSelfNodeUpdate);
 
-    // 监听自定义组件事件
+    // Listen on event of custom component
     const { events = [] } = this.compConfig;
     if (events.length) {
       for (const name of events) {
@@ -74,7 +74,7 @@ Component({
       data,
     );
 
-    // 执行一次 setData
+    // Execute setData
     if (Object.keys(data).length) this.setData(data);
   },
   detached() {
@@ -84,10 +84,10 @@ Component({
   },
   methods: {
     /**
-     * 监听当前节点变化
+     * Watch current node change
      */
     onSelfNodeUpdate() {
-      // 判断是否已被销毁
+      // Judge whether  it has been destoryed
       if (!this.pageId || !this.nodeId) return;
 
       const newData = {};
@@ -104,7 +104,7 @@ Component({
     },
 
     /**
-     * 触发简单节点事件
+     * Trigger simple event
      */
     callSimpleEvent(eventName, evt) {
       const domNode = this.domNode;

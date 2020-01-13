@@ -14,7 +14,7 @@ const suffixRegexp = /[a-zA-Z0-9_-]/;
 const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
   root.walk(child => {
     if (child.type === "atrule") {
-      // 处理 css 不支持的 @ 前缀
+      // Handle @-prefix that css doesn't support
       if (child.name === "-moz-keyframes") {
         child.remove();
       }
@@ -22,28 +22,28 @@ const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
       const selectors = [];
 
       child.selectors.forEach(selector => {
-        // 处理标签名选择器
+        // Handle tag selector
         selector = selector.replace(
           replaceRegexp,
           (all, $1, tagName, $2, offset, string) => {
-            // 非标签选择器，调整 \b 匹配的情况
+            // Non-tag selector, adjust \b
             let start = $1;
             let end = $2;
             if (!start) start = string[offset - 1] || "";
             if (!end) end = string[offset + all.length] || "";
 
             if (prefixRegexp.test(start) || suffixRegexp.test(end)) {
-              // 非标签选择器
+              // Non-tag selector
               return all;
             }
 
             tagName = tagName.toLowerCase();
 
             if (tagName === "html") {
-              // 页面单独处理
+              // Handle page alone
               return `${$1}page${$2}`;
             } else if (tagName) {
-              // 其他用原本的标签名
+              // Use original tag name
               return `${$1}.h5-${tagName}${$2}`;
             } else {
               return all;
@@ -51,7 +51,7 @@ const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
           },
         );
 
-        // 处理 * 号选择器
+        // Handle * selector
         selector = selector.replace(/(.*)\*(.*)/g, (all, $1, $2) => {
           if ($2[0] === "=") return all;
 
@@ -74,7 +74,7 @@ const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
 
 module.exports = function(code) {
   code = postcss([replaceTagNamePlugin]).process(code, {
-    from: undefined, // 主要是不想看到那个 warning
+    from: undefined, // Eliminate warning
     map: null,
   });
 

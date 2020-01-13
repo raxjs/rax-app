@@ -6,14 +6,14 @@ const config = require("/* CONFIG_PATH */");
 /* INIT_FUNCTION */
 
 /**
- * 处理一些特殊的页面
+ * Deal with some special pages
  */
 function dealWithPage(evt, window, value) {
   const type = evt.type;
   let url = evt.url;
 
   if (value === "webview") {
-    // 补全 url
+    // Complete url
     url = render.$$adapter.tool.completeURL(url, window.location.origin);
 
     const options = {
@@ -66,18 +66,17 @@ Page({
     this.document = mpRes.document;
     this.query = query;
 
-    // 写入 page 的方法
     if (typeof this.getTabBar === "function")
       this.window.getTabBar = this.getTabBar.bind(this);
 
-    // 处理跳转页面不存在的情况
+    // Handle the condition that redirected page doesn't exist
     if (config.redirect && config.redirect.notFound) {
       this.window.addEventListener("pagenotfound", evt => {
         dealWithPage(evt, mpRes.window, config.redirect.notFound);
       });
     }
 
-    // 处理跳转受限制页面的情况
+    // Handle the condition that redirect to restricted pages
     if (config.redirect && config.redirect.accessDenied) {
       this.window.addEventListener("pageaccessdenied", evt => {
         dealWithPage(evt, mpRes.window, config.redirect.accessDenied);
@@ -89,7 +88,6 @@ Page({
       query.type === "jump" ||
       query.type === "share"
     ) {
-      // 处理页面参数，只有当页面是其他页面打开或跳转时才处理
       this.window.$$miniprogram.init(
         query.targeturl ? decodeURIComponent(query.targeturl) : null,
       );
@@ -102,12 +100,12 @@ Page({
       this.window.$$miniprogram.init();
     }
 
-    // 处理分享显示
+    // Handle whether to show share menu
     if (!pageConfig.share) {
       APINamespace.hideShareMenu();
     }
 
-    // 处理 document 更新
+    // Handle update of document
     this.document.documentElement.addEventListener("$$domNodeUpdate", () => {
       if (pageConfig.rem) {
         const rootFontSize = this.document.documentElement.style.fontSize;
@@ -121,7 +119,7 @@ Page({
       }
     });
 
-    // 处理 body 更新
+    // Handle update of body
     this.document.documentElement.addEventListener("$$childNodesUpdate", () => {
       const domNode = this.document.body;
       const data = {
@@ -137,10 +135,10 @@ Page({
       }
     });
 
-    // 处理 selectorQuery 获取
+    // Hadle selectorQuery
     this.window.$$createSelectorQuery = () => APINamespace.createSelectorQuery().in(this);
 
-    // 处理 intersectionObserver 获取
+    // Handle intersectionObserver
     this.window.$$createIntersectionObserver = options => {
       if (TARGET === 'miniapp') {
         my.createIntersectionObserver(options);
@@ -171,7 +169,7 @@ Page({
     this.window.$$trigger("beforeunload");
     this.window.$$trigger("pageUnload");
     if (this.app && this.app.$destroy) this.app.$destroy();
-    this.document.body.$$recycle(); // 回收 dom 节点
+    this.document.body.$$recycle(); // Recycle DOM node
 
     render.destroyPage(this.pageId);
 
@@ -191,7 +189,7 @@ Page({
       if (shareOptions.path) {
         query.targeturl = encodeURIComponent(shareOptions.path);
       } else {
-        // 组装当前页面路径
+        // Pack path of current page
         const location = this.window.location;
 
         query.targeturl = encodeURIComponent(location.href);

@@ -23,7 +23,7 @@ App({
     if (appConfig.onHide) appConfig.onHide.call(this);
   },
   onError(err) {
-    // 支持 window 的 error 事件
+    // Support error event of window
     const pages = getCurrentPages() || [];
     const currentPage = pages[pages.length - 1];
     if (currentPage && currentPage.window) {

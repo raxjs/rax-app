@@ -39,13 +39,13 @@ const customComponentJsTmpl = readFileSync(
 const projectConfigJsonTmpl = require("./tmpl/project.config.tmpl.json");
 const packageConfigJsonTmpl = require("./tmpl/package.tmpl.json");
 
-process.env.isMiniprogram = true; // 设置环境变量
+process.env.isMiniprogram = true; // Set env variable
 const globalVars = [
   "HTMLElement"
 ];
 
 /**
- * 添加文件
+ * Add file to compilation
  */
 function addFile(compilation, filename, content, target = WECHAT_MINIPROGRAM) {
   console.log(`${target}/${filename}`);
@@ -56,13 +56,13 @@ function addFile(compilation, filename, content, target = WECHAT_MINIPROGRAM) {
 }
 
 /**
- * 给 chunk 头尾追加内容
+ * Add content to chunks head and tail
  */
 function wrapChunks(compilation, chunks, globalVarsConfig) {
   chunks.forEach(chunk => {
     chunk.files.forEach(fileName => {
       if (ModuleFilenameHelpers.matchObject({ test: /\.js$/ }, fileName)) {
-        // 页面 js
+        // Page js
         const headerContent =
           `module.exports = function(window, document) {const App = function(options) {window.appOptions = options};${
             globalVars.map(item => `var ${item} = window.${item}`).join(";")
@@ -91,7 +91,7 @@ function wrapChunks(compilation, chunks, globalVarsConfig) {
 }
 
 /**
- * 获取依赖文件路径
+ * Get dependency file path
  */
 function getAssetPath(
   assetPathPrefix,
@@ -191,7 +191,7 @@ function handlePageXML (compilation, customComponentRoot, pageConfig, pageRoute,
 }
 
 function handlePageCSS(compilation, pageConfig, assets, assetPathPrefix, assetsSubpackageMap, pageRoute, target) {
-  const pageBackgroundColor = pageConfig && (pageConfig.pageBackgroundColor || pageConfig.backgroundColor); // 兼容原有的 backgroundColor
+  const pageBackgroundColor = pageConfig && (pageConfig.pageBackgroundColor || pageConfig.backgroundColor); // Compatible with original backgroundColor
 
   let pageCssContent = assets.css
   .map(
@@ -378,7 +378,6 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
 function handleProjectConfig(compilation, { projectConfig = {} }, target) {
   if (target === WECHAT_MINIPROGRAM) {
     const userProjectConfigJson = projectConfig;
-    // 这里需要深拷贝，不然数组相同引用指向一直 push
     const projectConfigJson = JSON.parse(
       JSON.stringify(projectConfigJsonTmpl),
     );
@@ -408,14 +407,13 @@ function handleSiteMap(compilation, { sitemapConfig }, target) {
 function handleConfigJS(compilation, subpackagesMap, tabBarMap, pageConfigMap, customComponentConfig, { router, origin, entry, redirect, optimization, runtime }, target) {
   const processedRouter = {};
   if (router) {
-    // 处理 router
+    // Handle router
     Object.keys(router).forEach(key => {
       const pathObjList = [];
       let pathList = router[key];
       pathList = Array.isArray(pathList) ? pathList : [ pathList ];
 
       for (const pathItem of pathList) {
-        // 将每个 route 转成正则并进行序列化
         if (pathItem && typeof pathItem === 'string') {
           const keys = [];
           const regexp = pathToRegexp(pathItem, keys);
@@ -469,7 +467,6 @@ function handlePackageJSON(compilation, userPackageConfigJson = {}, target) {
 }
 
 function handleCustomComponent(compilation, customComponentRoot, customComponents, outputPath, target) {
-  // 自定义组件，生成到 miniprogram_npm 中
   if (customComponentRoot) {
     _.copyDir(
       customComponentRoot,
@@ -614,38 +611,38 @@ class MpPlugin {
       const customComponentRoot = customComponentConfig.root;
       const customComponents = customComponentConfig.usingComponents || {};
       const pages = [];
-      const subpackagesMap = {}; // 页面名-分包名
-      const assetsMap = {}; // 页面名-依赖
-      const assetsReverseMap = {}; // 依赖-页面名
-      const assetsSubpackageMap = {}; // 依赖-分包名
+      const subpackagesMap = {}; // page - subpackage
+      const assetsMap = {}; // page - asset
+      const assetsReverseMap = {}; // asset - page
+      const assetsSubpackageMap = {}; // asset - subpackage
       const tabBarMap = {};
 
-      // 收集依赖
+      // Collect asset
       for (const entryName of entryNames) {
         const assets = { js: [], css: [] };
         const filePathMap = {};
         const extRegex = /\.(css|js|wxss|acss)(\?|$)/;
         const entryFiles = compilation.entrypoints.get(entryName).getFiles();
         entryFiles.forEach(filePath => {
-          // 跳过非 css 和 js
+          // Skip non css or js
           const extMatch = extRegex.exec(filePath);
           if (!extMatch) return;
 
-          // 跳过已记录的
+          // Skip recorded
           if (filePathMap[filePath]) return;
           filePathMap[filePath] = true;
 
-          // 记录
+          // Record
           let ext = extMatch[1];
           ext = (ext === 'wxss' || ext === 'css' || ext === 'acss') ? 'css' : ext;
           assets[ext].push(filePath);
 
-          // 插入反查表
+          // Insert into assetsReverseMap
           assetsReverseMap[filePath] = assetsReverseMap[filePath] || [];
           if (assetsReverseMap[filePath].indexOf(entryName) === -1)
             assetsReverseMap[filePath].push(entryName);
 
-          // 调整 css 内容
+          // Adjust css content
           if (ext === 'css') {
             compilation.assets[filePath] = new RawSource(
               adjustCss(compilation.assets[filePath].source()),
@@ -656,19 +653,18 @@ class MpPlugin {
         assetsMap[entryName] = assets;
       }
 
-      // 处理分包配置
+      // Handle subpackage config
       Object.keys(subpackagesConfig).forEach(packageName => {
         const pages = subpackagesConfig[packageName] || [];
         pages.forEach(entryName => {
           subpackagesMap[entryName] = packageName;
 
-          // 寻找私有依赖，放入分包
+          // Search private asset and put into subpackage
           const assets = assetsMap[entryName];
           if (assets) {
             [...assets.js, ...assets.css].forEach(filePath => {
               const requirePages = assetsReverseMap[filePath] || [];
               if (_.includes(pages, requirePages)) {
-                // 该依赖为分包内页面私有
                 assetsSubpackageMap[filePath] = packageName;
                 compilation.assets[`../${packageName}/common/${filePath}`] =
                   compilation.assets[filePath];
@@ -679,11 +675,11 @@ class MpPlugin {
         });
       });
 
-      // 剔除 app.js 入口
+      // Delete entry of app.js
       const appJsEntryIndex = entryNames.indexOf(appJsEntryName);
       if (appJsEntryIndex >= 0) entryNames.splice(appJsEntryIndex, 1);
 
-      // 处理自定义组件字段
+      // Handle custom component
       Object.keys(customComponents).forEach(key => {
         if (typeof customComponents[key] === 'string') {
           customComponents[key] = {
@@ -692,7 +688,7 @@ class MpPlugin {
         }
       });
 
-      // 处理各个入口页面
+      // Handle each entry page
       for (const entryName of entryNames) {
         const assets = assetsMap[entryName];
         pageConfigMap[entryName] = Object.assign(
@@ -708,66 +704,65 @@ class MpPlugin {
         }pages/${entryName}/index`;
         const assetPathPrefix = packageName ? '../' : '';
 
-        // 页面 js
+        // Page js
         handlePageJS(compilation, assets, assetPathPrefix, assetsSubpackageMap, pageRoute, pageConfig, target);
 
-        // 页面 xml
+        // Page xml
         handlePageXML(compilation, customComponentRoot, pageConfig, pageRoute, target);
 
-        // 页面 css
+        // Page css
         handlePageCSS(compilation, pageConfig, assets, assetPathPrefix, assetsSubpackageMap, pageRoute, target);
 
-        // 页面 json
+        // Page json
         handlePageJSON(compilation, pageConfig, pageExtraConfig, customComponentRoot, assetPathPrefix, pageRoute, target);
 
-        // 记录页面路径
+        // Record page path
         if (!packageName) pages.push(pageRoute);
       }
 
-      // 追加 webview 页面
+      // Add webview page
       handleWebview(compilation, pages, options, target);
 
       const isEmitApp = generateConfig.app !== 'noemit';
       if (isEmitApp) {
         const appAssets = assetsMap[appJsEntryName] || { js: [], css: [] };
 
-        // app js
+        // App js
         handleAppJS(compilation, appAssets, assetsSubpackageMap, target);
-        // app css
+        // App css
         handleAppCSS(compilation, appAssets, assetsSubpackageMap, generateConfig.appWxss, target);
 
-        // app json
+        // App json
         handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpackagesMap, options.appExtraConfig, tabBarConfig, outputPath, tabBarMap, pages, options, target);
 
-        // project.config.json
+        // Project.config.json
         handleProjectConfig(compilation, options, target);
 
-        // sitemap.json
+        // Sitemap.json
         handleSiteMap(compilation, options, target);
       }
 
-      // config js
+      // Config js
       handleConfigJS(compilation, subpackagesMap, tabBarMap, pageConfigMap, customComponentConfig, options, target);
 
-      // package.json
+      // Package.json
       handlePackageJSON(compilation, options.packageConfig, target);
 
-      // node_modules
+      // Node_modules
       handleNodeModules(compilation, target);
 
-      // custom-component
+      // Custom-component
       handleCustomComponent(compilation, customComponentRoot, customComponents, outputPath, target);
 
       callback();
     });
 
     compiler.hooks.compilation.tap(PluginName, compilation => {
-      // 处理头尾追加内容
       handleWrapChunks(compilation, generateConfig.globalVars, this.afterOptimizations, PluginName);
     });
 
     compiler.hooks.done.tapAsync(PluginName, (stats, callback) => {
-      // 处理自动安装小程序依赖
+      // Install dependency automatically
       installDependencies(generateConfig.autoBuildNpm, stats, target, callback);
     });
   }

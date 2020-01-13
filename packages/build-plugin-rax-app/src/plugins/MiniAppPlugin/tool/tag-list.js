@@ -1,4 +1,4 @@
-// css * 号选择器支持的标签列表
+// Tag list that * selector supports
 module.exports = [
   "a",
   "abbr",

@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 
 /**
- * 深合并对象
+ * Deep merge objects
  */
 function merge(to, from) {
   if (typeof to !== "object" || typeof from !== "object") return to;
@@ -38,7 +38,7 @@ function merge(to, from) {
 }
 
 /**
- * 判断数组包含关系
+ * Judge whether parentArr includes childArr
  */
 function includes(parentArr, childArr) {
   for (const child of childArr) {
@@ -49,14 +49,14 @@ function includes(parentArr, childArr) {
 }
 
 /**
- * 递归创建目录
+ * Create directories recursively
  */
 function recursiveMkdir(dirPath) {
   const prevDirPath = path.dirname(dirPath);
   try {
     fs.accessSync(prevDirPath);
   } catch (err) {
-    // 上一级目录不存在
+    // Upper level directory does not exist
     recursiveMkdir(prevDirPath);
   }
 
@@ -65,18 +65,18 @@ function recursiveMkdir(dirPath) {
 
     const stat = fs.statSync(dirPath);
     if (stat && !stat.isDirectory()) {
-      // 目标路径存在，但不是目录
-      fs.renameSync(dirPath, `${dirPath}.bak`); // 将此文件重命名为 .bak 后缀
+      // Target path exists but is not a directory
+      fs.renameSync(dirPath, `${dirPath}.bak`); // Rename the file as .bak suffix
       fs.mkdirSync(dirPath);
     }
   } catch (err) {
-    // 目标路径不存在
+    // Target path does not exist
     fs.mkdirSync(dirPath);
   }
 }
 
 /**
- * 复制文件
+ * Copy files
  */
 function copyFile(fromPath, toPath) {
   recursiveMkdir(path.dirname(toPath));
@@ -84,7 +84,7 @@ function copyFile(fromPath, toPath) {
 }
 
 /**
- * 复制目录
+ * Copy directories
  */
 function copyDir(fromPath, toPath) {
   try {
@@ -92,11 +92,11 @@ function copyDir(fromPath, toPath) {
 
     const stat = fs.statSync(fromPath);
     if (stat && !stat.isDirectory()) {
-      // 源路径存在，但不是目录
+      // Target path exists but is not a directory
       return console.log(`path is not directory: "${fromPath}"`);
     }
   } catch (err) {
-    // 源路径不存在
+    // Target path does not exist
     return console.log(`path not exists: "${fromPath}"`);
   }
 
@@ -114,7 +114,7 @@ function copyDir(fromPath, toPath) {
 }
 
 /**
- * 计算文件 md5
+ * Calculate file md5
  */
 function md5File(filePath) {
   return crypto
