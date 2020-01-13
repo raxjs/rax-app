@@ -37,6 +37,7 @@ module.exports = class UniversalDocumentPlugin {
     const config = compiler.options;
     const absoluteDocumentPath = path.resolve(config.context, this.documentPath);
     const publicPath = this.publicPath ? this.publicPath : config.output.publicPath;
+    const command = this.command;
 
     // Get output dir from filename instead of hard code.
     const outputFileName = compiler.options.output.filename;
@@ -97,6 +98,8 @@ module.exports = class UniversalDocumentPlugin {
           return {
             __styles: assets.styles,
             __scripts: assets.scripts,
+            __command: command,
+            __publicPath: publicPath
           };
         };
         DocumentContextProvider.prototype.render = function () {
