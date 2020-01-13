@@ -98,8 +98,7 @@ module.exports = class UniversalDocumentPlugin {
           return {
             __styles: assets.styles,
             __scripts: assets.scripts,
-            __command: command,
-            __publicPath: publicPath
+            __command: command
           };
         };
         DocumentContextProvider.prototype.render = function () {
@@ -159,7 +158,7 @@ function interopRequire(obj) {
 /**
  * load Document after webpack compilation
  * @param {*} content document output
- * @param {*} insertScript 
+ * @param {*} insertScript
  */
 function loadDocument(content, insertScript) {
   let fileContent = content;
@@ -186,7 +185,7 @@ function loadDocument(content, insertScript) {
 /**
  * get assets from webpack outputs
  * @param {*} files [ 'web/detail.css', 'web/detail.js' ]
- * @param {*} publicPath 
+ * @param {*} publicPath
  */
 function getAssetsForPage(files, publicPath) {
   const jsFiles = files.filter(v => /\.js$/i.test(v));
