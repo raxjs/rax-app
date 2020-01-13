@@ -144,7 +144,7 @@ function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, 
     .replace("/* CONFIG_PATH */", `${assetPathPrefix}../../config`)
     .replace(
       "/* INIT_FUNCTION */",
-      `function init(window, document) {window.onload = null;${assets.js
+      `function init(window, document) {${assets.js
         .map(
           js =>
             `require('${getAssetPath(
