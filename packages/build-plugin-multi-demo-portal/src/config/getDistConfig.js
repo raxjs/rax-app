@@ -2,13 +2,33 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const getBaseWebpack = require("./getBaseWebpack");
+const getDemos = require("./utils/getDemos");
 
 module.exports = context => {
   const config = getBaseWebpack(context);
+  const { rootDir } = context;
+  const demos = getDemos(rootDir);
 
   config.target("web");
 
-  config.output.libraryTarget("umd").filename("[name].js");
+  demos.forEach(demo => {
+    const { name, filePath } = demo;
+
+    config.entry(name).add(filePath);
+
+    config.plugin(`html4${name}`).use(HtmlWebpackPlugin, [
+      {
+        inject: true,
+        filename: `${name}.html`,
+        chunks: [name],
+        template: path.resolve(__dirname, "./demo.html"),
+      },
+    ]);
+  });
+
+  config.output
+    .libraryTarget("umd")
+    .filename("[name].js");
 
   config.externals([
     function(ctx, request, callback) {

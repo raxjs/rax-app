@@ -28,7 +28,7 @@ const DemoBlock = ({ js, css, name, title, desc, active, onClick }) => {
       <div className={`demo-box ${active ? 'active' : ''}`} onClick={onClick}>
         <div className="demo-box-meta">
           <div className="demo-box-title">
-            <a target="_blank" href={`/${name}`}>
+            <a target="_blank" href={ '{{command}}' === 'build' ? `./${name}.html` : `${name}`}>
               {name}
             </a>
           </div>
@@ -137,7 +137,7 @@ const DemoBlocks = ({active:activeProp, onChange}) => {
 function Portal(props){
   const docHtml = {__html: `{{{docHtml}}}` || ''};
   const iframeStyle = { width: '100%', height: '760px', border: 'none' };
-  const [active, setActive ] = useState('index');
+  const [active, setActive ] = useState(demos && demos[0] && demos[0].name);
   const handleChange = (demo) => {
   	setActive(demo);
   }
@@ -155,7 +155,7 @@ function Portal(props){
         </div>
       </div>
       <Device>
-        <iframe src={`${active}`} style={iframeStyle}></iframe>
+        <iframe src={ '{{command}}' === 'build' ? `./${active}.html` :`/${active}`} style={iframeStyle}></iframe>
       </Device>
     </div>
   );
