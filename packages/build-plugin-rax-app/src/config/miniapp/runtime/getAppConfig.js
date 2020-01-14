@@ -13,10 +13,13 @@ module.exports = (context) => {
     throw new Error('routes in app.json must be array');
   }
 
-  config.routes = config.routes.map(route => ({
-    entryName: getRouteName(route, rootDir),
-    ...route
-  }))
+  config.routes = config.routes.map(route => {
+    route.name = route.source; // Use source as route name
+    return {
+      entryName: getRouteName(route, rootDir),
+      ...route,
+    }
+  });
 
   return config;
 };

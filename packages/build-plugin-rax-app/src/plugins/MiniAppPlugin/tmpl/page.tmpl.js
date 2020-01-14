@@ -56,7 +56,7 @@ Page({
       APINamespace.showLoading({
         title: pageConfig.loadingText,
         content: pageConfig.loadingText,
-        mask: true
+        mask: true,
       });
     }
 
@@ -141,11 +141,13 @@ Page({
     // Handle intersectionObserver
     this.window.$$createIntersectionObserver = options => {
       if (TARGET === 'miniapp') {
+        /* eslint-disable  no-undef */
         my.createIntersectionObserver(options);
       } else {
+        /* eslint-disable  no-undef */
         wx.createIntersectionObserver(this, options);
       }
-    }
+    };
 
     init(this.window, this.document);
     this.setData({

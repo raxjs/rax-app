@@ -11,8 +11,8 @@ module.exports = {
     directive: {
       prefix: "a",
       if: "a:if",
-      elif: "a:alif"
-    }
+      elif: "a:alif",
+    },
   },
   [WECHAT_MINIPROGRAM]: {
     name: "Wechat MiniProgram",
@@ -24,7 +24,7 @@ module.exports = {
     directive: {
       prefix: "wx",
       if: "wx:if",
-      elif: "wx:alif"
-    }
-  }
+      elif: "wx:alif",
+    },
+  },
 };

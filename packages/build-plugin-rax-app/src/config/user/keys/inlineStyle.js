@@ -1,5 +1,5 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { WEB, WEEX, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../../../constants');
+const { WEB, WEEX, NODE, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../../../constants');
 
 const webStandardList = [
   WEB,

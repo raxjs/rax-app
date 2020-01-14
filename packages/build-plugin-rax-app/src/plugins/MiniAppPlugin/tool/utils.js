@@ -19,10 +19,10 @@ function merge(to, from) {
 
     // eslint-disable-next-line no-bitwise
     if (fromType !== toType || isFromArray ^ isToArray) {
-      // 不同类型
+      // Different types
       to[key] = fromValue;
     } else {
-      // 相同类型
+      // The same type
       // eslint-disable-next-line no-lonely-if
       if (isFromArray) {
         fromValue.forEach(item => toValue.push(item));

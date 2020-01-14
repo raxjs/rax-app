@@ -35,13 +35,13 @@ const appCssTmpl = readFileSync(
 const customComponentJsTmpl = readFileSync(
   path.resolve(__dirname, "./tmpl/custom-component.tmpl.js"),
   "utf8",
-)
+);
 const projectConfigJsonTmpl = require("./tmpl/project.config.tmpl.json");
 const packageConfigJsonTmpl = require("./tmpl/package.tmpl.json");
 
 process.env.isMiniprogram = true; // Set env variable
 const globalVars = [
-  "HTMLElement"
+  "HTMLElement",
 ];
 
 /**
@@ -98,13 +98,15 @@ function getAssetPath(
   filePath,
   assetsSubpackageMap,
   selfFilePath,
-  target = WECHAT_MINIPROGRAM
-) {
-  if (assetsSubpackageMap[filePath]) assetPathPrefix = ""; // 依赖在分包内，不需要补前缀
-  return `${assetPathPrefix}./${path.relative(
+  target = WECHAT_MINIPROGRAM,
+  ) {
+  if (assetsSubpackageMap[filePath]) assetPathPrefix = "";
+
+  const result = `${assetPathPrefix}./${path.relative(
     path.dirname(`${target}/${selfFilePath}`),
     filePath,
-  )}`;
+  )}`
+  return result;
 }
 
 /**
@@ -125,10 +127,10 @@ function mergeConfig(defaultConfig, passedOptions = {}) {
     entry: routes[0] && routes[0].path,
     generate: {
       ...defaultConfig.generate,
-      tabBar
+      tabBar,
     },
     app: window,
-    appExtraConfig
+    appExtraConfig,
   };
   return Object.assign({}, defaultConfig, config);
 }
@@ -137,11 +139,12 @@ function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, 
   const addPageScroll = pageConfig && pageConfig.windowScroll;
   const reachBottom = pageConfig && pageConfig.reachBottom;
   const pullDownRefresh = pageConfig && pageConfig.pullDownRefresh;
-
+  console.log('assets.js', assets.js);
+  console.log('pageRoute', pageRoute);
   let pageJsContent = pageJsTmpl
     .replace(/APINamespace/g, adapter[target].APINamespace)
     .replace(/TARGET/g, `'${target}'`)
-    .replace("/* CONFIG_PATH */", `${assetPathPrefix}../../config`)
+    .replace("/* CONFIG_PATH */", `${getAssetPath(assetPathPrefix, `${target}/config.js`, assetsSubpackageMap, `${pageRoute}.js`, target)}`)
     .replace(
       "/* INIT_FUNCTION */",
       `function init(window, document) {${assets.js
@@ -151,17 +154,18 @@ function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, 
               assetPathPrefix,
               js,
               assetsSubpackageMap,
-              `${pageRoute}.js`
-            )}')(window, document)`
+              `${pageRoute}.js`,
+              target
+            )}')(window, document)`,
         )
-        .join(";")}}`
+        .join(";")}}`,
     );
   const pageScrollFunction = addPageScroll ? () =>
-  'onPageScroll({ scrollTop }) {if (this.window) {this.window.document.documentElement.scrollTop = scrollTop || 0;this.window.$$trigger("scroll");}},' : '';
+    'onPageScroll({ scrollTop }) {if (this.window) {this.window.document.documentElement.scrollTop = scrollTop || 0;this.window.$$trigger("scroll");}},' : '';
   const reachBottomFunction = reachBottom ? () =>
-  'onReachBottom() {if (this.window) {this.window.$$trigger("reachbottom");}},' : '';
+    'onReachBottom() {if (this.window) {this.window.$$trigger("reachbottom");}},' : '';
   const pullDownRefreshFunction = pullDownRefresh ? () =>
-  'onPullDownRefresh() {if (this.window) {this.window.$$trigger("pulldownrefresh");}},' : '';
+    'onPullDownRefresh() {if (this.window) {this.window.$$trigger("pulldownrefresh");}},' : '';
 
   pageJsContent = pageJsContent
     .replace('/* PAGE_SCROLL_FUNCTION */', pageScrollFunction)
@@ -201,8 +205,9 @@ function handlePageCSS(compilation, pageConfig, assets, assetPathPrefix, assetsS
         css,
         assetsSubpackageMap,
         `${pageRoute}.${adapter[target].css}`,
+        target
       )}";`,
-    )
+  )
   .join("\n");
   if (pageBackgroundColor)
     pageCssContent =
@@ -220,8 +225,8 @@ function handlePageJSON(compilation, pageConfig, pageExtraConfig, customComponen
     ...pageExtraConfig,
     enablePullDownRefresh: !!pullDownRefresh,
     usingComponents: {
-      element: `miniapp-element`
-    }
+      element: `miniapp-element`,
+    },
   };
   if (customComponentRoot) {
     pageJson.usingComponents[
@@ -241,20 +246,20 @@ function handleWebview(compilation, pages, { redirect }, target) {
       compilation,
       'pages/webview/index.js',
       'Page({data:{url:""},onLoad: function(query){this.setData({url:decodeURIComponent(query.url)})}})',
-      target
+      target,
     );
     addFile(
       compilation,
       `pages/webview/index.${adapter[target].xml}`,
       '<web-view src="{{url}}"></web-view>',
-      target
+      target,
     );
     addFile(compilation, `pages/webview/index.${adapter[target].css}`, '', target);
     addFile(
       compilation,
       'pages/webview/index.json',
       '{"usingComponents":{}}',
-      target
+      target,
     );
     pages.push('pages/webview/index');
   }
@@ -267,7 +272,7 @@ function handleAppJS (compilation, appAssets, assetsSubpackageMap, target) {
       .map(
         js =>
           `require('${
-            getAssetPath('', js, assetsSubpackageMap, '', "app.js")
+            getAssetPath('', js, assetsSubpackageMap, 'app.js', target)
           }')(fakeWindow, fakeDocument)`,
       )
       .join(';')};const appConfig = fakeWindow.appOptions || {};`,
@@ -289,8 +294,8 @@ function handleAppCSS (compilation, appAssets, assetsSubpackageMap, appCssConfig
             '',
             css,
             assetsSubpackageMap,
-            '',
             `app.${adapter[target].css}`,
+            target
           )}";`,
       )
       .join("\n")}`;
@@ -310,14 +315,14 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
     subpackages.push({
       name: packageName,
       root: packageName,
-      pages: pages.map(entryName => `pages/${entryName}/index`),
+      pages
     });
   });
   Object.keys(preloadRuleConfig).forEach(entryName => {
     const packageName = subpackagesMap[entryName];
     const pageRoute = `${
       packageName ? `${packageName  }/` : ''
-    }pages/${entryName}/index`;
+    }${entryName}`;
     preloadRule[pageRoute] = preloadRuleConfig[entryName];
   });
   const appJson = {
@@ -347,10 +352,10 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
           item.selectedIconPath,
           path.resolve(outputPath, `../images/${selectedIconPathName}`),
         );
-      tabBarMap[`/pages/${item.pageName}/index`] = true;
+      tabBarMap[`/${item.pageName}`] = true;
 
       return {
-        pagePath: `pages/${item.pageName}/index`,
+        pagePath: `${item.pageName}`,
         text: item.text,
         iconPath: iconPathName ? `./images/${iconPathName}` : '',
         selectedIconPath: selectedIconPathName
@@ -397,7 +402,7 @@ function handleSiteMap(compilation, { sitemapConfig }, target) {
       const sitemapConfigJsonContent = JSON.stringify(
         userSitemapConfigJson,
         null,
-        '\t'
+        '\t',
       );
       addFile(compilation, 'sitemap.json', sitemapConfigJsonContent, target);
     }
@@ -461,7 +466,7 @@ function handlePackageJSON(compilation, userPackageConfigJson = {}, target) {
   const packageConfigJsonContent = JSON.stringify(
     _.merge(packageConfigJson, userPackageConfigJson),
     null,
-    '\t'
+    '\t',
   );
   addFile(compilation, 'package.json', packageConfigJsonContent, target);
 }
@@ -482,19 +487,12 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
         ] = `components/${customComponents[key].path}`),
     );
 
-    const customComponentJsContent = customComponentJsTmpl
-      .replace(/MINIAPP-RENDER/, `miniapp-render/dist/${adapter[target].abbr}`)
-
-
     // custom-component/index.js
     addFile(
       compilation,
       "custom-component/index.js",
-      customComponentJsTmpl.replace(
-        /miniapp-render/g,
-        `miniapp-render/dist/${adapter[target].fileName}/index`
-      ),
-      target
+      customComponentJsTmpl,
+      target,
     );
 
     // custom-component/index.xml
@@ -513,7 +511,7 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
             .join(" ")}><slot/></${key}>`;
         })
         .join('\n'),
-      target
+      target,
     );
 
     // custom-component/index.css
@@ -531,7 +529,7 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
         null,
         '\t',
       ),
-      target
+      target,
     );
   }
 }
@@ -556,7 +554,7 @@ function installDependencies(autoBuildNpm = false, stats, target, callback) {
     ['miniapp-element', 'miniapp-render'].forEach(name => {
       _.copyDir(
         path.resolve(process.cwd(), "node_modules", name),
-        path.resolve(outputPath, adapter[target].npmDirName, name)
+        path.resolve(outputPath, adapter[target].npmDirName, name),
       );
     });
     if (!callbackExecuted) {
@@ -701,7 +699,7 @@ class MpPlugin {
         const packageName = subpackagesMap[entryName];
         const pageRoute = `${
           packageName ? `${packageName  }/` : ''
-        }pages/${entryName}/index`;
+        }${entryName}`;
         const assetPathPrefix = packageName ? '../' : '';
 
         // Page js
