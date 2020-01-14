@@ -48,7 +48,6 @@ const globalVars = [
  * Add file to compilation
  */
 function addFile(compilation, filename, content, target = WECHAT_MINIPROGRAM) {
-  console.log(`${target}/${filename}`);
   compilation.assets[`${target}/${filename}`] = {
     source: () => content,
     size: () => Buffer.from(content).length,
@@ -140,8 +139,6 @@ function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, 
   const addPageScroll = pageConfig && pageConfig.windowScroll;
   const reachBottom = pageConfig && pageConfig.reachBottom;
   const pullDownRefresh = pageConfig && pageConfig.pullDownRefresh;
-  console.log('assets.js', assets.js);
-  console.log('pageRoute', pageRoute);
   let pageJsContent = pageJsTmpl
     .replace(/APINamespace/g, adapter[target].APINamespace)
     .replace(/TARGET/g, `'${target}'`)
