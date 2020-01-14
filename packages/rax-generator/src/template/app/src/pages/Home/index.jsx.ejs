@@ -24,14 +24,14 @@ export default function Home() {
 <%_ } -%>
 
   return (
-    <View className='home'><%# className can work correctly whether `inlineStyle` is `true` or `false` %>
+    <View className="home"><%# className can work correctly whether `inlineStyle` is `true` or `false` %>
       <Logo />
-      <Text className='title'>Welcome to Your Rax App</Text>
+      <Text className="title">Welcome to Your Rax App</Text>
       <%_ if (useFaaS) { -%>
-      <Text className='info'>Current user: {account}</Text>
+      <Text className="info">Current user: {account}</Text>
       <%_ } -%>
-      <Text className='info'>More information about Rax</Text>
-      <Text className='info'>Visit https://rax.js.org</Text>
+      <Text className="info">More information about Rax</Text>
+      <Text className="info">Visit https://rax.js.org</Text>
     </View>
   );
 }

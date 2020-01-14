@@ -7,7 +7,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 const getDemos = require('./config/getDemos');
 
 const watchLib = require('./watchLib');
-const mpDev = require('./config/miniapp/dev');
+const startJSX2MpDev = require('./config/miniapp/dev');
 
 const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
@@ -22,38 +22,35 @@ module.exports = (api, options = {}) => {
   const demos = getDemos(rootDir);
 
   const asyncTask = [];
-  const selfDevTargets = [];
-  const customDevTargets = [];
+  // Use build-scripts webpack
+  const buildScriptsDevTargets = [];
+  // Use jsx2mp-cli webpack
+  const jsx2mpDevTargets = [];
   // set dev config
   targets.forEach((target) => {
     if ([WEB, WEEX].indexOf(target) > -1) {
       const getDev = require(`./config/${target}/getDev`);
       const config = getDev(context, options);
-      selfDevTargets.push(target);
+      buildScriptsDevTargets.push(target);
       registerTask(`component-demo-${target}`, config);
     } else if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > -1) {
       options[target] = options[target] || {};
       addMpPlatform(target, options[target]);
-      if (options[target].buildType === 'runtime') {
-        const getDev = require(`./config/miniapp/getDev`);
-        const config = getDev(context, options, target);
-        selfDevTargets.push(target);
-        registerTask(`component-demo-${target}`, config);
-      } else {
-        customDevTargets.push(target);
-      }
+      jsx2mpDevTargets.push(target);
     }
   });
-  customDevTargets.forEach(target => {
-    if (selfDevTargets.length) {
+
+  // Collect jsx2mp dev task
+  jsx2mpDevTargets.forEach(target => {
+    if (buildScriptsDevTargets.length) {
       onHook('after.start.devServer', () => {
-        mpDev(context, options[target], (args) => {
+        startJSX2MpDev(context, options[target], (args) => {
           devCompletedArr.push(args);
         });
       });
     } else {
       asyncTask.push(new Promise(resolve => {
-        mpDev(context, options[target], (args) => {
+        startJSX2MpDev(context, options[target], (args) => {
           devCompletedArr.push(args);
           resolve();
         });
@@ -62,6 +59,7 @@ module.exports = (api, options = {}) => {
   });
 
   if (asyncTask.length) {
+    // Run jsx2mp dev
     Promise.all(asyncTask).then(() => {
       devCompileLog();
     });
@@ -77,7 +75,7 @@ module.exports = (api, options = {}) => {
     devUrl = args.url;
     devCompletedArr.push(args);
     // run miniapp build while targets have web or weex, for log control
-    if (devCompletedArr.length === customDevTargets.length + 1) {
+    if (devCompletedArr.length === jsx2mpDevTargets.length + 1) {
       devCompileLog();
     }
   });
