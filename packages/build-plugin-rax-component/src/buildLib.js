@@ -5,7 +5,7 @@ const fs = require('fs-extra');
 const gulpCompile = require('./gulp/compile');
 const gulpParams = require('./gulp/params');
 
-const mpBuild = require('./config/miniapp/build');
+const jsx2mpBuilder = require('./config/miniapp/build');
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = async (api, options = {}) => {
@@ -36,7 +36,7 @@ module.exports = async (api, options = {}) => {
       gulpParams.callback = async () => {
         if (buildMiniapp) {
           const config = options[MINIAPP] || {};
-          const result = await mpBuild(context, 'src/index', config);
+          const result = await jsx2mpBuilder(context, 'src/index', config);
           fs.removeSync(path.join(BUILD_DIR, 'miniappTemp'));
           if (result.err) {
             return result;
@@ -45,9 +45,9 @@ module.exports = async (api, options = {}) => {
 
         if (buildWechatMiniProgram) {
           const config = Object.assign({
-            platform: 'wechat',
+            platform: WECHAT_MINIPROGRAM,
           }, options[WECHAT_MINIPROGRAM]);
-          const result = await mpBuild(context, 'src/index', config);
+          const result = await jsx2mpBuilder(context, 'src/index', config);
           fs.removeSync(path.join(BUILD_DIR, 'wechatTemp'));
           if (result.err) {
             return result;
@@ -58,16 +58,16 @@ module.exports = async (api, options = {}) => {
     } else {
       if (buildMiniapp) {
         const config = options[MINIAPP] || {};
-        const result = await mpBuild(context, null, config);
+        const result = await jsx2mpBuilder(context, null, config);
         if (result.err) {
           return result;
         }
       }
       if (buildWechatMiniProgram) {
         const config = Object.assign({
-          platform: 'wechat',
+          platform: WECHAT_MINIPROGRAM,
         }, options[WECHAT_MINIPROGRAM]);
-        const result = await mpBuild(context, null, config);
+        const result = await jsx2mpBuilder(context, null, config);
         if (result.err) {
           return result;
         }
