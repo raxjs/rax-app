@@ -1,10 +1,14 @@
 
 const path = require('path');
+const fs = require('fs');
+const ejs = require('ejs');
 const SourceMap = require('source-map');
 const { getRouteName } = require('rax-compile-config');
 const ErrorStackParser = require('error-stack-parser');
 const parseErrorStack = require('./parseEvalStackTrace');
 const extractSourceMap = require('./extractSourceMap');
+
+const MAIN_TEMPLATE = path.join(__dirname, '../template/main.jsx.ejs');
 
 function printErrorStack(error, bundleContent) {
   const sourcemap = extractSourceMap.getSourceMap(bundleContent);
@@ -48,23 +52,34 @@ module.exports = (config, context) => {
 
   appJSON.routes.forEach((route) => {
     const pathName = getRouteName(route, rootDir);
-    let routePath = route.path;
-    if (isMultiPages) {
-      routePath = `/pages/${pathName}`;
-    }
     routes.push({
-      path: routePath,
+      path: isMultiPages ? `/pages/${pathName}` : route.path,
       component: path.join(distDir, filename.replace('[name]', pathName)),
+      entryName: pathName,
     });
   });
 
   config.devServer.hot(false);
 
+  // There can only be one `before` config, this config will overwrite `before` config in web plugin.
   config.devServer.set('before', (app, devServer) => {
-    const memFs = devServer.compiler.compilers[0].outputFileSystem;
+    // Render the page portal
+    if (isMultiPages) {
+      const templateContent = fs.readFileSync(MAIN_TEMPLATE, 'utf-8');
+
+      app.get('/', function(req, res) {
+        const html = ejs.render(templateContent, {
+          entries: routes,
+        });
+        res.send(html);
+      });
+    }
+
+    // outputFileSystem in devServer is MemoryFileSystem by defalut, but it can also be custom with other file systems.
+    const outputFs = devServer.compiler.compilers[0].outputFileSystem;
     routes.forEach((route) => {
       app.get(route.path, function(req, res) {
-        const bundleContent = memFs.readFileSync(route.component, 'utf8');
+        const bundleContent = outputFs.readFileSync(route.component, 'utf8');
 
         process.once('unhandledRejection', (error) => printErrorStack(error, bundleContent));
 

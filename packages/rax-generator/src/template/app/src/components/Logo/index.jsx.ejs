@@ -2,12 +2,12 @@
 import { createElement } from '<%_ if (useReact) { -%>react<%_ } else { -%>rax<%_ } -%>';
 import Image from 'rax-image';
 
-import styles from './index.css';
+import './index.css';
 
 export default (props) => {
   return (
     <Image
-      style={styles.logo}
+      className="logo"
       source={{
         uri: '//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png',
       }}

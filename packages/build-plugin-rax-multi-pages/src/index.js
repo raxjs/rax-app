@@ -25,13 +25,6 @@ module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) =
       }
 
       setEntry(config, context, entries, 'web');
-
-      config.plugin('document').tap(args => {
-        return [{
-          ...args[0],
-          isMultiple: true,
-        }];
-      });
     });
   }
 
@@ -41,7 +34,7 @@ module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) =
     });
   }
 
-  onHook('after.devCompile', async({ url, err, stats }) => {
+  onHook('after.start.compile', async({ url, err, stats }) => {
     consoleClear(true);
 
     if (!handleWebpackErr(err, stats)) {

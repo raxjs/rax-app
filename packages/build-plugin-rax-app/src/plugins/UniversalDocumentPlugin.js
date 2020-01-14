@@ -25,14 +25,12 @@ module.exports = class UniversalDocumentPlugin {
       this.publicPath = options.publicPath;
     }
 
-    this.isMultiple = options.isMultiple;
     this.documentPath = options.path;
     this.command = options.command;
   }
 
   apply(compiler) {
     const config = compiler.options;
-    const isMultiple = this.isMultiple;
     const absoluteDocumentPath = path.resolve(config.context, this.documentPath);
     const publicPath = this.publicPath ? this.publicPath : config.output.publicPath;
 
@@ -93,7 +91,7 @@ module.exports = class UniversalDocumentPlugin {
         const DocumentContextProvider = function () { };
         DocumentContextProvider.prototype.getChildContext = function () {
           return {
-            __styles: isMultiple ? assets.styles : [],
+            __styles: assets.styles,
             __scripts: assets.scripts,
           };
         };
@@ -171,23 +169,15 @@ function loadDocument(content) {
 
 /**
  * get assets from webpack outputs
- * @param {*} files 
+ * @param {*} files [ 'web/detail.css', 'web/detail.js' ]
  * @param {*} publicPath 
  */
 function getAssetsForPage(files, publicPath) {
-  const fileNames = files.filter(v => ~v.indexOf('.js'));
-
-  const styles = [];
-  if (fileNames && fileNames[0]) {
-    // get the css file name by the entry bundle name
-    const styleFileName = fileNames[0].replace('.js', '.css');
-    styles.push(publicPath + styleFileName);
-  }
-
-  const scripts = fileNames.map(script => publicPath + script);
+  const jsFiles = files.filter(v => /\.js$/i.test(v));
+  const cssFiles = files.filter(v => /\.css$/i.test(v));
 
   return {
-    scripts,
-    styles,
+    scripts: jsFiles.map(script => publicPath + script),
+    styles: cssFiles.map(style => publicPath + style),
   };
 }
