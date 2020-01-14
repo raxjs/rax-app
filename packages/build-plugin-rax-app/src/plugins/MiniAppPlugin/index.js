@@ -99,14 +99,15 @@ function getAssetPath(
   assetsSubpackageMap,
   selfFilePath,
   target = WECHAT_MINIPROGRAM,
-  ) {
-  if (assetsSubpackageMap[filePath]) assetPathPrefix = "";
+) {
+  if (assetsSubpackageMap[filePath]) {
+    assetPathPrefix = "";
+  }
 
-  const result = `${assetPathPrefix}./${path.relative(
+  return `${assetPathPrefix}./${path.relative(
     path.dirname(`${target}/${selfFilePath}`),
     filePath,
-  )}`
-  return result;
+  )}`;
 }
 
 /**
@@ -155,7 +156,7 @@ function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, 
               js,
               assetsSubpackageMap,
               `${pageRoute}.js`,
-              target
+              target,
             )}')(window, document)`,
         )
         .join(";")}}`,
@@ -205,7 +206,7 @@ function handlePageCSS(compilation, pageConfig, assets, assetPathPrefix, assetsS
         css,
         assetsSubpackageMap,
         `${pageRoute}.${adapter[target].css}`,
-        target
+        target,
       )}";`,
   )
   .join("\n");
@@ -295,7 +296,7 @@ function handleAppCSS (compilation, appAssets, assetsSubpackageMap, appCssConfig
             css,
             assetsSubpackageMap,
             `app.${adapter[target].css}`,
-            target
+            target,
           )}";`,
       )
       .join("\n")}`;
@@ -315,7 +316,7 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
     subpackages.push({
       name: packageName,
       root: packageName,
-      pages
+      pages,
     });
   });
   Object.keys(preloadRuleConfig).forEach(entryName => {

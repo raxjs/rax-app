@@ -18,7 +18,7 @@ module.exports = (context) => {
     return {
       entryName: getRouteName(route, rootDir),
       ...route,
-    }
+    };
   });
 
   return config;
