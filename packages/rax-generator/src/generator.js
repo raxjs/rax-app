@@ -36,10 +36,10 @@ function getIgnore(args) {
       'demo/index.jsx.ejs',
     ];
 
-    if (!~projectTargets.indexOf('miniapp')) {
+    if (projectTargets.indexOf('miniapp') < 0) {
       list = [...list, 'demo/miniapp'];
     }
-    if (!~projectTargets.indexOf('wechat-miniprogram')) {
+    if (projectTargets.indexOf('wechat-miniprogram') < 0) {
       list = [...list, 'demo/wechat-miniprogram'];
     }
   } else if (componentType === 'base') {
