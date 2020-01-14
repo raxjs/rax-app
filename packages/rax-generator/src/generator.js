@@ -86,10 +86,10 @@ module.exports = function (template, args) {
   };
 
   new TemplateProcesser(template)
-  .use(ejsRender(ejsData))
-  .use(renameFile)
-  .ignore(getIgnore(args))
-  .done(projectDir);
+    .use(ejsRender(ejsData))
+    .use(renameFile)
+    .ignore(getIgnore(args))
+    .done(projectDir);
 
   process.chdir(projectDir);
   return Promise.resolve(projectDir);
