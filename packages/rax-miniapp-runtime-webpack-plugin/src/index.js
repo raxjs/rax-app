@@ -15,31 +15,31 @@ const adapter = require('./adapter');
 
 const PluginName = "MpPlugin";
 const appJsTmpl = readFileSync(
-  path.resolve(__dirname, "./tmpl/app.tmpl.js"),
+  path.resolve(__dirname, "./template/app.js"),
   "utf8",
 );
 const pageJsTmpl = readFileSync(
-  path.resolve(__dirname, "./tmpl/page.tmpl.js"),
+  path.resolve(__dirname, "./template/page.js"),
   "utf8",
 );
 const appDisplayCssTmpl = readFileSync(
-  path.resolve(__dirname, "./tmpl/app.display.tmpl.css"),
+  path.resolve(__dirname, "./template/app.display.css"),
   "utf8",
 );
 const appExtraCssTmpl = readFileSync(
-  path.resolve(__dirname, "./tmpl/app.extra.tmpl.css"),
+  path.resolve(__dirname, "./template/app.extra.css"),
   "utf8",
 );
 const appCssTmpl = readFileSync(
-  path.resolve(__dirname, "./tmpl/app.tmpl.css"),
+  path.resolve(__dirname, "./template/app.css"),
   "utf8",
 );
 const customComponentJsTmpl = readFileSync(
-  path.resolve(__dirname, "./tmpl/custom-component.tmpl.js"),
+  path.resolve(__dirname, "./template/custom-component.js"),
   "utf8",
 );
-const projectConfigJsonTmpl = require("./tmpl/project.config.tmpl.json");
-const packageConfigJsonTmpl = require("./tmpl/package.tmpl.json");
+const projectConfigJsonTmpl = require("./template/project.config.json");
+const packageConfigJsonTmpl = require("./template/package.json");
 
 process.env.isMiniprogram = true; // Set env variable
 const globalVars = [
