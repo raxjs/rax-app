@@ -20,6 +20,15 @@
       color: #f29718;
     }
   </style>
+  <script>
+    function openUrl(url){
+      if (location.search == '?target=_self') {
+        location.replace(url);
+      } else {
+        window.open(url);
+      }
+    }
+  </script>
 </head>
 <body>
   <h1>Rax mutiple pages app</h1>
@@ -29,7 +38,7 @@
     <% entries.forEach(function(entry){ %>
     <li>
       <div>/pages/<%= entry.entryName %></div>
-      <a class="btn" href="/pages/<%= entry.entryName %>" target="_blank">Web Preview</a>
+      <div class="btn" onclick="openUrl('/pages/<%= entry.entryName %>')">Web Preview</div>
     </li>
     <% }); %>
   </ul>

@@ -21,6 +21,15 @@
       color: #f29718;
     }
   </style>
+  <script>
+    function openUrl(url){
+      if (location.search == '?target=_self') {
+        location.replace(url);
+      } else {
+        window.open(url);
+      }
+    }
+  </script>
 </head>
 
 <body>
@@ -32,10 +41,10 @@
     <li>
       <div>/pages/<%= entry.entryName %></div>
       <%_ if (hasWeb) { -%>
-        <a class="btn" href="/pages/<%= entry.entryName %>" target="_blank">Web Preview</a>
+        <div class="btn" onclick="openUrl('/pages/<%= entry.entryName %>')">Web Preview</div>
       <%_ } -%>
       <%_ if (hasWeex) { -%>
-        <a class="btn" href="/weex/<%= entry.entryName %>.js?wh_weex=true" target="_blank">Weex Preview</a>
+        <div class="btn" onclick="openUrl('/weex/<%= entry.entryName %>.js?wh_weex=true')">Weex Preview</div>
       <%_ } -%>
     </li>
     <% }); %>
