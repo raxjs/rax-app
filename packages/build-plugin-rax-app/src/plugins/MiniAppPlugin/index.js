@@ -116,7 +116,7 @@ function getAssetPath(
  * @param {Array<Object>} routes
  */
 function getSourceFromPath(routePath, routes) {
-  for (let route of routes) {
+  for (const route of routes) {
     if (route.path === routePath) {
       return route.source;
     }
