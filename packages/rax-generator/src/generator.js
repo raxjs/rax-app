@@ -26,17 +26,22 @@ function ejsRender(data) {
 
 // get ignore files of template
 function getIgnore(args) {
-  const { appType, componentType, features } = args;
+  const { appType, componentType, features, projectTargets } = args;
   let list = [];
 
   if (appType === 'lite') {
     list = ['src/components', 'src/pages', 'src/app.json.ejs'];
   } else if (componentType === 'ui') {
     list = [
-      'demo/miniapp',
-      'demo/wechat-miniprogram',
       'demo/index.jsx.ejs',
     ];
+
+    if (projectTargets.indexOf('miniapp') < 0) {
+      list = [...list, 'demo/miniapp'];
+    }
+    if (projectTargets.indexOf('wechat-miniprogram') < 0) {
+      list = [...list, 'demo/wechat-miniprogram'];
+    }
   } else if (componentType === 'base') {
     list = [
       'demo/basic.md.ejs',
