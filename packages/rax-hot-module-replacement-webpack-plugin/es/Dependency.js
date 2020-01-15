@@ -2,18 +2,19 @@
   MIT License http://www.opensource.org/licenses/mit-license.php
   Author Tobias Koppers @sokra
 */
-'use strict';
 
-var compareLocations = require('./compareLocations');
 
-var Dependency =
-/*#__PURE__*/
+
+const compareLocations = require('./compareLocations');
+
+const Dependency =
+/* #__PURE__ */
 function () {
   function Dependency() {
     this.module = null;
   }
 
-  var _proto = Dependency.prototype;
+  const _proto = Dependency.prototype;
 
   _proto.isEqualResource = function isEqualResource() {
     return false;
@@ -24,7 +25,7 @@ function () {
     if (!this.module) return null;
     return {
       module: this.module,
-      importedNames: true // true: full object, false: only sideeffects/no export, array of strings: the exports with this names
+      importedNames: true, // true: full object, false: only sideeffects/no export, array of strings: the exports with this names
 
     };
   } // Returns the exported names
@@ -43,7 +44,7 @@ function () {
   };
 
   _proto.updateHash = function updateHash(hash) {
-    hash.update((this.module && this.module.id) + '');
+    hash.update(`${this.module && this.module.id  }`);
   };
 
   _proto.disconnect = function disconnect() {

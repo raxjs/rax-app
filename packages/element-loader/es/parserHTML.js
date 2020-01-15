@@ -2,29 +2,29 @@ import htmlparser from 'htmlparser2';
 
 function innerHTML(dom) {
   return htmlparser.DomUtils.getOuterHTML(dom, {
-    xmlMode: true
+    xmlMode: true,
   });
 }
 
 export function getDomObject(html) {
-  var handler = new htmlparser.DomHandler();
-  var parser = new htmlparser.Parser(handler, {
-    xmlMode: true
+  const handler = new htmlparser.DomHandler();
+  const parser = new htmlparser.Parser(handler, {
+    xmlMode: true,
   });
   parser.parseComplete(html);
   return handler.dom;
 }
 export default function parser(html) {
-  var dom = getDomObject(html);
-  var importLinks = [],
-      styleSheetLinks = [],
-      template = '',
-      script = '',
-      styles = '';
+  const dom = getDomObject(html);
+  const importLinks = [];
+  const styleSheetLinks = [];
+  let template = '';
+  let script = '';
+  let styles = '';
   dom.forEach(function (node) {
-    var name = node.name,
-        children = node.children,
-        attribs = node.attribs;
+    const name = node.name;
+    const children = node.children;
+    const attribs = node.attribs;
 
     switch (name) {
       case 'link':
@@ -60,20 +60,20 @@ export default function parser(html) {
     template: {
       type: 'template',
       content: template,
-      lang: ''
+      lang: '',
     },
     script: {
       type: 'script',
       content: script,
-      lang: ''
+      lang: '',
     },
     // allow multiple style tag
     // combine all css string
     styles: {
       type: 'style',
-      content: styles
+      content: styles,
     },
-    importLinks: importLinks,
-    styleSheetLinks: styleSheetLinks
+    importLinks,
+    styleSheetLinks,
   };
 }

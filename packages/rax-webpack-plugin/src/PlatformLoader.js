@@ -29,7 +29,7 @@ function mergeSourceMap(map, inputMap) {
 
     const mergedGenerator = new sourceMap.SourceMapGenerator({
       file: inputMapConsumer.file,
-      sourceRoot: inputMapConsumer.sourceRoot
+      sourceRoot: inputMapConsumer.sourceRoot,
     });
 
     // This assumes the output map always has a single source, since Babel always compiles a
@@ -40,7 +40,7 @@ function mergeSourceMap(map, inputMap) {
       const generatedPosition = outputMapConsumer.generatedPositionFor({
         line: mapping.generatedLine,
         column: mapping.generatedColumn,
-        source: source
+        source,
       });
       if (generatedPosition.column != null) {
         mergedGenerator.addMapping({
@@ -48,10 +48,10 @@ function mergeSourceMap(map, inputMap) {
 
           original: mapping.source == null ? null : {
             line: mapping.originalLine,
-            column: mapping.originalColumn
+            column: mapping.originalColumn,
           },
 
-          generated: generatedPosition
+          generated: generatedPosition,
         });
       }
     });
@@ -80,8 +80,8 @@ module.exports = function(inputSource, inputSourceMap) {
 
   const { code, map } = traverseImport(options, inputSource, {
     sourceMaps: true,
-    sourceMapTarget: sourceMapTarget,
-    sourceFileName: resourcePath
+    sourceMapTarget,
+    sourceFileName: resourcePath,
   });
 
   callback(null, code, mergeSourceMap(map, inputSourceMap));

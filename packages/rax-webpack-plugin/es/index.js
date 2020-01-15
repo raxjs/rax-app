@@ -5,11 +5,12 @@ import RaxMainTemplatePlugin from './RaxMainTemplatePlugin';
 import BuiltinModules from './BuiltinModules';
 import MultiplePlatform from './MultiplePlatform';
 import DuplicateChecker from './DuplicateChecker';
-var isProducation = process.env.NODE_ENV === 'production';
-var shouldExternalBuiltinModules = process.env.RAX_EXTERNAL_BUILTIN_MODULES === 'true';
 
-var RaxWebpackPlugin =
-/*#__PURE__*/
+const isProducation = process.env.NODE_ENV === 'production';
+const shouldExternalBuiltinModules = process.env.RAX_EXTERNAL_BUILTIN_MODULES === 'true';
+
+const RaxWebpackPlugin =
+/* #__PURE__ */
 function () {
   function RaxWebpackPlugin(options) {
     this.options = Object.assign({
@@ -25,15 +26,15 @@ function () {
       // private
       target: 'umd',
       // default umd
-      duplicateCheck: ['rax']
+      duplicateCheck: ['rax'],
     }, options);
   }
 
-  var _proto = RaxWebpackPlugin.prototype;
+  const _proto = RaxWebpackPlugin.prototype;
 
   _proto.applyBanner = function applyBanner(compiler) {
-    var defaultFrameworkComment = '// {"framework" : "Rax"}';
-    var frameworkComment = typeof this.options.frameworkComment === 'string' ? this.options.frameworkComment : defaultFrameworkComment; // Webpack 4
+    const defaultFrameworkComment = '// {"framework" : "Rax"}';
+    const frameworkComment = typeof this.options.frameworkComment === 'string' ? this.options.frameworkComment : defaultFrameworkComment; // Webpack 4
 
     if (compiler.hooks && compiler.hooks.compilation && compiler.hooks.compilation.tap) {
       compiler.hooks.compilation.tap('RaxBannerPlugin', function (compilation) {
@@ -53,7 +54,7 @@ function () {
               _ref = _i.value;
             }
 
-            var chunk = _ref;
+            const chunk = _ref;
 
             // Entry only
             if (!chunk.canBeInitial()) {
@@ -90,13 +91,13 @@ function () {
   };
 
   _proto.apply = function apply(compiler) {
-    var _this = this;
+    const _this = this;
 
     compiler.apply(new DefinePlugin({
-      '__DEV__': isProducation ? false : true
+      '__DEV__': !isProducation,
     }));
     compiler.apply(new DuplicateChecker({
-      modulesToCheck: this.options.duplicateCheck
+      modulesToCheck: this.options.duplicateCheck,
     }));
     compiler.plugin('this-compilation', function (compilation) {
       compilation.apply(new RaxMainTemplatePlugin(_this.options));
@@ -113,13 +114,13 @@ function () {
           return callback(null, request, 'commonjs');
         }
 
-        var builtinModuleName = _this.options.builtinModules[request];
+        const builtinModuleName = _this.options.builtinModules[request];
 
         if (_this.options.externalBuiltinModules && builtinModuleName) {
           if (Array.isArray(builtinModuleName)) {
-            var customRequest = '(function(){ var mod;';
+            let customRequest = '(function(){ var mod;';
             builtinModuleName.forEach(function (name) {
-              customRequest += "if (!mod) { try { mod = require(\"" + name + "\") } catch(e) {} }";
+              customRequest += `if (!mod) { try { mod = require("${  name  }") } catch(e) {} }`;
             });
             customRequest += 'return mod;})()'; // Custom external format
 

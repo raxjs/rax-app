@@ -3,7 +3,7 @@ import RaxWebpackPlugin from '../../../index';
 module.exports = {
   mode: 'production',
   optimization: {
-    minimize: false
+    minimize: false,
   },
   entry: {
     'index.module': './index',
@@ -11,6 +11,6 @@ module.exports = {
   plugins: [
     new RaxWebpackPlugin({
       target: 'module',
-    })
-  ]
+    }),
+  ],
 };

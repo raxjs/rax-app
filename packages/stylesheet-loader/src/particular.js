@@ -1,4 +1,4 @@
-'use strict';
+
 
 import normalizeColor from './normalizeColor';
 
@@ -34,12 +34,12 @@ function measure(value, key) {
     }
   }
 
-  const topKey = key + 'Top';
-  const rightKey = key + 'Right';
-  const bottomKey = key + 'Bottom';
-  const leftKey = key + 'Left';
+  const topKey = `${key  }Top`;
+  const rightKey = `${key  }Right`;
+  const bottomKey = `${key  }Bottom`;
+  const leftKey = `${key  }Left`;
 
-  let result = {
+  const result = {
     isDeleted: true,
   };
   result[topKey] = convertUnit(direction[0]);
@@ -50,58 +50,58 @@ function measure(value, key) {
   return result;
 };
 
-let prefix = function(value, key) {
-  let word = key.substring(0, 1).toUpperCase() + key.substring(1);
+const prefix = function(value, key) {
+  const word = key.substring(0, 1).toUpperCase() + key.substring(1);
 
-  let result = {
-    isDeleted: true
+  const result = {
+    isDeleted: true,
   };
 
-  result['ms' + word] = value;
-  result['webkit' + word] = value;
+  result[`ms${  word}`] = value;
+  result[`webkit${  word}`] = value;
   result[key] = value;
 
   return result;
 };
 
-let border = function(key, value) {
-  let result = {
-    isDeleted: true
+const border = function(key, value) {
+  const result = {
+    isDeleted: true,
   };
   const direction = value && value.split(' ');
 
-  result[key + 'Width'] = direction && convertUnit(direction[0]);
-  result[key + 'Style'] = direction && direction[1];
-  result[key + 'Color'] = direction && normalizeColor(direction[2]);
+  result[`${key  }Width`] = direction && convertUnit(direction[0]);
+  result[`${key  }Style`] = direction && direction[1];
+  result[`${key  }Color`] = direction && normalizeColor(direction[2]);
   return result;
 };
 
-let toMs = function(value) {
+const toMs = function(value) {
   if (typeof value === 'string') {
-    if (/^\./.test(value)) value = '0' + value; // .5s
+    if (/^\./.test(value)) value = `0${  value}`; // .5s
     if (/s$/.test(value) && !/ms$/.test(value)) { // 1.5s
       value = parseFloat(value) * 1000;
     } else { // 150 or 150ms
       value = parseFloat(value);
     }
   }
-  return (value || 0) + 'ms';
+  return `${value || 0  }ms`;
 };
 
-let transitionProperty = function(value) {
+const transitionProperty = function(value) {
   if (value === 'all') {
     value = 'width,height,top,bottom,left,right,backgroundColor,opacity,transform';
   } else if (value === 'none' || !value) {
     return { isDeleted: true };
   }
   return {
-    transitionProperty: value.replace('background-color', 'backgroundColor')
+    transitionProperty: value.replace('background-color', 'backgroundColor'),
   };
 };
 
-let transition = function(value) {
-  let result = {
-    isDeleted: true
+const transition = function(value) {
+  const result = {
+    isDeleted: true,
   };
   const options = (value || '')
     .trim()
@@ -140,12 +140,12 @@ export default {
   },
   lineHeight: (value) => {
     return {
-      lineHeight: value
+      lineHeight: value,
     };
   },
   fontWeight: (value) => {
     return {
-      fontWeight: value.toString()
+      fontWeight: value.toString(),
     };
   },
   transition: (value) => {
@@ -156,17 +156,17 @@ export default {
   },
   transitionDuration: (value) => {
     return {
-      transitionDuration: toMs(value)
+      transitionDuration: toMs(value),
     };
   },
   transitionDelay: (value) => {
     return {
-      transitionDelay: toMs(value)
+      transitionDelay: toMs(value),
     };
   },
   transitionTimingFunction: (value) => {
     return {
-      transitionTimingFunction: value.replace(/\s+/g, '')
+      transitionTimingFunction: value.replace(/\s+/g, ''),
     };
-  }
+  },
 };

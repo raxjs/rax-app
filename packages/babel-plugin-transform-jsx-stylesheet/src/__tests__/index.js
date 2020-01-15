@@ -1,6 +1,6 @@
-import jSXStylePlugin from '../index';
 import syntaxJSX from 'babel-plugin-syntax-jsx';
 import { transform } from 'babel-core';
+import jSXStylePlugin from '../index';
 
 const mergeStylesFunctionTemplate = `function _mergeStyles() {
   var newTarget = {};
@@ -70,8 +70,8 @@ function getTransfromCode(code, opts) {
   return transform(code, {
     plugins: [
       [jSXStylePlugin, opts],
-      syntaxJSX
-    ]
+      syntaxJSX,
+    ],
   }).code;
 }
 

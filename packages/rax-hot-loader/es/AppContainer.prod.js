@@ -1,13 +1,13 @@
 /* eslint-disable react/prop-types */
+import { createElement, Component } from 'rax';
+import Children from 'react-children';
+
 'use strict';
 
 function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
 
-import { createElement, Component } from 'rax';
-import Children from 'react-children';
-
-var AppContainer =
-/*#__PURE__*/
+const AppContainer =
+/* #__PURE__ */
 function (_Component) {
   _inheritsLoose(AppContainer, _Component);
 
@@ -15,7 +15,7 @@ function (_Component) {
     return _Component.apply(this, arguments) || this;
   }
 
-  var _proto = AppContainer.prototype;
+  const _proto = AppContainer.prototype;
 
   _proto.render = function render() {
     if (this.props.component) {

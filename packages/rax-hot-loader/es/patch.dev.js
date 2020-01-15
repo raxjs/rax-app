@@ -1,14 +1,15 @@
-'use strict';
 
-var Rax = require('rax');
 
-var _require = require('react-proxy'),
-    createProxy = _require.createProxy;
+const Rax = require('rax');
 
-var global = require('global');
+const _require = require('react-proxy');
 
-var ComponentMap =
-/*#__PURE__*/
+const createProxy = _require.createProxy;
+
+const global = require('global');
+
+const ComponentMap =
+/* #__PURE__ */
 function () {
   function ComponentMap(useWeakMap) {
     if (useWeakMap) {
@@ -18,10 +19,10 @@ function () {
     }
   }
 
-  var _proto = ComponentMap.prototype;
+  const _proto = ComponentMap.prototype;
 
   _proto.getSlot = function getSlot(type) {
-    var key = type.displayName || type.name || 'Unknown';
+    const key = type.displayName || type.name || 'Unknown';
 
     if (!this.slots[key]) {
       this.slots[key] = [];
@@ -35,9 +36,9 @@ function () {
       return this.wm.get(type);
     }
 
-    var slot = this.getSlot(type);
+    const slot = this.getSlot(type);
 
-    for (var i = 0; i < slot.length; i++) {
+    for (let i = 0; i < slot.length; i++) {
       if (slot[i].key === type) {
         return slot[i].value;
       }
@@ -50,9 +51,9 @@ function () {
     if (this.wm) {
       this.wm.set(type, value);
     } else {
-      var slot = this.getSlot(type);
+      const slot = this.getSlot(type);
 
-      for (var i = 0; i < slot.length; i++) {
+      for (let i = 0; i < slot.length; i++) {
         if (slot[i].key === type) {
           slot[i].value = value;
           return;
@@ -61,7 +62,7 @@ function () {
 
       slot.push({
         key: type,
-        value: value
+        value,
       });
     }
   };
@@ -71,9 +72,9 @@ function () {
       return this.wm.has(type);
     }
 
-    var slot = this.getSlot(type);
+    const slot = this.getSlot(type);
 
-    for (var i = 0; i < slot.length; i++) {
+    for (let i = 0; i < slot.length; i++) {
       if (slot[i].key === type) {
         return true;
       }
@@ -85,11 +86,11 @@ function () {
   return ComponentMap;
 }();
 
-var proxiesByID;
-var didWarnAboutID;
-var hasCreatedElementsByType;
-var idsByType;
-var hooks = {
+let proxiesByID;
+let didWarnAboutID;
+let hasCreatedElementsByType;
+let idsByType;
+const hooks = {
   register: function register(type, uniqueLocalName, fileName) {
     if (typeof type !== 'function') {
       return;
@@ -103,13 +104,13 @@ var hooks = {
       return;
     }
 
-    var id = fileName + '#' + uniqueLocalName; // eslint-disable-line prefer-template
+    const id = fileName + '#' + uniqueLocalName; // eslint-disable-line prefer-template
 
     if (!idsByType.has(type) && hasCreatedElementsByType.has(type)) {
       if (!didWarnAboutID[id]) {
         didWarnAboutID[id] = true;
-        var baseName = fileName.replace(/^.*[\\\/]/, '');
-        console.error("Rax Hot Loader: " + uniqueLocalName + " in " + fileName + " will not hot reload " + ("correctly because " + baseName + " uses <" + uniqueLocalName + " /> during ") + ("module definition. For hot reloading to work, move " + uniqueLocalName + " ") + ("into a separate file and import it from " + baseName + "."));
+        const baseName = fileName.replace(/^.*[\\\/]/, '');
+        console.error(`Rax Hot Loader: ${  uniqueLocalName  } in ${  fileName  } will not hot reload ` + `correctly because ${  baseName  } uses <${  uniqueLocalName  } /> during ` + `module definition. For hot reloading to work, move ${  uniqueLocalName  } ` + `into a separate file and import it from ${  baseName  }.`);
       }
 
       return;
@@ -132,7 +133,7 @@ var hooks = {
     didWarnAboutID = {};
     hasCreatedElementsByType = new ComponentMap(useWeakMap);
     idsByType = new ComponentMap(useWeakMap);
-  }
+  },
 };
 hooks.reset(typeof WeakMap === 'function');
 
@@ -144,13 +145,13 @@ function resolveType(type) {
 
   hasCreatedElementsByType.set(type, true); // When available, give proxy class to React instead of the real class.
 
-  var id = idsByType.get(type);
+  const id = idsByType.get(type);
 
   if (!id) {
     return type;
   }
 
-  var proxy = proxiesByID[id];
+  const proxy = proxiesByID[id];
 
   if (!proxy) {
     return type;
@@ -159,13 +160,13 @@ function resolveType(type) {
   return proxy.get();
 }
 
-var createElement = Rax.createElement;
+const createElement = Rax.createElement;
 
 function patchedCreateElement(type) {
   // Trick React into rendering a proxy so that
   // its state is preserved when the class changes.
   // This will update the proxy if it's for a known type.
-  var resolvedType = resolveType(type);
+  const resolvedType = resolveType(type);
 
   for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
     args[_key - 1] = arguments[_key];
@@ -180,7 +181,7 @@ function patchedCreateFactory(type) {
   // Patch Rax.createFactory to use patched createElement
   // because the original implementation uses the internal,
   // unpatched ReactElement.createElement
-  var factory = patchedCreateElement.bind(null, type);
+  const factory = patchedCreateElement.bind(null, type);
   factory.type = type;
   return factory;
 }

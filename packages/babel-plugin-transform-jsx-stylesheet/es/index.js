@@ -1,24 +1,25 @@
 import path from 'path';
 import camelcase from 'camelcase';
-var STYLE_SHEET_NAME = '_styleSheet';
-var GET_STYLE_FUNC_NAME = '_getStyle';
-var MERGE_STYLES_FUNC_NAME = '_mergeStyles';
-var GET_CLS_NAME_FUNC_NAME = '_getClassName';
-var NAME_SUFFIX = 'StyleSheet';
-var cssSuffixs = ['.css', '.scss', '.sass', '.less', '.styl'];
+
+const STYLE_SHEET_NAME = '_styleSheet';
+const GET_STYLE_FUNC_NAME = '_getStyle';
+const MERGE_STYLES_FUNC_NAME = '_mergeStyles';
+const GET_CLS_NAME_FUNC_NAME = '_getClassName';
+const NAME_SUFFIX = 'StyleSheet';
+const cssSuffixs = ['.css', '.scss', '.sass', '.less', '.styl'];
 export default function (_ref) {
-  var t = _ref.types,
-      template = _ref.template;
-  var mergeStylesFunctionTemplate = template("\nfunction " + MERGE_STYLES_FUNC_NAME + "() {\n  var newTarget = {};\n\n  for (var index = 0; index < arguments.length; index++) {\n    var target = arguments[index];\n\n    for (var key in target) {\n      newTarget[key] = Object.assign(newTarget[key] || {}, target[key]);\n    }\n  }\n\n  return newTarget;\n}\n  ");
-  var getClassNameFunctionTemplate = template("\nfunction " + GET_CLS_NAME_FUNC_NAME + "() {\n  var className = [];\n  var args = arguments[0];\n  var type = Object.prototype.toString.call(args).slice(8, -1).toLowerCase();\n\n  if (type === 'string') {\n    args = args.trim();\n    args && className.push(args);\n  } else if (type === 'array') {\n    args.forEach(function (cls) {\n      cls = " + GET_CLS_NAME_FUNC_NAME + "(cls).trim();\n      cls && className.push(cls);\n    });\n  } else if (type === 'object') {\n    for (var k in args) {\n      k = k.trim();\n      if (k && args.hasOwnProperty(k) && args[k]) {\n        className.push(k);\n      }\n    }\n  }\n\n  return className.join(' ').trim();\n}\n  ");
-  var getStyleFunctionTemplete = template("\nfunction " + GET_STYLE_FUNC_NAME + "(classNameExpression) {\n  var cache = " + STYLE_SHEET_NAME + ".__cache || (" + STYLE_SHEET_NAME + ".__cache = {});\n  var className = " + GET_CLS_NAME_FUNC_NAME + "(classNameExpression);\n  var classNameArr = className.split(/\\s+/);\n  var style = cache[className];\n\n  if (!style) {\n    style = {};\n    if (classNameArr.length === 1) {\n      style = " + STYLE_SHEET_NAME + "[classNameArr[0].trim()];\n    } else {\n      classNameArr.forEach(function(cls) {\n        style = Object.assign(style, " + STYLE_SHEET_NAME + "[cls.trim()]);\n      });\n    }\n    cache[className] = style;\n  }\n\n  return style;\n}\n  ");
-  var getClassNameFunctionAst = getClassNameFunctionTemplate();
-  var mergeStylesFunctionAst = mergeStylesFunctionTemplate();
-  var getStyleFunctionAst = getStyleFunctionTemplete();
+  const t = _ref.types;
+  const template = _ref.template;
+  const mergeStylesFunctionTemplate = template(`\nfunction ${  MERGE_STYLES_FUNC_NAME  }() {\n  var newTarget = {};\n\n  for (var index = 0; index < arguments.length; index++) {\n    var target = arguments[index];\n\n    for (var key in target) {\n      newTarget[key] = Object.assign(newTarget[key] || {}, target[key]);\n    }\n  }\n\n  return newTarget;\n}\n  `);
+  const getClassNameFunctionTemplate = template(`\nfunction ${  GET_CLS_NAME_FUNC_NAME  }() {\n  var className = [];\n  var args = arguments[0];\n  var type = Object.prototype.toString.call(args).slice(8, -1).toLowerCase();\n\n  if (type === 'string') {\n    args = args.trim();\n    args && className.push(args);\n  } else if (type === 'array') {\n    args.forEach(function (cls) {\n      cls = ${  GET_CLS_NAME_FUNC_NAME  }(cls).trim();\n      cls && className.push(cls);\n    });\n  } else if (type === 'object') {\n    for (var k in args) {\n      k = k.trim();\n      if (k && args.hasOwnProperty(k) && args[k]) {\n        className.push(k);\n      }\n    }\n  }\n\n  return className.join(' ').trim();\n}\n  `);
+  const getStyleFunctionTemplete = template(`\nfunction ${  GET_STYLE_FUNC_NAME  }(classNameExpression) {\n  var cache = ${  STYLE_SHEET_NAME  }.__cache || (${  STYLE_SHEET_NAME  }.__cache = {});\n  var className = ${  GET_CLS_NAME_FUNC_NAME  }(classNameExpression);\n  var classNameArr = className.split(/\\s+/);\n  var style = cache[className];\n\n  if (!style) {\n    style = {};\n    if (classNameArr.length === 1) {\n      style = ${  STYLE_SHEET_NAME  }[classNameArr[0].trim()];\n    } else {\n      classNameArr.forEach(function(cls) {\n        style = Object.assign(style, ${  STYLE_SHEET_NAME  }[cls.trim()]);\n      });\n    }\n    cache[className] = style;\n  }\n\n  return style;\n}\n  `);
+  const getClassNameFunctionAst = getClassNameFunctionTemplate();
+  const mergeStylesFunctionAst = mergeStylesFunctionTemplate();
+  const getStyleFunctionAst = getStyleFunctionTemplete();
 
   function getArrayExpression(value) {
-    var expression;
-    var str;
+    let expression;
+    let str;
 
     if (!value || value.value === '') {
       // className
@@ -35,13 +36,13 @@ export default function (_ref) {
     }
 
     return str === '' ? [] : str.split(/\s+/).map(function (className) {
-      return template(STYLE_SHEET_NAME + "[\"" + className + "\"]")().expression;
+      return template(`${STYLE_SHEET_NAME  }["${  className  }"]`)().expression;
     });
   }
 
   function findLastImportIndex(body) {
-    var bodyReverse = body.slice(0).reverse();
-    var _index = 0;
+    const bodyReverse = body.slice(0).reverse();
+    let _index = 0;
     bodyReverse.some(function (node, index) {
       if (node.type === 'ImportDeclaration') {
         _index = body.length - index - 1;
@@ -57,20 +58,20 @@ export default function (_ref) {
     visitor: {
       Program: {
         exit: function exit(_ref2, _ref3) {
-          var node = _ref2.node;
-          var file = _ref3.file;
-          var cssFileCount = file.get('cssFileCount');
-          var injectGetStyle = file.get('injectGetStyle');
-          var lastImportIndex = findLastImportIndex(node.body);
-          var cssParamIdentifiers = file.get('cssParamIdentifiers');
-          var callExpression;
+          const node = _ref2.node;
+          const file = _ref3.file;
+          const cssFileCount = file.get('cssFileCount');
+          const injectGetStyle = file.get('injectGetStyle');
+          const lastImportIndex = findLastImportIndex(node.body);
+          const cssParamIdentifiers = file.get('cssParamIdentifiers');
+          let callExpression;
 
           if (cssParamIdentifiers) {
             // only one css file
             if (cssParamIdentifiers.length === 1) {
               callExpression = t.variableDeclaration('var', [t.variableDeclarator(t.identifier(STYLE_SHEET_NAME), cssParamIdentifiers[0])]);
             } else if (cssParamIdentifiers.length > 1) {
-              var objectAssignExpression = t.callExpression(t.identifier(MERGE_STYLES_FUNC_NAME), cssParamIdentifiers);
+              const objectAssignExpression = t.callExpression(t.identifier(MERGE_STYLES_FUNC_NAME), cssParamIdentifiers);
               callExpression = t.variableDeclaration('var', [t.variableDeclarator(t.identifier(STYLE_SHEET_NAME), objectAssignExpression)]);
             }
 
@@ -85,29 +86,29 @@ export default function (_ref) {
           if (cssFileCount > 1) {
             node.body.unshift(mergeStylesFunctionAst);
           }
-        }
+        },
       },
       JSXOpeningElement: function JSXOpeningElement(_ref4, _ref5) {
-        var container = _ref4.container;
-        var file = _ref5.file,
-            opts = _ref5.opts;
-        var _opts$retainClassName = opts.retainClassName,
-            retainClassName = _opts$retainClassName === void 0 ? false : _opts$retainClassName;
-        var cssFileCount = file.get('cssFileCount') || 0;
+        const container = _ref4.container;
+        const file = _ref5.file;
+        const opts = _ref5.opts;
+        const _opts$retainClassName = opts.retainClassName;
+        const retainClassName = _opts$retainClassName === void 0 ? false : _opts$retainClassName;
+        const cssFileCount = file.get('cssFileCount') || 0;
 
         if (cssFileCount < 1) {
           return;
         } // Check if has "style"
 
 
-        var hasStyleAttribute = false;
-        var styleAttribute;
-        var hasClassName = false;
-        var classNameAttribute;
-        var attributes = container.openingElement.attributes;
+        let hasStyleAttribute = false;
+        let styleAttribute;
+        let hasClassName = false;
+        let classNameAttribute;
+        const attributes = container.openingElement.attributes;
 
-        for (var i = 0; i < attributes.length; i++) {
-          var name = attributes[i].name;
+        for (let i = 0; i < attributes.length; i++) {
+          const name = attributes[i].name;
 
           if (name) {
             if (!hasStyleAttribute) {
@@ -136,18 +137,18 @@ export default function (_ref) {
 
           if (classNameAttribute.value && classNameAttribute.value.type === 'JSXExpressionContainer' && typeof classNameAttribute.value.expression.value !== 'string' // not like className={'container'}
           ) {
-              file.set('injectGetStyle', true);
-            }
+            file.set('injectGetStyle', true);
+          }
 
-          var arrayExpression = getArrayExpression(classNameAttribute.value);
+          const arrayExpression = getArrayExpression(classNameAttribute.value);
 
           if (arrayExpression.length === 0) {
             return;
           }
 
           if (hasStyleAttribute && styleAttribute.value) {
-            var expression = styleAttribute.value.expression;
-            var expressionType = expression.type; // style={[styles.a, styles.b]} ArrayExpression
+            const expression = styleAttribute.value.expression;
+            const expressionType = expression.type; // style={[styles.a, styles.b]} ArrayExpression
 
             if (expressionType === 'ArrayExpression') {
               expression.elements = arrayExpression.concat(expression.elements); // style={styles.a} MemberExpression
@@ -158,7 +159,7 @@ export default function (_ref) {
               // style={this.props.useCustom ? custom : null} ConditionalExpression
               // style={custom || other} LogicalExpression
             } else {
-              var mergeArrayExpression = arrayExpression.concat(expression);
+              const mergeArrayExpression = arrayExpression.concat(expression);
               mergeArrayExpression.unshift(t.objectExpression([]));
               styleAttribute.value.expression = t.callExpression(t.memberExpression(t.identifier('Object'), t.identifier('assign')), mergeArrayExpression);
             }
@@ -168,32 +169,32 @@ export default function (_ref) {
               arrayExpression.unshift(t.objectExpression([]));
             }
 
-            var _expression = arrayExpression.length === 1 ? arrayExpression[0] : t.callExpression(t.memberExpression(t.identifier('Object'), t.identifier('assign')), arrayExpression);
+            const _expression = arrayExpression.length === 1 ? arrayExpression[0] : t.callExpression(t.memberExpression(t.identifier('Object'), t.identifier('assign')), arrayExpression);
 
             attributes.push(t.jSXAttribute(t.jSXIdentifier('style'), t.jSXExpressionContainer(_expression)));
           }
         }
       },
       ImportDeclaration: function ImportDeclaration(_ref6, _ref7) {
-        var node = _ref6.node;
-        var file = _ref7.file;
-        var sourceValue = node.source.value;
-        var extname = path.extname(sourceValue);
-        var cssIndex = cssSuffixs.indexOf(extname); // Do not convert `import styles from './foo.css'` kind
+        const node = _ref6.node;
+        const file = _ref7.file;
+        const sourceValue = node.source.value;
+        const extname = path.extname(sourceValue);
+        const cssIndex = cssSuffixs.indexOf(extname); // Do not convert `import styles from './foo.css'` kind
 
         if (node.specifiers.length === 0 && cssIndex > -1) {
-          var cssFileCount = file.get('cssFileCount') || 0;
-          var cssParamIdentifiers = file.get('cssParamIdentifiers') || [];
-          var cssFileBaseName = camelcase(path.basename(sourceValue, extname));
-          var styleSheetIdentifier = t.identifier("" + (cssFileBaseName + NAME_SUFFIX));
+          let cssFileCount = file.get('cssFileCount') || 0;
+          const cssParamIdentifiers = file.get('cssParamIdentifiers') || [];
+          const cssFileBaseName = camelcase(path.basename(sourceValue, extname));
+          const styleSheetIdentifier = t.identifier(`${  cssFileBaseName + NAME_SUFFIX}`);
           node.specifiers = [t.importDefaultSpecifier(styleSheetIdentifier)];
           cssParamIdentifiers.push(styleSheetIdentifier);
           cssFileCount++;
           file.set('cssParamIdentifiers', cssParamIdentifiers);
           file.set('cssFileCount', cssFileCount);
         }
-      }
-    }
+      },
+    },
   };
 }
 ;

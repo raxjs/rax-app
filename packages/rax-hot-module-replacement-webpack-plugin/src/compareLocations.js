@@ -2,7 +2,9 @@
   MIT License http://www.opensource.org/licenses/mit-license.php
   Author Tobias Koppers @sokra
 */
-'use strict';
+
+
+
 module.exports = function compareLocations(a, b) {
   if (typeof a === 'string') {
     if (typeof b === 'string') {

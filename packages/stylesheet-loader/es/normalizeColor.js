@@ -1,6 +1,6 @@
-'use strict';
 
-var NAMED_COLORS = {
+
+const NAMED_COLORS = {
   'transparent': '#00000000',
   'aliceblue': '#f0f8ff',
   'antiquewhite': '#faebd7',
@@ -149,10 +149,10 @@ var NAMED_COLORS = {
   'white': '#ffffff',
   'whitesmoke': '#f5f5f5',
   'yellow': '#ffff00',
-  'yellowgreen': '#9acd32'
+  'yellowgreen': '#9acd32',
 };
 
-var RGBtoRGB = function RGBtoRGB(r, g, b, a) {
+const RGBtoRGB = function RGBtoRGB(r, g, b, a) {
   if (a == null || a === '') a = 1;
   r = parseFloat(r);
   g = parseFloat(g);
@@ -162,28 +162,28 @@ var RGBtoRGB = function RGBtoRGB(r, g, b, a) {
   return [Math.round(r), Math.round(g), Math.round(b), a];
 };
 
-var hexToRGB = function hexToRGB(hex) {
+const hexToRGB = function hexToRGB(hex) {
   if (hex.length === 3) hex += 'f';
 
   if (hex.length === 4) {
-    var h0 = hex.charAt(0),
-        h1 = hex.charAt(1),
-        h2 = hex.charAt(2),
-        h3 = hex.charAt(3);
+    const h0 = hex.charAt(0);
+    const h1 = hex.charAt(1);
+    const h2 = hex.charAt(2);
+    const h3 = hex.charAt(3);
     hex = h0 + h0 + h1 + h1 + h2 + h2 + h3 + h3;
   }
 
   if (hex.length === 6) hex += 'ff';
-  var rgb = [];
+  const rgb = [];
 
-  for (var i = 0, l = hex.length; i < l; i += 2) {
+  for (let i = 0, l = hex.length; i < l; i += 2) {
     rgb.push(parseInt(hex.substr(i, 2), 16) / (i === 6 ? 255 : 1));
   }
 
   return rgb;
 };
 
-var hueToRGB = function hueToRGB(p, q, t) {
+const hueToRGB = function hueToRGB(p, q, t) {
   if (t < 0) t += 1;
   if (t > 1) t -= 1;
   if (t < 1 / 6) return p + (q - p) * 6 * t;
@@ -192,8 +192,8 @@ var hueToRGB = function hueToRGB(p, q, t) {
   return p;
 };
 
-var hslToRGB = function hslToRGB(h, s, l, a) {
-  var r, b, g;
+const hslToRGB = function hslToRGB(h, s, l, a) {
+  let r; let b; let g;
   if (a == null || a === '') a = 1;
   h = parseFloat(h) / 360;
   s = parseFloat(s) / 100;
@@ -204,8 +204,8 @@ var hslToRGB = function hslToRGB(h, s, l, a) {
   if (s === 0) {
     r = b = g = l;
   } else {
-    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    var p = 2 * l - q;
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
     r = hueToRGB(p, q, h + 1 / 3);
     g = hueToRGB(p, q, h);
     b = hueToRGB(p, q, h - 1 / 3);
@@ -214,19 +214,19 @@ var hslToRGB = function hslToRGB(h, s, l, a) {
   return [r * 255, g * 255, b * 255, a];
 };
 
-var shex = '(?:#([a-f0-9]{3,8}))',
-    sval = '\\s*([.\\d%]+)\\s*',
-    sop = '(?:,\\s*([.\\d]+)\\s*)?',
-    slist = '\\(' + [sval, sval, sval] + sop + '\\)',
-    srgb = '(?:rgb)a?',
-    shsl = '(?:hsl)a?';
-var xhex = RegExp(shex, 'i'),
-    xrgb = RegExp(srgb + slist, 'i'),
-    xhsl = RegExp(shsl + slist, 'i');
+const shex = '(?:#([a-f0-9]{3,8}))';
+const sval = '\\s*([.\\d%]+)\\s*';
+const sop = '(?:,\\s*([.\\d]+)\\s*)?';
+const slist = `\\(${  [sval, sval, sval]  }${sop  }\\)`;
+const srgb = '(?:rgb)a?';
+const shsl = '(?:hsl)a?';
+const xhex = RegExp(shex, 'i');
+const xrgb = RegExp(srgb + slist, 'i');
+const xhsl = RegExp(shsl + slist, 'i');
 export default function normalizeColor(value) {
   if (value == null) return null;
-  value = (value + '').replace(/\s+/, '');
-  var match;
+  value = (`${value  }`).replace(/\s+/, '');
+  let match;
 
   if (NAMED_COLORS.hasOwnProperty(value)) {
     return value;
@@ -241,6 +241,6 @@ export default function normalizeColor(value) {
   if (typeof value === 'string') value = [value];
   if (!(value && (value = RGBtoRGB.apply(null, value)))) return value;
   if (value[3] === 1) value.splice(3, 1);
-  return 'rgb' + (value.length === 4 ? 'a' : '') + '(' + value + ')';
+  return `rgb${  value.length === 4 ? 'a' : ''  }(${  value  })`;
 }
 ;

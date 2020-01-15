@@ -1,5 +1,5 @@
-var warnMessages = '';
-var errorMessages = '';
+let warnMessages = '';
+let errorMessages = '';
 export var getWarnMessages = function getWarnMessages() {
   return warnMessages;
 };
@@ -8,11 +8,11 @@ export var getErrorMessages = function getErrorMessages() {
 };
 export var pushWarnMessage = function pushWarnMessage(message) {
   message = message.replace(/`/g, '\\`');
-  warnMessages += message + "\\n";
+  warnMessages += `${message  }\\n`;
 };
 export var pushErrorMessage = function pushErrorMessage(message) {
   message = message.replace(/`/g, '\\`');
-  errorMessages += message + "\\n";
+  errorMessages += `${message  }\\n`;
 };
 export var resetMessage = function resetMessage() {
   warnMessages = '';

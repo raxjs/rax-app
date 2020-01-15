@@ -44,7 +44,7 @@ describe('rax-webpack-plugin', function() {
 
     if (!options.output) {
       options.output = {
-        filename: '[name].js'
+        filename: '[name].js',
       };
     }
 

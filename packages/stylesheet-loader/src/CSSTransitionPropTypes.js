@@ -1,4 +1,4 @@
-'use strict';
+
 
 import PropTypes from './PropTypes';
 
@@ -7,7 +7,7 @@ const CSSTransitionPropTypes = {
   transitionTimingFunction: PropTypes.string,
   transitionProperty: PropTypes.string,
   transitionDuration: PropTypes.string,
-  transitionDelay: PropTypes.string
+  transitionDelay: PropTypes.string,
 };
 
 export default CSSTransitionPropTypes;

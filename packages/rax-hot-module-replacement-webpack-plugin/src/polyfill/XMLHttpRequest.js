@@ -41,10 +41,10 @@ module.exports = function() {
       throw new Error('Request has already been sent');
     }
     this._sent = true;
-    var self = this;
+    const self = this;
     fetch(this._url, {
       method: this._method,
-      dataType: 'text'
+      dataType: 'text',
     })
       .then(function(response) {
         return response.text();

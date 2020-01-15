@@ -2,7 +2,9 @@
   MIT License http://www.opensource.org/licenses/mit-license.php
   Author Tobias Koppers @sokra
 */
-'use strict';
+
+
+
 const NullDependency = require('./NullDependency');
 
 class ConstDependency extends NullDependency {
@@ -13,8 +15,8 @@ class ConstDependency extends NullDependency {
   }
 
   updateHash(hash) {
-    hash.update(this.range + '');
-    hash.update(this.expression + '');
+    hash.update(`${this.range  }`);
+    hash.update(`${this.expression  }`);
   }
 }
 

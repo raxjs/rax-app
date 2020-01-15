@@ -1,8 +1,8 @@
-'use strict';
+
 
 import css from 'css';
-import transformer from './transformer';
 import loaderUtils from 'loader-utils';
+import transformer from './transformer';
 import { getErrorMessages, getWarnMessages, resetMessage } from './promptMessage';
 
 const RULE = 'rule';
@@ -33,9 +33,9 @@ module.exports = function(source) {
 };
 
 const parse = (parsedQuery, stylesheet) => {
-  let styles = {};
-  let fontFaceRules = [];
-  let mediaRules = [];
+  const styles = {};
+  const fontFaceRules = [];
+  const mediaRules = [];
   const transformDescendantCombinator = parsedQuery.transformDescendantCombinator;
 
   stylesheet.rules.forEach(function(rule) {
@@ -52,7 +52,7 @@ const parse = (parsedQuery, stylesheet) => {
           // handle pseudo class
           const pseudoIndex = sanitizedSelector.indexOf(':');
           if (pseudoIndex > -1) {
-            let pseudoStyle = {};
+            const pseudoStyle = {};
             const pseudoName = selector.slice(pseudoIndex + 1);
             sanitizedSelector = sanitizedSelector.slice(0, pseudoIndex);
 
@@ -70,7 +70,7 @@ const parse = (parsedQuery, stylesheet) => {
 
     // font face rule
     if (rule.type === FONT_FACE_RULE) {
-      let font = {};
+      const font = {};
       rule.declarations.forEach((declaration) => {
         font[declaration.property] = declaration.value;
       });
@@ -81,7 +81,7 @@ const parse = (parsedQuery, stylesheet) => {
     if (rule.type === MEDIA_RULE) {
       mediaRules.push({
         key: rule.media,
-        data: parse(parsedQuery, rule).data
+        data: parse(parsedQuery, rule).data,
       });
     }
   });
@@ -89,7 +89,7 @@ const parse = (parsedQuery, stylesheet) => {
   return {
     styles,
     fontFaceRules,
-    mediaRules
+    mediaRules,
   };
 };
 

@@ -1,20 +1,21 @@
-'use strict';
+
 
 import camelCase from 'camelcase';
+import chalk from 'chalk';
 import normalizeColor from './normalizeColor';
 import particular from './particular';
 import Validation from './Validation';
 import { pushErrorMessage } from './promptMessage';
-import chalk from 'chalk';
-var QUOTES_REG = /[\\'|\\"]/g;
-var COLOR_PROPERTIES = {
+
+const QUOTES_REG = /[\\'|\\"]/g;
+const COLOR_PROPERTIES = {
   color: true,
   backgroundColor: true,
   borderColor: true,
   borderBottomColor: true,
   borderTopColor: true,
   borderRightColor: true,
-  borderLeftColor: true
+  borderLeftColor: true,
 };
 export default {
   sanitizeSelector: function sanitizeSelector(selector, transformDescendantCombinator, position, log) {
@@ -26,8 +27,8 @@ export default {
       position = {
         start: {
           line: 0,
-          column: 0
-        }
+          column: 0,
+        },
       };
     }
 
@@ -37,12 +38,12 @@ export default {
 
     // tag selector suffix @
     if (/^[a-zA-Z]/.test(selector)) {
-      selector = '@' + selector;
+      selector = `@${  selector}`;
     } // filter multiple extend selectors
 
 
     if (log && !transformDescendantCombinator && !/^[.|@|#][a-zA-Z0-9_:\-]+$/.test(selector)) {
-      var message = "line: " + position.start.line + ", column: " + position.start.column + " - \"" + selector + "\" is not a valid selector (e.g. \".abc\u3001.abcBcd\u3001.abc_bcd\")";
+      const message = `line: ${  position.start.line  }, column: ${  position.start.column  } - "${  selector  }" is not a valid selector (e.g. ".abc\u3001.abcBcd\u3001.abc_bcd")`;
       console.error(chalk.red.bold(message));
       pushErrorMessage(message);
       return null;
@@ -51,7 +52,7 @@ export default {
     return selector.replace(/\s/gi, '_').replace(/[\.]/g, '');
   },
   convertProp: function convertProp(prop) {
-    var result = camelCase(prop); // Handle vendor prefixes
+    let result = camelCase(prop); // Handle vendor prefixes
 
     if (prop.indexOf('-webkit') === 0) {
       result = result.replace('webkit', 'Webkit');
@@ -62,8 +63,8 @@ export default {
     return result;
   },
   convertValue: function convertValue(property, value) {
-    var result = value,
-        resultNumber;
+    let result = value;
+    let resultNumber;
 
     if (!Number.isNaN(Number(result))) {
       result = Number(result);
@@ -76,9 +77,9 @@ export default {
     return result;
   },
   convert: function convert(rule, log) {
-    var _this = this;
+    const _this = this;
 
-    var style = {};
+    const style = {};
 
     if (rule.tagName === 'text') {
       return;
@@ -91,15 +92,15 @@ export default {
 
       declaration.value = declaration.value.replace(QUOTES_REG, '');
 
-      var camelCaseProperty = _this.convertProp(declaration.property);
+      const camelCaseProperty = _this.convertProp(declaration.property);
 
-      var value = _this.convertValue(camelCaseProperty, declaration.value);
+      const value = _this.convertValue(camelCaseProperty, declaration.value);
 
       style[camelCaseProperty] = value;
       Validation.validate(camelCaseProperty, declaration.property, declaration.value, rule.selectors.join(', '), declaration.position, log);
 
       if (particular[camelCaseProperty]) {
-        var particularResult = particular[camelCaseProperty](value);
+        const particularResult = particular[camelCaseProperty](value);
 
         if (particularResult.isDeleted) {
           style[camelCaseProperty] = null;
@@ -111,5 +112,5 @@ export default {
       }
     });
     return style;
-  }
+  },
 };

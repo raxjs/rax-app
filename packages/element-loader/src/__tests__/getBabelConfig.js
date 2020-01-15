@@ -5,16 +5,16 @@ describe('getBabelConfig', () => {
   it('should get babel config', () => {
     expect(getBabelConfig({
       babel: {
-        presets: ['rax']
-      }
+        presets: ['rax'],
+      },
     })).toEqual({
-      presets: ['rax']
+      presets: ['rax'],
     });
   });
 
   it('should read .babelrc when no babel query', () => {
     expect(getBabelConfig({})).toEqual({
-      presets: ['rax']
+      presets: ['rax'],
     });
   });
 });

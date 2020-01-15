@@ -1,4 +1,4 @@
-'use strict';
+
 
 import traverseImport from '../TraverseImport';
 
@@ -11,7 +11,7 @@ function unpad(str) {
   }
   const spaces = m[0].length;
   return lines.map(
-    line => line.slice(spaces)
+    line => line.slice(spaces),
   ).join('\n').trim();
 }
 
@@ -19,7 +19,7 @@ describe('PlatformLoader.traverseImport', function() {
   it('isWeex true', function() {
     const { code } = traverseImport(
       { name: 'universal-env', platform: 'weex' },
-      'import { isWeex } from "universal-env";'
+      'import { isWeex } from "universal-env";',
     );
 
     expect(code).toBe('const isWeex = true;');
@@ -31,14 +31,14 @@ describe('PlatformLoader.traverseImport', function() {
       'import { isWeex } from "universal-env";\n let a = 1;',
       { sourceMaps: true,
         filename: 'inline',
-        sourceFileName: 'inline'}
+        sourceFileName: 'inline'},
     );
-    let sourceMapObj = {
+    const sourceMapObj = {
       'version': 3,
       'sources': ['inline'],
       'names': ['a'],
       'mappings': ';;AACC,IAAIA,IAAI,CAAR',
-      'sourcesContent': ['import { isWeex } from "universal-env";\n let a = 1;']
+      'sourcesContent': ['import { isWeex } from "universal-env";\n let a = 1;'],
     };
     expect(map).toMatchObject(sourceMapObj);
   });
@@ -49,7 +49,7 @@ describe('PlatformLoader.traverseImport', function() {
       { name: 'universal-env', platform: 'weex' },
       unpad(`
         import * as env from 'universal-env'
-      `)
+      `),
     );
 
     const expected = unpad(`
@@ -67,7 +67,7 @@ describe('PlatformLoader.traverseImport', function() {
   it('isWeex as iw', function() {
     const { code } = traverseImport(
       { name: 'universal-env', platform: 'weex' },
-      'import { isWeex as iw } from "universal-env";'
+      'import { isWeex as iw } from "universal-env";',
     );
 
     const expected = unpad(`
@@ -81,7 +81,7 @@ describe('PlatformLoader.traverseImport', function() {
   it('isWeex and isWeb', function() {
     const { code } = traverseImport(
       { name: 'universal-env', platform: 'weex' },
-      'import { isWeex, isWeb } from "universal-env";'
+      'import { isWeex, isWeb } from "universal-env";',
     );
 
     const expected = unpad(`
@@ -95,7 +95,7 @@ describe('PlatformLoader.traverseImport', function() {
   it('isWeb true', function() {
     const { code } = traverseImport(
       { name: 'universal-env', platform: 'web' },
-      'import { isWeb } from "universal-env";'
+      'import { isWeb } from "universal-env";',
     );
 
     expect(code).toBe('const isWeb = true;');
@@ -107,7 +107,7 @@ describe('PlatformLoader.traverseImport', function() {
       unpad(`
         import { isWeb } from "other-env";
         import { isWeex } from "universal-env";
-      `)
+      `),
     );
 
     const expected = unpad(`
@@ -124,7 +124,7 @@ describe('PlatformLoader.traverseImport', function() {
       unpad(`
         import { isWeb } from "universal-env";
         import { XXX } from "universal-other";
-      `)
+      `),
     );
 
     const expected = unpad(`
@@ -139,7 +139,7 @@ describe('PlatformLoader.traverseImport', function() {
   it('not platform specified', function() {
     const { code } = traverseImport(
       { name: 'universal-env'},
-      'import { isWeex, isWeb } from "universal-env";'
+      'import { isWeex, isWeb } from "universal-env";',
     );
 
     expect(code).toBe('import { isWeex, isWeb } from "universal-env";');
@@ -148,7 +148,7 @@ describe('PlatformLoader.traverseImport', function() {
   it('unknown platform', function() {
     const { code } = traverseImport(
       { name: 'universal-env', platform: 'xxxx'},
-      'import { isWeex, isWeb } from "universal-env";'
+      'import { isWeex, isWeb } from "universal-env";',
     );
 
     expect(code).toBe('import { isWeex, isWeb } from "universal-env";');
@@ -157,7 +157,7 @@ describe('PlatformLoader.traverseImport', function() {
   it('unknown platform and unknown name', function() {
     const { code } = traverseImport(
       { name: 'universal-xxx'},
-      'import { isWeex, isWeb } from "universal-env";'
+      'import { isWeex, isWeb } from "universal-env";',
     );
 
     expect(code).toBe('import { isWeex, isWeb } from "universal-env";');

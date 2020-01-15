@@ -1,7 +1,8 @@
-'use strict';
+
 
 import PropTypes from './PropTypes';
-var BoxModelPropTypes = {
+
+const BoxModelPropTypes = {
   width: PropTypes.length,
   height: PropTypes.length,
   minWidth: PropTypes.length,
@@ -40,6 +41,6 @@ var BoxModelPropTypes = {
   left: PropTypes.length,
   right: PropTypes.length,
   opacity: PropTypes.number,
-  transform: PropTypes.string
+  transform: PropTypes.string,
 };
 export default BoxModelPropTypes;

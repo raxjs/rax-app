@@ -1,7 +1,7 @@
-'use strict';
 
-import transformer from '../transformer';
+
 import css from 'css';
+import transformer from '../transformer';
 
 describe('transformer', () => {
   it('should replace some characters of selector', () => {
@@ -73,15 +73,15 @@ describe('transformer', () => {
 
     expect(data).toEqual({
       container: {
-        width: 750
-      }
+        width: 750,
+      },
     });
   });
 });
 
 function parse(code) {
   const stylesheet = css.parse(code).stylesheet;
-  let data = {};
+  const data = {};
 
   stylesheet.rules.forEach((rule) => {
     let style = {};

@@ -1,15 +1,15 @@
-import {
-  transformFor,
-  transformIf,
-  transformPair
-} from './transformer';
 import htmlparser from 'htmlparser2';
-import { IF_KEY, FOR_KEY } from './defaultKey';
 import {
   endsWith,
   trimEnd,
-  isNumber
+  isNumber,
 } from 'lodash';
+import {
+  transformFor,
+  transformIf,
+  transformPair,
+} from './transformer';
+import { IF_KEY, FOR_KEY } from './defaultKey';
 import { getDomObject } from './parserHTML';
 
 const PAIR_REG = /^\{\{(.*)}\}$/;
@@ -18,7 +18,7 @@ const NODE_TYPE = {
   TEXT: 'text',
   COMMENT: 'comment',
   SCRIPT: 'script',
-  STYLE: 'style'
+  STYLE: 'style',
 };
 
 export default class HTMLtoJSX {
@@ -52,14 +52,14 @@ export default class HTMLtoJSX {
     }
 
     this._traverse({
-      children: nodes
+      children: nodes,
     });
 
-    this.output = this.output.trim() + '\n';
+    this.output = `${this.output.trim()  }\n`;
 
     return {
       output: this.output,
-      outputImportText: this.outputImportText
+      outputImportText: this.outputImportText,
     };
   }
 
@@ -81,7 +81,7 @@ export default class HTMLtoJSX {
     for (const key in node.attribs) {
       node.attributes.push({
         name: key,
-        value: node.attribs[key]
+        value: node.attribs[key],
       });
     }
     this._beginVisit(node);
@@ -90,7 +90,7 @@ export default class HTMLtoJSX {
   }
 
   _beginVisit(node) {
-    this.output += '\n' + new Array(this.level - 1).join(' ');
+    this.output += `\n${  new Array(this.level - 1).join(' ')}`;
     switch (node.type) {
       case NODE_TYPE.ELEMENT:
         this._beginVisitElement(node);
@@ -109,14 +109,14 @@ export default class HTMLtoJSX {
       case NODE_TYPE.STYLE:
         break;
       default:
-        console.warn('Unrecognised node type: ' + node.type);
+        console.warn(`Unrecognised node type: ${  node.type}`);
     }
   }
 
   _endVisit(node) {
     switch (node.type) {
       case NODE_TYPE.ELEMENT:
-        this.output += '\n' + new Array(this.level + 1).join(' ');
+        this.output += `\n${  new Array(this.level + 1).join(' ')}`;
         this._endVisitElement(node);
         break;
       case NODE_TYPE.TEXT:
@@ -130,7 +130,7 @@ export default class HTMLtoJSX {
   _beginVisitElement(node) {
     const tagName = node.name;
     const outputTagName = tagName;
-    let attributes = [];
+    const attributes = [];
 
     node.attributes.forEach((attribute) => {
       attributes.push(this._getElementAttribute(node, attribute));
@@ -140,7 +140,7 @@ export default class HTMLtoJSX {
     this.output += transformIf(node.attributes, true, this.scope);
     this.output += `<${outputTagName}`;
     if (attributes.length > 0) {
-      this.output += ' ' + attributes.join(' ');
+      this.output += ` ${  attributes.join(' ')}`;
     }
     this.output += '>';
   }
@@ -150,7 +150,7 @@ export default class HTMLtoJSX {
     const outputTagName = tagName;
 
     this.output = trimEnd(this.output, this.config.indent);
-    this.output += '</' + outputTagName + '>';
+    this.output += `</${  outputTagName  }>`;
     this.output += transformFor(node.attributes, false, this.scope);
     this.output += transformIf(node.attributes, false, this.scope);
   }
@@ -174,7 +174,7 @@ export default class HTMLtoJSX {
   }
 
   _onlyOneTopLevel(nodes) {
-    let _rootNodes = nodes.filter((node) => {
+    const _rootNodes = nodes.filter((node) => {
       return !/\n+/.test('\n');
     });
     return _rootNodes.length === 1;

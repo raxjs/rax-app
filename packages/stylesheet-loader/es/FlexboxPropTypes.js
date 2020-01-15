@@ -1,7 +1,8 @@
-'use strict';
+
 
 import PropTypes from './PropTypes';
-var FlexboxPropTypes = {
+
+const FlexboxPropTypes = {
   flexDirection: PropTypes.oneOf(['row', 'row-reverse', 'column', 'column-reverse']),
   flexWrap: PropTypes.oneOf(['wrap', 'nowrap', 'wrap-reverse']),
   justifyContent: PropTypes.oneOf(['flex-start', 'flex-end', 'center', 'space-between', 'space-around']),
@@ -10,6 +11,6 @@ var FlexboxPropTypes = {
   alignSelf: PropTypes.oneOf(['auto', 'flex-start', 'flex-end', 'center', 'stretch']),
   flex: PropTypes.integer,
   zIndex: PropTypes.integer,
-  itemSize: PropTypes.length
+  itemSize: PropTypes.length,
 };
 export default FlexboxPropTypes;

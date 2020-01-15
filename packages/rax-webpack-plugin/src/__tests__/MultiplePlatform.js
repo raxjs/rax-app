@@ -5,14 +5,14 @@ import MultiplePlatform from '../MultiplePlatform';
 
 const simpleConfig = {
   entry: {
-    hello: './index.js'
-  }
+    hello: './index.js',
+  },
 };
 
 describe('MultiplePlatform', function() {
   it('not specified platform', function() {
     expect(() => {
-      let platform = MultiplePlatform(simpleConfig);
+      const platform = MultiplePlatform(simpleConfig);
       expect(platform).toBe(simpleConfig);
     }).toLowPriorityWarnDev('The `platforms` field is not specified!', {withoutStack: true});
   });
@@ -21,49 +21,49 @@ describe('MultiplePlatform', function() {
     const config = {
       platforms: ['weex'],
       entry: {
-        'hello.bundle': './index.js'
+        'hello.bundle': './index.js',
       },
       module: {
         loaders: [{
           test: /\.jsx?$/,
-          loader: 'babel'
-        }]
-      }
+          loader: 'babel',
+        }],
+      },
     };
 
     const expected = [{
       'entry': {
-        'hello.bundle': './index.js'
+        'hello.bundle': './index.js',
       },
       'module': {
         'loaders': [{
           'test': /\.jsx?$/,
-          'loader': 'babel'
-        }]
+          'loader': 'babel',
+        }],
       },
       'platforms': [
-        'weex'
-      ]
+        'weex',
+      ],
     }, {
       'entry': {
-        'hello.bundle.weex': './index.js'
+        'hello.bundle.weex': './index.js',
       },
       'name': 'weex',
       'module': {
         'loaders': [{
           'test': /\.jsx?$/,
-          'loader': 'babel'
+          'loader': 'babel',
         }],
         'preLoaders': [{
           'test': /\.jsx?$/,
           'exclude': /(node_modules|bower_components)/,
-          'loader': `${path.resolve(__dirname, '../PlatformLoader.js')}?platform=weex`
+          'loader': `${path.resolve(__dirname, '../PlatformLoader.js')}?platform=weex`,
 
-        }]
+        }],
       },
       'platforms': [
-        'weex'
-      ]
+        'weex',
+      ],
     }];
     expect(MultiplePlatform(config)).toEqual(expected);
   });
@@ -72,109 +72,109 @@ describe('MultiplePlatform', function() {
     const config = {
       platforms: ['weex'],
       entry: {
-        'hello.bundle': './index.js'
+        'hello.bundle': './index.js',
       },
       module: {
         loaders: [{
           test: /\.jsx?$/,
-          loader: 'babel'
-        }]
+          loader: 'babel',
+        }],
       },
       output: {
         chunkFilename: '[name].js',
-      }
+      },
     };
 
     const expected = [{
       'entry': {
-        'hello.bundle': './index.js'
+        'hello.bundle': './index.js',
       },
       'module': {
         'loaders': [{
           'test': /\.jsx?$/,
-          'loader': 'babel'
-        }]
+          'loader': 'babel',
+        }],
       },
       'platforms': [
-        'weex'
+        'weex',
       ],
       output: {
         chunkFilename: '[name].js',
-      }
+      },
     }, {
       'entry': {
-        'hello.bundle.weex': './index.js'
+        'hello.bundle.weex': './index.js',
       },
       'name': 'weex',
       'module': {
         'loaders': [{
           'test': /\.jsx?$/,
-          'loader': 'babel'
+          'loader': 'babel',
         }],
         'preLoaders': [{
           'test': /\.jsx?$/,
           'exclude': /(node_modules|bower_components)/,
-          'loader': `${path.resolve(__dirname, '../PlatformLoader.js')}?platform=weex`
+          'loader': `${path.resolve(__dirname, '../PlatformLoader.js')}?platform=weex`,
 
-        }]
+        }],
       },
       'platforms': [
-        'weex'
+        'weex',
       ],
       output: {
         chunkFilename: '[name].weex.js',
-      }
+      },
     }];
     expect(MultiplePlatform(config, {
-      chunkFilename: function(platformType) {
-        return '[name].' + platformType + '.js';
-      }
+      chunkFilename(platformType) {
+        return `[name].${  platformType  }.js`;
+      },
     })).toEqual(expected);
   });
 
   it('specified platform is `weex` pass options', function() {
     const config = {
       entry: {
-        'hello.bundle': './index.js'
+        'hello.bundle': './index.js',
       },
       module: {
         loaders: [{
           test: /\.jsx?$/,
-          loader: 'babel'
-        }]
-      }
+          loader: 'babel',
+        }],
+      },
     };
 
     const expected = [{
       'entry': {
-        'hello.bundle': './index.js'
+        'hello.bundle': './index.js',
       },
       'module': {
         'loaders': [{
           'test': /\.jsx?$/,
-          'loader': 'babel'
-        }]
-      }
+          'loader': 'babel',
+        }],
+      },
     }, {
       'entry': {
-        'hello.bundle.weex': './index.js'
+        'hello.bundle.weex': './index.js',
       },
       'name': 'weex',
       'module': {
         'loaders': [{
           'test': /\.jsx?$/,
-          'loader': 'babel'
+          'loader': 'babel',
         }],
         'preLoaders': [{
           'test': /\.jsx?$/,
           'exclude': /(node_modules|bower_components)/,
-          'loader': `${path.resolve(__dirname, '../PlatformLoader.js')}?platform=weex`
+          'loader': `${path.resolve(__dirname, '../PlatformLoader.js')}?platform=weex`,
 
-        }]
-      }
+        }],
+      },
     }];
     expect(MultiplePlatform(config, {
-      platforms: ['weex']
+      platforms: ['weex'],
     })).toEqual(expected);
   });
 
@@ -185,9 +185,9 @@ describe('MultiplePlatform', function() {
       module: {
         loaders: [{
           test: /\.jsx?$/,
-          loader: 'babel'
-        }]
-      }
+          loader: 'babel',
+        }],
+      },
     };
 
     const expected = [{
@@ -195,12 +195,12 @@ describe('MultiplePlatform', function() {
       'module': {
         'loaders': [{
           'test': /\.jsx?$/,
-          'loader': 'babel'
-        }]
+          'loader': 'babel',
+        }],
       },
       'platforms': [
-        'weex'
-      ]
+        'weex',
+      ],
     }];
     expect(MultiplePlatform(config)).toEqual(expected);
   });
@@ -212,9 +212,9 @@ describe('MultiplePlatform', function() {
       module: {
         loaders: [{
           test: /\.jsx?$/,
-          loader: 'babel'
-        }]
-      }
+          loader: 'babel',
+        }],
+      },
     };
 
     const expected = [{
@@ -222,12 +222,12 @@ describe('MultiplePlatform', function() {
       'module': {
         'loaders': [{
           'test': /\.jsx?$/,
-          'loader': 'babel'
-        }]
+          'loader': 'babel',
+        }],
       },
       'platforms': [
-        'weex'
-      ]
+        'weex',
+      ],
     }];
     expect(MultiplePlatform(config)).toEqual(expected);
   });
@@ -237,51 +237,51 @@ describe('MultiplePlatform', function() {
       platforms: ['weex'],
       entry: {
         'hello.bundle': ['./index.js', './weex.js'],
-        'world.bundle': './world.js'
+        'world.bundle': './world.js',
       },
       module: {
         loaders: [{
           test: /\.jsx?$/,
-          loader: 'babel'
-        }]
-      }
+          loader: 'babel',
+        }],
+      },
     };
 
     const expected = [{
       'entry': {
         'hello.bundle': ['./index.js', './weex.js'],
-        'world.bundle': './world.js'
+        'world.bundle': './world.js',
       },
       'module': {
         'loaders': [{
           test: /\.jsx?$/,
-          loader: 'babel'
-        }]
+          loader: 'babel',
+        }],
       },
       'platforms': [
-        'weex'
-      ]
+        'weex',
+      ],
     }, {
       'entry': {
         'hello.bundle.weex': ['./index.js', './weex.js'],
-        'world.bundle.weex': './world.js'
+        'world.bundle.weex': './world.js',
       },
       'name': 'weex',
       'module': {
         'loaders': [{
           test: /\.jsx?$/,
-          loader: 'babel'
+          loader: 'babel',
         }],
         'preLoaders': [{
           'test': /\.jsx?$/,
           'exclude': /(node_modules|bower_components)/,
-          'loader': `${path.resolve(__dirname, '../PlatformLoader.js')}?platform=weex`
+          'loader': `${path.resolve(__dirname, '../PlatformLoader.js')}?platform=weex`,
 
-        }]
+        }],
       },
       'platforms': [
-        'weex'
-      ]
+        'weex',
+      ],
     }];
     expect(MultiplePlatform(config)).toEqual(expected);
   });
@@ -290,60 +290,60 @@ describe('MultiplePlatform', function() {
     const config = {
       platforms: ['weex'],
       entry: {
-        'hello.bundle': './index.js'
+        'hello.bundle': './index.js',
       },
       module: {
         preLoaders: [{
           test: /\.less$/,
-          loader: 'less'
+          loader: 'less',
         }],
         loaders: [{
           test: /\.jsx?$/,
-          loader: 'babel'
-        }]
-      }
+          loader: 'babel',
+        }],
+      },
     };
 
     const expected = [{
       'entry': {
-        'hello.bundle': './index.js'
+        'hello.bundle': './index.js',
       },
       'module': {
         'preLoaders': [{
           'test': /\.less$/,
-          'loader': 'less'
+          'loader': 'less',
         }],
         'loaders': [{
           'test': /\.jsx?$/,
-          'loader': 'babel'
-        }]
+          'loader': 'babel',
+        }],
       },
       'platforms': [
-        'weex'
-      ]
+        'weex',
+      ],
     }, {
       'entry': {
-        'hello.bundle.weex': './index.js'
+        'hello.bundle.weex': './index.js',
       },
       'module': {
         'loaders': [{
           'test': /\.jsx?$/,
-          'loader': 'babel'
+          'loader': 'babel',
         }],
         'preLoaders': [{
           test: /\.less$/,
-          loader: 'less'
+          loader: 'less',
         }, {
           'test': /\.jsx?$/,
           'exclude': /(node_modules|bower_components)/,
-          'loader': `${path.resolve(__dirname, '../PlatformLoader.js')}?platform=weex`
+          'loader': `${path.resolve(__dirname, '../PlatformLoader.js')}?platform=weex`,
 
-        }]
+        }],
       },
       'name': 'weex',
       'platforms': [
-        'weex'
-      ]
+        'weex',
+      ],
     }];
     expect(MultiplePlatform(config)).toEqual(expected);
   });
@@ -352,17 +352,17 @@ describe('MultiplePlatform', function() {
     const config = {
       platforms: ['XXXX'],
       entry: {
-        'hello.bundle': './index.js'
+        'hello.bundle': './index.js',
       },
       module: {
         loaders: {
           test: /\.jsx?$/,
-          loader: 'babel'
-        }
-      }
+          loader: 'babel',
+        },
+      },
     };
     expect(() => {
-      let platform = MultiplePlatform(config);
+      const platform = MultiplePlatform(config);
       expect(platform).toEqual(config);
     }).toLowPriorityWarnDev([
       'The options.platforms is no available platform!',
@@ -377,24 +377,24 @@ describe('MultiplePlatform', function() {
       module: {
         loaders: {
           test: /\.jsx?$/,
-          loader: 'babel'
-        }
-      }
+          loader: 'babel',
+        },
+      },
     };
 
     const expected = [{
       'entry': [
-        './index.js'
+        './index.js',
       ],
       'module': {
         'loaders': {
           'loader': 'babel',
-          'test': /\.jsx?$/
-        }
+          'test': /\.jsx?$/,
+        },
       },
       'platforms': [
-        'weex'
-      ]
+        'weex',
+      ],
     }];
     expect(MultiplePlatform(config)).toEqual(expected);
   });
@@ -406,9 +406,9 @@ describe('MultiplePlatform', function() {
       module: {
         loaders: {
           test: /\.jsx?$/,
-          loader: 'babel'
-        }
-      }
+          loader: 'babel',
+        },
+      },
     };
 
     const expected = [{
@@ -416,12 +416,12 @@ describe('MultiplePlatform', function() {
       'module': {
         'loaders': {
           'loader': 'babel',
-          'test': /\.jsx?$/
-        }
+          'test': /\.jsx?$/,
+        },
       },
       'platforms': [
-        'weex'
-      ]
+        'weex',
+      ],
     }];
     expect(MultiplePlatform(config)).toEqual(expected);
   });

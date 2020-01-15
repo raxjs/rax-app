@@ -8,8 +8,8 @@ function cleanPath(path) {
 
 
 function getClosestPackage(modulePath) {
-  var root;
-  var pkg; // Catch findRoot or require errors
+  let root;
+  let pkg; // Catch findRoot or require errors
 
   try {
     root = findRoot(modulePath);
@@ -28,19 +28,19 @@ function getClosestPackage(modulePath) {
 
   return {
     package: pkg,
-    path: root
+    path: root,
   };
 }
 
 function check(compilation, modulesToCheck) {
-  var context = compilation.compiler.context;
-  var modules = {};
+  const context = compilation.compiler.context;
+  const modules = {};
 
   function cleanPathRelativeToContext(modulePath) {
-    var cleanedPath = cleanPath(modulePath); // Make relative to compilation context
+    let cleanedPath = cleanPath(modulePath); // Make relative to compilation context
 
     if (cleanedPath.indexOf(context) === 0) {
-      cleanedPath = '.' + cleanedPath.replace(context, '');
+      cleanedPath = `.${  cleanedPath.replace(context, '')}`;
     }
 
     return cleanedPath;
@@ -51,9 +51,9 @@ function check(compilation, modulesToCheck) {
       return;
     }
 
-    var pkg;
-    var packagePath;
-    var closestPackage = getClosestPackage(module.resource); // Skip module if no closest package is found
+    let pkg;
+    let packagePath;
+    const closestPackage = getClosestPackage(module.resource); // Skip module if no closest package is found
 
     if (!closestPackage) {
       return;
@@ -61,15 +61,15 @@ function check(compilation, modulesToCheck) {
 
     pkg = closestPackage.package;
     packagePath = closestPackage.path;
-    var modulePath = cleanPathRelativeToContext(packagePath);
-    var version = pkg.version;
+    const modulePath = cleanPathRelativeToContext(packagePath);
+    const version = pkg.version;
 
     if (modulesToCheck.indexOf(pkg.name) < 0) {
       return;
     }
 
     modules[pkg.name] = modules[pkg.name] || [];
-    var isSeen = false;
+    let isSeen = false;
     modules[pkg.name].forEach(function (module) {
       if (module.version === version) {
         isSeen = true;
@@ -77,14 +77,14 @@ function check(compilation, modulesToCheck) {
     });
 
     if (!isSeen) {
-      var entry = {
-        version: version,
-        path: modulePath
+      const entry = {
+        version,
+        path: modulePath,
       };
       modules[pkg.name].push(entry);
     }
   });
-  var duplicates = {};
+  const duplicates = {};
   Object.keys(modules).forEach(function (name) {
     if (modules[name].length > 1) {
       duplicates[name] = modules[name];
@@ -94,35 +94,35 @@ function check(compilation, modulesToCheck) {
 }
 
 function formatMsg(duplicates) {
-  var error = 'Duplicate (conflicting) packages loaded, make sure to use only one: ';
+  let error = 'Duplicate (conflicting) packages loaded, make sure to use only one: ';
 
   if (Object.keys(duplicates).length) {
     Object.keys(duplicates).forEach(function (key) {
-      var instances = duplicates[key];
+      let instances = duplicates[key];
       instances = instances.map(function (version) {
-        var str = version.version + " " + version.path;
+        const str = `${version.version  } ${  version.path}`;
         return str;
       });
-      error += '\\n  <' + key + '> \\n';
-      error += '    ' + instances.join('\\n    ') + '\\n';
+      error += `\\n  <${  key  }> \\n`;
+      error += `    ${  instances.join('\\n    ')  }\\n`;
     });
   }
 
   return error;
 }
 
-var DuplicateChecker =
-/*#__PURE__*/
+const DuplicateChecker =
+/* #__PURE__ */
 function () {
   function DuplicateChecker(options) {
     this.options = Object.assign({}, options);
     ;
   }
 
-  var _proto = DuplicateChecker.prototype;
+  const _proto = DuplicateChecker.prototype;
 
   _proto.apply = function apply(compiler) {
-    var modulesToCheck = this.options.modulesToCheck;
+    const modulesToCheck = this.options.modulesToCheck;
 
     if (!modulesToCheck || !modulesToCheck.length) {
       return;
@@ -131,13 +131,13 @@ function () {
 
     if (compiler.hooks && compiler.hooks.compilation && compiler.hooks.compilation.tap) {
       compiler.hooks.compilation.tap('RaxDuplicateCheckerPlugin', function (compilation) {
-        var duplicates = check(compilation, modulesToCheck);
+        const duplicates = check(compilation, modulesToCheck);
 
         if (!Object.keys(duplicates).length) {
           return;
         }
 
-        var errorMessages = "console.error('" + formatMsg(duplicates) + "');";
+        const errorMessages = `console.error('${  formatMsg(duplicates)  }');`;
         compilation.hooks.optimizeChunkAssets.tap('RaxDuplicateCheckerPlugin', function (chunks) {
           for (var _iterator = chunks, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
             var _ref;
@@ -151,7 +151,7 @@ function () {
               _ref = _i.value;
             }
 
-            var chunk = _ref;
+            const chunk = _ref;
 
             // Entry only
             if (!chunk.canBeInitial()) {
@@ -166,13 +166,13 @@ function () {
       });
     } else {
       compiler.plugin('compilation', function (compilation) {
-        var duplicates = check(compilation, modulesToCheck);
+        const duplicates = check(compilation, modulesToCheck);
 
         if (!Object.keys(duplicates).length) {
           return;
         }
 
-        var errorMessages = "console.error('" + formatMsg(duplicates) + "');";
+        const errorMessages = `console.error('${  formatMsg(duplicates)  }');`;
         compilation.plugin('optimize-chunk-assets', function (chunks) {
           chunks.forEach(function (chunk) {
             // Entry only

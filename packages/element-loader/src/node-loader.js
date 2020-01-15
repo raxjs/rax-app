@@ -1,6 +1,6 @@
 import path from 'path';
-import parser from './parserHTML';
 import loaderUtils from 'loader-utils';
+import parser from './parserHTML';
 
 module.exports = function(content) {
   this.cacheable();

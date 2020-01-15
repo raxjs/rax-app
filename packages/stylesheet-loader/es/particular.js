@@ -1,7 +1,8 @@
-'use strict';
+
 
 import normalizeColor from './normalizeColor';
-var NUMBER_REG = /^[-+]?\d*\.?\d+$/;
+
+const NUMBER_REG = /^[-+]?\d*\.?\d+$/;
 
 function convertUnit(val) {
   if (NUMBER_REG.test(val)) {
@@ -12,7 +13,7 @@ function convertUnit(val) {
 }
 
 function measure(value, key) {
-  var direction = [];
+  let direction = [];
 
   if (typeof value === 'number') {
     direction = [value, value, value, value];
@@ -37,12 +38,12 @@ function measure(value, key) {
     }
   }
 
-  var topKey = key + 'Top';
-  var rightKey = key + 'Right';
-  var bottomKey = key + 'Bottom';
-  var leftKey = key + 'Left';
-  var result = {
-    isDeleted: true
+  const topKey = `${key  }Top`;
+  const rightKey = `${key  }Right`;
+  const bottomKey = `${key  }Bottom`;
+  const leftKey = `${key  }Left`;
+  const result = {
+    isDeleted: true,
   };
   result[topKey] = convertUnit(direction[0]);
   result[rightKey] = convertUnit(direction[1]);
@@ -53,31 +54,31 @@ function measure(value, key) {
 
 ;
 
-var prefix = function prefix(value, key) {
-  var word = key.substring(0, 1).toUpperCase() + key.substring(1);
-  var result = {
-    isDeleted: true
+const prefix = function prefix(value, key) {
+  const word = key.substring(0, 1).toUpperCase() + key.substring(1);
+  const result = {
+    isDeleted: true,
   };
-  result['ms' + word] = value;
-  result['webkit' + word] = value;
+  result[`ms${  word}`] = value;
+  result[`webkit${  word}`] = value;
   result[key] = value;
   return result;
 };
 
-var _border = function border(key, value) {
-  var result = {
-    isDeleted: true
+const _border = function border(key, value) {
+  const result = {
+    isDeleted: true,
   };
-  var direction = value && value.split(' ');
-  result[key + 'Width'] = direction && convertUnit(direction[0]);
-  result[key + 'Style'] = direction && direction[1];
-  result[key + 'Color'] = direction && normalizeColor(direction[2]);
+  const direction = value && value.split(' ');
+  result[`${key  }Width`] = direction && convertUnit(direction[0]);
+  result[`${key  }Style`] = direction && direction[1];
+  result[`${key  }Color`] = direction && normalizeColor(direction[2]);
   return result;
 };
 
-var toMs = function toMs(value) {
+const toMs = function toMs(value) {
   if (typeof value === 'string') {
-    if (/^\./.test(value)) value = '0' + value; // .5s
+    if (/^\./.test(value)) value = `0${  value}`; // .5s
 
     if (/s$/.test(value) && !/ms$/.test(value)) {
       // 1.5s
@@ -88,33 +89,33 @@ var toMs = function toMs(value) {
     }
   }
 
-  return (value || 0) + 'ms';
+  return `${value || 0  }ms`;
 };
 
-var _transitionProperty = function transitionProperty(value) {
+const _transitionProperty = function transitionProperty(value) {
   if (value === 'all') {
     value = 'width,height,top,bottom,left,right,backgroundColor,opacity,transform';
   } else if (value === 'none' || !value) {
     return {
-      isDeleted: true
+      isDeleted: true,
     };
   }
 
   return {
-    transitionProperty: value.replace('background-color', 'backgroundColor')
+    transitionProperty: value.replace('background-color', 'backgroundColor'),
   };
 };
 
-var _transition = function transition(value) {
-  var result = {
-    isDeleted: true
+const _transition = function transition(value) {
+  const result = {
+    isDeleted: true,
   };
-  var options = (value || '').trim().replace(/cubic-bezier\(.*\)/g, function ($0) {
+  const options = (value || '').trim().replace(/cubic-bezier\(.*\)/g, function ($0) {
     return $0.replace(/\s+/g, '');
   }) // transition: all 0.2s cubic-bezier( 0.42, 0, 0.58, 1 ) 0s
   .split(/\s+/);
 
-  var property = _transitionProperty(options[0] || 'all');
+  const property = _transitionProperty(options[0] || 'all');
 
   if (!property.isDeleted) result.transitionProperty = property.transitionProperty;
   result.transitionTimingFunction = (options[2] || 'ease').replace(/\s+/g, '');
@@ -147,12 +148,12 @@ export default {
   },
   lineHeight: function lineHeight(value) {
     return {
-      lineHeight: value
+      lineHeight: value,
     };
   },
   fontWeight: function fontWeight(value) {
     return {
-      fontWeight: value.toString()
+      fontWeight: value.toString(),
     };
   },
   transition: function transition(value) {
@@ -163,17 +164,17 @@ export default {
   },
   transitionDuration: function transitionDuration(value) {
     return {
-      transitionDuration: toMs(value)
+      transitionDuration: toMs(value),
     };
   },
   transitionDelay: function transitionDelay(value) {
     return {
-      transitionDelay: toMs(value)
+      transitionDelay: toMs(value),
     };
   },
   transitionTimingFunction: function transitionTimingFunction(value) {
     return {
-      transitionTimingFunction: value.replace(/\s+/g, '')
+      transitionTimingFunction: value.replace(/\s+/g, ''),
     };
-  }
+  },
 };

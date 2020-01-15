@@ -1,36 +1,37 @@
 import template from 'babel-template';
-var buildRegistration = template('__RAX_HOT_LOADER__.register(ID, NAME, FILENAME);');
-var buildSemi = template(';'); // We're making the IIFE we insert at the end of the file an unused variable
+
+const buildRegistration = template('__RAX_HOT_LOADER__.register(ID, NAME, FILENAME);');
+const buildSemi = template(';'); // We're making the IIFE we insert at the end of the file an unused variable
 // because it otherwise breaks the output of the babel-node REPL (#359).
 
-var buildTagger = template("\nvar UNUSED = (function () {\n  if (typeof __RAX_HOT_LOADER__ === 'undefined') {\n    return;\n  }\n  REGISTRATIONS\n})();\n");
+const buildTagger = template("\nvar UNUSED = (function () {\n  if (typeof __RAX_HOT_LOADER__ === 'undefined') {\n    return;\n  }\n  REGISTRATIONS\n})();\n");
 
-var buildNewClassProperty = function buildNewClassProperty(t, classPropertyName, newMethodName, isAsync) {
-  var returnExpression = t.callExpression(t.memberExpression(t.thisExpression(), newMethodName), [t.spreadElement(t.identifier('params'))]);
+const buildNewClassProperty = function buildNewClassProperty(t, classPropertyName, newMethodName, isAsync) {
+  let returnExpression = t.callExpression(t.memberExpression(t.thisExpression(), newMethodName), [t.spreadElement(t.identifier('params'))]);
 
   if (isAsync) {
     returnExpression = t.awaitExpression(returnExpression);
   }
 
-  var newArrowFunction = t.arrowFunctionExpression([t.restElement(t.identifier('params'))], returnExpression, isAsync);
+  const newArrowFunction = t.arrowFunctionExpression([t.restElement(t.identifier('params'))], returnExpression, isAsync);
   return t.classProperty(classPropertyName, newArrowFunction);
 };
 
-var classPropertyOptOutVistor = {
+const classPropertyOptOutVistor = {
   MetaProperty: function MetaProperty(path, state) {
-    var node = path.node;
+    const node = path.node;
 
     if (node.meta.name === 'new' && node.property.name === 'target') {
       state.optOut = true; // eslint-disable-line no-param-reassign
     }
   },
   ReferencedIdentifier: function ReferencedIdentifier(path, state) {
-    var node = path.node;
+    const node = path.node;
 
     if (node.name === 'arguments') {
       state.optOut = true; // eslint-disable-line no-param-reassign
     }
-  }
+  },
 };
 
 module.exports = function plugin(args) {
@@ -39,11 +40,11 @@ module.exports = function plugin(args) {
     throw new Error('Rax Hot Loader: You are erroneously trying to use a Babel plugin ' + 'as a Webpack loader. We recommend that you use Babel, ' + 'remove "rax-hot-loader/babel" from the "loaders" section ' + 'of your Webpack configuration, and instead add ' + '"rax-hot-loader/babel" to the "plugins" section of your .babelrc file. ' + 'If you prefer not to use Babel, replace "rax-hot-loader/babel" with ' + '"rax-hot-loader/webpack" in the "loaders" section of your Webpack configuration. ');
   }
 
-  var t = args.types; // No-op in production.
+  const t = args.types; // No-op in production.
 
   if (process.env.NODE_ENV === 'production') {
     return {
-      visitor: {}
+      visitor: {},
     };
   } // Gather top-level variables, functions, and classes.
   // Try our best to avoid variables from require().
@@ -51,9 +52,9 @@ module.exports = function plugin(args) {
 
 
   function shouldRegisterBinding(binding) {
-    var _binding$path = binding.path,
-        type = _binding$path.type,
-        node = _binding$path.node;
+    const _binding$path = binding.path;
+    const type = _binding$path.type;
+    const node = _binding$path.node;
 
     switch (type) {
       case 'FunctionDeclaration':
@@ -62,26 +63,26 @@ module.exports = function plugin(args) {
         return true;
 
       case 'VariableDeclarator':
-        {
-          var init = node.init;
+      {
+        const init = node.init;
 
-          if (t.isCallExpression(init) && init.callee.name === 'require') {
-            return false;
-          }
-
-          return true;
+        if (t.isCallExpression(init) && init.callee.name === 'require') {
+          return false;
         }
+
+        return true;
+      }
 
       default:
         return false;
     }
   }
 
-  var REGISTRATIONS = Symbol();
+  const REGISTRATIONS = Symbol();
   return {
     visitor: {
       ExportDefaultDeclaration: function ExportDefaultDeclaration(path, _ref) {
-        var file = _ref.file;
+        const file = _ref.file;
 
         // Default exports with names are going
         // to be in scope anyway so no need to bother.
@@ -91,8 +92,8 @@ module.exports = function plugin(args) {
         // so we can later refer to it and tag it with __source.
 
 
-        var id = path.scope.generateUidIdentifier('default');
-        var expression = t.isExpression(path.node.declaration) ? path.node.declaration : t.toExpression(path.node.declaration);
+        const id = path.scope.generateUidIdentifier('default');
+        const expression = t.isExpression(path.node.declaration) ? path.node.declaration : t.toExpression(path.node.declaration);
         path.insertBefore(t.variableDeclaration('const', [t.variableDeclarator(id, expression)]));
         path.node.declaration = id; // eslint-disable-line no-param-reassign
         // It won't appear in scope.bindings
@@ -101,28 +102,28 @@ module.exports = function plugin(args) {
         path.parent[REGISTRATIONS].push(buildRegistration({
           ID: id,
           NAME: t.stringLiteral('default'),
-          FILENAME: t.stringLiteral(file.opts.filename)
+          FILENAME: t.stringLiteral(file.opts.filename),
         }));
       },
       Program: {
         enter: function enter(_ref2, _ref3) {
-          var node = _ref2.node,
-              scope = _ref2.scope;
-          var file = _ref3.file;
+          const node = _ref2.node;
+          const scope = _ref2.scope;
+          const file = _ref3.file;
           node[REGISTRATIONS] = []; // eslint-disable-line no-param-reassign
           // Everything in the top level scope, when reasonable,
           // is going to get tagged with __source.
 
           /* eslint-disable guard-for-in,no-restricted-syntax */
 
-          for (var id in scope.bindings) {
-            var binding = scope.bindings[id];
+          for (const id in scope.bindings) {
+            const binding = scope.bindings[id];
 
             if (shouldRegisterBinding(binding)) {
               node[REGISTRATIONS].push(buildRegistration({
                 ID: binding.identifier,
                 NAME: t.stringLiteral(id),
-                FILENAME: t.stringLiteral(file.opts.filename)
+                FILENAME: t.stringLiteral(file.opts.filename),
               }));
             }
           }
@@ -130,9 +131,9 @@ module.exports = function plugin(args) {
 
         },
         exit: function exit(_ref4) {
-          var node = _ref4.node,
-              scope = _ref4.scope;
-          var registrations = node[REGISTRATIONS];
+          const node = _ref4.node;
+          const scope = _ref4.scope;
+          const registrations = node[REGISTRATIONS];
           node[REGISTRATIONS] = null; // eslint-disable-line no-param-reassign
           // Inject the generated tagging code at the very end
           // so that it is as minimally intrusive as possible.
@@ -140,23 +141,23 @@ module.exports = function plugin(args) {
           node.body.push(buildSemi());
           node.body.push(buildTagger({
             UNUSED: scope.generateUidIdentifier(),
-            REGISTRATIONS: registrations
+            REGISTRATIONS: registrations,
           }));
           node.body.push(buildSemi());
-        }
+        },
       },
       Class: function Class(classPath) {
-        var classBody = classPath.get('body');
+        const classBody = classPath.get('body');
         classBody.get('body').forEach(function (path) {
           if (path.isClassProperty()) {
-            var node = path.node; // don't apply transform to static class properties
+            const node = path.node; // don't apply transform to static class properties
 
             if (node.static) {
               return;
             }
 
-            var state = {
-              optOut: false
+            const state = {
+              optOut: false,
             };
             path.traverse(classPropertyOptOutVistor, state);
 
@@ -166,7 +167,7 @@ module.exports = function plugin(args) {
 
 
             if (node.value && node.value.type === 'ArrowFunctionExpression') {
-              var isAsync = node.value.async; // TODO:
+              const isAsync = node.value.async; // TODO:
               // Remove this check when babel issue is resolved: https://github.com/babel/babel/issues/5078
               // RHL Issue: https://github.com/gaearon/react-hot-loader/issues/391
               // This code makes async arrow functions not reloadable,
@@ -176,13 +177,13 @@ module.exports = function plugin(args) {
                 return;
               }
 
-              var params = node.value.params;
-              var newIdentifier = t.identifier("__" + node.key.name + "__RAX_HOT_LOADER__"); // arrow function body can either be a block statement or a returned expression
+              const params = node.value.params;
+              const newIdentifier = t.identifier(`__${  node.key.name  }__RAX_HOT_LOADER__`); // arrow function body can either be a block statement or a returned expression
 
-              var newMethodBody = node.value.body.type === 'BlockStatement' ? node.value.body : t.blockStatement([t.returnStatement(node.value.body)]); // create a new method on the class that the original class property function
+              const newMethodBody = node.value.body.type === 'BlockStatement' ? node.value.body : t.blockStatement([t.returnStatement(node.value.body)]); // create a new method on the class that the original class property function
               // calls, since the method is able to be replaced by RHL
 
-              var newMethod = t.classMethod('method', newIdentifier, params, newMethodBody);
+              const newMethod = t.classMethod('method', newIdentifier, params, newMethodBody);
               newMethod.async = isAsync;
               path.insertAfter(newMethod); // replace the original class property function with a function that calls
               // the new class method created above
@@ -191,7 +192,7 @@ module.exports = function plugin(args) {
             }
           }
         });
-      }
-    }
+      },
+    },
   };
 };

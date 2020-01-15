@@ -1,27 +1,27 @@
-'use strict';
 
-function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
 
 import { Component, createElement } from 'rax';
 import deepForceUpdate from 'react-deep-force-update';
 import Children from 'react-children';
 
-var AppContainer =
-/*#__PURE__*/
+function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
+
+const AppContainer =
+/* #__PURE__ */
 function (_Component) {
   _inheritsLoose(AppContainer, _Component);
 
   function AppContainer(props) {
-    var _this;
+    let _this;
 
     _this = _Component.call(this, props) || this;
     _this.state = {
-      error: null
+      error: null,
     };
     return _this;
   }
 
-  var _proto = AppContainer.prototype;
+  const _proto = AppContainer.prototype;
 
   _proto.componentDidMount = function componentDidMount() {
     if (typeof __RAX_HOT_LOADER__ === 'undefined') {
@@ -33,7 +33,7 @@ function (_Component) {
     // Hot reload is happening.
     // Retry rendering!
     this.setState({
-      error: null
+      error: null,
     }); // Force-update the whole tree, including
     // components that refuse to update.
 
@@ -47,12 +47,12 @@ function (_Component) {
   _proto.unstable_handleError = function unstable_handleError(error) {
     // eslint-disable-line camelcase
     this.setState({
-      error: error
+      error,
     });
   };
 
   _proto.render = function render() {
-    var error = this.state.error;
+    const error = this.state.error;
 
     if (error) {
       console.log(error);
@@ -72,6 +72,6 @@ AppContainer.propTypes = {
     }
 
     return undefined;
-  }
+  },
 };
 module.exports = AppContainer;

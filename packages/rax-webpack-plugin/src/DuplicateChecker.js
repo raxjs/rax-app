@@ -8,8 +8,8 @@ function cleanPath(path) {
 
 // Get closest package definition from path
 function getClosestPackage(modulePath) {
-  var root;
-  var pkg;
+  let root;
+  let pkg;
 
   // Catch findRoot or require errors
   try {
@@ -29,20 +29,20 @@ function getClosestPackage(modulePath) {
 
   return {
     package: pkg,
-    path: root
+    path: root,
   };
 }
 
 function check(compilation, modulesToCheck) {
-  var context = compilation.compiler.context;
-  var modules = {};
+  const context = compilation.compiler.context;
+  const modules = {};
 
   function cleanPathRelativeToContext(modulePath) {
-    var cleanedPath = cleanPath(modulePath);
+    let cleanedPath = cleanPath(modulePath);
 
     // Make relative to compilation context
     if (cleanedPath.indexOf(context) === 0) {
-      cleanedPath = '.' + cleanedPath.replace(context, '');
+      cleanedPath = `.${  cleanedPath.replace(context, '')}`;
     }
 
     return cleanedPath;
@@ -53,10 +53,10 @@ function check(compilation, modulesToCheck) {
       return;
     }
 
-    var pkg;
-    var packagePath;
+    let pkg;
+    let packagePath;
 
-    var closestPackage = getClosestPackage(module.resource);
+    const closestPackage = getClosestPackage(module.resource);
 
     // Skip module if no closest package is found
     if (!closestPackage) {
@@ -66,9 +66,9 @@ function check(compilation, modulesToCheck) {
     pkg = closestPackage.package;
     packagePath = closestPackage.path;
 
-    var modulePath = cleanPathRelativeToContext(packagePath);
+    const modulePath = cleanPathRelativeToContext(packagePath);
 
-    var version = pkg.version;
+    const version = pkg.version;
 
     if (modulesToCheck.indexOf(pkg.name) < 0) {
       return;
@@ -76,7 +76,7 @@ function check(compilation, modulesToCheck) {
 
     modules[pkg.name] = modules[pkg.name] || [];
 
-    var isSeen = false;
+    let isSeen = false;
 
     modules[pkg.name].forEach(module => {
       if (module.version === version) {
@@ -85,13 +85,13 @@ function check(compilation, modulesToCheck) {
     });
 
     if (!isSeen) {
-      var entry = { version, path: modulePath };
+      const entry = { version, path: modulePath };
 
       modules[pkg.name].push(entry);
     }
   });
 
-  var duplicates = {};
+  const duplicates = {};
   Object.keys(modules).forEach((name) => {
     if (modules[name].length > 1) {
       duplicates[name] = modules[name];
@@ -102,17 +102,17 @@ function check(compilation, modulesToCheck) {
 }
 
 function formatMsg(duplicates) {
-  var error = 'Duplicate (conflicting) packages loaded, make sure to use only one: ';
+  let error = 'Duplicate (conflicting) packages loaded, make sure to use only one: ';
 
   if (Object.keys(duplicates).length) {
     Object.keys(duplicates).forEach((key) => {
-      var instances = duplicates[key];
+      let instances = duplicates[key];
       instances = instances.map(version => {
-        var str = `${version.version} ${version.path}`;
+        const str = `${version.version} ${version.path}`;
         return str;
       });
-      error += '\\n  <' + key + '> \\n';
-      error += '    ' + instances.join('\\n    ') + '\\n';
+      error += `\\n  <${  key  }> \\n`;
+      error += `    ${  instances.join('\\n    ')  }\\n`;
     });
   }
 
@@ -151,7 +151,7 @@ export default class DuplicateChecker {
               compilation.assets[file] = new ConcatSource(
                 compilation.assets[file],
                 '\n',
-                errorMessages
+                errorMessages,
               );
             });
           }
@@ -180,7 +180,7 @@ export default class DuplicateChecker {
               compilation.assets[file] = new ConcatSource(
                 compilation.assets[file],
                 '\n',
-                errorMessages
+                errorMessages,
               );
             });
           });

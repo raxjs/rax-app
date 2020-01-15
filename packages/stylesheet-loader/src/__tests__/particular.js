@@ -1,4 +1,4 @@
-'use strict';
+
 
 import particular from '../particular';
 
@@ -6,27 +6,27 @@ describe('particular', () => {
   function testBorder(methodName) {
     const borderResult = particular[methodName]('1 solid red');
 
-    expect(borderResult[methodName + 'Width']).toEqual(1);
-    expect(borderResult[methodName + 'Style']).toEqual('solid');
-    expect(borderResult[methodName + 'Color']).toEqual('red');
+    expect(borderResult[`${methodName  }Width`]).toEqual(1);
+    expect(borderResult[`${methodName  }Style`]).toEqual('solid');
+    expect(borderResult[`${methodName  }Color`]).toEqual('red');
   }
 
   function testMeasure(key) {
     const result = particular[key]('1 2 3 4');
 
-    expect(result[key + 'Top']).toEqual(1);
-    expect(result[key + 'Right']).toEqual(2);
-    expect(result[key + 'Bottom']).toEqual(3);
-    expect(result[key + 'Left']).toEqual(4);
+    expect(result[`${key  }Top`]).toEqual(1);
+    expect(result[`${key  }Right`]).toEqual(2);
+    expect(result[`${key  }Bottom`]).toEqual(3);
+    expect(result[`${key  }Left`]).toEqual(4);
   }
 
   function testPrefix(methodName, isRem) {
-    let value = 'testValue';
+    const value = 'testValue';
     const result = particular[methodName](value);
     const word = methodName.substring(0, 1).toUpperCase() + methodName.substring(1);
 
-    expect(result['ms' + word]).toEqual(value);
-    expect(result['webkit' + word]).toEqual(value);
+    expect(result[`ms${  word}`]).toEqual(value);
+    expect(result[`webkit${  word}`]).toEqual(value);
     expect(result[methodName]).toEqual(value);
   }
 
@@ -56,30 +56,30 @@ describe('particular', () => {
     const key = 'padding';
     const result = particular[key]('1 2 3');
 
-    expect(result[key + 'Top']).toEqual(1);
-    expect(result[key + 'Right']).toEqual(2);
-    expect(result[key + 'Bottom']).toEqual(3);
-    expect(result[key + 'Left']).toEqual(2);
+    expect(result[`${key  }Top`]).toEqual(1);
+    expect(result[`${key  }Right`]).toEqual(2);
+    expect(result[`${key  }Bottom`]).toEqual(3);
+    expect(result[`${key  }Left`]).toEqual(2);
   });
 
   it('should separate two numbers', () => {
     const key = 'padding';
     const result = particular[key]('1 2');
 
-    expect(result[key + 'Top']).toEqual(1);
-    expect(result[key + 'Right']).toEqual(2);
-    expect(result[key + 'Bottom']).toEqual(1);
-    expect(result[key + 'Left']).toEqual(2);
+    expect(result[`${key  }Top`]).toEqual(1);
+    expect(result[`${key  }Right`]).toEqual(2);
+    expect(result[`${key  }Bottom`]).toEqual(1);
+    expect(result[`${key  }Left`]).toEqual(2);
   });
 
   it('should separate one numbers', () => {
     const key = 'padding';
     const result = particular[key](1);
 
-    expect(result[key + 'Top']).toEqual(1);
-    expect(result[key + 'Right']).toEqual(1);
-    expect(result[key + 'Bottom']).toEqual(1);
-    expect(result[key + 'Left']).toEqual(1);
+    expect(result[`${key  }Top`]).toEqual(1);
+    expect(result[`${key  }Right`]).toEqual(1);
+    expect(result[`${key  }Bottom`]).toEqual(1);
+    expect(result[`${key  }Left`]).toEqual(1);
   });
 
   it('should return in front of four values with over four numbers', () => {
@@ -136,18 +136,18 @@ describe('particular', () => {
       transitionProperty: 'width,height,top,bottom,left,right,backgroundColor,opacity,transform',
       transitionDuration: '500ms',
       transitionTimingFunction: 'linear',
-      transitionDelay: '0ms'
+      transitionDelay: '0ms',
     });
     testTransition('background-color 300ms cubic-bezier( 0.42, 0, 0.58, 1 ) .01s', {
       transitionProperty: 'backgroundColor',
       transitionDuration: '300ms',
       transitionTimingFunction: 'cubic-bezier(0.42,0,0.58,1)',
-      transitionDelay: '10ms'
+      transitionDelay: '10ms',
     });
     testTransition('none', {
       transitionDuration: '0ms',
       transitionTimingFunction: 'ease',
-      transitionDelay: '0ms'
+      transitionDelay: '0ms',
     });
   });
 });

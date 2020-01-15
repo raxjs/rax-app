@@ -1,6 +1,6 @@
-'use strict';
 
-let Rax = require('rax');
+
+const Rax = require('rax');
 const { createProxy } = require('react-proxy');
 const global = require('global');
 
@@ -91,7 +91,7 @@ const hooks = {
           `Rax Hot Loader: ${uniqueLocalName} in ${fileName} will not hot reload ` +
             `correctly because ${baseName} uses <${uniqueLocalName} /> during ` +
             `module definition. For hot reloading to work, move ${uniqueLocalName} ` +
-            `into a separate file and import it from ${baseName}.`
+            `into a separate file and import it from ${baseName}.`,
         );
       }
       return;
@@ -116,7 +116,7 @@ const hooks = {
     didWarnAboutID = {};
     hasCreatedElementsByType = new ComponentMap(useWeakMap);
     idsByType = new ComponentMap(useWeakMap);
-  }
+  },
 };
 
 hooks.reset(typeof WeakMap === 'function');

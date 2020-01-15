@@ -1,10 +1,10 @@
 import loaderUtils from 'loader-utils';
-import parser from './parserHTML';
-import pkg from '../package.json';
 import path from 'path';
 import { transform } from 'babel-core';
-import getBabelConfig from './getBabelConfig';
 import uppercamelcase from 'uppercamelcase';
+import parser from './parserHTML';
+import pkg from '../package.json';
+import getBabelConfig from './getBabelConfig';
 
 module.exports = function(source) {
   this.cacheable();
@@ -58,10 +58,10 @@ module.exports = function(source) {
         loaderString = `babel-loader?${JSON.stringify(getBabelConfig(query))}!${pkg.name}/lib/node-loader?${JSON.stringify({type: 'script', index: 0, banner: query.banner})}!`;
         break;
     }
-    return 'require(' + loaderUtils.stringifyRequest(
+    return `require(${  loaderUtils.stringifyRequest(
       context,
-      `!!${loaderString}${path}`
-    ) + ')';
+      `!!${loaderString}${path}`,
+    )  })`;
   }
 
   output += `

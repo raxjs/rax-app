@@ -1,22 +1,22 @@
 import {
   transformFor,
   transformIf,
-  transformPair
+  transformPair,
 } from '../transformer';
 
 describe('transformer', () => {
   it('transform for statement', () => {
     const beginOutput = transformFor([{
       name: ':for',
-      value: 'item in items'
+      value: 'item in items',
     }], true);
     const endOutput = transformFor([{
       name: ':for',
-      value: 'item in items'
+      value: 'item in items',
     }], false);
     const errorOutput = transformFor([{
       name: ':for',
-      value: ' in items'
+      value: ' in items',
     }], false);
 
     expect(beginOutput).toEqual('{props.items.map((item) => {return (');
@@ -27,11 +27,11 @@ describe('transformer', () => {
   it('transform if statement', () => {
     const beginOutput = transformIf([{
       name: ':if',
-      value: '{{items.length !== 0}}'
+      value: '{{items.length !== 0}}',
     }], true, 1);
     const endOutput = transformIf([{
       name: ':if',
-      value: 'items.length !== 0'
+      value: 'items.length !== 0',
     }], false, 1);
 
     expect(beginOutput).toEqual('{((props.items.length !== 0)) && ');

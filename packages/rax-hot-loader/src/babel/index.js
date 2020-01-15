@@ -13,12 +13,12 @@ var UNUSED = (function () {
   }
   REGISTRATIONS
 })();
-`
+`,
 );
 
 const buildNewClassProperty = (t, classPropertyName, newMethodName, isAsync) => {
   let returnExpression = t.callExpression(t.memberExpression(t.thisExpression(), newMethodName), [
-    t.spreadElement(t.identifier('params'))
+    t.spreadElement(t.identifier('params')),
   ]);
 
   if (isAsync) {
@@ -28,7 +28,7 @@ const buildNewClassProperty = (t, classPropertyName, newMethodName, isAsync) => 
   const newArrowFunction = t.arrowFunctionExpression(
     [t.restElement(t.identifier('params'))],
     returnExpression,
-    isAsync
+    isAsync,
   );
   return t.classProperty(classPropertyName, newArrowFunction);
 };
@@ -48,7 +48,7 @@ const classPropertyOptOutVistor = {
     if (node.name === 'arguments') {
       state.optOut = true; // eslint-disable-line no-param-reassign
     }
-  }
+  },
 };
 
 module.exports = function plugin(args) {
@@ -61,7 +61,7 @@ module.exports = function plugin(args) {
         'of your Webpack configuration, and instead add ' +
         '"rax-hot-loader/babel" to the "plugins" section of your .babelrc file. ' +
         'If you prefer not to use Babel, replace "rax-hot-loader/babel" with ' +
-        '"rax-hot-loader/webpack" in the "loaders" section of your Webpack configuration. '
+        '"rax-hot-loader/webpack" in the "loaders" section of your Webpack configuration. ',
     );
   }
   const { types: t } = args;
@@ -118,8 +118,8 @@ module.exports = function plugin(args) {
           buildRegistration({
             ID: id,
             NAME: t.stringLiteral('default'),
-            FILENAME: t.stringLiteral(file.opts.filename)
-          })
+            FILENAME: t.stringLiteral(file.opts.filename),
+          }),
         );
       },
 
@@ -137,8 +137,8 @@ module.exports = function plugin(args) {
                 buildRegistration({
                   ID: binding.identifier,
                   NAME: t.stringLiteral(id),
-                  FILENAME: t.stringLiteral(file.opts.filename)
-                })
+                  FILENAME: t.stringLiteral(file.opts.filename),
+                }),
               );
             }
           }
@@ -155,11 +155,11 @@ module.exports = function plugin(args) {
           node.body.push(
             buildTagger({
               UNUSED: scope.generateUidIdentifier(),
-              REGISTRATIONS: registrations
-            })
+              REGISTRATIONS: registrations,
+            }),
           );
           node.body.push(buildSemi());
-        }
+        },
       },
 
       Class(classPath) {
@@ -175,7 +175,7 @@ module.exports = function plugin(args) {
             }
 
             const state = {
-              optOut: false
+              optOut: false,
             };
 
             path.traverse(classPropertyOptOutVistor, state);
@@ -217,7 +217,7 @@ module.exports = function plugin(args) {
             }
           }
         });
-      }
-    }
+      },
+    },
   };
 };

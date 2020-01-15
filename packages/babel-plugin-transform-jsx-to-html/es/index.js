@@ -1,35 +1,35 @@
-var esutils = require('esutils');
+const esutils = require('esutils');
 
-var t = require('@babel/types');
+const t = require('@babel/types');
 
-var KEY_FOR_HTML = '__html';
-var KEY_FOR_ATTRS = '__attrs';
-var TEMP_KEY_PREFIX = '__key_';
+const KEY_FOR_HTML = '__html';
+const KEY_FOR_ATTRS = '__attrs';
+const TEMP_KEY_PREFIX = '__key_';
 
 module.exports = function () {
-  var keyIndex = 0;
+  let keyIndex = 0;
   return {
     visitor: {
       JSXElement: {
         exit: function exit(path, file) {
-          var openingPath = path.get('openingElement');
-          var tag = openingPath.node.name;
-          var tagName = tag.name;
+          const openingPath = path.get('openingElement');
+          const tag = openingPath.node.name;
+          const tagName = tag.name;
 
           if (!t.react.isCompatTag(tagName)) {
             // This plugin may transform a normal child to be an array, which cause key validation in createElement failed.
             // So add a key for each child in non production env, to prevent key validation warning.
             if (process.env.NODE_ENV !== 'production') {
-              var keyAttr = t.jsxAttribute(t.jsxIdentifier('key'), t.stringLiteral(TEMP_KEY_PREFIX + keyIndex++));
+              const keyAttr = t.jsxAttribute(t.jsxIdentifier('key'), t.stringLiteral(TEMP_KEY_PREFIX + keyIndex++));
               openingPath.node.attributes.unshift(keyAttr);
             }
 
             return;
           }
 
-          var result = [];
-          var html = '<' + tagName;
-          var attrs = openingPath.node.attributes;
+          const result = [];
+          let html = `<${  tagName}`;
+          let attrs = openingPath.node.attributes;
 
           if (attrs.length) {
             attrs = buildOpeningElementAttributes(attrs, file);
@@ -37,13 +37,13 @@ module.exports = function () {
             attrs = {};
           }
 
-          var _attrs = attrs,
-              staticAttrs = _attrs.staticAttrs,
-              dynamicAttrs = _attrs.dynamicAttrs,
-              innerHTML = _attrs.innerHTML;
+          const _attrs = attrs;
+          const staticAttrs = _attrs.staticAttrs;
+          const dynamicAttrs = _attrs.dynamicAttrs;
+          const innerHTML = _attrs.innerHTML;
 
           if (staticAttrs) {
-            html = html + staticAttrs;
+            html += staticAttrs;
           }
 
           if (dynamicAttrs) {
@@ -52,7 +52,7 @@ module.exports = function () {
             html = '';
           }
 
-          html = html + (openingPath.node.selfClosing && !innerHTML ? '/>' : '>');
+          html += (openingPath.node.selfClosing && !innerHTML ? '/>' : '>');
           result.push(buildObject(KEY_FOR_HTML, t.stringLiteral(html)));
           html = '';
 
@@ -61,27 +61,27 @@ module.exports = function () {
             // structure of dangerouslySetInnerHTML is same as {KEY_FOR_HTML: xxx}
             pushResult(innerHTML, result);
           } else {
-            var children = t.react.buildChildren(openingPath.parent);
+            const children = t.react.buildChildren(openingPath.parent);
             flattenChildren(children, result);
           }
 
           if (path.node.closingElement || innerHTML) {
-            pushResult(t.stringLiteral('</' + tagName + '>'), result);
+            pushResult(t.stringLiteral(`</${  tagName  }>`), result);
           }
 
           if (result && result.length) {
             path.replaceWith(t.arrayExpression(result));
           }
-        }
-      }
-    }
+        },
+      },
+    },
   };
 }; // flatten and push children to result
 
 
 function flattenChildren(children, result) {
-  for (var i = 0, l = children.length; i < l; i++) {
-    var child = children[i];
+  for (let i = 0, l = children.length; i < l; i++) {
+    const child = children[i];
 
     if (t.isArrayExpression(child)) {
       flattenChildren(child.elements, result);
@@ -95,11 +95,11 @@ function flattenChildren(children, result) {
 
 
 function pushResult(value, result) {
-  var len = result.length;
+  const len = result.length;
 
   if (len) {
-    var lastIdx = len - 1;
-    var lastChild = result[lastIdx];
+    const lastIdx = len - 1;
+    const lastChild = result[lastIdx];
 
     if (isStringObject(lastChild)) {
       if (isStringObject(value)) {
@@ -132,7 +132,7 @@ function updateStringObject(obj, value) {
 }
 
 function buildObject(name, value) {
-  var obj = t.objectProperty(t.identifier(name), value);
+  const obj = t.objectProperty(t.identifier(name), value);
   return t.objectExpression([obj]);
 }
 /**
@@ -146,38 +146,36 @@ function buildObject(name, value) {
 
 
 function buildOpeningElementAttributes(attribs, file) {
-  var staticAttrs = '';
-  var dynamicAttrs;
-  var innerHTML;
-  var _props = [];
-  var objs = [];
-  var useBuiltIns = file.opts.useBuiltIns || false;
+  let staticAttrs = '';
+  let dynamicAttrs;
+  let innerHTML;
+  let _props = [];
+  const objs = [];
+  const useBuiltIns = file.opts.useBuiltIns || false;
 
   if (typeof useBuiltIns !== 'boolean') {
     throw new Error('transform-react-jsx currently only accepts a boolean option for ' + 'useBuiltIns (defaults to false)');
   }
 
   while (attribs.length) {
-    var prop = attribs.shift();
+    const prop = attribs.shift();
 
     if (prop.name && prop.name.name === 'dangerouslySetInnerHTML') {
       innerHTML = prop.value.expression;
     } else if (t.isJSXSpreadAttribute(prop)) {
       _props = pushProps(_props, objs);
       objs.push(prop.argument);
-    } else {
-      if (t.isStringLiteral(prop.value)) {
-        var name = prop.name.name;
+    } else if (t.isStringLiteral(prop.value)) {
+      let name = prop.name.name;
 
-        if (name === 'className') {
-          name = 'class';
-        }
-
-        var value = prop.value.value.replace(/\n\s+/g, ' ');
-        staticAttrs = staticAttrs + ' ' + name + '="' + value + '"';
-      } else {
-        _props.push(convertAttribute(prop));
+      if (name === 'className') {
+        name = 'class';
       }
+
+      const value = prop.value.value.replace(/\n\s+/g, ' ');
+      staticAttrs = `${staticAttrs  } ${  name  }="${  value  }"`;
+    } else {
+      _props.push(convertAttribute(prop));
     }
   }
 
@@ -193,15 +191,15 @@ function buildOpeningElementAttributes(attribs, file) {
       objs.unshift(t.objectExpression([]));
     }
 
-    var helper = useBuiltIns ? t.memberExpression(t.identifier('Object'), t.identifier('assign')) : file.addHelper('extends'); // spread it
+    const helper = useBuiltIns ? t.memberExpression(t.identifier('Object'), t.identifier('assign')) : file.addHelper('extends'); // spread it
 
     dynamicAttrs = t.callExpression(helper, objs);
   }
 
   return {
-    staticAttrs: staticAttrs,
-    dynamicAttrs: dynamicAttrs,
-    innerHTML: innerHTML
+    staticAttrs,
+    dynamicAttrs,
+    innerHTML,
   };
 }
 
@@ -220,7 +218,7 @@ function convertAttributeValue(node) {
 }
 
 function convertAttribute(node) {
-  var value = convertAttributeValue(node.value || t.booleanLiteral(true));
+  const value = convertAttributeValue(node.value || t.booleanLiteral(true));
 
   if (t.isStringLiteral(value) && !t.isJSXExpressionContainer(node.value)) {
     value.value = value.value.replace(/\n\s+/g, ' '); // "raw" JSXText should not be used from a StringLiteral because it needs to be escaped.
@@ -231,7 +229,7 @@ function convertAttribute(node) {
   }
 
   if (t.isJSXNamespacedName(node.name)) {
-    node.name = t.stringLiteral(node.name.namespace.name + ':' + node.name.name.name);
+    node.name = t.stringLiteral(`${node.name.namespace.name  }:${  node.name.name.name}`);
   } else if (esutils.keyword.isIdentifierNameES6(node.name.name)) {
     node.name.type = 'Identifier';
   } else {

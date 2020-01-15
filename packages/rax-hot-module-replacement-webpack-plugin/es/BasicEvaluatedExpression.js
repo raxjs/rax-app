@@ -2,16 +2,17 @@
   MIT License http://www.opensource.org/licenses/mit-license.php
   Author Tobias Koppers @sokra
 */
-'use strict';
 
-var BasicEvaluatedExpression =
-/*#__PURE__*/
+
+
+const BasicEvaluatedExpression =
+/* #__PURE__ */
 function () {
   function BasicEvaluatedExpression() {
     this.range = null;
   }
 
-  var _proto = BasicEvaluatedExpression.prototype;
+  const _proto = BasicEvaluatedExpression.prototype;
 
   _proto.isNull = function isNull() {
     return !!this.null;
@@ -61,7 +62,7 @@ function () {
     if (this.isBoolean()) return this.bool;else if (this.isNull()) return false;else if (this.isString()) return !!this.string;else if (this.isNumber()) return !!this.number;else if (this.isRegExp()) return true;else if (this.isArray()) return true;else if (this.isConstArray()) return true;else if (this.isWrapped()) return this.prefix && this.prefix.asBool() || this.postfix && this.postfix.asBool() ? true : undefined;else if (this.isTemplateString()) {
       if (this.quasis.length === 1) return this.quasis[0].asBool();
 
-      for (var i = 0; i < this.quasis.length; i++) {
+      for (let i = 0; i < this.quasis.length; i++) {
         if (this.quasis[i].asBool()) return true;
       } // can't tell if string will be empty without executing
 
@@ -132,7 +133,7 @@ function () {
   };
 
   _proto.addOptions = function addOptions(options) {
-    var _this = this;
+    const _this = this;
 
     if (!this.options) this.options = [];
     options.forEach(function (item) {

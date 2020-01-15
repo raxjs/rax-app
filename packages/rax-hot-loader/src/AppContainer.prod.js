@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 
-'use strict';
+
 
 import { createElement, Component } from 'rax';
 import Children from 'react-children';

@@ -2,45 +2,45 @@ import { ConcatSource } from 'webpack-sources';
 import fs from 'fs';
 import path from 'path';
 
-var RaxMainTemplatePlugin =
-/*#__PURE__*/
+const RaxMainTemplatePlugin =
+/* #__PURE__ */
 function () {
   function RaxMainTemplatePlugin(options) {
     this.name = '[name]';
     this.options = options;
   }
 
-  var _proto = RaxMainTemplatePlugin.prototype;
+  const _proto = RaxMainTemplatePlugin.prototype;
 
   _proto.onRenderWithEntry = function onRenderWithEntry(mainTemplate, source, chunk, hash) {
-    var requireCall = '';
-    var polyfills = [];
-    var name = ''; // webpack 4 api
+    const requireCall = '';
+    let polyfills = [];
+    let name = ''; // webpack 4 api
 
     if (mainTemplate.getAssetPath) {
       name = mainTemplate.getAssetPath(this.name, {
-        hash: hash,
-        chunk: chunk
+        hash,
+        chunk,
       });
     } else {
       name = mainTemplate.applyPluginsWaterfall('asset-path', this.name, {
-        hash: hash,
-        chunk: chunk
+        hash,
+        chunk,
       });
     }
 
     if (this.options.includePolyfills) {
-      var polyfillModules = this.options.polyfillModules;
+      const polyfillModules = this.options.polyfillModules;
       polyfills = polyfillModules.map(function (fp) {
         return fs.readFileSync(fp, 'utf8');
       });
     }
 
-    var moduleName = this.options.moduleName || name;
-    var globalName = this.options.globalName || name;
-    var target = this.options.target;
-    var sourcePrefix = '';
-    var sourceSuffix = '';
+    const moduleName = this.options.moduleName || name;
+    const globalName = this.options.globalName || name;
+    const target = this.options.target;
+    let sourcePrefix = '';
+    let sourceSuffix = '';
 
     if (typeof this.options.sourcePrefix === 'function' && typeof this.options.sourceSuffix === 'function') {
       sourcePrefix = this.options.sourcePrefix(source, chunk, hash);
@@ -56,8 +56,8 @@ function () {
       } else if (chunk.name.endsWith('.bundle') || target === 'bundle') {
         // Build page bundle use this mode.
         if (this.options.bundle === 'compatible') {
-          sourcePrefix = "define(\"" + chunk.name + "\", function(require) {";
-          sourceSuffix = "}); require(\"" + chunk.name + "\");";
+          sourcePrefix = `define("${  chunk.name  }", function(require) {`;
+          sourceSuffix = `}); require("${  chunk.name  }");`;
         } else {
           sourcePrefix = '';
           sourceSuffix = '';
@@ -66,21 +66,21 @@ function () {
         // Build weex builtin modules use this mode.
         // NOTE: globals should sync logic in weex-rax-framework
         if (this.options.factoryGlobals) {
-          var globalsCodes = this.options.factoryGlobals.map(function (name) {
-            return "var " + name + " = this[\"" + name + "\"];";
+          const globalsCodes = this.options.factoryGlobals.map(function (name) {
+            return `var ${  name  } = this["${  name  }"];`;
           });
-          sourcePrefix = "module.exports = function(require, exports, module) {\n" + globalsCodes.join('\n') + "\nmodule.exports = ";
+          sourcePrefix = `module.exports = function(require, exports, module) {\n${  globalsCodes.join('\n')  }\nmodule.exports = `;
           sourceSuffix = '};';
         } else {
           sourcePrefix = "module.exports = function(require, exports, module) {\nwith(this) { module.exports = ";
           sourceSuffix = '}};';
         }
       } else if (chunk.name.endsWith('.cmd') || target === 'cmd') {
-        sourcePrefix = "define(" + JSON.stringify(moduleName) + ", function(require, exports, module){\nmodule.exports = ";
+        sourcePrefix = `define(${  JSON.stringify(moduleName)  }, function(require, exports, module){\nmodule.exports = `;
         sourceSuffix = '});';
       } else if (chunk.name.endsWith('.umd') || target === 'umd') {
         // CommonJS first that could rename module name by wrap another define in air
-        sourcePrefix = "\n;(function(fn) {\n  if (typeof exports === \"object\" && typeof module !== \"undefined\") {\n    module.exports = fn();\n  } else if (typeof define === \"function\") {\n    define(" + JSON.stringify(moduleName) + ", function(require, exports, module){\n      module.exports = fn();\n    });\n  } else {\n    var root;\n    if (typeof window !== \"undefined\") {\n      root = window;\n    } else if (typeof self !== \"undefined\") {\n      root = self;\n    } else if (typeof global !== \"undefined\") {\n      root = global;\n    } else {\n      // NOTICE: In JavaScript strict mode, this is null\n      root = this;\n    }\n    root[\"" + globalName + "\"] = fn();\n  }\n})(function(){\n  return ";
+        sourcePrefix = `\n;(function(fn) {\n  if (typeof exports === "object" && typeof module !== "undefined") {\n    module.exports = fn();\n  } else if (typeof define === "function") {\n    define(${  JSON.stringify(moduleName)  }, function(require, exports, module){\n      module.exports = fn();\n    });\n  } else {\n    var root;\n    if (typeof window !== "undefined") {\n      root = window;\n    } else if (typeof self !== "undefined") {\n      root = self;\n    } else if (typeof global !== "undefined") {\n      root = global;\n    } else {\n      // NOTICE: In JavaScript strict mode, this is null\n      root = this;\n    }\n    root["${  globalName  }"] = fn();\n  }\n})(function(){\n  return `;
         sourceSuffix = '});';
       }
     }
@@ -90,9 +90,9 @@ function () {
   ;
 
   _proto.applyWithTap = function applyWithTap(compilation) {
-    var _this = this;
+    const _this = this;
 
-    var mainTemplate = compilation.mainTemplate;
+    const mainTemplate = compilation.mainTemplate;
     mainTemplate.hooks.renderWithEntry.tap('RaxMainTemplatePlugin', this.onRenderWithEntry.bind(this, mainTemplate));
     mainTemplate.hooks.globalHashPaths.tap('RaxMainTemplatePlugin', function (paths) {
       if (_this.name) paths.push(_this.name);
@@ -106,14 +106,14 @@ function () {
   ;
 
   _proto.apply = function apply(compilation) {
-    var _this2 = this;
+    const _this2 = this;
 
     // webpack 4
     if (!compilation.templatesPlugin) {
       return this.applyWithTap(compilation);
     }
 
-    var mainTemplate = compilation.mainTemplate;
+    const mainTemplate = compilation.mainTemplate;
     compilation.templatesPlugin('render-with-entry', this.onRenderWithEntry.bind(this, mainTemplate));
     mainTemplate.plugin('global-hash-paths', function (paths) {
       if (_this2.name) paths = paths.concat(_this2.name);

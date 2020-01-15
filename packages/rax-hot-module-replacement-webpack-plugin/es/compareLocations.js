@@ -2,7 +2,8 @@
   MIT License http://www.opensource.org/licenses/mit-license.php
   Author Tobias Koppers @sokra
 */
-'use strict';
+
+
 
 module.exports = function compareLocations(a, b) {
   if (typeof a === 'string') {
@@ -20,8 +21,8 @@ module.exports = function compareLocations(a, b) {
       return -1;
     } else if (typeof b === 'object') {
       if (a.start && b.start) {
-        var ap = a.start;
-        var bp = b.start;
+        const ap = a.start;
+        const bp = b.start;
         if (ap.line < bp.line) return -1;
         if (ap.line > bp.line) return 1;
         if (ap.column < bp.column) return -1;

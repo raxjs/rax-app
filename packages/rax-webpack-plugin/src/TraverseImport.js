@@ -14,7 +14,7 @@ export default function traverseImport(options, inputSource, sourceMapOption) {
     weex: 'isWeex',
     web: 'isWeb',
     node: 'isNode',
-    reactnative: 'isReactNative'
+    reactnative: 'isReactNative',
   };
 
   /**
@@ -33,9 +33,9 @@ export default function traverseImport(options, inputSource, sourceMapOption) {
       'const', [
         types.variableDeclarator(
           types.Identifier(name),
-          types.BooleanLiteral(value)
-        )
-      ]
+          types.BooleanLiteral(value),
+        ),
+      ],
     );
   }
 
@@ -59,8 +59,8 @@ export default function traverseImport(options, inputSource, sourceMapOption) {
       properties.push(
         types.objectProperty(
           types.Identifier(platformMap[p]),
-          types.booleanLiteral(p === platformName)
-        )
+          types.booleanLiteral(p === platformName),
+        ),
       );
     });
 
@@ -74,7 +74,7 @@ export default function traverseImport(options, inputSource, sourceMapOption) {
       sourceType: 'module',
       plugins: [
         '*',
-      ]
+      ],
     });
   } catch (err) {
     if (err instanceof SyntaxError) {
@@ -82,10 +82,10 @@ export default function traverseImport(options, inputSource, sourceMapOption) {
       err.column = err.loc.column + 1;
 
       // remove trailing "(LINE:COLUMN)" acorn message and add in esprima syntax error message start
-      err.message = 'Line ' + err.lineNumber + ': ' + err.message.replace(/ \((\d+):(\d+)\)$/, '') +
+      err.message = `Line ${  err.lineNumber  }: ${  err.message.replace(/ \((\d+):(\d+)\)$/, '') 
       // add codeframe
-      '\n\n' +
-      codeFrame(inputSource, err.lineNumber, err.column, { highlightCode: true });
+      }\n\n${ 
+        codeFrame(inputSource, err.lineNumber, err.column, { highlightCode: true })}`;
     }
 
     throw err;
@@ -101,31 +101,31 @@ export default function traverseImport(options, inputSource, sourceMapOption) {
     },
     // Support commonjs method `require`
     CallExpression(path) {
-      let { node } = path;
+      const { node } = path;
 
       if (
         hasPlatformSpecified &&
         node.callee.name === 'require' &&
         node.arguments[0] &&
-        -1 !== options.name.indexOf(node.arguments[0].value)
+        options.name.indexOf(node.arguments[0].value) !== -1
       ) {
         path.replaceWith(objectExpressionMethod(options.platform));
       }
     },
     ImportDeclaration(path) {
-      let { node } = path;
+      const { node } = path;
 
-      if (-1 !== options.name.indexOf(node.source.value)) {
+      if (options.name.indexOf(node.source.value) !== -1) {
         node.specifiers.forEach(spec => {
           if (spec.type === 'ImportNamespaceSpecifier') {
             specified.push({
               local: spec.local.name,
-              imported: '*'
+              imported: '*',
             });
           } else {
             specified.push({
               local: spec.local.name,
-              imported: spec.imported.name
+              imported: spec.imported.name,
             });
           }
         });
@@ -137,16 +137,15 @@ export default function traverseImport(options, inputSource, sourceMapOption) {
                 'const', [
                   types.variableDeclarator(
                     types.Identifier(specObj.local),
-                    objectExpressionMethod(options.platform)
-                  )
-                ]
+                    objectExpressionMethod(options.platform),
+                  ),
+                ],
               ));
             } else {
-              let newNodeInit = specObj.imported === platformMap[options.platform] ?
-                true : false;
+              const newNodeInit = specObj.imported === platformMap[options.platform];
               let newNode = variableDeclarationMethod(
                 specObj.imported,
-                newNodeInit
+                newNodeInit,
               );
 
               path.insertAfter(newNode);
@@ -158,7 +157,7 @@ export default function traverseImport(options, inputSource, sourceMapOption) {
               if (specObj.imported !== specObj.local) {
                 newNode = variableDeclarationMethod(
                   specObj.local,
-                  newNodeInit
+                  newNodeInit,
                 );
                 path.insertAfter(newNode);
               }
@@ -168,7 +167,7 @@ export default function traverseImport(options, inputSource, sourceMapOption) {
           path.remove();
         }
       }
-    }
+    },
   });
 
   return generate(ast, Object.assign({

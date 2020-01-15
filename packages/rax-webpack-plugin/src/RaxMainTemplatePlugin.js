@@ -9,7 +9,7 @@ export default class RaxMainTemplatePlugin {
   }
 
   onRenderWithEntry(mainTemplate, source, chunk, hash) {
-    let requireCall = '';
+    const requireCall = '';
     let polyfills = [];
     let name = '';
 
@@ -17,25 +17,25 @@ export default class RaxMainTemplatePlugin {
     if (mainTemplate.getAssetPath) {
       name = mainTemplate.getAssetPath(this.name, {
         hash,
-        chunk
+        chunk,
       });
     } else {
       name = mainTemplate.applyPluginsWaterfall('asset-path', this.name, {
         hash,
-        chunk
+        chunk,
       });
     }
 
     if (this.options.includePolyfills) {
-      let polyfillModules = this.options.polyfillModules;
+      const polyfillModules = this.options.polyfillModules;
       polyfills = polyfillModules.map((fp) => {
         return fs.readFileSync(fp, 'utf8');
       });
     }
 
-    let moduleName = this.options.moduleName || name;
-    let globalName = this.options.globalName || name;
-    let target = this.options.target;
+    const moduleName = this.options.moduleName || name;
+    const globalName = this.options.globalName || name;
+    const target = this.options.target;
     let sourcePrefix = '';
     let sourceSuffix = '';
 
@@ -65,7 +65,7 @@ return `;
         // Build weex builtin modules use this mode.
         // NOTE: globals should sync logic in weex-rax-framework
         if (this.options.factoryGlobals) {
-          var globalsCodes = this.options.factoryGlobals.map(function(name) {
+          const globalsCodes = this.options.factoryGlobals.map(function(name) {
             return `var ${name} = this["${name}"];`;
           });
           sourcePrefix = `module.exports = function(require, exports, module) {
@@ -117,7 +117,7 @@ module.exports = `;
       sourcePrefix,
       source,
       sourceSuffix,
-      requireCall
+      requireCall,
     );
   }
 
@@ -127,7 +127,7 @@ module.exports = `;
 
     mainTemplate.hooks.renderWithEntry.tap(
       'RaxMainTemplatePlugin',
-      this.onRenderWithEntry.bind(this, mainTemplate)
+      this.onRenderWithEntry.bind(this, mainTemplate),
     );
 
     mainTemplate.hooks.globalHashPaths.tap('RaxMainTemplatePlugin', paths => {

@@ -21,13 +21,13 @@ class RaxWebpackPlugin {
       runModule: false,
       bundle: 'compatible', // private
       target: 'umd', // default umd
-      duplicateCheck: ['rax']
+      duplicateCheck: ['rax'],
     }, options);
   }
 
   applyBanner(compiler) {
-    var defaultFrameworkComment = '// {"framework" : "Rax"}';
-    var frameworkComment = typeof this.options.frameworkComment === 'string' ?
+    const defaultFrameworkComment = '// {"framework" : "Rax"}';
+    const frameworkComment = typeof this.options.frameworkComment === 'string' ?
       this.options.frameworkComment : defaultFrameworkComment;
 
     // Webpack 4
@@ -47,7 +47,7 @@ class RaxWebpackPlugin {
               compilation.assets[file] = new ConcatSource(
                 frameworkComment,
                 '\n',
-                compilation.assets[file]
+                compilation.assets[file],
               );
             });
           }
@@ -71,7 +71,7 @@ class RaxWebpackPlugin {
               compilation.assets[file] = new ConcatSource(
                 frameworkComment,
                 '\n',
-                compilation.assets[file]
+                compilation.assets[file],
               );
             });
           });
@@ -82,11 +82,11 @@ class RaxWebpackPlugin {
 
   apply(compiler) {
     compiler.apply(new DefinePlugin({
-      '__DEV__': isProducation ? false : true
+      '__DEV__': !isProducation,
     }));
 
     compiler.apply(new DuplicateChecker({
-      modulesToCheck: this.options.duplicateCheck
+      modulesToCheck: this.options.duplicateCheck,
     }));
 
     compiler.plugin('this-compilation', (compilation) => {
@@ -106,7 +106,7 @@ class RaxWebpackPlugin {
             return callback(null, request, 'commonjs');
           }
 
-          let builtinModuleName = this.options.builtinModules[request];
+          const builtinModuleName = this.options.builtinModules[request];
           if (this.options.externalBuiltinModules && builtinModuleName) {
             if (Array.isArray(builtinModuleName)) {
               let customRequest = '(function(){ var mod;';
@@ -124,7 +124,7 @@ class RaxWebpackPlugin {
           }
 
           callback();
-        }
+        },
       ));
     });
 

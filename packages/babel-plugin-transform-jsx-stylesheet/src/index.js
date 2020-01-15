@@ -122,7 +122,7 @@ function ${GET_STYLE_FUNC_NAME}(classNameExpression) {
           const cssFileCount = file.get('cssFileCount');
           const injectGetStyle = file.get('injectGetStyle');
           const lastImportIndex = findLastImportIndex(node.body);
-          let cssParamIdentifiers = file.get('cssParamIdentifiers');
+          const cssParamIdentifiers = file.get('cssParamIdentifiers');
           let callExpression;
 
           if (cssParamIdentifiers) {
@@ -145,7 +145,7 @@ function ${GET_STYLE_FUNC_NAME}(classNameExpression) {
           if (cssFileCount > 1) {
             node.body.unshift(mergeStylesFunctionAst);
           }
-        }
+        },
       },
       JSXOpeningElement({ container }, { file, opts }) {
         const { retainClassName = false } = opts;
@@ -204,8 +204,8 @@ function ${GET_STYLE_FUNC_NAME}(classNameExpression) {
           }
 
           if (hasStyleAttribute && styleAttribute.value) {
-            let expression = styleAttribute.value.expression;
-            let expressionType = expression.type;
+            const expression = styleAttribute.value.expression;
+            const expressionType = expression.type;
 
             // style={[styles.a, styles.b]} ArrayExpression
             if (expressionType === 'ArrayExpression') {
@@ -222,7 +222,7 @@ function ${GET_STYLE_FUNC_NAME}(classNameExpression) {
               mergeArrayExpression.unshift(t.objectExpression([]));
               styleAttribute.value.expression = t.callExpression(
                 t.memberExpression(t.identifier('Object'), t.identifier('assign')),
-                mergeArrayExpression
+                mergeArrayExpression,
               );
             }
           } else {
@@ -230,11 +230,11 @@ function ${GET_STYLE_FUNC_NAME}(classNameExpression) {
               // Object.assign({}, ...)
               arrayExpression.unshift(t.objectExpression([]));
             }
-            let expression = arrayExpression.length === 1 ?
+            const expression = arrayExpression.length === 1 ?
               arrayExpression[0] :
               t.callExpression(
                 t.memberExpression(t.identifier('Object'), t.identifier('assign')),
-                arrayExpression
+                arrayExpression,
               );
             attributes.push(t.jSXAttribute(t.jSXIdentifier('style'), t.jSXExpressionContainer(expression)));
           }
@@ -247,7 +247,7 @@ function ${GET_STYLE_FUNC_NAME}(classNameExpression) {
         // Do not convert `import styles from './foo.css'` kind
         if (node.specifiers.length === 0 && cssIndex > -1) {
           let cssFileCount = file.get('cssFileCount') || 0;
-          let cssParamIdentifiers = file.get('cssParamIdentifiers') || [];
+          const cssParamIdentifiers = file.get('cssParamIdentifiers') || [];
           const cssFileBaseName = camelcase(path.basename(sourceValue, extname));
           const styleSheetIdentifier = t.identifier(`${cssFileBaseName + NAME_SUFFIX}`);
 
@@ -258,7 +258,7 @@ function ${GET_STYLE_FUNC_NAME}(classNameExpression) {
           file.set('cssParamIdentifiers', cssParamIdentifiers);
           file.set('cssFileCount', cssFileCount);
         }
-      }
-    }
+      },
+    },
   };
 };

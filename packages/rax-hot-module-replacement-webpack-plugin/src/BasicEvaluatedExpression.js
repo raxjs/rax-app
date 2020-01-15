@@ -3,7 +3,7 @@
   Author Tobias Koppers @sokra
 */
 
-'use strict';
+
 
 class BasicEvaluatedExpression {
   constructor() {

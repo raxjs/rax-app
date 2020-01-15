@@ -1,4 +1,4 @@
-'use strict';
+
 
 import traverseImport from '../TraverseImport';
 
@@ -11,7 +11,7 @@ function unpad(str) {
   }
   const spaces = m[0].length;
   return lines.map(
-    line => line.slice(spaces)
+    line => line.slice(spaces),
   ).join('\n').trim();
 }
 
@@ -19,7 +19,7 @@ describe('PlatformLoader.traverseImport work on CommonJS', function() {
   it('isWeex true', function() {
     const { code } = traverseImport(
       { name: 'universal-env', platform: 'weex' },
-      'const env = require("universal-env");'
+      'const env = require("universal-env");',
     );
 
     const expected = unpad(`
@@ -40,7 +40,7 @@ describe('PlatformLoader.traverseImport work on CommonJS', function() {
       unpad(`
         const env = require("universal-env");
         const iw = env.isWeex;
-      `)
+      `),
     );
 
     const expected = unpad(`
@@ -62,7 +62,7 @@ describe('PlatformLoader.traverseImport work on CommonJS', function() {
       unpad(`
         const env = require("other-env");
         const env2 = require("universal-env");
-      `)
+      `),
     );
 
     const expected = unpad(`
@@ -88,7 +88,7 @@ describe('PlatformLoader.traverseImport work on CommonJS', function() {
       { name: 'universal-env', platform: 'web' },
       unpad(`
         const xxx = require("universal-env").xxx;
-      `)
+      `),
     );
 
     const expected = unpad(`
@@ -106,7 +106,7 @@ describe('PlatformLoader.traverseImport work on CommonJS', function() {
   it('not platform specified', function() {
     const { code } = traverseImport(
       { name: 'universal-env'},
-      'const env = require("universal-env");'
+      'const env = require("universal-env");',
     );
 
     const expected = 'const env = require("universal-env");';
@@ -117,7 +117,7 @@ describe('PlatformLoader.traverseImport work on CommonJS', function() {
   it('unknown platform', function() {
     const { code } = traverseImport(
       { name: 'universal-env', platform: 'xxxx'},
-      'const env = require("universal-env");'
+      'const env = require("universal-env");',
     );
 
     const expected = 'const env = require("universal-env");';
@@ -128,7 +128,7 @@ describe('PlatformLoader.traverseImport work on CommonJS', function() {
   it('unknown platform and unknown name', function() {
     const { code } = traverseImport(
       { name: 'universal-xxx'},
-      'const env = require("universal-env");'
+      'const env = require("universal-env");',
     );
 
     expect(code).toBe('const env = require("universal-env");');

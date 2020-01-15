@@ -1,20 +1,20 @@
-var postcss = require('postcss'); // !singlequotes|!doublequotes|!url()|pixelunit
+const postcss = require('postcss'); // !singlequotes|!doublequotes|!url()|pixelunit
 
 
-var rpxRegex = /"[^"]+"|'[^']+'|url\([^\)]+\)|(\d*\.?\d+)rpx/g;
-var defaults = {
+const rpxRegex = /"[^"]+"|'[^']+'|url\([^\)]+\)|(\d*\.?\d+)rpx/g;
+const defaults = {
   viewportWidth: 750,
   viewportUnit: 'vw',
   fontViewportUnit: 'vw',
-  unitPrecision: 5
+  unitPrecision: 5,
 };
 module.exports = postcss.plugin('postcss-rpx2vw', function (options) {
-  var opts = Object.assign({}, defaults, options);
+  const opts = Object.assign({}, defaults, options);
   return function (root) {
     root.walkDecls(function (decl, i) {
       // This should be the fastest test and will remove most declarations
       if (decl.value.indexOf('rpx') === -1) return;
-      var unit = getUnit(decl.prop, opts);
+      const unit = getUnit(decl.prop, opts);
       decl.value = decl.value.replace(rpxRegex, createRpxReplace(opts, unit, opts.viewportWidth));
     });
     root.walkAtRules('media', function (rule) {
@@ -25,8 +25,8 @@ module.exports = postcss.plugin('postcss-rpx2vw', function (options) {
 });
 
 function toFixed(number, precision) {
-  var multiplier = Math.pow(10, precision + 1);
-  var wholeNumber = Math.floor(number * multiplier);
+  const multiplier = Math.pow(10, precision + 1);
+  const wholeNumber = Math.floor(number * multiplier);
   return Math.round(wholeNumber / 10) * 10 / multiplier;
 } // transform rpx to vw
 
@@ -34,8 +34,8 @@ function toFixed(number, precision) {
 function createRpxReplace(opts, viewportUnit, viewportSize) {
   return function (m, $1) {
     if (!$1) return m;
-    var pixels = parseFloat($1);
-    var parsedVal = toFixed(pixels / viewportSize * 100, opts.unitPrecision);
+    const pixels = parseFloat($1);
+    const parsedVal = toFixed(pixels / viewportSize * 100, opts.unitPrecision);
     return parsedVal === 0 ? '0' : parsedVal + viewportUnit;
   };
 } // get unit, font can also use vmin.

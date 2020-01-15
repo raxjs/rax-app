@@ -1,8 +1,8 @@
 import cons from 'consolidate';
 import path from 'path';
 import loaderUtils from 'loader-utils';
-import HTMLToJSX from './HTMLToJSX';
 import { transform } from 'babel-core';
+import HTMLToJSX from './HTMLToJSX';
 import getBabelConfig from './getBabelConfig';
 
 const converter = new HTMLToJSX();
@@ -18,7 +18,7 @@ module.exports = function(source, parseObject) {
   }
 
   cons[query.engine].render(source, {
-    filename: this.resourcePath
+    filename: this.resourcePath,
   }, (error, html) => {
     return callback(error, getConvertText(html, parseObject.importLinks, query));
   });

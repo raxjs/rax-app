@@ -1,7 +1,8 @@
-'use strict';
+
 
 import PropTypes from './PropTypes';
-var ColorPropTypes = {
+
+const ColorPropTypes = {
   color: PropTypes.color,
   backgroundColor: PropTypes.color,
   borderColor: PropTypes.color,
@@ -13,6 +14,6 @@ var ColorPropTypes = {
   itemSelectedColor: PropTypes.color,
   textColor: PropTypes.color,
   timeColor: PropTypes.color,
-  textHighlightColor: PropTypes.color
+  textHighlightColor: PropTypes.color,
 };
 export default ColorPropTypes;

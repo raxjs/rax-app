@@ -1,11 +1,11 @@
-'use strict';
+
 
 import camelCase from 'camelcase';
+import chalk from 'chalk';
 import normalizeColor from './normalizeColor';
 import particular from './particular';
 import Validation from './Validation';
 import { pushErrorMessage } from './promptMessage';
-import chalk from 'chalk';
 
 const QUOTES_REG = /[\\'|\\"]/g;
 
@@ -16,14 +16,14 @@ const COLOR_PROPERTIES = {
   borderBottomColor: true,
   borderTopColor: true,
   borderRightColor: true,
-  borderLeftColor: true
+  borderLeftColor: true,
 };
 
 export default {
   sanitizeSelector(selector, transformDescendantCombinator = false, position = { start: { line: 0, column: 0 } }, log = false) {
     // tag selector suffix @
     if (/^[a-zA-Z]/.test(selector)) {
-      selector = '@' + selector;
+      selector = `@${  selector}`;
     }
     // filter multiple extend selectors
     if (log && !transformDescendantCombinator && !/^[.|@|#][a-zA-Z0-9_:\-]+$/.test(selector)) {
@@ -50,8 +50,8 @@ export default {
   },
 
   convertValue(property, value) {
-    var result = value,
-      resultNumber;
+    let result = value;
+    let resultNumber;
 
     if (!Number.isNaN(Number(result))) {
       result = Number(result);
@@ -65,7 +65,7 @@ export default {
   },
 
   convert(rule, log) {
-    let style = {};
+    const style = {};
 
     if (rule.tagName === 'text') {
       return;
@@ -76,13 +76,13 @@ export default {
         return;
       }
       declaration.value = declaration.value.replace(QUOTES_REG, '');
-      let camelCaseProperty = this.convertProp(declaration.property);
-      let value = this.convertValue(camelCaseProperty, declaration.value);
+      const camelCaseProperty = this.convertProp(declaration.property);
+      const value = this.convertValue(camelCaseProperty, declaration.value);
       style[camelCaseProperty] = value;
 
       Validation.validate(camelCaseProperty, declaration.property, declaration.value, rule.selectors.join(', '), declaration.position, log);
       if (particular[camelCaseProperty]) {
-        let particularResult = particular[camelCaseProperty](value);
+        const particularResult = particular[camelCaseProperty](value);
         if (particularResult.isDeleted) {
           style[camelCaseProperty] = null;
           delete style[camelCaseProperty];
@@ -93,5 +93,5 @@ export default {
     });
 
     return style;
-  }
+  },
 };

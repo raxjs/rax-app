@@ -1,4 +1,4 @@
-'use strict';
+
 
 import PropTypes from './PropTypes';
 
@@ -11,7 +11,7 @@ const FlexboxPropTypes = {
   alignSelf: PropTypes.oneOf(['auto', 'flex-start', 'flex-end', 'center', 'stretch']),
   flex: PropTypes.integer,
   zIndex: PropTypes.integer,
-  itemSize: PropTypes.length
+  itemSize: PropTypes.length,
 };
 
 export default FlexboxPropTypes;

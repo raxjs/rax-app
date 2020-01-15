@@ -2,7 +2,9 @@
   MIT License http://www.opensource.org/licenses/mit-license.php
   Author Tobias Koppers @sokra
 */
-'use strict';
+
+
+
 const compareLocations = require('./compareLocations');
 
 class Dependency {
@@ -37,7 +39,7 @@ class Dependency {
   }
 
   updateHash(hash) {
-    hash.update((this.module && this.module.id) + '');
+    hash.update(`${this.module && this.module.id  }`);
   }
 
   disconnect() {

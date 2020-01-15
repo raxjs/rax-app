@@ -1,19 +1,20 @@
-import { transformFor, transformIf, transformPair } from './transformer';
 import htmlparser from 'htmlparser2';
-import { IF_KEY, FOR_KEY } from './defaultKey';
 import { endsWith, trimEnd, isNumber } from 'lodash';
+import { transformFor, transformIf, transformPair } from './transformer';
+import { IF_KEY, FOR_KEY } from './defaultKey';
 import { getDomObject } from './parserHTML';
-var PAIR_REG = /^\{\{(.*)}\}$/;
-var NODE_TYPE = {
+
+const PAIR_REG = /^\{\{(.*)}\}$/;
+const NODE_TYPE = {
   ELEMENT: 'tag',
   TEXT: 'text',
   COMMENT: 'comment',
   SCRIPT: 'script',
-  STYLE: 'style'
+  STYLE: 'style',
 };
 
-var HTMLtoJSX =
-/*#__PURE__*/
+const HTMLtoJSX =
+/* #__PURE__ */
 function () {
   function HTMLtoJSX(config) {
     this.config = config || {};
@@ -24,7 +25,7 @@ function () {
     }
   }
 
-  var _proto = HTMLtoJSX.prototype;
+  const _proto = HTMLtoJSX.prototype;
 
   _proto.reset = function reset() {
     this.output = '';
@@ -36,27 +37,27 @@ function () {
   _proto.convert = function convert(html) {
     this.reset();
     html = this._cleanInput(html);
-    var nodes = getDomObject(html);
+    let nodes = getDomObject(html);
 
     if (!this._onlyOneTopLevel(nodes)) {
       this.level++;
-      html = "<div>\n" + html + "\n</div>";
+      html = `<div>\n${  html  }\n</div>`;
       nodes = getDomObject(html);
     }
 
     this._traverse({
-      children: nodes
+      children: nodes,
     });
 
-    this.output = this.output.trim() + '\n';
+    this.output = `${this.output.trim()  }\n`;
     return {
       output: this.output,
-      outputImportText: this.outputImportText
+      outputImportText: this.outputImportText,
     };
   };
 
   _proto._traverse = function _traverse(node) {
-    var _this = this;
+    const _this = this;
 
     node.children = node.children || [];
     this.level++;
@@ -74,10 +75,10 @@ function () {
 
     node.attributes = [];
 
-    for (var key in node.attribs) {
+    for (const key in node.attribs) {
       node.attributes.push({
         name: key,
-        value: node.attribs[key]
+        value: node.attribs[key],
       });
     }
 
@@ -89,7 +90,7 @@ function () {
   };
 
   _proto._beginVisit = function _beginVisit(node) {
-    this.output += '\n' + new Array(this.level - 1).join(' ');
+    this.output += `\n${  new Array(this.level - 1).join(' ')}`;
 
     switch (node.type) {
       case NODE_TYPE.ELEMENT:
@@ -114,14 +115,14 @@ function () {
         break;
 
       default:
-        console.warn('Unrecognised node type: ' + node.type);
+        console.warn(`Unrecognised node type: ${  node.type}`);
     }
   };
 
   _proto._endVisit = function _endVisit(node) {
     switch (node.type) {
       case NODE_TYPE.ELEMENT:
-        this.output += '\n' + new Array(this.level + 1).join(' ');
+        this.output += `\n${  new Array(this.level + 1).join(' ')}`;
 
         this._endVisitElement(node);
 
@@ -136,46 +137,46 @@ function () {
   };
 
   _proto._beginVisitElement = function _beginVisitElement(node) {
-    var _this2 = this;
+    const _this2 = this;
 
-    var tagName = node.name;
-    var outputTagName = tagName;
-    var attributes = [];
+    const tagName = node.name;
+    const outputTagName = tagName;
+    const attributes = [];
     node.attributes.forEach(function (attribute) {
       attributes.push(_this2._getElementAttribute(node, attribute));
     });
     this.output += transformFor(node.attributes, true, this.scope);
     this.output += transformIf(node.attributes, true, this.scope);
-    this.output += "<" + outputTagName;
+    this.output += `<${  outputTagName}`;
 
     if (attributes.length > 0) {
-      this.output += ' ' + attributes.join(' ');
+      this.output += ` ${  attributes.join(' ')}`;
     }
 
     this.output += '>';
   };
 
   _proto._endVisitElement = function _endVisitElement(node) {
-    var tagName = node.name;
-    var outputTagName = tagName;
+    const tagName = node.name;
+    const outputTagName = tagName;
     this.output = trimEnd(this.output, this.config.indent);
-    this.output += '</' + outputTagName + '>';
+    this.output += `</${  outputTagName  }>`;
     this.output += transformFor(node.attributes, false, this.scope);
     this.output += transformIf(node.attributes, false, this.scope);
   };
 
   _proto._visitText = function _visitText(node) {
-    var _this3 = this;
+    const _this3 = this;
 
-    var text = node.data;
+    let text = node.data;
 
     if (PAIR_REG.test(text)) {
       text = text.replace(PAIR_REG, function (word, $1) {
         if (/^\{\{([props.].*)}\}$/.test(text)) {
-          return "{" + $1 + "}";
+          return `{${  $1  }}`;
         }
 
-        return "{" + transformPair($1, _this3.scope) + "}";
+        return `{${  transformPair($1, _this3.scope)  }}`;
       });
     }
 
@@ -183,11 +184,11 @@ function () {
   };
 
   _proto._visitComment = function _visitComment(node) {
-    this.output += "{/*" + node.data.replace('*/', '* /') + "*/}";
+    this.output += `{/*${  node.data.replace('*/', '* /')  }*/}`;
   };
 
   _proto._onlyOneTopLevel = function _onlyOneTopLevel(nodes) {
-    var _rootNodes = nodes.filter(function (node) {
+    const _rootNodes = nodes.filter(function (node) {
       return !/\n+/.test('\n');
     });
 
@@ -197,7 +198,7 @@ function () {
   _proto._getElementAttribute = function _getElementAttribute(node, attribute) {
     switch (attribute.name) {
       case 'src':
-        return "source={{uri: \"" + attribute.value + "\"}}";
+        return `source={{uri: "${  attribute.value  }"}}`;
 
       case 'class':
         var value = attribute.value.trim();
@@ -205,17 +206,17 @@ function () {
         var style = '';
 
         if (multiClass.length === 1) {
-          style = "styles." + multiClass[0];
+          style = `styles.${  multiClass[0]}`;
         } else {
           style += '[';
           multiClass = multiClass.map(function (className) {
-            return "styles." + className;
+            return `styles.${  className}`;
           });
           style += multiClass.join(', ');
           style += ']';
         }
 
-        return "style={" + style + "}";
+        return `style={${  style  }}`;
 
       case IF_KEY:
       case FOR_KEY:
@@ -227,9 +228,9 @@ function () {
         var result = name; // Numeric values should be output as {123} not "123"
 
         if (isNumber(attribute.value)) {
-          result += "={" + attribute.value + "}";
+          result += `={${  attribute.value  }}`;
         } else if (attribute.value.length > 0) {
-          result += "=\"" + attribute.value.replace(/"/gm, '&quot;') + "\"";
+          result += `="${  attribute.value.replace(/"/gm, '&quot;')  }"`;
         }
 
         return result;

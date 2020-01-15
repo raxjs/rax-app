@@ -1,5 +1,6 @@
-'use strict';
 
+
+import chalk from 'chalk';
 import BoxModelPropTypes from './BoxModelPropTypes';
 import FlexboxPropTypes from './FlexboxPropTypes';
 import TextStylePropTypes from './TextStylePropTypes';
@@ -7,13 +8,12 @@ import ColorPropTypes from './ColorPropTypes';
 import CSSTransitionPropTypes from './CSSTransitionPropTypes';
 import {pushWarnMessage} from './promptMessage';
 import particular from './particular';
-import chalk from 'chalk';
 
 class Validation {
   static validate(camelCaseProperty, prop, value, selectors = '', position = {}, log) {
     if (!log) return {};
     if (allStylePropTypes[camelCaseProperty]) {
-      let error = allStylePropTypes[camelCaseProperty](value, prop, selectors);
+      const error = allStylePropTypes[camelCaseProperty](value, prop, selectors);
 
       if (error) {
         const message = `line: ${position.start.line}, column: ${position.start.column} - ${error.message}`;
@@ -21,17 +21,15 @@ class Validation {
         pushWarnMessage(message);
       }
       return error;
-    } else {
-      if (!particular[camelCaseProperty]) {
-        const message = `line: ${position.start.line}, column: ${position.start.column} - "${prop}: ${value}" is not valid in "${selectors}" selector`;
-        console.warn(chalk.yellow.bold(message));
-        pushWarnMessage(message);
-      }
+    } else if (!particular[camelCaseProperty]) {
+      const message = `line: ${position.start.line}, column: ${position.start.column} - "${prop}: ${value}" is not valid in "${selectors}" selector`;
+      console.warn(chalk.yellow.bold(message));
+      pushWarnMessage(message);
     }
   }
 
   static addValidStylePropTypes(stylePropTypes) {
-    for (let prop in stylePropTypes) {
+    for (const prop in stylePropTypes) {
       allStylePropTypes[prop] = stylePropTypes[prop];
     }
   }

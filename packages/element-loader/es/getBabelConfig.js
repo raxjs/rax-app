@@ -1,19 +1,20 @@
 import fs from 'fs';
+
 export default function getBabelConfig(query) {
   if (query === void 0) {
     query = {};
   }
 
-  var result = {};
-  var BABELRC_FILE = process.cwd() + '/.babelrc';
+  let result = {};
+  const BABELRC_FILE = `${process.cwd()  }/.babelrc`;
 
   if (query.babel) {
     result = query.babel;
   } else {
-    var content = fs.readFileSync(BABELRC_FILE);
+    const content = fs.readFileSync(BABELRC_FILE);
 
     try {
-      var config = JSON.parse(content);
+      const config = JSON.parse(content);
       result = config;
     } catch (e) {
       console.error('`.babelrc` config error');

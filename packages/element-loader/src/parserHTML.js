@@ -2,14 +2,14 @@ import htmlparser from 'htmlparser2';
 
 function innerHTML(dom) {
   return htmlparser.DomUtils.getOuterHTML(dom, {
-    xmlMode: true
+    xmlMode: true,
   });
 }
 
 export function getDomObject(html) {
   const handler = new htmlparser.DomHandler();
   const parser = new htmlparser.Parser(handler, {
-    xmlMode: true
+    xmlMode: true,
   });
 
   parser.parseComplete(html);
@@ -18,18 +18,18 @@ export function getDomObject(html) {
 }
 
 export default function parser(html) {
-  let dom = getDomObject(html);
-  let importLinks = [],
-    styleSheetLinks = [],
-    template = '',
-    script = '',
-    styles = '';
+  const dom = getDomObject(html);
+  const importLinks = [];
+  const styleSheetLinks = [];
+  let template = '';
+  let script = '';
+  let styles = '';
 
   dom.forEach((node) => {
     const {name, children, attribs} = node;
     switch (name) {
       case 'link':
-        let rel = attribs.rel.toLowerCase();
+        const rel = attribs.rel.toLowerCase();
         if (rel === 'import') {
           importLinks.push(attribs.href);
         }
@@ -55,21 +55,21 @@ export default function parser(html) {
     template: {
       type: 'template',
       content: template,
-      lang: ''
+      lang: '',
     },
     script: {
       type: 'script',
       content: script,
-      lang: ''
+      lang: '',
     },
     // allow multiple style tag
     // combine all css string
     styles: {
       type: 'style',
-      content: styles
+      content: styles,
     },
-    importLinks: importLinks,
-    styleSheetLinks: styleSheetLinks
+    importLinks,
+    styleSheetLinks,
   };
 }
 

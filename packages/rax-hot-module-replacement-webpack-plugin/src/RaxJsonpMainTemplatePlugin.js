@@ -2,7 +2,8 @@
   MIT License http://www.opensource.org/licenses/mit-license.php
   Author Tobias Koppers @sokra
 */
-'use strict';
+
+
 
 const Template = require('./Template');
 
@@ -37,17 +38,17 @@ class JsonpMainTemplatePlugin {
         hash: `" + ${this.renderCurrentHashCode(hash)} + "`,
         hashWithLength: length => `" + ${this.renderCurrentHashCode(hash, length)} + "`,
         chunk: {
-          id: '" + chunkId + "'
-        }
-      }
+          id: '" + chunkId + "',
+        },
+      },
     );
     const currentHotUpdateMainFilename = this.applyPluginsWaterfall(
       'asset-path',
       JSON.stringify(hotUpdateMainFilename),
       {
         hash: `" + ${this.renderCurrentHashCode(hash)} + "`,
-        hashWithLength: length => `" + ${this.renderCurrentHashCode(hash, length)} + "`
-      }
+        hashWithLength: length => `" + ${this.renderCurrentHashCode(hash, length)} + "`,
+      },
     );
     const runtimeSource = Template.getFunctionContent(require('./RaxJsonpMainTemplate.runtime.js'))
       .replace(/\/\/\$semicolon/g, ';')

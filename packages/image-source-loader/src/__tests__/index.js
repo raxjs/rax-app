@@ -1,4 +1,4 @@
-'use strict';
+
 const imageSourceLoader = require('../index');
 /* eslint-disable */
 const onePixelPng = require('one-pixel-png');

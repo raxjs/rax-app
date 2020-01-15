@@ -1,4 +1,4 @@
-'use strict';
+
 
 import PropTypes from './PropTypes';
 
@@ -41,7 +41,7 @@ const BoxModelPropTypes = {
   left: PropTypes.length,
   right: PropTypes.length,
   opacity: PropTypes.number,
-  transform: PropTypes.string
+  transform: PropTypes.string,
 };
 
 export default BoxModelPropTypes;

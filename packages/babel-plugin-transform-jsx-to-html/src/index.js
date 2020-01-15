@@ -27,9 +27,9 @@ module.exports = function() {
             return;
           }
 
-          let result = [];
+          const result = [];
 
-          let html = '<' + tagName;
+          let html = `<${  tagName}`;
 
           let attrs = openingPath.node.attributes;
           if (attrs.length) {
@@ -41,11 +41,11 @@ module.exports = function() {
           const {
             staticAttrs,
             dynamicAttrs,
-            innerHTML
+            innerHTML,
           } = attrs;
 
           if (staticAttrs) {
-            html = html + staticAttrs;
+            html += staticAttrs;
           }
 
           if (dynamicAttrs) {
@@ -54,7 +54,7 @@ module.exports = function() {
             html = '';
           }
 
-          html = html + (openingPath.node.selfClosing && !innerHTML ? '/>' : '>');
+          html += (openingPath.node.selfClosing && !innerHTML ? '/>' : '>');
           result.push(buildObject(KEY_FOR_HTML, t.stringLiteral(html)));
           html = '';
 
@@ -68,22 +68,22 @@ module.exports = function() {
           }
 
           if (path.node.closingElement || innerHTML) {
-            pushResult(t.stringLiteral('</' + tagName + '>'), result);
+            pushResult(t.stringLiteral(`</${  tagName  }>`), result);
           }
 
           if (result && result.length) {
             path.replaceWith(t.arrayExpression(result));
           }
-        }
-      }
-    }
+        },
+      },
+    },
   };
 };
 
 // flatten and push children to result
 function flattenChildren(children, result) {
-  for (var i = 0, l = children.length; i < l; i++) {
-    let child = children[i];
+  for (let i = 0, l = children.length; i < l; i++) {
+    const child = children[i];
     if (t.isArrayExpression(child)) {
       flattenChildren(child.elements, result);
     } else if (Array.isArray(child)) {
@@ -134,7 +134,7 @@ function updateStringObject(obj, value) {
 }
 
 function buildObject(name, value) {
-  let obj = t.objectProperty(t.identifier(name), value);
+  const obj = t.objectProperty(t.identifier(name), value);
   return t.objectExpression([obj]);
 }
 
@@ -170,17 +170,15 @@ function buildOpeningElementAttributes(attribs, file) {
     } else if (t.isJSXSpreadAttribute(prop)) {
       _props = pushProps(_props, objs);
       objs.push(prop.argument);
-    } else {
-      if (t.isStringLiteral(prop.value)) {
-        let name = prop.name.name;
-        if (name === 'className') {
-          name = 'class';
-        }
-        const value = prop.value.value.replace(/\n\s+/g, ' ');
-        staticAttrs = staticAttrs + ' ' + name + '="' + value + '"';
-      } else {
-        _props.push(convertAttribute(prop));
+    } else if (t.isStringLiteral(prop.value)) {
+      let name = prop.name.name;
+      if (name === 'className') {
+        name = 'class';
       }
+      const value = prop.value.value.replace(/\n\s+/g, ' ');
+      staticAttrs = `${staticAttrs  } ${  name  }="${  value  }"`;
+    } else {
+      _props.push(convertAttribute(prop));
     }
   }
 
@@ -206,9 +204,9 @@ function buildOpeningElementAttributes(attribs, file) {
   }
 
   return {
-    staticAttrs: staticAttrs,
-    dynamicAttrs: dynamicAttrs,
-    innerHTML: innerHTML
+    staticAttrs,
+    dynamicAttrs,
+    innerHTML,
   };
 }
 
@@ -241,7 +239,7 @@ function convertAttribute(node) {
 
   if (t.isJSXNamespacedName(node.name)) {
     node.name = t.stringLiteral(
-      node.name.namespace.name + ':' + node.name.name.name,
+      `${node.name.namespace.name  }:${  node.name.name.name}`,
     );
   } else if (esutils.keyword.isIdentifierNameES6(node.name.name)) {
     node.name.type = 'Identifier';

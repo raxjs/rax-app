@@ -1,3 +1,3 @@
 module.exports = {
-  'rax': ['rax']
+  'rax': ['rax'],
 };

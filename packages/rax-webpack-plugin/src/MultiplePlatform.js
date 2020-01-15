@@ -29,7 +29,7 @@ module.exports = function MultiplePlatform(config, options = {}) {
 
   // filter platforms by platformWihteList
   platforms = platforms.filter(platform => {
-    let p = platform.toLowerCase();
+    const p = platform.toLowerCase();
     if (platformWihteList.indexOf(p) !== -1) {
       return true;
     }
@@ -45,7 +45,7 @@ module.exports = function MultiplePlatform(config, options = {}) {
   }
 
   const multiplePlatformConfigs = [];
-  let entry = config.entry;
+  const entry = config.entry;
 
   if (Array.isArray(entry) || typeof entry === 'string') {
     // TODO: support entry pass array/string ?
@@ -54,8 +54,8 @@ module.exports = function MultiplePlatform(config, options = {}) {
 
     platforms.forEach(platform => {
       const platformType = platform.toLowerCase();
-      let platformConfig = cloneDeep(config);
-      let platformEntry = {};
+      const platformConfig = cloneDeep(config);
+      const platformEntry = {};
       let nameQuery = '';
       // append platform entry
       entries.forEach(name => {
@@ -78,7 +78,7 @@ module.exports = function MultiplePlatform(config, options = {}) {
 
       if (Array.isArray(options.name)) {
         options.name.map(name => {
-          nameQuery += '&name[]=' + name;
+          nameQuery += `&name[]=${  name}`;
         });
       }
 
@@ -86,13 +86,13 @@ module.exports = function MultiplePlatform(config, options = {}) {
         platformConfig.module.preLoaders.push({
           test: /\.jsx?$/,
           exclude: options.exclude ? options.exclude : /(node_modules|bower_components)/,
-          loader: `${platformLoader}?platform=${platformType}${nameQuery}`
+          loader: `${platformLoader}?platform=${platformType}${nameQuery}`,
         });
       } else if (typeof platformConfig.module.preLoaders === 'undefined') {
         platformConfig.module.preLoaders = [{
           test: /\.jsx?$/,
           exclude: options.exclude ? options.exclude : /(node_modules|bower_components)/,
-          loader: `${platformLoader}?platform=${platformType}${nameQuery}`
+          loader: `${platformLoader}?platform=${platformType}${nameQuery}`,
         }];
       }
 

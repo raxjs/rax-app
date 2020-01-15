@@ -1,4 +1,4 @@
-'use strict';
+
 
 const imageSize = require('image-size');
 const mimes = require('../mimes.json');
@@ -7,7 +7,7 @@ function getMime(path) {
   const extension = path.split('.').pop().toLowerCase();
   const mime = mimes[extension];
   if (!mime) {
-    throw new Error('Unsupported type of image of extension ' + extension + ': ' + path);
+    throw new Error(`Unsupported type of image of extension ${  extension  }: ${  path}`);
   }
   return mime;
 }

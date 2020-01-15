@@ -3,13 +3,13 @@ import normalizeColor from './normalizeColor';
 const LENGTH_REGEXP = /^[-+]?[0-9]*\.?[0-9]+(px|em|rpx|rem|\%)?$/;
 const INTEGER_REGEXP = /^[-+]?[0-9]+$/;
 
-let PropTypes = {
+const PropTypes = {
   length: createLengthChecker,
   number: createNumberChecker,
   integer: createIntegerChecker,
   oneOf: createEnumChecker,
   color: createColorChecker,
-  string: createStringChecker
+  string: createStringChecker,
 };
 
 function createLengthChecker(value = '', prop, selectors) {
@@ -23,7 +23,7 @@ function createLengthChecker(value = '', prop, selectors) {
 
 function createNumberChecker(value = '', prop, selectors) {
   value = value.toString();
-  let match = value.match(LENGTH_REGEXP);
+  const match = value.match(LENGTH_REGEXP);
 
   if (!match || match[1]) {
     return new Error(getMessage(prop, value, selectors, '16、24、5.2'));
@@ -42,7 +42,7 @@ function createIntegerChecker(value = '', prop, selectors) {
 
 function createEnumChecker(list) {
   return function validate(value, prop, selectors) {
-    let index = list.indexOf(value);
+    const index = list.indexOf(value);
 
     if (index < 0) {
       return new Error(getMessage(prop, value, selectors, `${list.join('、')}`));

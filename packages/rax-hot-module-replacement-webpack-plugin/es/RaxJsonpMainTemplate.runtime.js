@@ -14,16 +14,16 @@ module.exports = function () {
 
   function hotDownloadUpdateChunk(chunkId) {
     // eslint-disable-line no-unused-vars
-    var isWeex = typeof callNative === 'function';
-    var updateFile = $require$.p + $hotChunkFilename$;
+    const isWeex = typeof callNative === 'function';
+    const updateFile = $require$.p + $hotChunkFilename$;
 
     if (isWeex) {
       fetch(updateFile, {
         method: 'GET',
         dataType: 'text',
         headers: {
-          'Content-Type': 'text/javascript'
-        }
+          'Content-Type': 'text/javascript',
+        },
       }).then(function (response) {
         return response.text();
       }).then(function (text) {
@@ -32,8 +32,8 @@ module.exports = function () {
         throw err;
       });
     } else {
-      var head = document.getElementsByTagName('head')[0];
-      var script = document.createElement('script');
+      const head = document.getElementsByTagName('head')[0];
+      const script = document.createElement('script');
       script.type = 'text/javascript';
       script.charset = 'utf-8';
       script.src = updateFile;
@@ -61,13 +61,13 @@ module.exports = function () {
 
         if (request.status === 0) {
           // timeout
-          reject(new Error('Manifest request to ' + requestPath + ' timed out.'));
+          reject(new Error(`Manifest request to ${  requestPath  } timed out.`));
         } else if (request.status === 404) {
           // no update available
           resolve();
         } else if (request.status !== 200 && request.status !== 304) {
           // other failure
-          reject(new Error('Manifest request to ' + requestPath + ' failed.'));
+          reject(new Error(`Manifest request to ${  requestPath  } failed.`));
         } else {
           // success
           try {

@@ -23,20 +23,20 @@ import traverseImport from './TraverseImport';
 
 function mergeSourceMap(map, inputMap) {
   if (inputMap) {
-    var inputMapConsumer = new sourceMap.SourceMapConsumer(inputMap);
-    var outputMapConsumer = new sourceMap.SourceMapConsumer(map);
-    var mergedGenerator = new sourceMap.SourceMapGenerator({
+    const inputMapConsumer = new sourceMap.SourceMapConsumer(inputMap);
+    const outputMapConsumer = new sourceMap.SourceMapConsumer(map);
+    const mergedGenerator = new sourceMap.SourceMapGenerator({
       file: inputMapConsumer.file,
-      sourceRoot: inputMapConsumer.sourceRoot
+      sourceRoot: inputMapConsumer.sourceRoot,
     }); // This assumes the output map always has a single source, since Babel always compiles a
     // single source file to a single output file.
 
-    var source = outputMapConsumer.sources[0];
+    const source = outputMapConsumer.sources[0];
     inputMapConsumer.eachMapping(function (mapping) {
-      var generatedPosition = outputMapConsumer.generatedPositionFor({
+      const generatedPosition = outputMapConsumer.generatedPositionFor({
         line: mapping.generatedLine,
         column: mapping.generatedColumn,
-        source: source
+        source,
       });
 
       if (generatedPosition.column != null) {
@@ -44,13 +44,13 @@ function mergeSourceMap(map, inputMap) {
           source: mapping.source,
           original: mapping.source == null ? null : {
             line: mapping.originalLine,
-            column: mapping.originalColumn
+            column: mapping.originalColumn,
           },
-          generated: generatedPosition
+          generated: generatedPosition,
         });
       }
     });
-    var mergedMap = mergedGenerator.toJSON();
+    const mergedMap = mergedGenerator.toJSON();
     inputMap.mappings = mergedMap.mappings;
     return inputMap;
   } else {
@@ -60,25 +60,25 @@ function mergeSourceMap(map, inputMap) {
 
 module.exports = function (inputSource, inputSourceMap) {
   this.cacheable();
-  var callback = this.async();
-  var loaderOptions = loaderUtils.getOptions(this);
-  var resourcePath = this.resourcePath;
-  var sourceMapTarget = path.basename(resourcePath);
-  var options = Object.assign({
-    name: 'universal-env'
+  const callback = this.async();
+  const loaderOptions = loaderUtils.getOptions(this);
+  const resourcePath = this.resourcePath;
+  const sourceMapTarget = path.basename(resourcePath);
+  const options = Object.assign({
+    name: 'universal-env',
   }, loaderOptions);
 
   if (!Array.isArray(options.name)) {
     options.name = [options.name];
   }
 
-  var _traverseImport = traverseImport(options, inputSource, {
+  const _traverseImport = traverseImport(options, inputSource, {
     sourceMaps: true,
-    sourceMapTarget: sourceMapTarget,
-    sourceFileName: resourcePath
-  }),
-      code = _traverseImport.code,
-      map = _traverseImport.map;
+    sourceMapTarget,
+    sourceFileName: resourcePath,
+  });
+  const code = _traverseImport.code;
+  const map = _traverseImport.map;
 
   callback(null, code, mergeSourceMap(map, inputSourceMap));
 };

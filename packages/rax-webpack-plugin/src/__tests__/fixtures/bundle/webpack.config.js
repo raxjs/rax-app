@@ -8,7 +8,7 @@ module.exports = {
   plugins: [
     new RaxWebpackPlugin({
       target: 'bundle',
-      bundle: 'bundle'
-    })
-  ]
+      bundle: 'bundle',
+    }),
+  ],
 };

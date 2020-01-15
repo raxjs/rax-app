@@ -4,7 +4,7 @@
  */
 import cloneDeep from 'lodash.clonedeep';
 
-var platformLoader = require.resolve('./PlatformLoader');
+const platformLoader = require.resolve('./PlatformLoader');
 
 module.exports = function MultiplePlatform(config, options) {
   if (options === void 0) {
@@ -19,7 +19,7 @@ module.exports = function MultiplePlatform(config, options) {
     throw new TypeError('Invalid argument: options, must be an object');
   }
 
-  var platforms = options.platforms || config.platforms;
+  let platforms = options.platforms || config.platforms;
 
   if (typeof platforms === 'undefined' || platforms.length === 0) {
     console.log('');
@@ -28,10 +28,10 @@ module.exports = function MultiplePlatform(config, options) {
     return config;
   }
 
-  var platformWihteList = ['web', 'node', 'weex', 'reactnative']; // filter platforms by platformWihteList
+  const platformWihteList = ['web', 'node', 'weex', 'reactnative']; // filter platforms by platformWihteList
 
   platforms = platforms.filter(function (platform) {
-    var p = platform.toLowerCase();
+    const p = platform.toLowerCase();
 
     if (platformWihteList.indexOf(p) !== -1) {
       return true;
@@ -48,25 +48,25 @@ module.exports = function MultiplePlatform(config, options) {
     return config;
   }
 
-  var multiplePlatformConfigs = [];
-  var entry = config.entry;
+  const multiplePlatformConfigs = [];
+  const entry = config.entry;
 
   if (Array.isArray(entry) || typeof entry === 'string') {// TODO: support entry pass array/string ?
   } else if (typeof entry === 'object') {
-    var entries = Object.keys(entry);
+    const entries = Object.keys(entry);
     platforms.forEach(function (platform) {
-      var platformType = platform.toLowerCase();
-      var platformConfig = cloneDeep(config);
-      var platformEntry = {};
-      var nameQuery = ''; // append platform entry
+      const platformType = platform.toLowerCase();
+      const platformConfig = cloneDeep(config);
+      const platformEntry = {};
+      let nameQuery = ''; // append platform entry
 
       entries.forEach(function (name) {
         if (Array.isArray(entry[name])) {
-          platformEntry[name + "." + platformType] = entry[name].map(function (ev) {
-            return "" + ev;
+          platformEntry[`${name  }.${  platformType}`] = entry[name].map(function (ev) {
+            return `${  ev}`;
           });
         } else if (typeof entry[name] === 'string') {
-          platformEntry[name + "." + platformType] = "" + entry[name];
+          platformEntry[`${name  }.${  platformType}`] = `${  entry[name]}`;
         }
       });
       platformConfig.entry = platformEntry;
@@ -78,7 +78,7 @@ module.exports = function MultiplePlatform(config, options) {
 
       if (Array.isArray(options.name)) {
         options.name.map(function (name) {
-          nameQuery += '&name[]=' + name;
+          nameQuery += `&name[]=${  name}`;
         });
       }
 
@@ -86,13 +86,13 @@ module.exports = function MultiplePlatform(config, options) {
         platformConfig.module.preLoaders.push({
           test: /\.jsx?$/,
           exclude: options.exclude ? options.exclude : /(node_modules|bower_components)/,
-          loader: platformLoader + "?platform=" + platformType + nameQuery
+          loader: `${platformLoader  }?platform=${  platformType  }${nameQuery}`,
         });
       } else if (typeof platformConfig.module.preLoaders === 'undefined') {
         platformConfig.module.preLoaders = [{
           test: /\.jsx?$/,
           exclude: options.exclude ? options.exclude : /(node_modules|bower_components)/,
-          loader: platformLoader + "?platform=" + platformType + nameQuery
+          loader: `${platformLoader  }?platform=${  platformType  }${nameQuery}`,
         }];
       }
 

@@ -97,10 +97,10 @@ export function transformPair(code, scope, config = {}) {
       ) {
         node.name = `props.${node.name}`;
       }
-    }
+    },
   };
 
-  let codeStr = code;
+  const codeStr = code;
 
   const ast = babylon.parse(`(${codeStr})`);
   traverse(ast, visitor);

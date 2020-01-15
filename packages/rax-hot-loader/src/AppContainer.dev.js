@@ -1,4 +1,4 @@
-'use strict';
+
 
 import { Component, createElement } from 'rax';
 import deepForceUpdate from 'react-deep-force-update';
@@ -19,7 +19,7 @@ class AppContainer extends Component {
           'you can add "rax-hot-loader/patch" as the very first item to the ' +
           '"entry" array in its config. Alternatively, you can add ' +
           'require("rax-hot-loader/patch") as the very first line ' +
-          'in the application code, before any other imports.'
+          'in the application code, before any other imports.',
       );
     }
   }
@@ -28,7 +28,7 @@ class AppContainer extends Component {
     // Hot reload is happening.
     // Retry rendering!
     this.setState({
-      error: null
+      error: null,
     });
     // Force-update the whole tree, including
     // components that refuse to update.
@@ -42,7 +42,7 @@ class AppContainer extends Component {
   unstable_handleError(error) {
     // eslint-disable-line camelcase
     this.setState({
-      error
+      error,
     });
   }
 
@@ -62,12 +62,12 @@ AppContainer.propTypes = {
     if (Children.count(props.children) !== 1) {
       return new Error(
         'Invalid prop "children" supplied to AppContainer. ' +
-          'Expected a single React element with your app’s root component, e.g. <App />.'
+          'Expected a single React element with your app’s root component, e.g. <App />.',
       );
     }
 
     return undefined;
-  }
+  },
 };
 
 module.exports = AppContainer;

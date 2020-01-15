@@ -1,4 +1,4 @@
-'use strict';
+
 
 import PropTypes from './PropTypes';
 
@@ -11,7 +11,7 @@ const TextStylePropTypes = {
   lineHeight: PropTypes.length,
   textAlign: PropTypes.oneOf(['left', 'center', 'right']),
   textOverflow: PropTypes.oneOf(['clip', 'ellipsis']),
-  lines: PropTypes.integer
+  lines: PropTypes.integer,
 };
 
 export default TextStylePropTypes;

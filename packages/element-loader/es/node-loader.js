@@ -1,16 +1,16 @@
 import path from 'path';
-import parser from './parserHTML';
 import loaderUtils from 'loader-utils';
+import parser from './parserHTML';
 
 module.exports = function (content) {
   this.cacheable();
-  var query = loaderUtils.parseQuery(this.query);
-  var type = query.type;
-  var filename = path.basename(this.resourcePath);
-  var parts = parser(content);
-  var part = parts[type];
-  var output = '';
-  var source;
+  const query = loaderUtils.parseQuery(this.query);
+  const type = query.type;
+  const filename = path.basename(this.resourcePath);
+  const parts = parser(content);
+  let part = parts[type];
+  let output = '';
+  let source;
 
   if (Array.isArray(part)) {
     part = part[query.index];
@@ -20,7 +20,7 @@ module.exports = function (content) {
     output = part.content;
     source = parts;
   } else {
-    output = query.banner + "\n" + (part.content || defaultComponent);
+    output = `${query.banner  }\n${  part.content || defaultComponent}`;
   }
 
   this.callback(null, output, source);
