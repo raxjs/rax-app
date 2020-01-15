@@ -9,7 +9,7 @@ const prefixRegexp = /[a-zA-Z0-9:.#_-]/;
 const suffixRegexp = /[a-zA-Z0-9_-]/;
 
 /**
- * 替换标签名
+ * Replace tag name
  */
 const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
   root.walk(child => {
