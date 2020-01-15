@@ -1,5 +1,4 @@
-
-
+/* eslint no-cond-assign: "off", no-multi-assign: "off", prefer-spread: "off" */
 const NAMED_COLORS = {
   'transparent': '#00000000',
   'aliceblue': '#f0f8ff',

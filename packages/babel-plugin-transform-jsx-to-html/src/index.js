@@ -130,7 +130,7 @@ function isStringObject(obj) {
 };
 
 function updateStringObject(obj, value) {
-  obj.properties[0].value.value = obj.properties[0].value.value + value;
+  obj.properties[0].value.value += value;
 }
 
 function buildObject(name, value) {

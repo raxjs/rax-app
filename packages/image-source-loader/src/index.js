@@ -14,11 +14,10 @@ function getMime(path) {
 
 module.exports = function base64ImageLoader(content) {
   this.cacheable && this.cacheable();
-  const dimensions = {};
+  let dimensions = {};
   try {
-    const _dimensions = imageSize(content);
-    Object.assign(dimensions, _dimensions);
-  } catch (err) {}
+    dimensions = imageSize(content);
+  } catch (err) { /* empty */ }
   return `module.exports = {
     uri: "data:${getMime(this.resourcePath)};base64,${content.toString('base64')}",
     width: ${dimensions.width || 'undefined'},

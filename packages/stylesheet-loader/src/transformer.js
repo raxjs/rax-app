@@ -26,14 +26,14 @@ export default {
       selector = `@${  selector}`;
     }
     // filter multiple extend selectors
-    if (log && !transformDescendantCombinator && !/^[.|@|#][a-zA-Z0-9_:\-]+$/.test(selector)) {
+    if (log && !transformDescendantCombinator && !/^[.|@|#][a-zA-Z0-9_:-]+$/.test(selector)) {
       const message = `line: ${position.start.line}, column: ${position.start.column} - "${selector}" is not a valid selector (e.g. ".abc、.abcBcd、.abc_bcd")`;
       console.error(chalk.red.bold(message));
       pushErrorMessage(message);
       return null;
     }
 
-    return selector.replace(/\s/gi, '_').replace(/[\.]/g, '');
+    return selector.replace(/\s/gi, '_').replace(/[.]/g, '');
   },
 
   convertProp(prop) {
