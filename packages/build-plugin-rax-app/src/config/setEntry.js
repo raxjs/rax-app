@@ -5,7 +5,7 @@ const { hmrClient } = require('rax-compile-config');
 const { WECHAT_MINIPROGRAM, MINIAPP } = require('../constants');
 
 
-module.exports = (config, context, targert) => {
+module.exports = (config, context, target) => {
   const { rootDir, command } = context;
   const isDev = command === 'start';
 
@@ -15,18 +15,18 @@ module.exports = (config, context, targert) => {
 
   config.module.rule('appJSON')
     .use('loader')
-    .tap(() => ({ targert }));
+    .tap(() => ({ type: target }));
 
 
   ['jsx', 'tsx'].forEach(tag => {
     config.module.rule(tag)
       .use('platform')
       .options({
-        platform: targert,
+        platform: target,
       });
   });
 
-  if (isDev && ![WECHAT_MINIPROGRAM, MINIAPP].includes(targert)) {
+  if (isDev && ![WECHAT_MINIPROGRAM, MINIAPP].includes(target)) {
     entryConfig.add(hmrClient);
   }
   entryConfig.add(appEntry);
