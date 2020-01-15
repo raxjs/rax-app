@@ -1,7 +1,7 @@
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('./getAppConfig');
 const setEntry = require('./setEntry');
-const MiniAppPlugin = require('../../../plugins/MiniAppPlugin');
+const MiniAppPlugin = require('rax-miniapp-runtime-webpack-plugin');
 
 module.exports = (context, target) => {
   const config = getWebpackBase(context);
@@ -24,7 +24,7 @@ module.exports = (context, target) => {
     },
   ]);
 
-  config.plugin("MpPlugin").use(MiniAppPlugin, [{ ...appConfig, target }]);
+  config.plugin("MiniAppPlugin").use(MiniAppPlugin, [{ ...appConfig, target }]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
   config.devtool("none");
