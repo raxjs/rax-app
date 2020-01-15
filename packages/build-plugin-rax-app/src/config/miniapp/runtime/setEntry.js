@@ -19,6 +19,7 @@ module.exports = (config, context, entries) => {
     const entryConfig = config.entry(entryName);
 
     const pageEntry = getDepPath(rootDir, source);
-    entryConfig.add(`${EntryLoader}!${pageEntry}`);
+    entryConfig.add(`${EntryLoader}?${JSON.stringify({routes: entries})}!${pageEntry}`);
   });
 };
+

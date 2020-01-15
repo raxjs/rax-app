@@ -110,6 +110,21 @@ function getAssetPath(
 }
 
 /**
+ * Get corresponding source from path
+ *
+ * @param {string} routePath
+ * @param {Array<Object>} routes
+ */
+function getSourceFromPath(routePath, routes) {
+  for (let route of routes) {
+    if (route.path === routePath) {
+      return route.source;
+    }
+  }
+  return null;
+}
+
+/**
  * 读取用户配置并合并
  * @param {object} defaultConfig
  * @param {object} passedOptions
@@ -121,6 +136,12 @@ function mergeConfig(defaultConfig, passedOptions = {}) {
   routes.forEach(({ entryName, path }) => {
     router[entryName] = [path];
   });
+
+  if (tabBar && tabBar.items) {
+    tabBar.items.forEach(item => {
+      item.pagePath = getSourceFromPath(item.path, routes);
+    });
+  }
 
   const config = {
     router,
@@ -330,33 +351,33 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
     preloadRule,
     ...userAppJson,
   };
-  if (tabBarConfig.list && tabBarConfig.list.length) {
+  if (tabBarConfig.items && tabBarConfig.items.length) {
     const tabBar = Object.assign({}, tabBarConfig);
-    tabBar.list = tabBarConfig.list.map(item => {
-      const iconPathName = item.iconPath
-        ? _.md5File(item.iconPath) + path.extname(item.iconPath)
+    tabBar.items = tabBarConfig.items.map(item => {
+      const iconPathName = item.icon
+        ? _.md5File(path.resolve('src', item.icon)) + path.extname(item.icon)
         : '';
       if (iconPathName)
         _.copyFile(
-          item.iconPath,
-          path.resolve(outputPath, `../images/${iconPathName}`),
+          path.resolve('src', item.icon),
+          path.resolve(outputPath, target, `./images/${iconPathName}`),
         );
-      const selectedIconPathName = item.selectedIconPath
-        ? _.md5File(item.selectedIconPath) +
-          path.extname(item.selectedIconPath)
+      const selectedIconPathName = item.activeIcon
+        ? _.md5File(path.resolve('src', item.activeIcon)) +
+          path.extname(item.activeIcon)
         : '';
       if (selectedIconPathName)
         _.copyFile(
-          item.selectedIconPath,
-          path.resolve(outputPath, `../images/${selectedIconPathName}`),
+          path.resolve('src', item.activeIcon),
+          path.resolve(outputPath, target, `./images/${selectedIconPathName}`),
         );
       tabBarMap[`/${item.pageName}`] = true;
 
       return {
-        pagePath: `${item.pageName}`,
-        text: item.text,
-        iconPath: iconPathName ? `./images/${iconPathName}` : '',
-        selectedIconPath: selectedIconPathName
+        pagePath: `${item.pagePath}`,
+        name: item.name,
+        icon: iconPathName ? `./images/${iconPathName}` : '',
+        activeIcon: selectedIconPathName
           ? `./images/${selectedIconPathName}`
           : '',
       };
