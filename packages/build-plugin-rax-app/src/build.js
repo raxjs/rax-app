@@ -20,7 +20,7 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
     }
 
     if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
-      const mpBuild = require('./config/miniapp/compile/build');
+      const jsx2mpBuilder = require('./config/miniapp/compile/build');
       let config;
       switch (target) {
         case WECHAT_MINIPROGRAM:
@@ -35,7 +35,7 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
       }
       onHook('after.build.compile', async() => {
         if (!(options[target] && options[target].buildType === 'runtime')) {
-          const mpInfo = await mpBuild(context, config);
+          const mpInfo = await jsx2mpBuilder(context, config);
           if (mpInfo.err || mpInfo.stats.hasErrors()) {
             mpBuildErr = mpInfo;
           }
