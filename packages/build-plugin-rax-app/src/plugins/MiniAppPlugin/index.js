@@ -6,7 +6,9 @@ const { RawSource } = require("webpack-sources");
 const pathToRegexp = require("path-to-regexp");
 const chalk = require('chalk');
 const adjustCss = require("./tool/adjust-css");
-const _ = require("./tool/utils");
+const { md5File, copyDir, copyFile } = require('./tool/file-helper');
+const deepMerge = require('./tool/deep-merge');
+const includes = require('./tool/includes');
 const defaultConfig = require('./defaultConfig');
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('../../constants');
 const adapter = require('./adapter');
@@ -355,19 +357,19 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
     const tabBar = Object.assign({}, tabBarConfig);
     tabBar.items = tabBarConfig.items.map(item => {
       const iconPathName = item.icon
-        ? _.md5File(path.resolve('src', item.icon)) + path.extname(item.icon)
+        ? md5File(path.resolve('src', item.icon)) + path.extname(item.icon)
         : '';
       if (iconPathName)
-        _.copyFile(
+        copyFile(
           path.resolve('src', item.icon),
           path.resolve(outputPath, target, `./images/${iconPathName}`),
         );
       const selectedIconPathName = item.activeIcon
-        ? _.md5File(path.resolve('src', item.activeIcon)) +
+        ? md5File(path.resolve('src', item.activeIcon)) +
           path.extname(item.activeIcon)
         : '';
       if (selectedIconPathName)
-        _.copyFile(
+        copyFile(
           path.resolve('src', item.activeIcon),
           path.resolve(outputPath, target, `./images/${selectedIconPathName}`),
         );
@@ -387,7 +389,7 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
       // 自定义 tabBar
       const customTabBarDir = tabBar.custom;
       tabBar.custom = true;
-      _.copyDir(
+      copyDir(
         customTabBarDir,
         path.resolve(outputPath, '../custom-tab-bar'),
       );
@@ -406,7 +408,7 @@ function handleProjectConfig(compilation, { projectConfig = {} }, target) {
       JSON.stringify(projectConfigJsonTmpl),
     );
     const projectConfigJsonContent = JSON.stringify(
-      _.merge(projectConfigJson, userProjectConfigJson),
+      deepMerge(projectConfigJson, userProjectConfigJson),
       null,
       '\t',
     );
@@ -483,7 +485,7 @@ function handleConfigJS(compilation, subpackagesMap, tabBarMap, pageConfigMap, c
 function handlePackageJSON(compilation, userPackageConfigJson = {}, target) {
   const packageConfigJson = Object.assign({}, packageConfigJsonTmpl);
   const packageConfigJsonContent = JSON.stringify(
-    _.merge(packageConfigJson, userPackageConfigJson),
+    deepMerge(packageConfigJson, userPackageConfigJson),
     null,
     '\t',
   );
@@ -492,7 +494,7 @@ function handlePackageJSON(compilation, userPackageConfigJson = {}, target) {
 
 function handleCustomComponent(compilation, customComponentRoot, customComponents, outputPath, target) {
   if (customComponentRoot) {
-    _.copyDir(
+    copyDir(
       customComponentRoot,
       path.resolve(outputPath, '../custom-component/components'),
     );
@@ -571,7 +573,7 @@ function installDependencies(autoBuildNpm = false, stats, target, callback) {
     const outputNpmPath = path.resolve(outputPath, adapter[target].npmDirName);
     ensureDirSync(outputNpmPath);
     ['miniapp-element', 'miniapp-render'].forEach(name => {
-      _.copyDir(
+      copyDir(
         path.resolve(process.cwd(), "node_modules", name),
         path.resolve(outputPath, adapter[target].npmDirName, name),
       );
@@ -681,7 +683,7 @@ class MpPlugin {
           if (assets) {
             [...assets.js, ...assets.css].forEach(filePath => {
               const requirePages = assetsReverseMap[filePath] || [];
-              if (_.includes(pages, requirePages)) {
+              if (includes(pages, requirePages)) {
                 assetsSubpackageMap[filePath] = packageName;
                 compilation.assets[`../${packageName}/common/${filePath}`] =
                   compilation.assets[filePath];
