@@ -45,7 +45,7 @@ export default class HTMLtoJSX {
 
     let nodes = getDomObject(html);
 
-    if (!this._onlyOneTopLevel(nodes)) {
+    if (!_onlyOneTopLevel(nodes)) {
       this.level++;
       html = `<div>\n${html}\n</div>`;
       nodes = getDomObject(html);
@@ -55,7 +55,7 @@ export default class HTMLtoJSX {
       children: nodes,
     });
 
-    this.output = `${this.output.trim()  }\n`;
+    this.output = `${this.output.trim()}\n`;
 
     return {
       output: this.output,
@@ -90,7 +90,7 @@ export default class HTMLtoJSX {
   }
 
   _beginVisit(node) {
-    this.output += `\n${  new Array(this.level - 1).join(' ')}`;
+    this.output += `\n${new Array(this.level - 1).join(' ')}`;
     switch (node.type) {
       case NODE_TYPE.ELEMENT:
         this._beginVisitElement(node);
@@ -109,20 +109,21 @@ export default class HTMLtoJSX {
       case NODE_TYPE.STYLE:
         break;
       default:
-        console.warn(`Unrecognised node type: ${  node.type}`);
+        console.warn(`Unrecognised node type: ${node.type}`);
     }
   }
 
   _endVisit(node) {
     switch (node.type) {
       case NODE_TYPE.ELEMENT:
-        this.output += `\n${  new Array(this.level + 1).join(' ')}`;
+        this.output += `\n${new Array(this.level + 1).join(' ')}`;
         this._endVisitElement(node);
         break;
       case NODE_TYPE.TEXT:
       case NODE_TYPE.COMMENT:
       case NODE_TYPE.SCRIPT:
       case NODE_TYPE.STYLE:
+      default:
         break;
     }
   }
@@ -133,14 +134,14 @@ export default class HTMLtoJSX {
     const attributes = [];
 
     node.attributes.forEach((attribute) => {
-      attributes.push(this._getElementAttribute(node, attribute));
+      attributes.push(_getElementAttribute(node, attribute));
     });
 
     this.output += transformFor(node.attributes, true, this.scope);
     this.output += transformIf(node.attributes, true, this.scope);
     this.output += `<${outputTagName}`;
     if (attributes.length > 0) {
-      this.output += ` ${  attributes.join(' ')}`;
+      this.output += ` ${attributes.join(' ')}`;
     }
     this.output += '>';
   }
@@ -150,7 +151,7 @@ export default class HTMLtoJSX {
     const outputTagName = tagName;
 
     this.output = trimEnd(this.output, this.config.indent);
-    this.output += `</${  outputTagName  }>`;
+    this.output += `</${outputTagName}>`;
     this.output += transformFor(node.attributes, false, this.scope);
     this.output += transformIf(node.attributes, false, this.scope);
   }
@@ -173,55 +174,55 @@ export default class HTMLtoJSX {
     this.output += `{/*${node.data.replace('*/', '* /')}*/}`;
   }
 
-  _onlyOneTopLevel(nodes) {
-    const _rootNodes = nodes.filter((node) => {
-      return !/\n+/.test('\n');
-    });
-    return _rootNodes.length === 1;
-  }
-
-  _getElementAttribute(node, attribute) {
-    switch (attribute.name) {
-      case 'src':
-        return `source={{uri: "${attribute.value}"}}`;
-      case 'class':
-        const value = attribute.value.trim();
-        let multiClass = value.split(' ');
-        let style = '';
-
-        if (multiClass.length === 1) {
-          style = `styles.${multiClass[0]}`;
-        } else {
-          style += '[';
-          multiClass = multiClass.map((className) => {
-            return `styles.${className}`;
-          });
-          style += multiClass.join(', ');
-
-          style += ']';
-        }
-
-        return `style={${style}}`;
-      case IF_KEY:
-      case FOR_KEY:
-        break;
-      default:
-        const tagName = node.name;
-        const name = attribute.name;
-        let result = name;
-
-        // Numeric values should be output as {123} not "123"
-        if (isNumber(attribute.value)) {
-          result += `={${attribute.value}}`;
-        } else if (attribute.value.length > 0) {
-          result += `="${attribute.value.replace(/"/gm, '&quot;')}"`;
-        }
-        return result;
-    }
-  }
-
   _cleanInput(html) {
     html = html.trim();
     return html;
+  }
+}
+
+function _onlyOneTopLevel(nodes) {
+  const _rootNodes = nodes.filter((node) => {
+    return !/\n+/.test('\n');
+  });
+  return _rootNodes.length === 1;
+}
+
+function _getElementAttribute(node, attribute) {
+  switch (attribute.name) {
+    case 'src':
+      return `source={{uri: "${attribute.value}"}}`;
+    case 'class':
+      const value = attribute.value.trim();
+      let multiClass = value.split(' ');
+      let style = '';
+
+      if (multiClass.length === 1) {
+        style = `styles.${multiClass[0]}`;
+      } else {
+        style += '[';
+        multiClass = multiClass.map((className) => {
+          return `styles.${className}`;
+        });
+        style += multiClass.join(', ');
+
+        style += ']';
+      }
+
+      return `style={${style}}`;
+    case IF_KEY:
+    case FOR_KEY:
+      break;
+    default:
+      const tagName = node.name;
+      const name = attribute.name;
+      let result = name;
+
+      // Numeric values should be output as {123} not "123"
+      if (isNumber(attribute.value)) {
+        result += `={${attribute.value}}`;
+      } else if (attribute.value.length > 0) {
+        result += `="${attribute.value.replace(/"/gm, '&quot;')}"`;
+      }
+      return result;
   }
 }
