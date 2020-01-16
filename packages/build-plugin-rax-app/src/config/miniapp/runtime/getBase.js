@@ -1,7 +1,7 @@
+const MiniAppPlugin = require('rax-miniapp-runtime-webpack-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('./getAppConfig');
 const setEntry = require('./setEntry');
-const MiniAppPlugin = require('rax-miniapp-runtime-webpack-plugin');
 
 module.exports = (context, target) => {
   const config = getWebpackBase(context);
