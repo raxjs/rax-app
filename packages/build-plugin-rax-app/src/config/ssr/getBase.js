@@ -1,6 +1,10 @@
 const getWebpackBase = require('../getWebpackBase');
 const setUserConfig = require('../user/setConfig');
 
+const USERCONFIGKEY_IGNORED = {
+  'hash': true // There is no need to change output config no matter `hash` is `true` or `false`
+};
+
 module.exports = (context) => {
   const { userConfig } = context;
   const config = getWebpackBase(context, {
@@ -28,8 +32,13 @@ module.exports = (context) => {
     registerUserConfig: (registers) => {
       // Each registers define how keys in build.json be mapped to webpack config, they are defined in `../user/keys`
       registers.forEach((register) => {
+        const userConfigKey = register.name;
+        if (USERCONFIGKEY_IGNORED[userConfigKey]) {
+          return;
+        }
+
         if (register.configWebpack) {
-          const value = userConfig[register.name] || register.defaultValue;
+          const value = userConfig[userConfigKey] || register.defaultValue;
           register.configWebpack(config, value, {
             ...context,
             taskName: 'node',
