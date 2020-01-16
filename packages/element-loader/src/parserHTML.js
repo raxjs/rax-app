@@ -26,9 +26,9 @@ export default function parser(html) {
   let styles = '';
 
   dom.forEach((node) => {
-    const {name, children, attribs} = node;
+    const { name, children, attribs } = node;
     switch (name) {
-      case 'link':
+      case 'link': {
         const rel = attribs.rel.toLowerCase();
         if (rel === 'import') {
           importLinks.push(attribs.href);
@@ -37,6 +37,7 @@ export default function parser(html) {
           styleSheetLinks.push(attribs.href);
         }
         break;
+      }
       case 'template':
         template = innerHTML(children);
         break;

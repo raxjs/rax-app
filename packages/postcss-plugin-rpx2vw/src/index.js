@@ -1,6 +1,6 @@
 const postcss = require('postcss');
 // !singlequotes|!doublequotes|!url()|pixelunit
-const rpxRegex = /"[^"]+"|'[^']+'|url\([^\)]+\)|(\d*\.?\d+)rpx/g;
+const rpxRegex = /"[^"]+"|'[^']+'|url\([^)]+\)|(\d*\.?\d+)rpx/g;
 
 const defaults = {
   viewportWidth: 750,
@@ -9,11 +9,11 @@ const defaults = {
   unitPrecision: 5,
 };
 
-module.exports = postcss.plugin('postcss-rpx2vw', function(options) {
+module.exports = postcss.plugin('postcss-rpx2vw', function (options) {
   const opts = Object.assign({}, defaults, options);
 
-  return function(root) {
-    root.walkDecls(function(decl, i) {
+  return function (root) {
+    root.walkDecls(function (decl, i) {
       // This should be the fastest test and will remove most declarations
       if (decl.value.indexOf('rpx') === -1) return;
 
@@ -21,7 +21,7 @@ module.exports = postcss.plugin('postcss-rpx2vw', function(options) {
       decl.value = decl.value.replace(rpxRegex, createRpxReplace(opts, unit, opts.viewportWidth));
     });
 
-    root.walkAtRules('media', function(rule) {
+    root.walkAtRules('media', function (rule) {
       if (rule.params.indexOf('rpx') === -1) return;
 
       rule.params = rule.params.replace(rpxRegex, createRpxReplace(opts, opts.viewportUnit, opts.viewportWidth));
@@ -30,6 +30,7 @@ module.exports = postcss.plugin('postcss-rpx2vw', function(options) {
 });
 
 function toFixed(number, precision) {
+  // eslint-disable-next-line
   const multiplier = Math.pow(10, precision + 1);
   const wholeNumber = Math.floor(number * multiplier);
 
@@ -38,7 +39,7 @@ function toFixed(number, precision) {
 
 // transform rpx to vw
 function createRpxReplace(opts, viewportUnit, viewportSize) {
-  return function(m, $1) {
+  return function (m, $1) {
     if (!$1) return m;
     const pixels = parseFloat($1);
     const parsedVal = toFixed(pixels / viewportSize * 100, opts.unitPrecision);

@@ -6,7 +6,7 @@ import parser from './parserHTML';
 import pkg from '../package.json';
 import getBabelConfig from './getBabelConfig';
 
-module.exports = function(source) {
+module.exports = function (source) {
   this.cacheable();
   const context = this;
   const filePath = this.resourcePath;
@@ -55,13 +55,14 @@ module.exports = function(source) {
         loaderString = `stylesheet-loader!${pkg.name}/lib/node-loader?type=styles&index=0!`;
         break;
       case 'script':
-        loaderString = `babel-loader?${JSON.stringify(getBabelConfig(query))}!${pkg.name}/lib/node-loader?${JSON.stringify({type: 'script', index: 0, banner: query.banner})}!`;
+        loaderString = `babel-loader?${JSON.stringify(getBabelConfig(query))}!${pkg.name}/lib/node-loader?${JSON.stringify({ type: 'script', index: 0, banner: query.banner })}!`;
         break;
+      default: break;
     }
-    return `require(${  loaderUtils.stringifyRequest(
+    return `require(${loaderUtils.stringifyRequest(
       context,
       `!!${loaderString}${path}`,
-    )  })`;
+    )})`;
   }
 
   output += `

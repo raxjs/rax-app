@@ -41,7 +41,7 @@ export default class HTMLtoJSX {
   convert(html) {
     this.reset();
 
-    html = this._cleanInput(html);
+    html = _cleanInput(html);
 
     let nodes = getDomObject(html);
 
@@ -173,11 +173,11 @@ export default class HTMLtoJSX {
   _visitComment(node) {
     this.output += `{/*${node.data.replace('*/', '* /')}*/}`;
   }
+}
 
-  _cleanInput(html) {
-    html = html.trim();
-    return html;
-  }
+function _cleanInput(html) {
+  html = html.trim();
+  return html;
 }
 
 function _onlyOneTopLevel(nodes) {
@@ -191,7 +191,8 @@ function _getElementAttribute(node, attribute) {
   switch (attribute.name) {
     case 'src':
       return `source={{uri: "${attribute.value}"}}`;
-    case 'class':
+
+    case 'class': {
       const value = attribute.value.trim();
       let multiClass = value.split(' ');
       let style = '';
@@ -209,10 +210,13 @@ function _getElementAttribute(node, attribute) {
       }
 
       return `style={${style}}`;
+    }
+
     case IF_KEY:
     case FOR_KEY:
       break;
-    default:
+
+    default: {
       const tagName = node.name;
       const name = attribute.name;
       let result = name;
@@ -224,5 +228,6 @@ function _getElementAttribute(node, attribute) {
         result += `="${attribute.value.replace(/"/gm, '&quot;')}"`;
       }
       return result;
+    }
   }
 }

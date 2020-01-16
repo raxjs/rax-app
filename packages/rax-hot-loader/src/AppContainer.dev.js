@@ -14,12 +14,12 @@ class AppContainer extends Component {
     if (typeof __RAX_HOT_LOADER__ === 'undefined') {
       console.error(
         'Rax Hot Loader: It appears that "rax-hot-loader/patch" ' +
-          'did not run immediately before the app started. Make sure that it ' +
-          'runs before any other code. For example, if you use Webpack, ' +
-          'you can add "rax-hot-loader/patch" as the very first item to the ' +
-          '"entry" array in its config. Alternatively, you can add ' +
-          'require("rax-hot-loader/patch") as the very first line ' +
-          'in the application code, before any other imports.',
+        'did not run immediately before the app started. Make sure that it ' +
+        'runs before any other code. For example, if you use Webpack, ' +
+        'you can add "rax-hot-loader/patch" as the very first item to the ' +
+        '"entry" array in its config. Alternatively, you can add ' +
+        'require("rax-hot-loader/patch") as the very first line ' +
+        'in the application code, before any other imports.',
       );
     }
   }
@@ -39,8 +39,7 @@ class AppContainer extends Component {
   // In 15.0, it only catches errors on initial mount.
   // Later it will work for updates as well:
   // https://github.com/facebook/react/pull/6020
-  unstable_handleError(error) {
-    // eslint-disable-line camelcase
+  unstable_handleError(error) { // eslint-disable-line camelcase
     this.setState({
       error,
     });
@@ -62,7 +61,7 @@ AppContainer.propTypes = {
     if (Children.count(props.children) !== 1) {
       return new Error(
         'Invalid prop "children" supplied to AppContainer. ' +
-          'Expected a single React element with your app’s root component, e.g. <App />.',
+        'Expected a single React element with your app’s root component, e.g. <App />.',
       );
     }
 
