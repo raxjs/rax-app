@@ -1,4 +1,5 @@
 const webpack = require("webpack");
+const path = require("path");
 const Chain = require("webpack-chain");
 const { getBabelConfig, setBabelAlias } = require("rax-compile-config");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
@@ -17,14 +18,15 @@ const babelConfig = getBabelConfig({
 });
 
 module.exports = context => {
-  const { rootDir, command, userConfig } = context;
+  const { rootDir, command, userConfig, pkg } = context;
   const config = new Chain();
 
   const demos = getDemos(rootDir);
   const targets = getBuildTargets(userConfig);
   const portalPath = generatePortalJs({
     rootDir,
-    params: { demos, targets },
+    componentName: pkg.name,
+    params: { demos, targets, command },
   });
 
   if (command === "start") {
@@ -77,6 +79,16 @@ module.exports = context => {
     .loader(require.resolve("ts-loader"));
 
   config.module
+    .rule('md')
+    .test(/\.md$/)
+    .use('babel')
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig)
+    .end()
+    .use('markdown-loader')
+    .loader(require.resolve('../loaders/MarkdownLoader/index'));
+
+  config.module
     .rule("assets")
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
     .use("source")
@@ -107,6 +119,10 @@ module.exports = context => {
       .end()
       .minimizer("optimizeCSS")
       .use(OptimizeCSSAssetsPlugin);
+  }
+
+  if (pkg.name) {
+    config.resolve.alias.set(pkg.name, path.resolve(rootDir, 'src/index'));
   }
 
   return config;

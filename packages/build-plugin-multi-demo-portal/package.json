@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-multi-demo-portal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "multi demo portal page for rax component developmente",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
