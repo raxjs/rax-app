@@ -1,5 +1,5 @@
 module.exports = {
-  defaultValue: '/',
+  defaultValue: './',
   validation: 'string',
   configWebpack: (config, value, context) => {
     const { command } = context;
