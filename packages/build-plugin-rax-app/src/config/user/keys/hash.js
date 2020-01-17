@@ -8,6 +8,11 @@ module.exports = {
       const hashStr = typeof value === 'boolean' ? 'hash:6' : value;
 
       const fileName = config.output.get('filename');
+
+      if (!fileName) {
+        return;
+      }
+      
       let pathArray = fileName.split('/');
       pathArray.pop();
       pathArray = pathArray.filter((v) => v);
