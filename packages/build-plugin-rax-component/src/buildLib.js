@@ -45,7 +45,7 @@ module.exports = async (api, options = {}) => {
 
         if (buildWechatMiniProgram) {
           const config = Object.assign({
-            platform: WECHAT_MINIPROGRAM,
+            platform: 'wechat',
           }, options[WECHAT_MINIPROGRAM]);
           const result = await jsx2mpBuilder(context, 'src/index', config);
           fs.removeSync(path.join(BUILD_DIR, 'wechatTemp'));
@@ -65,7 +65,7 @@ module.exports = async (api, options = {}) => {
       }
       if (buildWechatMiniProgram) {
         const config = Object.assign({
-          platform: WECHAT_MINIPROGRAM,
+          platform: 'wechat',
         }, options[WECHAT_MINIPROGRAM]);
         const result = await jsx2mpBuilder(context, null, config);
         if (result.err) {

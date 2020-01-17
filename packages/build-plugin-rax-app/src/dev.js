@@ -5,78 +5,76 @@ const qrcode = require('qrcode-terminal');
 
 const { handleWebpackErr } = require('rax-compile-config');
 const getMpOuput = require('./config/miniapp/getOutputPath');
-const mpDev = require('./config/miniapp/dev');
+const startJSX2MpDev = require('./config/miniapp/compile/dev');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
+const asyncTask = [];
+
 module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook }, options = {}) => {
   const { targets = [] } = options;
-
   let devUrl = '';
   let devCompletedArr = [];
-
-  if (targets.includes(MINIAPP)) {
-    const config = options[MINIAPP] || {};
-    if (targets.length > 2) {
-      onHook('after.start.devServer', () => {
-        mpDev(context, config, (args) => {
-          devCompletedArr.push(args);
-          if (devCompletedArr.length === 2) {
-            devCompileLog();
-          }
-        });
-      });
-    } else {
-      mpDev(context, config, (args) => {
-        devCompletedArr.push(args);
-        devCompileLog();
-      });
-    }
-  }
-
-  if (targets.includes(WECHAT_MINIPROGRAM)) {
-    const config = Object.assign({
-      platform: 'wechat',
-    }, options[WECHAT_MINIPROGRAM]);
-    if (targets.length > 2) {
-      onHook('after.start.devServer', () => {
-        mpDev(context, config, (args) => {
-          devCompletedArr.push(args);
-          if (devCompletedArr.length === 2) {
-            devCompileLog();
-          }
-        });
-      });
-    } else {
-      mpDev(context, config, (args) => {
-        devCompletedArr.push(args);
-        devCompileLog();
-      });
-    }
-  }
+  // Use build-scripts webpack
+  const buildScriptsDevTargets = [];
+  // Use jsx2mp-cli webpack
+  const jsx2mpDevTargets = [];
 
   targets.forEach(target => {
-    if (target === KRAKEN || target === WEEX || target === WEB) {
-      const getBase = require(`./config/${target}/getBase`);
-      const setDev = require(`./config/${target}/setDev`);
+    if ([WEB, WEEX, KRAKEN].indexOf(target) > - 1) {
+      buildScriptsDevTargets.push(target);
+    } else if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > - 1) {
+      options[target] = options[target] || {};
+      addMpPlatform(target, options[target]);
+      if (options[target].buildType === 'runtime') {
+        buildScriptsDevTargets.push(target);
+      } else {
+        jsx2mpDevTargets.push(target);
+      }
+    }
+  });
 
-      registerTask(target, getBase(context));
+  buildScriptsDevTargets.forEach(target => {
+    const [getBase, setDev] = getConfig(target);
+    registerTask(target, getBase(context, target));
 
+    if (setDev) {
       onGetWebpackConfig(target, (config) => {
         setDev(config, context);
       });
     }
   });
 
+  // Collect jsx2mp dev task
+  jsx2mpDevTargets.forEach(target => {
+    if (buildScriptsDevTargets.length) {
+      onHook('after.start.devServer', () => {
+        startJSX2MpDev(context, options[target], (args) => {
+          devCompletedArr.push(args);
+        });
+      });
+    } else {
+      asyncTask.push(new Promise(resolve => {
+        startJSX2MpDev(context, options[target], (args) => {
+          devCompletedArr.push(args);
+          resolve();
+        });
+      }));
+    }
+  });
+
+  if (asyncTask.length) {
+    // Run jsx2mp dev
+    Promise.all(asyncTask).then(() => {
+      devCompileLog();
+    });
+  }
+
   onHook('after.start.compile', async (args) => {
     devUrl = args.url;
     devCompletedArr.push(args);
     // run miniapp build while targets have web or weex, for log control
-    if (targets.includes(MINIAPP) || targets.includes(WECHAT_MINIPROGRAM)) {
-      if (devCompletedArr.length === 2) {
-        devCompileLog();
-      }
-    } else {
+    if (devCompletedArr.length === jsx2mpDevTargets.length + 1) {
       devCompileLog();
     }
   });
@@ -106,7 +104,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     console.log(chalk.green('Rax development server has been started:'));
     console.log();
 
-    if (targets.includes(WEB)) {
+    if (~targets.indexOf(WEB)) {
       console.log(chalk.green('[Web] Development server at:'));
       console.log('   ', chalk.underline.white(devUrl));
       console.log();
@@ -139,18 +137,37 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
       console.log();
     }
 
-    if (targets.includes(MINIAPP)) {
+    if (~targets.indexOf(MINIAPP)) {
       console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
       console.log('   ', chalk.underline.white(getMpOuput(context)));
       console.log();
     }
 
-    if (targets.includes(WECHAT_MINIPROGRAM)) {
+    if (~targets.indexOf(WECHAT_MINIPROGRAM)) {
       console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMpOuput(context, {
-        platform: 'wechat',
-      })));
+      console.log('   ', chalk.underline.white(getMpOuput(context, options[WECHAT_MINIPROGRAM])));
       console.log();
     }
   }
 };
+
+/**
+ * Add mp platform
+ * */
+function addMpPlatform(target, originalConfig = {}) {
+  switch (target) {
+    case WECHAT_MINIPROGRAM:
+      originalConfig.platform = 'wechat';
+      break;
+    default:
+      break;
+  }
+}
+
+function getConfig(target) {
+  if ([WEB, WEEX].indexOf(target) > -1) {
+    return [require(`./config/${target}/getBase`), require(`./config/${target}/setDev`)];
+  } else {
+    return [require(`./config/miniapp/runtime/getBase`)];
+  }
+}
