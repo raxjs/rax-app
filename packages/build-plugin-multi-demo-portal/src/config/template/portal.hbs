@@ -45,18 +45,22 @@ const DemoBlock = ({ js, css, name, title, desc, active, onClick }) => {
               }}
               unselectable="none"
             />
-            <a
-              target="_blank"
-              href={`weex/${name}.js?wh_weex=true`}
-              class={`icon weex ${!isWeexEnable ? 'disabled':''}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                if(!isWeexEnable){
-                  e.preventDefault();
-                }
-              }}
-              unselectable="none"
-            />
+            {
+              '{{command}}' !== 'build' ?
+              <a
+                target="_blank"
+                href={`weex/${name}.js?wh_weex=true`}
+                class={`icon weex ${!isWeexEnable ? 'disabled':''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if(!isWeexEnable){
+                    e.preventDefault();
+                  }
+                }}
+                unselectable="none"
+              />:
+              null
+            }
             <span
             class="icon fullscreen"
             onClick={(e) => {
