@@ -14,30 +14,34 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
   targets.forEach(target => {
     if (target === KRAKEN || target === WEEX || target === WEB) {
       const getBase = require(`./config/${target}/getBase`);
-
       registerTask(target, getBase(context));
     }
 
     if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
-      const mpBuild = require('./config/miniapp/build');
-      let config;
-      switch (target) {
-        case WECHAT_MINIPROGRAM:
-          config = Object.assign({
-            platform: 'wechat',
-          }, options[WECHAT_MINIPROGRAM]);
-          break;
-        case MINIAPP:
-        default:
-          config = options[MINIAPP] || {};
-          break;
-      }
-      onHook('after.build.compile', async () => {
-        const mpInfo = await mpBuild(context, config);
-        if (mpInfo.err || mpInfo.stats.hasErrors()) {
-          mpBuildErr = mpInfo;
+      if (options[target] && options[target].buildType === 'runtime') {
+        const getBase = require('./config/miniapp/runtime/getBase');
+        registerTask(target, getBase(context, target));
+      } else {
+        const jsx2mpBuilder = require('./config/miniapp/compile/build');
+        let config;
+        switch (target) {
+          case WECHAT_MINIPROGRAM:
+            config = Object.assign({
+              platform: 'wechat',
+            }, options[WECHAT_MINIPROGRAM]);
+            break;
+          case MINIAPP:
+          default:
+            config = options[MINIAPP] || {};
+            break;
         }
-      });
+        onHook('after.build.compile', async() => {
+          const mpInfo = await jsx2mpBuilder(context, config);
+          if (mpInfo.err || mpInfo.stats.hasErrors()) {
+            mpBuildErr = mpInfo;
+          }
+        });
+      }
     }
   });
 

@@ -16,11 +16,12 @@ function compile(hbsPath) {
 module.exports = function({
   filename = "index.js",
   rootDir = process.cwd(),
+  componentName = 'component',
   params,
 }) {
   const compileTemplateContent = compile(PORTAL_TMPL_PATH);
   const readmeFilePath = path.resolve(rootDir, "./README.md");
-  const result = parseMd("portal", readmeFilePath);
+  const result = parseMd(componentName, readmeFilePath);
   const docHtml = result.body;
 
   const tempDir = path.join(rootDir, "./node_modules");
