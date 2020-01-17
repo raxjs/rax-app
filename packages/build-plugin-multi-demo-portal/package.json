@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-multi-demo-portal",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "multi demo portal page for rax component developmente",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
@@ -22,6 +22,7 @@
     "highlight.js": "^9.17.1",
     "html-webpack-plugin": "^3.2.0",
     "image-source-loader": "^0.6.5",
+    "ip": "^1.1.5",
     "js-htmlencode": "^0.3.0",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",

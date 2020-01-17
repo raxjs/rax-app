@@ -1,3 +1,4 @@
+const ip = require('ip');
 const consoleClear = require("console-clear");
 const chalk = require("chalk");
 const { handleWebpackErr } = require("rax-compile-config");
@@ -31,9 +32,19 @@ module.exports = (api, options = {}) => {
       return;
     }
 
+    const portalUrl = `${devUrl}portal`.replace(/^http:\/\/localhost/gi, function (match) {
+      // Called when matched
+      try {
+        return `http://${ip.address()}`;
+      } catch (error) {
+        console.log(chalk.yellow(`Get local IP address failed: ${error.toString()}`));
+        return match;
+      }
+    });
+
     console.log(chalk.green("Multi-page portal has been started at:"));
     console.log();
-    console.log("   ", chalk.underline.white(`${devUrl}portal`));
+    console.log("   ", chalk.underline.white(portalUrl));
     console.log();
   }
 

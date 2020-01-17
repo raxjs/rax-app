@@ -6,33 +6,72 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Rax mutiple pages app</title>
   <style>
+    body {
+      text-align: center;
+    }
+    .logo {
+      width: 150px;
+      margin: 70px auto 10px;
+    }
+    .pagelist {
+      margin: 20px auto;
+      padding: 10px;
+      max-width: 700px;
+      border: 1px solid #efefef;
+      border-radius: 2px;
+    }
+    .title {
+      margin-bottom: 10px;
+    }
+    .h2 {
+      margin: 10px;
+    }
+    ul, li {
+      margin: 0;
+      padding: 0;
+      display: block;
+    }
+    li {
+      text-align: left;
+      border-bottom: 1px solid #efefef;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
     .btn {
       display: inline-block;
-      padding: 1px 7px;
-      border: 1px solid #ddd;
+      padding: 0 15px;
+      height: 32px;
+      line-height: 32px;
       cursor: pointer;
-      text-decoration: none;
-      color: #000;
-      margin-top: 8px;
-      margin-right: 8px;
-    }
-    .btn:hover {
-      color: #f29718;
+      background-color: #f29718;
+      color: #fff;
+      border-radius: 16px;
     }
   </style>
+  <script>
+    function openUrl(url){
+      if (location.search == '?target=_self') {
+        location.replace(url);
+      } else {
+        window.open(url);
+      }
+    }
+  </script>
 </head>
 <body>
+  <img class="logo" src="//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png">
   <h1>Rax mutiple pages app</h1>
   <%_ if (entries.length) { -%>
-  <h3>Page list</h3>
-  <ul>
-    <% entries.forEach(function(entry){ %>
-    <li>
-      <div>/pages/<%= entry.entryName %></div>
-      <a class="btn" href="/pages/<%= entry.entryName %>" target="_blank">Web Preview</a>
-    </li>
-    <% }); %>
-  </ul>
+  <div class="pagelist">
+    <ul>
+      <% entries.forEach(function(entry){ %>
+      <li>
+        <div class="title">/pages/<%= entry.entryName %></div>
+        <button type="button" class="btn" onclick="openUrl('/pages/<%= entry.entryName %>')">Web Preview</button>
+      </li>
+      <% }); %>
+    </ul>
+  </div>
   <%_ } -%>
 </body>
 </html>

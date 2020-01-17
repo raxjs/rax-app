@@ -18,8 +18,9 @@ module.exports = context => {
 
     config.plugin(`html4${name}`).use(HtmlWebpackPlugin, [
       {
-        inject: true,
-        filename: `${name}.html`,
+        inject: false,
+        filename: `demo/${name}.html`,
+        jsPath: `../${name}.js`,
         chunks: [name],
         template: path.resolve(__dirname, "./demo.html"),
       },
@@ -63,7 +64,7 @@ module.exports = context => {
   config.plugin("html").use(HtmlWebpackPlugin, [
     {
       inject: true,
-      filename: "portal.html",
+      filename: "index.html",
       chunks: ["portal"],
       template: path.resolve(__dirname, "./portal.html"),
     },
