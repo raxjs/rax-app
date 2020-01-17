@@ -65,8 +65,8 @@
   <div class="pagelist">
     <ul>
       <% entries.forEach(function(entry){ %>
-      <li class="title">
-        <div>/pages/<%= entry.entryName %></div>
+      <li>
+        <div class="title">/pages/<%= entry.entryName %></div>
         <button type="button" class="btn" onclick="openUrl('/pages/<%= entry.entryName %>')">Web Preview</button>
       </li>
       <% }); %>
