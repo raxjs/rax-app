@@ -20,8 +20,11 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
   // Use jsx2mp-cli webpack
   const jsx2mpDevTargets = [];
 
+  if (targets.indexOf(WEB)) {
+    buildScriptsDevTargets.push(WEB);
+  }
   targets.forEach(target => {
-    if ([WEB, WEEX, KRAKEN].indexOf(target) > - 1) {
+    if ([WEEX, KRAKEN].indexOf(target) > - 1) {
       buildScriptsDevTargets.push(target);
     } else if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > - 1) {
       options[target] = options[target] || {};
