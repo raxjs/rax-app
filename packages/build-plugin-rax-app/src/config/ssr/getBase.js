@@ -2,7 +2,7 @@ const getWebpackBase = require('../getWebpackBase');
 const setUserConfig = require('../user/setConfig');
 
 const USERCONFIGKEY_IGNORED = {
-  'hash': true // There is no need to change output config no matter `hash` is `true` or `false`
+  hash: true, // There is no need to change output config no matter `hash` is `true` or `false`
 };
 
 module.exports = (context) => {
