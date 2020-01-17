@@ -28,14 +28,14 @@ const DemoBlock = ({ js, css, name, title, desc, active, onClick }) => {
       <div className={`demo-box ${active ? 'active' : ''}`} onClick={onClick}>
         <div className="demo-box-meta">
           <div className="demo-box-title">
-            <a target="_blank" href={ '{{command}}' === 'build' ? `./${name}.html` : `${name}`}>
+            <a target="_blank" href={ '{{command}}' === 'build' ? `./demo/${name}.html` : `/${name}` }>
               {name}
             </a>
           </div>
           <div className="icons">
             <a
               target="_blank"
-              href={`/${name}`}
+              href={ '{{command}}' === 'build' ? `./demo/${name}.html` : `/${name}` }
               class={`icon web ${!isWebEnable ? 'disabled':''}`}
               onClick={(e) => {
                 e.stopPropagation();
@@ -155,7 +155,7 @@ function Portal(props){
         </div>
       </div>
       <Device>
-        <iframe src={ '{{command}}' === 'build' ? `./${active}.html` :`/${active}`} style={iframeStyle}></iframe>
+        <iframe src={ '{{command}}' === 'build' ? `./demo/${active}.html` :`/${active}`} style={iframeStyle}></iframe>
       </Device>
     </div>
   );
