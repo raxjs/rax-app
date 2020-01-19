@@ -30,16 +30,7 @@ If you use TypeScript, run the following command:
 npm install --save-dev eslint eslint-config-rax babel-eslint eslint-plugin-react eslint-plugin-import @typescript-eslint/parser @typescript-eslint/eslint-plugin
 ```
 
-Then, add this to your `.eslintrc.js` file:
-
-```js
-// .eslintrc.js
-module.exports = {
-  extends: ['rax/typescript']
-};
-```
-
-Make sure you read about [the `--ext` command line option](https://eslint.org/docs/user-guide/command-line-interface#--ext). Example command line usage:
+Then, Make sure you read about [the `--ext` command line option](https://eslint.org/docs/user-guide/command-line-interface#--ext). Example command line usage:
 
 ```
 npx eslint --ext .js,.ts .

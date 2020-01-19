@@ -24,7 +24,6 @@ module.exports = {
     /**
      * ES6
      */
-    'prefer-const': 'off',
     'no-const-assign': 'error',
     'no-class-assign': 'error',
     'no-dupe-class-members': 'error',
@@ -36,6 +35,18 @@ module.exports = {
     'template-curly-spacing': 'error',
     'generator-star-spacing': ['error', {'before': false, 'after': true}],
     'yield-star-spacing': ['error', {'before': false, 'after': true}],
+    'no-undef': 'error',
+    'dot-notation': ['error', {
+      'allowKeywords': true,
+    }],
+    'no-extend-native': 'error',
+    'no-native-reassign': 'error',
+    'no-constant-condition': ['error', {
+      'checkLoops': false,
+    }],
+    'no-caller': 'error',
+    'no-return-assign': 'off',
+    'no-loop-func': 'off',
     'strict': ['off', 'global'],
     'global-strict': ['off', 'always'],
     'no-extra-strict': 'off',
@@ -45,43 +56,18 @@ module.exports = {
       'args': 'after-used',
       'varsIgnorePattern': 'createElement',
     }],
-    'no-array-constructor': 'off',
-    'no-undef': 'error',
     'no-unused-expressions': 'off',
     'no-use-before-define': 'off',
+    'no-array-constructor': 'off',
     'yoda': 'off',
     'eqeqeq': 'off',
     'no-new': 'off',
     'consistent-return': 'off',
-    'dot-notation': ['error', {
-      'allowKeywords': true,
-    }],
-    'no-extend-native': 'error',
-    'no-native-reassign': 'error',
-    'no-return-assign': 'off',
-    'no-constant-condition': ['error', {
-      'checkLoops': false,
-    }],
-    'no-caller': 'error',
-    'no-loop-func': 'off',
-
+    'prefer-const': 'off',
     /**
      * Node.js
      */
-    'no-console': 'off',
     'no-catch-shadow': 'error',
-    'no-new-require': 'off',
-    'no-mixed-requires': ['off', false],
-    'no-path-concat': 'off',
-    'handle-callback-err': 'off',
-
-    'no-empty': 'off',
-    'indent': ['error', 2, {
-      'SwitchCase': 1,
-    }],
-    'camelcase': ['off', {
-      'properties': 'always',
-    }],
     'quotes': ['error', 'single', 'avoid-escape'],
     'brace-style': ['error', '1tbs', {
       'allowSingleLine': false,
@@ -91,8 +77,6 @@ module.exports = {
       'after': true,
     }],
     'comma-style': ['error', 'last'],
-    'eol-last': 'off',
-    'func-names': 'off',
     'new-cap': ['error', {
       'newIsCap': true,
     }],
@@ -125,6 +109,20 @@ module.exports = {
         'exceptions': ['*'],
         'balanced': true,
       },
+    }],
+    'no-console': 'off',
+    'no-new-require': 'off',
+    'no-mixed-requires': ['off', false],
+    'no-path-concat': 'off',
+    'handle-callback-err': 'off',
+    'eol-last': 'off',
+    'func-names': 'off',
+    'no-empty': 'off',
+    'indent': ['error', 2, {
+      'SwitchCase': 1,
+    }],
+    'camelcase': ['off', {
+      'properties': 'always',
     }],
 
     /**

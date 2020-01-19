@@ -13,8 +13,6 @@ module.exports = {
      * React & JSX
      */
     'jsx-quotes': ['error', 'prefer-double'],
-    'react/display-name': 'off',
-    'react/jsx-boolean-value': ['off', 'always'],
     'react/jsx-no-bind': ['error', {
       'allowArrowFunctions': true,
     }],
@@ -26,17 +24,22 @@ module.exports = {
     'react/jsx-tag-spacing': 'error',
     'react/jsx-no-comment-textnodes': 'error',
     'react/jsx-equals-spacing': 'error',
-    'react/jsx-handler-names': 'off',
     'react/jsx-uses-react': 'error',
     'react/jsx-uses-vars': 'error',
     'react/no-is-mounted': 'error',
     'react/no-children-prop': 'error',
     'react/no-did-mount-set-state': 'error',
     'react/no-did-update-set-state': 'error',
-    'react/no-unknown-property': 'off',
     'react/style-prop-object': 'error',
     'react/react-in-jsx-scope': 'error',
-    'react/self-closing-comp': 'error',
+    // Avoid throw lint error like <script src="path"></script>
+    'react/self-closing-comp': ['error', {
+      'html': false
+    }],
+    'react/display-name': 'off',
+    'react/jsx-boolean-value': ['off', 'always'],
+    'react/jsx-handler-names': 'off',
+    'react/no-unknown-property': 'off',
     'react/sort-comp': ['off', {
       'order': [
         'lifecycle',
