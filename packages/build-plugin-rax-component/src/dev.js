@@ -9,7 +9,7 @@ const getDemos = require('./config/getDemos');
 const watchLib = require('./watchLib');
 const startJSX2MpDev = require('./config/miniapp/dev');
 
-const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
+const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM, NODE } = require('./constants');
 
 module.exports = (api, options = {}) => {
   const { registerTask, context, onHook } = api;
@@ -28,7 +28,7 @@ module.exports = (api, options = {}) => {
   const jsx2mpDevTargets = [];
   // set dev config
   targets.forEach((target) => {
-    if ([WEB, WEEX].indexOf(target) > -1) {
+    if ([WEB, WEEX, NODE].indexOf(target) > -1) {
       const getDev = require(`./config/${target}/getDev`);
       const config = getDev(context, options);
       buildScriptsDevTargets.push(target);
@@ -104,6 +104,12 @@ module.exports = (api, options = {}) => {
     if (~targets.indexOf(WEB)) {
       console.log(chalk.green('[Web] Development pages:'));
       demos.forEach((demo) => console.log('   ', chalk.underline.white(devUrl + demo.name)));
+      console.log();
+    }
+
+    if (~targets.indexOf(NODE)) {
+      console.log(chalk.green('[SSR] Development pages:'));
+      demos.forEach((demo) => console.log('   ', chalk.underline.white(devUrl + 'ssr/' + demo.name)));
       console.log();
     }
 

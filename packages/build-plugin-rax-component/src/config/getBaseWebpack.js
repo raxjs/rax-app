@@ -23,6 +23,8 @@ module.exports = (context) => {
   config.target('web');
   config.context(rootDir);
 
+  config.output.path(rootDir);
+
   config.externals([
     function(ctx, request, callback) {
       if (request.indexOf('@weex-module') !== -1) {
