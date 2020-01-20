@@ -12,7 +12,7 @@ module.exports = {
       if (!fileName) {
         return;
       }
-      
+
       let pathArray = fileName.split('/');
       pathArray.pop();
       pathArray = pathArray.filter((v) => v);

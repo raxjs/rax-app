@@ -1,19 +1,19 @@
-const remarkAbstract = require("remark");
-const colors = require("chalk");
-const fs = require("fs-extra");
-const marked = require("marked");
-const hljs = require("highlight.js/lib/highlight");
-const htmlDecode = require("js-htmlencode").htmlDecode;
+const remarkAbstract = require('remark');
+const colors = require('chalk');
+const fs = require('fs-extra');
+const marked = require('marked');
+const hljs = require('highlight.js/lib/highlight');
+const htmlDecode = require('js-htmlencode').htmlDecode;
 
 const remark = remarkAbstract();
 
 hljs.registerLanguage(
-  "javascript",
-  require("highlight.js/lib/languages/javascript"),
+  'javascript',
+  require('highlight.js/lib/languages/javascript'),
 );
-hljs.registerLanguage("css", require("highlight.js/lib/languages/css"));
-hljs.registerLanguage("html", require("highlight.js/lib/languages/xml"));
-hljs.registerLanguage("bash", require("highlight.js/lib/languages/bash"));
+hljs.registerLanguage('css', require('highlight.js/lib/languages/css'));
+hljs.registerLanguage('html', require('highlight.js/lib/languages/xml'));
+hljs.registerLanguage('bash', require('highlight.js/lib/languages/bash'));
 
 /**
  * Parse demo markdown
@@ -38,7 +38,7 @@ module.exports = (name, filePath) => {
 
   if (!content) return result;
 
-  const AST = remark.parse(content.replace(/^---(.|\n)*---/gim, ""));
+  const AST = remark.parse(content.replace(/^---(.|\n)*---/gim, ''));
 
   if (!AST || !AST.children) {
     colors.yellow(`Can not parse the demo md: ${filePath}`);
@@ -50,16 +50,16 @@ module.exports = (name, filePath) => {
   const metaArray = content.match(metaReg);
 
   if (metaArray && metaArray.length > 0) {
-    content = content.replace(metaReg, "");
+    content = content.replace(metaReg, '');
     metaArray.forEach(metaStr => {
       if (!metaStr) return;
-      metaStr = metaStr.replace(/---/g, "");
+      metaStr = metaStr.replace(/---/g, '');
       metaStr
-        .split("\n")
+        .split('\n')
         .map(str => str.trim())
         .filter(str => !!str)
         .forEach(metaItemStr => {
-          const index = metaItemStr.indexOf(":");
+          const index = metaItemStr.indexOf(':');
 
           result.meta[
             metaItemStr.substring(0, index).trim()
@@ -70,7 +70,7 @@ module.exports = (name, filePath) => {
 
   // title
   const titleNode = AST.children.find(
-    child => child.type === "heading" && child.depth === 1,
+    child => child.type === 'heading' && child.depth === 1,
   );
   if (titleNode && titleNode.children && titleNode.children[0]) {
     result.meta.title = titleNode.children[0].value;
@@ -80,21 +80,21 @@ module.exports = (name, filePath) => {
   const body = AST.children;
 
   const jsNode = body.find(
-    child => child.type === "code" && ["js", "jsx"].indexOf(child.lang) > -1,
+    child => child.type === 'code' && ['js', 'jsx'].indexOf(child.lang) > -1,
   );
   if (jsNode) {
     result.js = jsNode.value;
   }
 
   const cssNode = body.find(
-    child => child.type === "code" && child.lang === "css",
+    child => child.type === 'code' && child.lang === 'css',
   );
   if (cssNode) {
     result.css = cssNode.value;
   }
 
   const htmlNode = body.find(
-    child => child.type === "code" && child.lang === "html",
+    child => child.type === 'code' && child.lang === 'html',
   );
 
   if (htmlNode) {
@@ -103,23 +103,23 @@ module.exports = (name, filePath) => {
 
   const bodyContent = body.map(child => {
     if (
-      child.type === "code" &&
-      ["js", "jsx", "css", "html"].indexOf(child.lang) > 0
+      child.type === 'code' &&
+      ['js', 'jsx', 'css', 'html'].indexOf(child.lang) > 0
     ) {
-      return "\n";
-    } else if (child.type === "code") {
+      return '\n';
+    } else if (child.type === 'code') {
       return `<pre><code>${htmlDecode(
-        hljs.highlight(child.lang || "bash", child.value).value,
+        hljs.highlight(child.lang || 'bash', child.value).value,
       )}</code></pre>`;
-    } else if (!(child.type === "heading" && child.depth === 1)) {
+    } else if (!(child.type === 'heading' && child.depth === 1)) {
       return marked(remark.stringify(child));
     } else {
-      return "\n";
+      return '\n';
     }
   });
 
   if (bodyContent) {
-    result.body = bodyContent.join("\n");
+    result.body = bodyContent.join('\n');
   }
 
   return result;

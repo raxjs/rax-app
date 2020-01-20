@@ -70,7 +70,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     });
   }
 
-  onHook('after.start.compile', async (args) => {
+  onHook('after.start.compile', async(args) => {
     devUrl = args.url;
     devCompletedArr.push(args);
     // run miniapp build while targets have web or weex, for log control
@@ -112,7 +112,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     if (targets.includes(WEEX)) {
       // Use Weex App to scan ip address (mobile phone can't visit localhost).
-      const weexUrl = `${devUrl}weex/index.js?wh_weex=true`.replace(/^http:\/\/localhost/gi, function (match) {
+      const weexUrl = `${devUrl}weex/index.js?wh_weex=true`.replace(/^http:\/\/localhost/gi, function(match) {
         // Called when matched
         try {
           return `http://${ip.address()}`;
@@ -168,6 +168,6 @@ function getConfig(target) {
   if ([WEB, WEEX].indexOf(target) > -1) {
     return [require(`./config/${target}/getBase`), require(`./config/${target}/setDev`)];
   } else {
-    return [require(`./config/miniapp/runtime/getBase`)];
+    return [require('./config/miniapp/runtime/getBase')];
   }
 }

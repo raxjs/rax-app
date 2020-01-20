@@ -38,7 +38,7 @@ checkRegistry()
       stdio: 'inherit',
     });
 
-    spawn.sync('rax', ['init', ...argv], { 
+    spawn.sync('rax', ['init', ...argv], {
       stdio: 'inherit',
     });
   })

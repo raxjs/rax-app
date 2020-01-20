@@ -19,14 +19,14 @@ updateNotifier({pkg}).notify();
 // Check node version
 if (!semver.satisfies(process.version, '>=8')) {
   const message = `You are currently running Node.js ${
-    chalk.red(process.version)  }.\n` +
-    `\n` +
-    `Rax runs on Node 6.0 or newer. There are several ways to ` +
-    `upgrade Node.js depending on your preference.\n` +
-    `\n` +
-    `nvm:       nvm install node && nvm alias default node\n` +
-    `Homebrew:  brew install node\n` +
-    `Installer: download the Mac .pkg from https://nodejs.org/\n`;
+    chalk.red(process.version)}.\n` +
+    '\n' +
+    'Rax runs on Node 6.0 or newer. There are several ways to ' +
+    'upgrade Node.js depending on your preference.\n' +
+    '\n' +
+    'nvm:       nvm install node && nvm alias default node\n' +
+    'Homebrew:  brew install node\n' +
+    'Installer: download the Mac .pkg from https://nodejs.org/\n';
 
   console.log(message);
   process.exit(1);
@@ -38,7 +38,7 @@ if (!semver.satisfies(process.version, '>=8')) {
  * usage: rax -v or rax --version
  */
 if (argv._.length === 0 && (argv.v || argv.version)) {
-  console.log(`rax-cli: ${  pkg.version}`);
+  console.log(`rax-cli: ${pkg.version}`);
   try {
     const RAX_PACKAGE_JSON_PATH = path.resolve(
       process.cwd(),
@@ -136,12 +136,12 @@ function createProject(name, verbose, template, userAnswers) {
   }).then(function(isAutoInstalled) {
     console.log(chalk.white.bold('To run your app:'));
     if (!createInCurrent) {
-      console.log(chalk.white(`   cd ${  projectName}`));
+      console.log(chalk.white(`   cd ${projectName}`));
     }
     if (!isAutoInstalled) {
-      console.log(chalk.white(`   ${  pkgManager === 'npm' ? 'npm install' : 'yarn'}`));
+      console.log(chalk.white(`   ${pkgManager === 'npm' ? 'npm install' : 'yarn'}`));
     }
-    console.log(chalk.white(`   ${  pkgManager  } start`));
+    console.log(chalk.white(`   ${pkgManager} start`));
   });
 }
 
@@ -174,7 +174,7 @@ function install(directory, verbose) {
 
     proc.on('close', function(code) {
       if (code !== 0) {
-        console.error(`\`${  pkgManager  } install\` failed`);
+        console.error(`\`${pkgManager} install\` failed`);
         resolve(false);
       } else {
         resolve(true);

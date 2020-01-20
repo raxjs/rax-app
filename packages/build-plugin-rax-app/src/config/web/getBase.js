@@ -11,7 +11,7 @@ module.exports = (context) => {
   config.output.filename('web/[name].js');
 
   config.externals([
-    function (ctx, request, callback) {
+    function(ctx, request, callback) {
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, 'undefined');
       }

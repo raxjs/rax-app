@@ -15,12 +15,11 @@ const interopRequire = (obj) => {
 // The App-Shell component will be pre-rendered to index.html.
 // When user loaded entry javascript file, it will hydrate the App-Shell component.
 module.exports = class PWAAppShellPlugin {
-
   apply(compiler) {
     const config = compiler.options;
     const appJSON = path.resolve(config.context, 'src/app.json');
 
-    if (!existsSync(appJSON)){
+    if (!existsSync(appJSON)) {
       return;
     }
 
@@ -57,7 +56,6 @@ module.exports = class PWAAppShellPlugin {
 
     // Render into index.html
     compiler.hooks.emit.tapAsync(NAME, (compilation, callback) => {
-
       const tempCode = readFileSync(outputFile, 'utf-8');
       const tempFn = new Function('require', 'module', tempCode); // eslint-disable-line
       const tempModule = { exports: {} };
