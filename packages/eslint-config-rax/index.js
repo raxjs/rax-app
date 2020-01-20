@@ -1,6 +1,6 @@
 module.exports = {
   extends: [
-    './rules/global',
+    './rules/globals',
     './rules/base',
     './rules/react',
     './rules/typescript'

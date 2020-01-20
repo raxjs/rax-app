@@ -17,5 +17,7 @@ module.exports = {
     'webkitCancelAnimationFrame': 'readonly',
     // React
     'React': 'readonly',
+    // Rax
+    'Rax': 'readonly',
   },
 };
