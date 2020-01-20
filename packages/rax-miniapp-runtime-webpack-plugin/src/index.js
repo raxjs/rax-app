@@ -567,8 +567,6 @@ function installDependencies(autoBuildNpm = false, stats, target, callback) {
     target,
   );
 
-  let callbackExecuted = false;
-
   const build = () => {
     const outputNpmPath = path.resolve(outputPath, adapter[target].npmDirName);
     ensureDirSync(outputNpmPath);
@@ -578,19 +576,11 @@ function installDependencies(autoBuildNpm = false, stats, target, callback) {
         path.resolve(outputPath, adapter[target].npmDirName, name),
       );
     });
-    if (!callbackExecuted) {
-      callback();
-      callbackExecuted = true;
-    }
   };
   console.log(chalk.green(`Start building deps for ${adapter[target].name}...`));
 
   build();
-
-  if (!callbackExecuted) {
-    callback();
-    callbackExecuted = true;
-  }
+  callback();
 }
 
 function handleWrapChunks(compilation, globalVars = [], afterOptimizations, pluginName) {
