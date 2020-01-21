@@ -1,5 +1,5 @@
-const path = require("path");
-const glob = require("glob");
+const path = require('path');
+const glob = require('glob');
 const fs = require('fs');
 
 module.exports = function(rootDir, options = {}) {
@@ -11,7 +11,7 @@ module.exports = function(rootDir, options = {}) {
   // |  ├── index.jsx
   if (!isNode) {
     // read demos
-    glob.sync(path.resolve(rootDir, `demo/*.{js,jsx,md}`)).forEach(filePath => {
+    glob.sync(path.resolve(rootDir, 'demo/*.{js,jsx,md}')).forEach(filePath => {
       const name = filePath.substring(
         filePath.lastIndexOf('/') + 1,
         Math.max(filePath.indexOf('.js'), filePath.indexOf('.md')),

@@ -73,7 +73,6 @@ module.exports = (context, options) => {
 
     demos.forEach((demo) => {
       app.get(`/ssr/${demo.name}`, async function(req, res) {
-
         const query = req.query || {};
         // disable hydarte for debug http://localhost:9999/ssr/index?hydrate=false
         const hydrate = query.hydrate !== 'false';
@@ -111,8 +110,7 @@ module.exports = (context, options) => {
               ${srcipt}
             </body>
           </html>`;
-          
-        res.send(html);
+          res.send(html);
       });
     });
   });
