@@ -6,6 +6,9 @@ module.exports = function(rootDir, options = {}) {
   const demos = [];
   const isNode = options.type === 'node';
 
+  // Compatible with original way
+  // ├── demo
+  // |  ├── index.jsx
   if (!isNode) {
     // read demos
     glob.sync(path.resolve(rootDir, `demo/*.{js,jsx,md}`)).forEach(filePath => {
@@ -34,6 +37,10 @@ module.exports = function(rootDir, options = {}) {
     return true;
   });
 
+  // ├── demo
+  // |  ├── index
+  // |  |  ├── entry-client.js
+  // |  |  ├── entry-server.js
   const platformEntry = isNode ? 'entry-server.js' : 'entry-client.js';
   folders.forEach((folder) => {
     demos.push({
