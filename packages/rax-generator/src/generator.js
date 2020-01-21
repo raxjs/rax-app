@@ -56,7 +56,7 @@ function getIgnore(args) {
       '.prettierignore.ejs',
     ];
   }
-  
+
   if (!projectFeatures || Array.isArray(projectFeatures) && !projectFeatures.includes('faas')) {
     list.push('src/api');
   }
