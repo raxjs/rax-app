@@ -40,25 +40,21 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
       if (options[target] && options[target].buildType === 'runtime') {
         const getBase = require('./config/miniapp/runtime/getBase');
         registerTask(target, getBase(context, target));
-      } else {
-
-        if (buildScriptsDevTargets.length) {
-          onHook('after.build.compile', async () => {
-            mpBuildErr = await invokeJSX2MPBuilder(context, options[target]);
-          });
-        } else if (jsx2mpDevTargets.length) {
-          console.log(123123);
+      } else if (buildScriptsDevTargets.length) {
+        onHook('after.build.compile', async () => {
           mpBuildErr = await invokeJSX2MPBuilder(context, options[target]);
-          consoleClear(true);
-          if (mpBuildErr) {
-            const err = mpBuildErr.err;
-            const stats = mpBuildErr.stats;
-            if (!handleWebpackErr(err, stats)) {
-              return;
-            }
+        });
+      } else if (jsx2mpDevTargets.length) {
+        mpBuildErr = await invokeJSX2MPBuilder(context, options[target]);
+        consoleClear(true);
+        if (mpBuildErr) {
+          const err = mpBuildErr.err;
+          const stats = mpBuildErr.stats;
+          if (!handleWebpackErr(err, stats)) {
+            return;
           }
-          logBuildResult(targets, context);
         }
+        logBuildResult(targets, context);
       }
     }
   });
