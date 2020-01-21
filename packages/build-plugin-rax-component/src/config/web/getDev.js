@@ -96,6 +96,7 @@ module.exports = (context, options) => {
       .loader(require.resolve('less-loader'));
   }
 
+  // Extract css for SSR dev server
   config.plugin('minicss')
     .use(MiniCssExtractPlugin, [{
       filename: '[name].css',

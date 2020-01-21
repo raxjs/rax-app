@@ -75,6 +75,7 @@ module.exports = (context, options) => {
       app.get(`/ssr/${demo.name}`, async function(req, res) {
 
         const query = req.query || {};
+        // disable hydarte for debug http://localhost:9999/ssr/index?hydrate=fasle
         const hydrate = query.hydrate === 'false';
 
         const bundleContent = outputFs.readFileSync(path.join(rootDir, `ssr/${demo.name}.js`), 'utf8');
