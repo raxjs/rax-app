@@ -86,5 +86,5 @@ function parseWebpackPath(pathString) {
 
 module.exports = {
   parse,
-  print
+  print,
 };
