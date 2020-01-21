@@ -101,19 +101,19 @@ module.exports = (api, options = {}) => {
     console.log(chalk.green('Rax development server has been started:'));
     console.log();
 
-    if (~targets.indexOf(WEB)) {
+    if (targets.includes(WEB)) {
       console.log(chalk.green('[Web] Development pages:'));
       demos.forEach((demo) => console.log('   ', chalk.underline.white(devUrl + demo.name)));
       console.log();
     }
 
-    if (~targets.indexOf(NODE)) {
+    if (targets.includes(NODE)) {
       console.log(chalk.green('[SSR] Development pages:'));
       demos.forEach((demo) => console.log('   ', chalk.underline.white(`${devUrl}ssr/${demo.name}`)));
       console.log();
     }
 
-    if (~targets.indexOf(WEEX)) {
+    if (targets.includes(WEEX)) {
       console.log(chalk.green('[Weex] Development server at:'));
 
       demos.forEach((demo) => {
@@ -134,13 +134,13 @@ module.exports = (api, options = {}) => {
       });
     }
 
-    if (~targets.indexOf(MINIAPP)) {
+    if (targets.includes(MINIAPP)) {
       console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
       console.log('   ', chalk.underline.white(path.resolve(rootDir, `demo/${MINIAPP}`)));
       console.log();
     }
 
-    if (~targets.indexOf(WECHAT_MINIPROGRAM)) {
+    if (targets.includes(WECHAT_MINIPROGRAM)) {
       console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
       console.log('   ', chalk.underline.white(path.resolve(rootDir, 'demo/wechat-miniprogram')));
       console.log();
