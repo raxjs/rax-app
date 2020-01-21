@@ -30,7 +30,7 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
     }
   });
 
-  targets.forEach(async (target) => {
+  targets.forEach(async(target) => {
     if ([WEB, WEEX, KRAKEN].includes(target)) {
       const getBase = require(`./config/${target}/getBase`);
       registerTask(target, getBase(context));
@@ -41,7 +41,7 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
         const getBase = require('./config/miniapp/runtime/getBase');
         registerTask(target, getBase(context, target));
       } else if (buildScriptsDevTargets.length) {
-        onHook('after.build.compile', async () => {
+        onHook('after.build.compile', async() => {
           mpBuildErr = await invokeJSX2MPBuilder(context, options[target]);
         });
       } else if (jsx2mpDevTargets.length) {
