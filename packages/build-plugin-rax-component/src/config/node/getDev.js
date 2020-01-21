@@ -1,5 +1,5 @@
 const path = require('path');
-const Module = require("module");
+const Module = require('module');
 const { parse, print } = require('error-stack-tracey');
 
 const getBaseWebpack = require('../getBaseWebpack');
@@ -55,15 +55,15 @@ module.exports = (context, options) => {
 
     config.module.rules.delete('css');
     config.module.rule('css')
-    .test(/\.css?$/)
-    .use('ignorecss')
+      .test(/\.css?$/)
+      .use('ignorecss')
       .loader(require.resolve('./ignoreLoader'))
       .end();
 
     config.module.rules.delete('less');
     config.module.rule('less')
-    .test(/\.less?$/)
-    .use('ignorecss')
+      .test(/\.less?$/)
+      .use('ignorecss')
       .loader(require.resolve('./ignoreLoader'))
       .end();
   }
@@ -111,7 +111,7 @@ module.exports = (context, options) => {
               ${srcipt}
             </body>
           </html>`;
-        
+          
         res.send(html);
       });
     });

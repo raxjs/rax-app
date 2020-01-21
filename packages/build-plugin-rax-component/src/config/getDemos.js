@@ -13,8 +13,8 @@ module.exports = function(rootDir, options = {}) {
     // read demos
     glob.sync(path.resolve(rootDir, `demo/*.{js,jsx,md}`)).forEach(filePath => {
       const name = filePath.substring(
-        filePath.lastIndexOf("/") + 1,
-        Math.max(filePath.indexOf(".js"), filePath.indexOf(".md")),
+        filePath.lastIndexOf('/') + 1,
+        Math.max(filePath.indexOf('.js'), filePath.indexOf('.md')),
       );
 
       demos.push({
@@ -39,9 +39,9 @@ module.exports = function(rootDir, options = {}) {
 
   // ├── demo
   // |  ├── index
-  // |  |  ├── entry-client.js
-  // |  |  ├── entry-server.js
-  const platformEntry = isNode ? 'entry-server.js' : 'entry-client.js';
+  // |  |  ├── entry-client.jsx
+  // |  |  ├── entry-server.jsx
+  const platformEntry = isNode ? 'entry-server.jsx' : 'entry-client.jsx';
   folders.forEach((folder) => {
     demos.push({
       name: folder,
