@@ -7,7 +7,7 @@ module.exports = (context, options = {}) => {
   const output = path.resolve(rootDir, outputDir);
   fs.ensureDirSync(output);
   const platform = options.platform;
-  switch(platform) {
+  switch (platform) {
     case 'wechat':
       return path.resolve(output, 'wechat-miniprogram');
     case 'ali':

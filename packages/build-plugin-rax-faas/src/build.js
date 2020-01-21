@@ -16,9 +16,9 @@ module.exports = (api, functionConfig, options) => {
   onGetWebpackConfig('web', (config) => {
     config
       .plugin('faasDefinePlugin')
-        .use(webpack.DefinePlugin, [{
-          __FAAS_API__: JSON.stringify(devServerUrl),
-        }]);
+      .use(webpack.DefinePlugin, [{
+        __FAAS_API__: JSON.stringify(devServerUrl),
+      }]);
   });
 
   onHook('after.build.compile', () => {

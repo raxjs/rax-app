@@ -1,3 +1,4 @@
+/* eslint new-cap: off */
 const babelParser = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const types = require('@babel/types');

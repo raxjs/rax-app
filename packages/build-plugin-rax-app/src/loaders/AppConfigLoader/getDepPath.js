@@ -10,6 +10,6 @@ module.exports = function getDepPath(path, rootContext = '') {
   } else if (path[0] === '/') {
     return join(rootContext, path);
   } else {
-    return `./${  path}`;
+    return `./${path}`;
   }
 };
