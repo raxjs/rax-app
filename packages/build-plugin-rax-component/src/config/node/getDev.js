@@ -1,7 +1,17 @@
 const path = require('path');
+const Module = require("module");
+const { parse, print } = require('error-stack-tracey');
 
 const getBaseWebpack = require('../getBaseWebpack');
 const getDemos = require('../getDemos');
+
+function exec(code, filename, filePath) {
+  const module = new Module(filename, this);
+  module.paths = Module._nodeModulePaths(filePath);
+  module.filename = filename;
+  module._compile(code, filename);
+  return module.exports;
+}
 
 module.exports = (context, options) => {
   const config = getBaseWebpack(context);
@@ -57,23 +67,30 @@ module.exports = (context, options) => {
       .loader(require.resolve('./ignoreLoader'))
       .end();
   }
-  
-  // TODO: support debug 
-  // TODO: error sourcemap
-  // TODO: refactor read file from output fs
+
   config.devServer.set('before', (app, devServer) => {
     const outputFs = devServer.compiler.compilers[0].outputFileSystem;
 
     demos.forEach((demo) => {
-      app.get(`/ssr/${demo.name}`, function(req, res) {
+      app.get(`/ssr/${demo.name}`, async function(req, res) {
 
         const query = req.query || {};
         const hydrate = query.hydrate === 'false';
 
         const bundleContent = outputFs.readFileSync(path.join(rootDir, `ssr/${demo.name}.js`), 'utf8');
-        const mod = eval(bundleContent); // eslint-disable-line
 
-        const content = mod.default();
+        let content;
+
+        try {
+          const mod = exec(bundleContent, demo.filePath, demo.filePath);
+          content = mod.default();
+        } catch (error) {
+          const errorStack = await parse(error, bundleContent);
+          print(error.message, errorStack);
+
+          const stackMessage = errorStack.map(frame => frame.source);
+          content = `Error: ${error.message}<br>${stackMessage.join('<br>')}`;
+        }
 
         const existsCSS = outputFs.existsSync(path.join(rootDir, `${demo.name}.css`));
         const style = existsCSS ? `<link href="/${demo.name}.css" rel="stylesheet"></head>` : '';

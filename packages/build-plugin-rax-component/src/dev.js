@@ -109,7 +109,7 @@ module.exports = (api, options = {}) => {
 
     if (~targets.indexOf(NODE)) {
       console.log(chalk.green('[SSR] Development pages:'));
-      demos.forEach((demo) => console.log('   ', chalk.underline.white(devUrl + 'ssr/' + demo.name)));
+      demos.forEach((demo) => console.log('   ', chalk.underline.white(`${devUrl}ssr/${demo.name}`)));
       console.log();
     }
 
