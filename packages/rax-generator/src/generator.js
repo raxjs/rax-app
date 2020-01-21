@@ -26,7 +26,7 @@ function ejsRender(data) {
 
 // get ignore files of template
 function getIgnore(args) {
-  const { appType, componentType, features, projectTargets } = args;
+  const { appType, componentType, projectFeatures, projectTargets } = args;
   let list = [];
 
   if (appType === 'lite') {
@@ -57,7 +57,7 @@ function getIgnore(args) {
     ];
   }
 
-  if (Array.isArray(features) && !features.includes('faas')) {
+  if (Array.isArray(projectFeatures) && !projectFeatures.includes('faas')) {
     list.push('src/api');
   }
 
