@@ -1,5 +1,5 @@
 /* global Component */
-const render = require("miniapp-render");
+const render = require('miniapp-render');
 
 const { Event, cache, tool } = render.$$adapter;
 
@@ -19,17 +19,18 @@ function checkComponentAttr({ props = [] }, name, domNode, destData, oldData) {
   if (!oldData || oldData.id !== newId) destData.id = newId;
   const newClass = `builtin-component-${name} node-${
     domNode.$$nodeId
-  } ${domNode.className || ""}`;
+  } ${domNode.className || ''}`;
   if (!oldData || oldData.class !== newClass) destData.class = newClass;
   const newStyle = domNode.style.cssText;
   if (!oldData || oldData.style !== newStyle) destData.style = newStyle;
 }
 
+// eslint-disable-next-line new-cap
 Component({
   properties: {
     name: {
       type: String,
-      value: "",
+      value: '',
     },
   },
   options: {
@@ -49,15 +50,15 @@ Component({
     // config of custom component
     const config = cache.getConfig();
     this.compConfig =
-      (config.runtime &&
+      config.runtime &&
         config.runtime.usingComponents &&
-        config.runtime.usingComponents[this.domNode.behavior]) ||
+        config.runtime.usingComponents[this.domNode.behavior] ||
       {};
 
     // Listen on global event
     this.onSelfNodeUpdate = tool.throttle(this.onSelfNodeUpdate.bind(this));
-    this.domNode.$$clearEvent("$$domNodeUpdate");
-    this.domNode.addEventListener("$$domNodeUpdate", this.onSelfNodeUpdate);
+    this.domNode.$$clearEvent('$$domNodeUpdate');
+    this.domNode.addEventListener('$$domNodeUpdate', this.onSelfNodeUpdate);
 
     // Listen on event of custom component
     const { events = [] } = this.compConfig;

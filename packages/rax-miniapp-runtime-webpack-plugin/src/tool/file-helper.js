@@ -69,15 +69,14 @@ function copyDir(fromPath, toPath) {
 }
 
 
-
 /**
  * Calculate file md5
  */
 function md5File(filePath) {
   return crypto
-    .createHash("md5")
+    .createHash('md5')
     .update(fs.readFileSync(filePath))
-    .digest("hex");
+    .digest('hex');
 }
 
 module.exports = {

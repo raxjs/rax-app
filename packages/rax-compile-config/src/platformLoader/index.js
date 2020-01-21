@@ -37,7 +37,7 @@ function mergeSourceMap(map, inputMap) {
     // single source file to a single output file.
     const source = outputMapConsumer.sources[0];
 
-    inputMapConsumer.eachMapping(function (mapping) {
+    inputMapConsumer.eachMapping(function(mapping) {
       const generatedPosition = outputMapConsumer.generatedPositionFor({
         line: mapping.generatedLine,
         column: mapping.generatedColumn,
@@ -65,7 +65,7 @@ function mergeSourceMap(map, inputMap) {
   }
 }
 
-module.exports = function (inputSource, inputSourceMap) {
+module.exports = function(inputSource, inputSourceMap) {
   this.cacheable();
   const callback = this.async();
 

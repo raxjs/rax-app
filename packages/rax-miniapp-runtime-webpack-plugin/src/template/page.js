@@ -1,7 +1,7 @@
 /* global APINamespace,TARGET, Page,init */
-const render = require("miniapp-render");
+const render = require('miniapp-render');
 /* eslint-disable  import/no-absolute-path */
-const config = require("/* CONFIG_PATH */");
+const config = require('/* CONFIG_PATH */');
 
 /* INIT_FUNCTION */
 
@@ -12,18 +12,18 @@ function dealWithPage(evt, window, value) {
   const type = evt.type;
   let url = evt.url;
 
-  if (value === "webview") {
+  if (value === 'webview') {
     // Complete url
     url = render.$$adapter.tool.completeURL(url, window.location.origin);
 
     const options = {
       url: `/pages/webview/index?url=${encodeURIComponent(url)}`,
     };
-    if (type === "jump") APINamespace.redirectTo(options);
-    else if (type === "open") APINamespace.navigateTo(options);
-  } else if (value === "error") {
+    if (type === 'jump') APINamespace.redirectTo(options);
+    else if (type === 'open') APINamespace.navigateTo(options);
+  } else if (value === 'error') {
     console.error(`page not found: ${evt.url}`);
-  } else if (value !== "none") {
+  } else if (value !== 'none') {
     const targeturl = `${
       window.location.origin
     }/redirect?url=${encodeURIComponent(url)}`;
@@ -34,18 +34,19 @@ function dealWithPage(evt, window, value) {
     };
     if (window.$$miniprogram.isTabBarPage(`/pages/${value}/index`))
       APINamespace.switchTab(options);
-    else if (type === "jump") APINamespace.redirectTo(options);
-    else if (type === "open") APINamespace.navigateTo(options);
+    else if (type === 'jump') APINamespace.redirectTo(options);
+    else if (type === 'open') APINamespace.navigateTo(options);
   }
 }
 
+// eslint-disable-next-line new-cap
 Page({
   data: {
-    pageId: "",
-    bodyClass: "h5-body miniprogram-root",
-    bodyStyle: "",
-    rootFontSize: "12px",
-    pageStyle: "",
+    pageId: '',
+    bodyClass: 'h5-body miniprogram-root',
+    bodyStyle: '',
+    rootFontSize: '12px',
+    pageStyle: '',
   },
   onLoad(query) {
     const pageName = render.$$adapter.tool.getPageName(this.route);
@@ -66,27 +67,27 @@ Page({
     this.document = mpRes.document;
     this.query = query;
 
-    if (typeof this.getTabBar === "function")
+    if (typeof this.getTabBar === 'function')
       this.window.getTabBar = this.getTabBar.bind(this);
 
     // Handle the condition that redirected page doesn't exist
     if (config.redirect && config.redirect.notFound) {
-      this.window.addEventListener("pagenotfound", evt => {
+      this.window.addEventListener('pagenotfound', evt => {
         dealWithPage(evt, mpRes.window, config.redirect.notFound);
       });
     }
 
     // Handle the condition that redirect to restricted pages
     if (config.redirect && config.redirect.accessDenied) {
-      this.window.addEventListener("pageaccessdenied", evt => {
+      this.window.addEventListener('pageaccessdenied', evt => {
         dealWithPage(evt, mpRes.window, config.redirect.accessDenied);
       });
     }
 
     if (
-      query.type === "open" ||
-      query.type === "jump" ||
-      query.type === "share"
+      query.type === 'open' ||
+      query.type === 'jump' ||
+      query.type === 'share'
     ) {
       this.window.$$miniprogram.init(
         query.targeturl ? decodeURIComponent(query.targeturl) : null,
@@ -106,7 +107,7 @@ Page({
     }
 
     // Handle update of document
-    this.document.documentElement.addEventListener("$$domNodeUpdate", () => {
+    this.document.documentElement.addEventListener('$$domNodeUpdate', () => {
       if (pageConfig.rem) {
         const rootFontSize = this.document.documentElement.style.fontSize;
         if (rootFontSize && rootFontSize !== this.data.rootFontSize)
@@ -120,11 +121,11 @@ Page({
     });
 
     // Handle update of body
-    this.document.documentElement.addEventListener("$$childNodesUpdate", () => {
+    this.document.documentElement.addEventListener('$$childNodesUpdate', () => {
       const domNode = this.document.body;
       const data = {
-        bodyClass: `${domNode.className || ""} h5-body miniprogram-root`, // 增加默认 class
-        bodyStyle: domNode.style.cssText || "",
+        bodyClass: `${domNode.className || ''} h5-body miniprogram-root`, // 增加默认 class
+        bodyStyle: domNode.style.cssText || '',
       };
 
       if (
@@ -154,22 +155,22 @@ Page({
       pageId: this.pageId,
     });
     this.app = this.window.createApp();
-    this.window.$$trigger("load");
-    this.window.$$trigger("pageLoad", { event: query });
+    this.window.$$trigger('load');
+    this.window.$$trigger('pageLoad', { event: query });
   },
   onShow() {
-    this.window.$$trigger("pageShow");
+    this.window.$$trigger('pageShow');
   },
   onReady() {
     if (this.pageConfig.loadingText) APINamespace.hideLoading();
-    this.window.$$trigger("pageReady");
+    this.window.$$trigger('pageReady');
   },
   onHide() {
-    this.window.$$trigger("pageHide");
+    this.window.$$trigger('pageHide');
   },
   onUnload() {
-    this.window.$$trigger("beforeunload");
-    this.window.$$trigger("pageUnload");
+    this.window.$$trigger('beforeunload');
+    this.window.$$trigger('pageUnload');
     if (this.app && this.app.$destroy) this.app.$destroy();
     this.document.body.$$recycle(); // Recycle DOM node
 
@@ -199,10 +200,10 @@ Page({
         query.hash = encodeURIComponent(location.hash);
       }
 
-      query.type = "share";
+      query.type = 'share';
       const queryString = Object.keys(query)
-        .map(key => `${key}=${query[key] || ""}`)
-        .join("&");
+        .map(key => `${key}=${query[key] || ''}`)
+        .join('&');
       const currentPagePath = `${this.route}?${queryString}`;
       shareOptions.path = currentPagePath;
 

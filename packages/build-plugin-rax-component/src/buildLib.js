@@ -8,7 +8,7 @@ const gulpParams = require('./gulp/params');
 const jsx2mpBuilder = require('./config/miniapp/build');
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
-module.exports = async (api, options = {}) => {
+module.exports = async(api, options = {}) => {
   const { context, log } = api;
   const { rootDir, userConfig, command } = context;
   const { outputDir, devOutputDir } = userConfig;
@@ -33,7 +33,7 @@ module.exports = async (api, options = {}) => {
       gulpParams.compileMiniappTS = true;
       gulpParams.compileAliMiniappTS = buildMiniapp;
       gulpParams.compileWechatMiniProgramTS = buildWechatMiniProgram;
-      gulpParams.callback = async () => {
+      gulpParams.callback = async() => {
         if (buildMiniapp) {
           const config = options[MINIAPP] || {};
           const result = await jsx2mpBuilder(context, 'src/index', config);

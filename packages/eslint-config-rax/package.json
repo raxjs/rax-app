@@ -1,29 +1,27 @@
 {
-	"name": "eslint-config-rax",
-	"version": "0.0.0",
-	"description": "A universal tslint config.",
-	"license": "BSD-3-Clause",
-	"main": "index.js",
-	"keywords": [
-		"universal",
-		"eslint",
-		"tslint"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/raxjs/rax-scripts"
-	},
-	"bugs": {
-		"url": "https://github.com/raxjs/rax-scripts/issues"
-	},
-	"homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/eslint-config-rax#readme",
-	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^1.7.0",
-		"@typescript-eslint/parser": "^1.7.0",
-		"babel-eslint": "^10.0.1",
-		"eslint": "^5.16.0",
-		"eslint-plugin-import": "^2.17.2",
-		"eslint-plugin-react": "^7.12.4",
-		"typescript": "^3.4.5"
-	}
+  "name": "eslint-config-rax",
+  "version": "0.0.1",
+  "description": "ESLint config for Rax",
+  "license": "BSD-3-Clause",
+  "main": "index.js",
+  "keywords": [
+    "rax",
+    "eslint"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-scripts/issues"
+  },
+  "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/eslint-config-rax#readme",
+  "peerDependencies": {
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.16.0 || ^6.7.2",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-react": "^7.15.1",
+    "@typescript-eslint/eslint-plugin": "^1.7.0",
+    "@typescript-eslint/parser": "^1.7.0"
+  }
 }

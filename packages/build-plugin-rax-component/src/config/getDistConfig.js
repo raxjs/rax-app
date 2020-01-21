@@ -28,64 +28,64 @@ module.exports = (context, options) => {
     config.module.rule('css')
       .test(/\.css?$/)
       .use('css')
-        .loader(require.resolve('stylesheet-loader'));
+      .loader(require.resolve('stylesheet-loader'));
 
     config.module.rule('less')
       .test(/\.less?$/)
       .use('css')
-        .loader(require.resolve('stylesheet-loader'))
-        .end()
+      .loader(require.resolve('stylesheet-loader'))
+      .end()
       .use('less')
-        .loader(require.resolve('less-loader'));
+      .loader(require.resolve('less-loader'));
   } else {
     config.module.rule('css')
       .test(/\.css?$/)
       .use('minicss')
-        .loader(MiniCssExtractPlugin.loader)
-        .end()
+      .loader(MiniCssExtractPlugin.loader)
+      .end()
       .use('css')
-        .loader(require.resolve('css-loader'))
-        .end()
+      .loader(require.resolve('css-loader'))
+      .end()
       .use('postcss')
-        .loader(require.resolve('postcss-loader'))
-        .options({
-          ident: 'postcss',
-          plugins: () => [
-            require('postcss-preset-env')({
-              autoprefixer: {
-                flexbox: 'no-2009',
-              },
-              stage: 3,
-            }),
-            require('postcss-plugin-rpx2vw')(),
-          ],
-        });
+      .loader(require.resolve('postcss-loader'))
+      .options({
+        ident: 'postcss',
+        plugins: () => [
+          require('postcss-preset-env')({
+            autoprefixer: {
+              flexbox: 'no-2009',
+            },
+            stage: 3,
+          }),
+          require('postcss-plugin-rpx2vw')(),
+        ],
+      });
 
     config.module.rule('less')
       .test(/\.less?$/)
       .use('minicss')
       .loader(MiniCssExtractPlugin.loader)
-        .end()
+      .end()
       .use('css')
-        .loader(require.resolve('css-loader'))
-        .end()
+      .loader(require.resolve('css-loader'))
+      .end()
       .use('postcss')
-        .loader(require.resolve('postcss-loader'))
-        .options({
-          ident: 'postcss',
-          plugins: () => [
-            require('postcss-preset-env')({
-              autoprefixer: {
-                flexbox: 'no-2009',
-              },
-              stage: 3,
-            }),
-            require('postcss-plugin-rpx2vw')(),
-          ],
-        })
-        .end()
+      .loader(require.resolve('postcss-loader'))
+      .options({
+        ident: 'postcss',
+        plugins: () => [
+          require('postcss-preset-env')({
+            autoprefixer: {
+              flexbox: 'no-2009',
+            },
+            stage: 3,
+          }),
+          require('postcss-plugin-rpx2vw')(),
+        ],
+      })
+      .end()
       .use('less')
-        .loader(require.resolve('less-loader'));
+      .loader(require.resolve('less-loader'));
   }
 
   config.plugin('minicss')

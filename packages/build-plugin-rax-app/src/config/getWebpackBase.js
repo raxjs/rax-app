@@ -32,43 +32,43 @@ module.exports = (context, options = {}) => {
 
   // Process app.json file
   config.module.rule('appJSON')
-    .type("javascript/auto")
+    .type('javascript/auto')
     .test(/app\.json$/)
     .use('babel')
-      .loader(require.resolve('babel-loader'))
-      .options(babelConfig)
-      .end()
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig)
+    .end()
     .use('loader')
-      .loader(require.resolve('../loaders/AppConfigLoader'));
+    .loader(require.resolve('../loaders/AppConfigLoader'));
 
   config.module.rule('jsx')
     .test(/\.(js|mjs|jsx)$/)
     .use('babel')
-      .loader(require.resolve('babel-loader'))
-      .options(babelConfig)
-      .end()
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig)
+    .end()
     .use('platform')
-      .loader(require.resolve('rax-compile-config/src/platformLoader'));
+    .loader(require.resolve('rax-compile-config/src/platformLoader'));
 
   config.module.rule('tsx')
     .test(/\.(ts|tsx)?$/)
     .use('babel')
-      .loader(require.resolve('babel-loader'))
-      .options(babelConfig)
-      .end()
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig)
+    .end()
     .use('ts')
-      .loader(require.resolve('ts-loader'))
-      .options({
-        transpileOnly: true,
-      })
-      .end()
+    .loader(require.resolve('ts-loader'))
+    .options({
+      transpileOnly: true,
+    })
+    .end()
     .use('platform')
-      .loader(require.resolve('rax-compile-config/src/platformLoader'));;
+    .loader(require.resolve('rax-compile-config/src/platformLoader')); ;
 
   config.module.rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
     .use('source')
-      .loader(require.resolve('image-source-loader'));
+    .loader(require.resolve('image-source-loader'));
 
   config.plugin('caseSensitivePaths')
     .use(CaseSensitivePathsPlugin);
@@ -89,17 +89,17 @@ module.exports = (context, options = {}) => {
 
     config.optimization
       .minimizer('terser')
-        .use(TerserPlugin, [{
-          terserOptions: {
-            output: {
-              comments: false,
-            },
+      .use(TerserPlugin, [{
+        terserOptions: {
+          output: {
+            comments: false,
           },
-          extractComments: false,
-        }])
-        .end()
+        },
+        extractComments: false,
+      }])
+      .end()
       .minimizer('optimizeCSS')
-        .use(OptimizeCSSAssetsPlugin);
+      .use(OptimizeCSSAssetsPlugin);
   }
 
   return config;

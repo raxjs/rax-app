@@ -1,18 +1,18 @@
 const ip = require('ip');
-const consoleClear = require("console-clear");
-const chalk = require("chalk");
-const { handleWebpackErr } = require("rax-compile-config");
+const consoleClear = require('console-clear');
+const chalk = require('chalk');
+const { handleWebpackErr } = require('rax-compile-config');
 
 module.exports = (api, options = {}) => {
   const { registerTask, context, onHook } = api;
 
   // set dev config
-  const getDev = require(`./config/getDev`);
+  const getDev = require('./config/getDev');
   const config = getDev(context, options);
 
-  registerTask(`component-multi-demo-portal`, config);
+  registerTask('component-multi-demo-portal', config);
 
-  let devUrl = "";
+  let devUrl = '';
   let devCompletedArr = [];
 
   function devCompileLog() {
@@ -32,7 +32,7 @@ module.exports = (api, options = {}) => {
       return;
     }
 
-    const portalUrl = `${devUrl}portal`.replace(/^http:\/\/localhost/gi, function (match) {
+    const portalUrl = `${devUrl}portal`.replace(/^http:\/\/localhost/gi, function(match) {
       // Called when matched
       try {
         return `http://${ip.address()}`;
@@ -42,13 +42,13 @@ module.exports = (api, options = {}) => {
       }
     });
 
-    console.log(chalk.green("Multi-page portal has been started at:"));
+    console.log(chalk.green('Multi-page portal has been started at:'));
     console.log();
-    console.log("   ", chalk.underline.white(portalUrl));
+    console.log('   ', chalk.underline.white(portalUrl));
     console.log();
   }
 
-  onHook("after.start.compile", async args => {
+  onHook('after.start.compile', async args => {
     devUrl = args.url;
     devCompletedArr.push(args);
     devCompileLog();

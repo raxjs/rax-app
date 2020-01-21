@@ -4,7 +4,7 @@ const recursiveCopy = require('recursive-copy');
 /**
  * build functions
  */
-module.exports = async (context, functions) => {
+module.exports = async(context, functions) => {
   const { rootDir, userConfig } = context;
   const { outputDir } = userConfig;
 

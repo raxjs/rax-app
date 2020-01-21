@@ -84,7 +84,7 @@ module.exports = (userOptions = {}) => {
       ],
     });
   }
-  
+
   // Enable jsx plus default.
   if (!disableJSXPlus) {
     configArr.push({
