@@ -9,23 +9,23 @@ const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants'
 module.exports = ({ registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
 
-  let mpBuildErr = null;
+  let jsx2mpBuildErr = null;
 
   // Use build-scripts webpack
-  const buildScriptsDevTargets = [];
+  const buildScriptsBuildTargets = [];
   // Use jsx2mp-cli webpack
-  const jsx2mpDevTargets = [];
+  const jsx2mpBuildTargets = [];
 
   targets.forEach(target => {
     if ([WEB, WEEX, KRAKEN].includes(target)) {
-      buildScriptsDevTargets.push(target);
+      buildScriptsBuildTargets.push(target);
     } else if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
       options[target] = options[target] || {};
       addMpPlatform(target, options[target]);
       if (options[target].buildType === 'runtime') {
-        buildScriptsDevTargets.push(target);
+        buildScriptsBuildTargets.push(target);
       } else {
-        jsx2mpDevTargets.push(target);
+        jsx2mpBuildTargets.push(target);
       }
     }
   });
@@ -40,16 +40,16 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
       if (options[target] && options[target].buildType === 'runtime') {
         const getBase = require('./config/miniapp/runtime/getBase');
         registerTask(target, getBase(context, target));
-      } else if (buildScriptsDevTargets.length) {
+      } else if (buildScriptsBuildTargets.length) {
         onHook('after.build.compile', async() => {
-          mpBuildErr = await invokeJSX2MPBuilder(context, options[target]);
+          jsx2mpBuildErr = await invokeJSX2MPBuilder(context, options[target]);
         });
-      } else if (jsx2mpDevTargets.length) {
-        mpBuildErr = await invokeJSX2MPBuilder(context, options[target]);
+      } else if (jsx2mpBuildTargets.length) {
+        jsx2mpBuildErr = await invokeJSX2MPBuilder(context, options[target]);
         consoleClear(true);
-        if (mpBuildErr) {
-          const err = mpBuildErr.err;
-          const stats = mpBuildErr.stats;
+        if (jsx2mpBuildErr) {
+          const err = jsx2mpBuildErr.err;
+          const stats = jsx2mpBuildErr.stats;
           if (!handleWebpackErr(err, stats)) {
             return;
           }
@@ -61,9 +61,9 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
 
   onHook('after.build.compile', ({err, stats}) => {
     consoleClear(true);
-    if (mpBuildErr) {
-      err = mpBuildErr.err;
-      stats = mpBuildErr.stats;
+    if (jsx2mpBuildErr) {
+      err = jsx2mpBuildErr.err;
+      stats = jsx2mpBuildErr.stats;
     }
     if (!handleWebpackErr(err, stats)) {
       return;
@@ -137,9 +137,9 @@ function logBuildResult(targets = [], context = {}) {
  */
 async function invokeJSX2MPBuilder(context, config) {
   const jsx2mpBuilder = require('./config/miniapp/compile/build');
-  const mpInfo = await jsx2mpBuilder(context, config);
-  if (mpInfo.err || mpInfo.stats.hasErrors()) {
-    return mpInfo;
+  const jsx2mpBuildInfo = await jsx2mpBuilder(context, config);
+  if (jsx2mpBuildInfo.err || jsx2mpBuildInfo.stats.hasErrors()) {
+    return jsx2mpBuildInfo;
   }
   return null;
 }
