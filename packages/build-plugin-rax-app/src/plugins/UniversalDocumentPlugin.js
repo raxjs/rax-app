@@ -93,6 +93,7 @@ module.exports = class UniversalDocumentPlugin {
           return {
             __styles: assets.styles,
             __scripts: assets.scripts,
+            __entry: entry
           };
         };
         DocumentContextProvider.prototype.render = function () {
