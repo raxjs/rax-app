@@ -26,7 +26,8 @@ module.exports = (context, options) => {
     ]);
   });
 
-  config.output.filename('[name].js');
+  config.output
+    .filename('[name].js');
 
   if (options.forceInline) {
     config.module
