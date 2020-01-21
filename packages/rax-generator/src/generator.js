@@ -60,7 +60,7 @@ function getIgnore(args) {
   if (!projectFeatures || Array.isArray(projectFeatures) && !projectFeatures.includes('faas')) {
     list.push('src/api');
   }
-  
+
   return list;
 }
 
@@ -78,7 +78,7 @@ function getIgnore(args) {
  * @param  {Array} args.projectFeatures- The features of project
  * @return {Promise}
  */
-module.exports = function (template, args) {
+module.exports = function(template, args) {
   const projectDir = args.root;
   const ejsData = {
     ...args,
