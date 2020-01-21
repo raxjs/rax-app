@@ -19,7 +19,7 @@ module.exports = (context, options) => {
     config.plugin(`html4${name}`).use(HtmlWebpackPlugin, [
       {
         inject: true,
-        filename: demos.length === 1 && name === 'index' ? 'index.html': name,
+        filename: demos.length === 1 && name === 'index' ? 'index.html' : name,
         chunks: [name],
         template: path.resolve(__dirname, '../demo.html'),
       },

@@ -5,7 +5,7 @@ const path = require('path');
 module.exports = (context, options = {}, devCompileLog) => {
   const { rootDir } = context;
   let dirName;
-  switch(options.platform) {
+  switch (options.platform) {
     case 'wechat':
       dirName = 'wechat-miniprogram';
       break;

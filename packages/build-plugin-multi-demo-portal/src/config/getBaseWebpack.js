@@ -1,19 +1,19 @@
-const webpack = require("webpack");
-const path = require("path");
-const Chain = require("webpack-chain");
-const { getBabelConfig, setBabelAlias } = require("rax-compile-config");
-const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
-const { hmrClient } = require("rax-compile-config");
-const TerserPlugin = require("terser-webpack-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const generatePortalJs = require("./utils/generatePortalJs");
-const getDemos = require("./utils/getDemos");
-const getBuildTargets = require("./utils/getBuildTargets");
+const webpack = require('webpack');
+const path = require('path');
+const Chain = require('webpack-chain');
+const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
+const { hmrClient } = require('rax-compile-config');
+const TerserPlugin = require('terser-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const generatePortalJs = require('./utils/generatePortalJs');
+const getDemos = require('./utils/getDemos');
+const getBuildTargets = require('./utils/getBuildTargets');
 
 const babelConfig = getBabelConfig({
   styleSheet: true,
   custom: {
-    ignore: ["**/**/*.d.ts"],
+    ignore: ['**/**/*.d.ts'],
   },
 });
 
@@ -29,23 +29,23 @@ module.exports = context => {
     params: { demos, targets, command },
   });
 
-  if (command === "start") {
+  if (command === 'start') {
     config
-      .entry("portal")
+      .entry('portal')
       .add(hmrClient)
       .add(portalPath);
   } else {
-    config.entry("portal").add(portalPath);
+    config.entry('portal').add(portalPath);
   }
 
   setBabelAlias(config);
 
-  config.target("web");
+  config.target('web');
   config.context(rootDir);
 
   config.externals([
     function(ctx, request, callback) {
-      if (request.indexOf("@weex-module") !== -1) {
+      if (request.indexOf('@weex-module') !== -1) {
         return callback(null, `commonjs ${request}`);
       }
       callback();
@@ -53,30 +53,30 @@ module.exports = context => {
   ]);
 
   config.resolve.extensions.merge([
-    ".js",
-    ".json",
-    ".jsx",
-    ".ts",
-    ".tsx",
-    ".html",
+    '.js',
+    '.json',
+    '.jsx',
+    '.ts',
+    '.tsx',
+    '.html',
   ]);
 
   config.module
-    .rule("jsx")
+    .rule('jsx')
     .test(/\.(js|mjs|jsx)$/)
-    .use("babel")
-    .loader(require.resolve("babel-loader"))
+    .use('babel')
+    .loader(require.resolve('babel-loader'))
     .options(babelConfig);
 
   config.module
-    .rule("tsx")
+    .rule('tsx')
     .test(/\.tsx?$/)
-    .use("babel")
-    .loader(require.resolve("babel-loader"))
+    .use('babel')
+    .loader(require.resolve('babel-loader'))
     .options(babelConfig)
     .end()
-    .use("ts")
-    .loader(require.resolve("ts-loader"));
+    .use('ts')
+    .loader(require.resolve('ts-loader'));
 
   config.module
     .rule('md')
@@ -89,23 +89,23 @@ module.exports = context => {
     .loader(require.resolve('../loaders/MarkdownLoader/index'));
 
   config.module
-    .rule("assets")
+    .rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
-    .use("source")
-    .loader(require.resolve("image-source-loader"));
+    .use('source')
+    .loader(require.resolve('image-source-loader'));
 
-  config.plugin("caseSensitivePaths").use(CaseSensitivePathsPlugin);
+  config.plugin('caseSensitivePaths').use(CaseSensitivePathsPlugin);
 
-  config.plugin("noError").use(webpack.NoEmitOnErrorsPlugin);
+  config.plugin('noError').use(webpack.NoEmitOnErrorsPlugin);
 
-  if (command === "start") {
-    config.mode("development");
-    config.devtool("inline-module-source-map");
-  } else if (command === "build") {
-    config.mode("production");
+  if (command === 'start') {
+    config.mode('development');
+    config.devtool('inline-module-source-map');
+  } else if (command === 'build') {
+    config.mode('production');
 
     config.optimization
-      .minimizer("terser")
+      .minimizer('terser')
       .use(TerserPlugin, [
         {
           terserOptions: {
@@ -117,7 +117,7 @@ module.exports = context => {
         },
       ])
       .end()
-      .minimizer("optimizeCSS")
+      .minimizer('optimizeCSS')
       .use(OptimizeCSSAssetsPlugin);
   }
 

@@ -1,18 +1,18 @@
 module.exports = {
-  origin: "",
-  entry: "/",
+  origin: '',
+  entry: '/',
   router: {
-    index: ["/"],
+    index: ['/'],
   },
   redirect: {
-    notFound: "none",
-    accessDenied: "none",
+    notFound: 'none',
+    accessDenied: 'none',
   },
   generate: {
     autoBuildNpm: true,
   },
   app: {
-    navigationBarTitleText: "Rax App 1.0",
+    navigationBarTitleText: 'Rax App 1.0',
   },
   appExtraConfig: {},
   global: {

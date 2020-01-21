@@ -1,69 +1,69 @@
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const getBaseWebpack = require("./getBaseWebpack");
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const getBaseWebpack = require('./getBaseWebpack');
 
 module.exports = context => {
   const config = getBaseWebpack(context);
 
-  config.output.filename("[name].js");
+  config.output.filename('[name].js');
 
   config.module
-    .rule("css")
+    .rule('css')
     .test(/\.css?$/)
-    .use("style")
-    .loader(require.resolve("style-loader"))
+    .use('style')
+    .loader(require.resolve('style-loader'))
     .end()
-    .use("css")
-    .loader(require.resolve("css-loader"))
+    .use('css')
+    .loader(require.resolve('css-loader'))
     .end()
-    .use("postcss")
-    .loader(require.resolve("postcss-loader"))
+    .use('postcss')
+    .loader(require.resolve('postcss-loader'))
     .options({
-      ident: "postcss",
+      ident: 'postcss',
       plugins: () => [
-        require("postcss-preset-env")({
+        require('postcss-preset-env')({
           autoprefixer: {
-            flexbox: "no-2009",
+            flexbox: 'no-2009',
           },
           stage: 3,
         }),
-        require("postcss-plugin-rpx2vw")(),
+        require('postcss-plugin-rpx2vw')(),
       ],
     });
 
   config.module
-    .rule("less")
+    .rule('less')
     .test(/\.less?$/)
-    .use("style")
-    .loader(require.resolve("style-loader"))
+    .use('style')
+    .loader(require.resolve('style-loader'))
     .end()
-    .use("css")
-    .loader(require.resolve("css-loader"))
+    .use('css')
+    .loader(require.resolve('css-loader'))
     .end()
-    .use("postcss")
-    .loader(require.resolve("postcss-loader"))
+    .use('postcss')
+    .loader(require.resolve('postcss-loader'))
     .options({
-      ident: "postcss",
+      ident: 'postcss',
       plugins: () => [
-        require("postcss-preset-env")({
+        require('postcss-preset-env')({
           autoprefixer: {
-            flexbox: "no-2009",
+            flexbox: 'no-2009',
           },
           stage: 3,
         }),
-        require("postcss-plugin-rpx2vw")(),
+        require('postcss-plugin-rpx2vw')(),
       ],
     })
     .end()
-    .use("less")
-    .loader(require.resolve("less-loader"));
+    .use('less')
+    .loader(require.resolve('less-loader'));
 
-  config.plugin("html").use(HtmlWebpackPlugin, [
+  config.plugin('html').use(HtmlWebpackPlugin, [
     {
       inject: true,
-      filename: "portal",
-      chunks: ["portal"],
-      template: path.resolve(__dirname, "./portal.html"),
+      filename: 'portal',
+      chunks: ['portal'],
+      template: path.resolve(__dirname, './portal.html'),
     },
   ]);
 

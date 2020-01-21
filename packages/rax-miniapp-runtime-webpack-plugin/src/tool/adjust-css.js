@@ -1,9 +1,9 @@
-const postcss = require("postcss");
-const tagList = require("./tag-list");
+const postcss = require('postcss');
+const tagList = require('./tag-list');
 
 const replaceRegexp = new RegExp(
-  `(\\W|\\b)(${["html", ...tagList].join("|")})(\\W|\\b)`,
-  "ig",
+  `(\\W|\\b)(${['html', ...tagList].join('|')})(\\W|\\b)`,
+  'ig',
 );
 const prefixRegexp = /[a-zA-Z0-9:.#_-]/;
 const suffixRegexp = /[a-zA-Z0-9_-]/;
@@ -11,14 +11,14 @@ const suffixRegexp = /[a-zA-Z0-9_-]/;
 /**
  * Replace tag name
  */
-const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
+const replaceTagNamePlugin = postcss.plugin('replaceTagName', () => root => {
   root.walk(child => {
-    if (child.type === "atrule") {
+    if (child.type === 'atrule') {
       // Handle @-prefix that css doesn't support
-      if (child.name === "-moz-keyframes") {
+      if (child.name === '-moz-keyframes') {
         child.remove();
       }
-    } else if (child.type === "rule") {
+    } else if (child.type === 'rule') {
       const selectors = [];
 
       child.selectors.forEach(selector => {
@@ -29,8 +29,8 @@ const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
             // Non-tag selector, adjust \b
             let start = $1;
             let end = $2;
-            if (!start) start = string[offset - 1] || "";
-            if (!end) end = string[offset + all.length] || "";
+            if (!start) start = string[offset - 1] || '';
+            if (!end) end = string[offset + all.length] || '';
 
             if (prefixRegexp.test(start) || suffixRegexp.test(end)) {
               // Non-tag selector
@@ -39,7 +39,7 @@ const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
 
             tagName = tagName.toLowerCase();
 
-            if (tagName === "html") {
+            if (tagName === 'html') {
               // Handle page alone
               return `${$1}page${$2}`;
             } else if (tagName) {
@@ -53,7 +53,7 @@ const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
 
         // Handle * selector
         selector = selector.replace(/(.*)\*(.*)/g, (all, $1, $2) => {
-          if ($2[0] === "=") return all;
+          if ($2[0] === '=') return all;
 
           tagList.forEach(tagName =>
             selectors.push(`${$1}.h5-${tagName}${$2}`),
@@ -61,7 +61,7 @@ const replaceTagNamePlugin = postcss.plugin("replaceTagName", () => root => {
 
           selectors.push(`${$1}page${$2}`);
 
-          return "";
+          return '';
         });
 
         if (selector.trim()) selectors.push(selector);

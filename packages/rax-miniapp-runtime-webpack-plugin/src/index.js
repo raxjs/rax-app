@@ -1,11 +1,11 @@
-const path = require("path");
-const { readFileSync, ensureDirSync } = require("fs-extra");
-const ConcatSource = require("webpack-sources").ConcatSource;
-const ModuleFilenameHelpers = require("webpack/lib/ModuleFilenameHelpers");
-const { RawSource } = require("webpack-sources");
-const pathToRegexp = require("path-to-regexp");
+const path = require('path');
+const { readFileSync, ensureDirSync } = require('fs-extra');
+const ConcatSource = require('webpack-sources').ConcatSource;
+const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
+const { RawSource } = require('webpack-sources');
+const pathToRegexp = require('path-to-regexp');
 const chalk = require('chalk');
-const adjustCss = require("./tool/adjust-css");
+const adjustCss = require('./tool/adjust-css');
 const { md5File, copyDir, copyFile } = require('./tool/file-helper');
 const deepMerge = require('./tool/deep-merge');
 const includes = require('./tool/includes');
@@ -13,37 +13,37 @@ const defaultConfig = require('./defaultConfig');
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 const adapter = require('./adapter');
 
-const PluginName = "MpPlugin";
+const PluginName = 'MpPlugin';
 const appJsTmpl = readFileSync(
-  path.resolve(__dirname, "./template/app.js"),
-  "utf8",
+  path.resolve(__dirname, './template/app.js'),
+  'utf8',
 );
 const pageJsTmpl = readFileSync(
-  path.resolve(__dirname, "./template/page.js"),
-  "utf8",
+  path.resolve(__dirname, './template/page.js'),
+  'utf8',
 );
 const appDisplayCssTmpl = readFileSync(
-  path.resolve(__dirname, "./template/app.display.css"),
-  "utf8",
+  path.resolve(__dirname, './template/app.display.css'),
+  'utf8',
 );
 const appExtraCssTmpl = readFileSync(
-  path.resolve(__dirname, "./template/app.extra.css"),
-  "utf8",
+  path.resolve(__dirname, './template/app.extra.css'),
+  'utf8',
 );
 const appCssTmpl = readFileSync(
-  path.resolve(__dirname, "./template/app.css"),
-  "utf8",
+  path.resolve(__dirname, './template/app.css'),
+  'utf8',
 );
 const customComponentJsTmpl = readFileSync(
-  path.resolve(__dirname, "./template/custom-component.js"),
-  "utf8",
+  path.resolve(__dirname, './template/custom-component.js'),
+  'utf8',
 );
-const projectConfigJsonTmpl = require("./template/project.config.json");
-const packageConfigJsonTmpl = require("./template/package.json");
+const projectConfigJsonTmpl = require('./template/project.config.json');
+const packageConfigJsonTmpl = require('./template/package.json');
 
 process.env.isMiniprogram = true; // Set env variable
 const globalVars = [
-  "HTMLElement",
+  'HTMLElement',
 ];
 
 /**
@@ -66,20 +66,20 @@ function wrapChunks(compilation, chunks, globalVarsConfig) {
         // Page js
         const headerContent =
           `module.exports = function(window, document) {const App = function(options) {window.appOptions = options};${
-            globalVars.map(item => `var ${item} = window.${item}`).join(";")
+            globalVars.map(item => `var ${item} = window.${item}`).join(';')
           };`;
         let customHeaderContent = globalVarsConfig
           .map(
             item =>
               `var ${item[0]} = ${
-                item[1] ? item[1] : `window['${  item[0]  }']`
+                item[1] ? item[1] : `window['${item[0]}']`
               }`,
           )
-          .join(";");
+          .join(';');
         customHeaderContent = customHeaderContent
-          ? `${customHeaderContent  };`
-          : "";
-        const footerContent = "}";
+          ? `${customHeaderContent};`
+          : '';
+        const footerContent = '}';
 
         compilation.assets[fileName] = new ConcatSource(
           headerContent + customHeaderContent,
@@ -102,7 +102,7 @@ function getAssetPath(
   target = WECHAT_MINIPROGRAM,
 ) {
   if (assetsSubpackageMap[filePath]) {
-    assetPathPrefix = "";
+    assetPathPrefix = '';
   }
 
   return `${assetPathPrefix}./${path.relative(
@@ -158,16 +158,16 @@ function mergeConfig(defaultConfig, passedOptions = {}) {
   return Object.assign({}, defaultConfig, config);
 }
 
-function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, pageRoute, pageConfig, target) {
+function handlePageJS(compilation, assets, assetPathPrefix, assetsSubpackageMap, pageRoute, pageConfig, target) {
   const addPageScroll = pageConfig && pageConfig.windowScroll;
   const reachBottom = pageConfig && pageConfig.reachBottom;
   const pullDownRefresh = pageConfig && pageConfig.pullDownRefresh;
   let pageJsContent = pageJsTmpl
     .replace(/APINamespace/g, adapter[target].APINamespace)
     .replace(/TARGET/g, `'${target}'`)
-    .replace("/* CONFIG_PATH */", `${getAssetPath(assetPathPrefix, `${target}/config.js`, assetsSubpackageMap, `${pageRoute}.js`, target)}`)
+    .replace('/* CONFIG_PATH */', `${getAssetPath(assetPathPrefix, `${target}/config.js`, assetsSubpackageMap, `${pageRoute}.js`, target)}`)
     .replace(
-      "/* INIT_FUNCTION */",
+      '/* INIT_FUNCTION */',
       `function init(window, document) {${assets.js
         .map(
           js =>
@@ -179,7 +179,7 @@ function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, 
               target,
             )}')(window, document)`,
         )
-        .join(";")}}`,
+        .join(';')}}`,
     );
   const pageScrollFunction = addPageScroll ? () =>
     'onPageScroll({ scrollTop }) {if (this.window) {this.window.document.documentElement.scrollTop = scrollTop || 0;this.window.$$trigger("scroll");}},' : '';
@@ -196,7 +196,7 @@ function handlePageJS(compilation,assets, assetPathPrefix, assetsSubpackageMap, 
   addFile(compilation, `${pageRoute}.js`, pageJsContent, target);
 }
 
-function handlePageXML (compilation, customComponentRoot, pageConfig, pageRoute, target) {
+function handlePageXML(compilation, customComponentRoot, pageConfig, pageRoute, target) {
   const rem = pageConfig && pageConfig.rem;
   const pageStyle = pageConfig && pageConfig.pageStyle;
 
@@ -208,9 +208,9 @@ function handlePageXML (compilation, customComponentRoot, pageConfig, pageRoute,
 
   if (target === WECHAT_MINIPROGRAM && (rem || pageStyle)) {
     pageXmlContent =
-      `<page-meta ${rem ? 'root-font-size="{{rootFontSize}}"' : ""} ${
-        pageStyle ? 'page-style="{{pageStyle}}"' : ""
-      }></page-meta>${  pageXmlContent}`;
+      `<page-meta ${rem ? 'root-font-size="{{rootFontSize}}"' : ''} ${
+        pageStyle ? 'page-style="{{pageStyle}}"' : ''
+      }></page-meta>${pageXmlContent}`;
   }
   addFile(compilation, `${pageRoute}.${adapter[target].xml}`, pageXmlContent, target);
 }
@@ -219,17 +219,17 @@ function handlePageCSS(compilation, pageConfig, assets, assetPathPrefix, assetsS
   const pageBackgroundColor = pageConfig && (pageConfig.pageBackgroundColor || pageConfig.backgroundColor); // Compatible with original backgroundColor
 
   let pageCssContent = assets.css
-  .map(
-    css =>
-      `@import "${getAssetPath(
-        assetPathPrefix,
-        css,
-        assetsSubpackageMap,
-        `${pageRoute}.${adapter[target].css}`,
-        target,
-      )}";`,
-  )
-  .join("\n");
+    .map(
+      css =>
+        `@import "${getAssetPath(
+          assetPathPrefix,
+          css,
+          assetsSubpackageMap,
+          `${pageRoute}.${adapter[target].css}`,
+          target,
+        )}";`,
+    )
+    .join('\n');
   if (pageBackgroundColor)
     pageCssContent =
       `page { background-color: ${pageBackgroundColor}; }\n${
@@ -246,7 +246,7 @@ function handlePageJSON(compilation, pageConfig, pageExtraConfig, customComponen
     ...pageExtraConfig,
     enablePullDownRefresh: !!pullDownRefresh,
     usingComponents: {
-      element: `miniapp-element`,
+      element: 'miniapp-element',
     },
   };
   if (customComponentRoot) {
@@ -286,7 +286,7 @@ function handleWebview(compilation, pages, { redirect }, target) {
   }
 }
 
-function handleAppJS (compilation, appAssets, assetsSubpackageMap, target) {
+function handleAppJS(compilation, appAssets, assetsSubpackageMap, target) {
   const appJsContent = appJsTmpl.replace(
     '/* INIT_FUNCTION */',
     `const fakeWindow = {};const fakeDocument = {};${appAssets.js
@@ -301,11 +301,11 @@ function handleAppJS (compilation, appAssets, assetsSubpackageMap, target) {
   addFile(compilation, 'app.js', appJsContent, target);
 }
 
-function handleAppCSS (compilation, appAssets, assetsSubpackageMap, appCssConfig = 'default', target) {
-  const cssTmpl = appCssConfig === "display" ? appDisplayCssTmpl : appCssTmpl;
+function handleAppCSS(compilation, appAssets, assetsSubpackageMap, appCssConfig = 'default', target) {
+  const cssTmpl = appCssConfig === 'display' ? appDisplayCssTmpl : appCssTmpl;
   let appCssContent =
     appCssConfig === 'none'
-      ? ""
+      ? ''
       : cssTmpl;
   if (appAssets.css.length) {
     appCssContent += `\n${appAssets.css
@@ -319,16 +319,16 @@ function handleAppCSS (compilation, appAssets, assetsSubpackageMap, appCssConfig
             target,
           )}";`,
       )
-      .join("\n")}`;
+      .join('\n')}`;
   }
   appCssContent = adjustCss(appCssContent);
   if (appCssConfig !== 'none' && appCssConfig !== 'display') {
-    appCssContent += `\n${  appExtraCssTmpl}`;
+    appCssContent += `\n${appExtraCssTmpl}`;
   }
   addFile(compilation, `app.${adapter[target].css}`, appCssContent, target);
 }
 
-function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpackagesMap, userAppJson = {},  tabBarConfig, outputPath, tabBarMap, pages, { app }, target) {
+function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpackagesMap, userAppJson = {}, tabBarConfig, outputPath, tabBarMap, pages, { app }, target) {
   const subpackages = [];
   const preloadRule = {};
   Object.keys(subpackagesConfig).forEach(packageName => {
@@ -342,7 +342,7 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
   Object.keys(preloadRuleConfig).forEach(entryName => {
     const packageName = subpackagesMap[entryName];
     const pageRoute = `${
-      packageName ? `${packageName  }/` : ''
+      packageName ? `${packageName}/` : ''
     }${entryName}`;
     preloadRule[pageRoute] = preloadRuleConfig[entryName];
   });
@@ -397,8 +397,8 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
 
     appJson.tabBar = tabBar;
   }
-  const appJsonContent = JSON.stringify(appJson, null, "\t");
-  addFile(compilation, "app.json", appJsonContent, target);
+  const appJsonContent = JSON.stringify(appJson, null, '\t');
+  addFile(compilation, 'app.json', appJsonContent, target);
 }
 
 function handleProjectConfig(compilation, { projectConfig = {} }, target) {
@@ -503,15 +503,15 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
     const names = Object.keys(customComponents);
     names.forEach(
       key =>
-        (realUsingComponents[
+        realUsingComponents[
           key
-        ] = `components/${customComponents[key].path}`),
+        ] = `components/${customComponents[key].path}`,
     );
 
     // custom-component/index.js
     addFile(
       compilation,
-      "custom-component/index.js",
+      'custom-component/index.js',
       customComponentJsTmpl,
       target,
     );
@@ -526,10 +526,10 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
           return `<${key} ${adapter[target].directive.prefix}:${
             index === 0 ? 'if' : 'elif'
           }="{{name === '${key}'}}" id="{{id}}" class="{{class}}" style="{{style}}" ${props
-            .map(name => `${name  }="{{${  name  }}}"`)
-            .join(" ")} ${events
-            .map(name => `bind${  name  }="on${  name  }"`)
-            .join(" ")}><slot/></${key}>`;
+            .map(name => `${name}="{{${name}}}"`)
+            .join(' ')} ${events
+            .map(name => `bind${name}="on${name}"`)
+            .join(' ')}><slot/></${key}>`;
         })
         .join('\n'),
       target,
@@ -572,7 +572,7 @@ function installDependencies(autoBuildNpm = false, stats, target, callback) {
     ensureDirSync(outputNpmPath);
     ['miniapp-element', 'miniapp-render'].forEach(name => {
       copyDir(
-        path.resolve(process.cwd(), "node_modules", name, 'dist', adapter[target].fileName),
+        path.resolve(process.cwd(), 'node_modules', name, 'dist', adapter[target].fileName),
         path.resolve(outputPath, adapter[target].npmDirName, name),
       );
     });
@@ -646,7 +646,7 @@ class MpPlugin {
 
           // Record
           let ext = extMatch[1];
-          ext = (ext === 'wxss' || ext === 'css' || ext === 'acss') ? 'css' : ext;
+          ext = ext === 'wxss' || ext === 'css' || ext === 'acss' ? 'css' : ext;
           assets[ext].push(filePath);
 
           // Insert into assetsReverseMap
@@ -709,10 +709,10 @@ class MpPlugin {
           pageConfigMap[entryName] || {},
         );
         const pageConfig = pageConfigMap[entryName];
-        const pageExtraConfig = (pageConfig && pageConfig.extra) || {};
+        const pageExtraConfig = pageConfig && pageConfig.extra || {};
         const packageName = subpackagesMap[entryName];
         const pageRoute = `${
-          packageName ? `${packageName  }/` : ''
+          packageName ? `${packageName}/` : ''
         }${entryName}`;
         const assetPathPrefix = packageName ? '../' : '';
 

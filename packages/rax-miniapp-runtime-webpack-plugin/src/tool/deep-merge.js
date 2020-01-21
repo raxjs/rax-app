@@ -2,7 +2,7 @@
  * Deep merge objects
  */
 function merge(to, from) {
-  if (typeof to !== "object" || typeof from !== "object") return to;
+  if (typeof to !== 'object' || typeof from !== 'object') return to;
 
   const fromKeys = Object.keys(from);
   for (const key of fromKeys) {
@@ -22,7 +22,7 @@ function merge(to, from) {
       // eslint-disable-next-line no-lonely-if
       if (isFromArray) {
         fromValue.forEach(item => toValue.push(item));
-      } else if (fromType === "object") {
+      } else if (fromType === 'object') {
         to[key] = merge(toValue, fromValue);
       } else {
         to[key] = fromValue;

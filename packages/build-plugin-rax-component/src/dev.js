@@ -71,7 +71,7 @@ module.exports = (api, options = {}) => {
     });
   }
 
-  onHook('after.start.compile', async (args) => {
+  onHook('after.start.compile', async(args) => {
     devUrl = args.url;
     devCompletedArr.push(args);
     // run miniapp build while targets have web or weex, for log control
@@ -118,7 +118,7 @@ module.exports = (api, options = {}) => {
 
       demos.forEach((demo) => {
         // Use Weex App to scan ip address (mobile phone can't visit localhost).
-        const weexUrl = `${devUrl}weex/${demo.name}.js?wh_weex=true`.replace(/^http:\/\/localhost/gi, function (match) {
+        const weexUrl = `${devUrl}weex/${demo.name}.js?wh_weex=true`.replace(/^http:\/\/localhost/gi, function(match) {
           // Called when matched
           try {
             return `http://${ip.address()}`;

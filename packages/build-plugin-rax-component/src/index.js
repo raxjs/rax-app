@@ -6,7 +6,6 @@ const dev = require('./dev');
 const build = require('./build');
 
 module.exports = (api, options = {}) => {
-
   setUserConfig(api, options);
 
   if (!(options.targets && options.targets.length)) {
