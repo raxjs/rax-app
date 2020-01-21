@@ -4,7 +4,7 @@ module.exports = (userConfig = []) => {
   userConfig.plugins.forEach(config => {
     if (
       Array.isArray(config) &&
-      config[0] === "build-plugin-rax-component" &&
+      config[0] === 'build-plugin-rax-component' &&
       config[1] &&
       Array.isArray(config[1].targets)
     ) {

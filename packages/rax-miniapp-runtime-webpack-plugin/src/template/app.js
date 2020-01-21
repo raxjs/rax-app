@@ -1,17 +1,18 @@
 /* INIT_FUNCTION */
 /* global appConfig,App,getCurrentPages */
 const LIFE_CYCLE_METHODS = [
-  "onLaunch",
-  "onShow",
-  "onHide",
-  "onError",
-  "onPageNotFound",
+  'onLaunch',
+  'onShow',
+  'onHide',
+  'onError',
+  'onPageNotFound',
 ];
 const extraConfig = {};
 for (const key in appConfig) {
   if (LIFE_CYCLE_METHODS.indexOf(key) === -1) extraConfig[key] = appConfig[key];
 }
 
+// eslint-disable-next-line new-cap
 App({
   onLaunch(options) {
     if (appConfig.onLaunch) appConfig.onLaunch.call(this, options);
@@ -27,7 +28,7 @@ App({
     const pages = getCurrentPages() || [];
     const currentPage = pages[pages.length - 1];
     if (currentPage && currentPage.window) {
-      currentPage.window.$$trigger("error", {
+      currentPage.window.$$trigger('error', {
         event: err,
       });
     }

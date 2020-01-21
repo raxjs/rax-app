@@ -50,7 +50,6 @@ module.exports = class UniversalDocumentPlugin {
 
     // Executed while initializing the compilation, right before emitting the compilation event.
     compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
-
       // Add file dependencies of child compiler to parent compilerto keep them watched
       compilation.hooks.additionalChunkAssets.tap(PLUGIN_NAME, () => {
         const childCompilerDependencies = fileDependencies;
@@ -88,15 +87,15 @@ module.exports = class UniversalDocumentPlugin {
         const files = compilation.entrypoints.get(entry).getFiles();
         const assets = getAssetsForPage(files, publicPath);
 
-        const DocumentContextProvider = function () { };
-        DocumentContextProvider.prototype.getChildContext = function () {
+        const DocumentContextProvider = function() { };
+        DocumentContextProvider.prototype.getChildContext = function() {
           return {
             __styles: assets.styles,
             __scripts: assets.scripts,
             __entry: entry
           };
         };
-        DocumentContextProvider.prototype.render = function () {
+        DocumentContextProvider.prototype.render = function() {
           return createElement(Document);
         };
 
@@ -171,7 +170,7 @@ function loadDocument(content) {
 /**
  * get assets from webpack outputs
  * @param {*} files [ 'web/detail.css', 'web/detail.js' ]
- * @param {*} publicPath 
+ * @param {*} publicPath
  */
 function getAssetsForPage(files, publicPath) {
   const jsFiles = files.filter(v => /\.js$/i.test(v));

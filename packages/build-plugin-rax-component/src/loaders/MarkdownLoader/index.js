@@ -1,5 +1,5 @@
-const path = require("path");
-const parseMD = require("../../config/parseMarkdown");
+const path = require('path');
+const parseMD = require('../../config/parseMarkdown');
 
 module.exports = function(content) {
   const resourcePath = this.resourcePath;

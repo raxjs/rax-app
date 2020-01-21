@@ -13,7 +13,7 @@ module.exports = ({
     const compiler = devServer.compiler.compilers[0];
     const templateContent = fs.readFileSync(MAIN_TEMPLATE, 'utf-8');
 
-    app.get('/', function (req, res) {
+    app.get('/', function(req, res) {
       const content = ejs.render(templateContent, {
         entries,
         hasWeb: targets.includes('web'),
@@ -27,7 +27,7 @@ module.exports = ({
       let compilationAssets;
       const httpTaskQueue = [];
 
-      compiler.hooks.emit.tap('AppHistoryFallback', function (compilation) {
+      compiler.hooks.emit.tap('AppHistoryFallback', function(compilation) {
         compilationAssets = compilation.assets;
 
         let task;
@@ -38,7 +38,7 @@ module.exports = ({
       });
 
       entries.forEach(({ entryName }) => {
-        app.get(`/pages/${entryName}`, function (req, res) {
+        app.get(`/pages/${entryName}`, function(req, res) {
           const assetPath = `web/${entryName}.html`;
           const send = () => {
             const content = compilationAssets[assetPath]

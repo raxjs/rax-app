@@ -11,9 +11,9 @@ module.exports = ({ onGetWebpackConfig }, functionConfig) => {
   onGetWebpackConfig('web', (config) => {
     config
       .plugin('faasDefinePlugin')
-        .use(webpack.DefinePlugin, [{
-          __FAAS_API__: JSON.stringify(devServerUrl),
-        }]);
+      .use(webpack.DefinePlugin, [{
+        __FAAS_API__: JSON.stringify(devServerUrl),
+      }]);
   });
 
   generateYaml(functionConfig);

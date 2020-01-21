@@ -28,7 +28,7 @@ module.exports = (api, options = {}) => {
 
   onHook('before.build.load', async() => {
     consoleClear(true);
-    
+
     const libBuildErr = await buildLib(api, options);
 
     if (libBuildErr) {

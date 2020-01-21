@@ -60,7 +60,7 @@ function collectDepsPath(root, nodeModulesPath, pkgName, deps = {}) {
   deps[`${pkgName}@@${pkgJson.version}`] = pkgInstallPath;
 
   let i = -1;
-  while(++i < pkgDepsArr.length) {
+  while (++i < pkgDepsArr.length) {
     const depName = pkgDepsArr[i];
     collectDepsPath(root, subModulePath, depName, deps);
   }
