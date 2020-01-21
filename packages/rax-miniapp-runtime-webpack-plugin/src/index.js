@@ -567,27 +567,20 @@ function installDependencies(autoBuildNpm = false, stats, target, callback) {
     target,
   );
 
-  let callbackExecuted = false;
-
   const build = () => {
     const outputNpmPath = path.resolve(outputPath, adapter[target].npmDirName);
     ensureDirSync(outputNpmPath);
     ['miniapp-element', 'miniapp-render'].forEach(name => {
       copyDir(
-        path.resolve(process.cwd(), "node_modules", name),
+        path.resolve(process.cwd(), "node_modules", name, 'dist', adapter[target].fileName),
         path.resolve(outputPath, adapter[target].npmDirName, name),
       );
     });
-    if (!callbackExecuted) {
-      callback();
-    }
   };
   console.log(chalk.green(`Start building deps for ${adapter[target].name}...`));
 
   build();
-
   callback();
-  callbackExecuted = true;
 }
 
 function handleWrapChunks(compilation, globalVars = [], afterOptimizations, pluginName) {
