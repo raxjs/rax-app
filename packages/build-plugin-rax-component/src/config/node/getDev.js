@@ -106,7 +106,9 @@ module.exports = (context, options) => {
               ${style}
             </head>
             <body style="padding: 0;margin: 0">
-              ${content}
+              <div id="root">
+                ${content}
+              </div>
               ${srcipt}
             </body>
           </html>`;
