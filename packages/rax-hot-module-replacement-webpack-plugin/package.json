@@ -1,0 +1,24 @@
+{
+  "name": "rax-hot-module-replacement-webpack-plugin",
+  "version": "0.6.5",
+  "description": "Rax hot module replacement.",
+  "main": "./src/HotModuleReplacementPlugin.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-scripts.git"
+  },
+  "keywords": [
+    "Rax",
+    "hot-loader",
+    "webpack-plugin"
+  ],
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-scripts/issues"
+  },
+  "homepage": "https://github.com/raxjs/rax-scripts#readme",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "tapable": "^0.2.6",
+    "webpack-sources": "^0.2.3"
+  }
+}
