@@ -110,7 +110,7 @@ module.exports = (context, options) => {
               ${srcipt}
             </body>
           </html>`;
-          res.send(html);
+        res.send(html);
       });
     });
   });
