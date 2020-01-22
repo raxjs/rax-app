@@ -1,77 +1,20 @@
 import path from 'path';
 import camelcase from 'camelcase';
-
-const STYLE_SHEET_NAME = '_styleSheet';
-const GET_STYLE_FUNC_NAME = '_getStyle';
-const MERGE_STYLES_FUNC_NAME = '_mergeStyles';
-const GET_CLS_NAME_FUNC_NAME = '_getClassName';
-const NAME_SUFFIX = 'StyleSheet';
-const cssSuffixs = ['.css', '.scss', '.sass', '.less', '.styl'];
+import {
+  STYLE_SHEET_NAME,
+  GET_STYLE_FUNC_NAME,
+  MERGE_STYLES_FUNC_NAME,
+  NAME_SUFFIX,
+  cssSuffixs,
+  mergeStylesFunctionString,
+  getClassNameFunctionString,
+  getStyleFunctionString
+} from './constants';
 
 export default function({ types: t, template }) {
-  const mergeStylesFunctionTemplate = template(`
-function ${MERGE_STYLES_FUNC_NAME}() {
-  var newTarget = {};
-
-  for (var index = 0; index < arguments.length; index++) {
-    var target = arguments[index];
-
-    for (var key in target) {
-      newTarget[key] = Object.assign(newTarget[key] || {}, target[key]);
-    }
-  }
-
-  return newTarget;
-}
-  `);
-  const getClassNameFunctionTemplate = template(`
-function ${GET_CLS_NAME_FUNC_NAME}() {
-  var className = [];
-  var args = arguments[0];
-  var type = Object.prototype.toString.call(args).slice(8, -1).toLowerCase();
-
-  if (type === 'string') {
-    args = args.trim();
-    args && className.push(args);
-  } else if (type === 'array') {
-    args.forEach(function (cls) {
-      cls = ${GET_CLS_NAME_FUNC_NAME}(cls).trim();
-      cls && className.push(cls);
-    });
-  } else if (type === 'object') {
-    for (var k in args) {
-      k = k.trim();
-      if (k && args.hasOwnProperty(k) && args[k]) {
-        className.push(k);
-      }
-    }
-  }
-
-  return className.join(' ').trim();
-}
-  `);
-  const getStyleFunctionTemplete = template(`
-function ${GET_STYLE_FUNC_NAME}(classNameExpression) {
-  var cache = ${STYLE_SHEET_NAME}.__cache || (${STYLE_SHEET_NAME}.__cache = {});
-  var className = ${GET_CLS_NAME_FUNC_NAME}(classNameExpression);
-  var classNameArr = className.split(/\\s+/);
-  var style = cache[className];
-
-  if (!style) {
-    style = {};
-    if (classNameArr.length === 1) {
-      style = ${STYLE_SHEET_NAME}[classNameArr[0].trim()];
-    } else {
-      classNameArr.forEach(function(cls) {
-        style = Object.assign(style, ${STYLE_SHEET_NAME}[cls.trim()]);
-      });
-    }
-    cache[className] = style;
-  }
-
-  return style;
-}
-  `);
+  const mergeStylesFunctionTemplate = template(mergeStylesFunctionString);
+  const getClassNameFunctionTemplate = template(getClassNameFunctionString);
+  const getStyleFunctionTemplete = template(getStyleFunctionString);
 
   const getClassNameFunctionAst = getClassNameFunctionTemplate();
   const mergeStylesFunctionAst = mergeStylesFunctionTemplate();
