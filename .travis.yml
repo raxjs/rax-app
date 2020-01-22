@@ -1,9 +1,12 @@
 sudo: required
 language: node_js
 node_js:
-  - '8'
+  - "8"
+  - "12"
 script:
   - npm run lint
+  - npm run setup
+  - npm run test
 cache:
   directories:
     - node_modules
