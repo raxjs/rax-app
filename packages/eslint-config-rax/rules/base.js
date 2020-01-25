@@ -79,6 +79,11 @@ module.exports = {
     'comma-style': ['error', 'last'],
     'new-cap': ['error', {
       'newIsCap': true,
+      'capIsNewExceptions': [
+        // For MiniApp
+        'Page',
+        'Component'
+      ]
     }],
     'key-spacing': ['error', {
       'beforeColon': false,
@@ -142,6 +147,7 @@ module.exports = {
           '**/config/*.js',
           '**/*.conf.js',
           '**/tests/*.test.js',
+          '**/demo/**'
         ],
       },
     ],

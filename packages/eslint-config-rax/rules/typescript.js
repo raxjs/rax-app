@@ -57,7 +57,14 @@ module.exports = {
         '@typescript-eslint/adjacent-overload-signatures': 'error',
         '@typescript-eslint/array-type': 'error',
         '@typescript-eslint/ban-types': 'error',
-        '@typescript-eslint/camelcase': 'error',
+        '@typescript-eslint/camelcase': ['error', {
+          'allow': [
+            '__weex_data__',
+            '__weex_options__',
+            '__weex_downgrade__',
+            '__weex_define__',
+            '__weex_require__']
+         }],
         '@typescript-eslint/class-name-casing': 'error',
         '@typescript-eslint/explicit-member-accessibility': 'error',
         '@typescript-eslint/interface-name-prefix': 'error',
