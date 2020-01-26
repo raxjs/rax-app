@@ -11,7 +11,7 @@ const isWin = process.platform === 'win32';
 /**
  * Transform Windows-style paths, such as 'C:\Windows\system32' to 'C:/Windows/system32'.
  * Because 'C:\Windows\system32' will be escaped to 'C:Windowssystem32'
- * @param {*} p 
+ * @param {*} p
  */
 const normalizePath = (p) => {
   return isWin ? p.split(path.sep).join('/') : p;

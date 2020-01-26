@@ -1,4 +1,5 @@
 const path = require('path');
+
 const HTMLAssetPath = path.join('web', 'index.html');
 
 module.exports = (config) => {
