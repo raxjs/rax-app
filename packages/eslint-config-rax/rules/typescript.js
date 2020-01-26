@@ -58,7 +58,7 @@ module.exports = {
         '@typescript-eslint/array-type': 'error',
         '@typescript-eslint/ban-types': 'error',
         '@typescript-eslint/camelcase': ['error', {
-          'allow': ['\__[a-zA-Z]+\_[a-zA-Z]+\__']
+          'allow': ['\__.*\__']
         }],
         '@typescript-eslint/class-name-casing': 'error',
         '@typescript-eslint/explicit-member-accessibility': 'error',
