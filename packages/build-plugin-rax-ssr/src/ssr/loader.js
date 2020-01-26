@@ -1,9 +1,21 @@
 const qs = require('qs');
 const fs = require('fs');
+const path = require('path');
 const babel = require('@babel/core');
 const { getBabelConfig } = require('rax-compile-config');
 
 const babelConfig = getBabelConfig();
+
+const isWin = process.platform === 'win32';
+
+/**
+ * Transform Windows-style paths, such as 'C:\Windows\system32' to 'C:/Windows/system32'.
+ * Because 'C:\Windows\system32' will be escaped to 'C:Windowssystem32'
+ * @param {*} p 
+ */
+const normalizePath = (p) => {
+  return isWin ? p.split(path.sep).join('/') : p;
+};
 
 module.exports = function() {
   const query = typeof this.query === 'string' ? qs.parse(this.query.substr(1)) : this.query;
@@ -20,7 +32,7 @@ module.exports = function() {
   } = query;
 
   const hasShell = fs.existsSync(absoluteShellPath);
-  const shellStr = hasShell ? `import Shell from '${absoluteShellPath}'` : 'const Shell = function (props) { return props.children };';
+  const shellStr = hasShell ? `import Shell from '${normalizePath(absoluteShellPath)}'` : 'const Shell = function (props) { return props.children };';
 
   const renderHtmlFnc = `
     async function renderComponentToHTML(Component, ctx) {
@@ -68,9 +80,9 @@ module.exports = function() {
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
 
-    import Page from '${absolutePagePath}';
-    import Document from '${absoluteDocumentPath}';
-    import appJSON from '${absoluteAppJSONPath}';
+    import Page from '${normalizePath(absolutePagePath)}';
+    import Document from '${normalizePath(absoluteDocumentPath)}';
+    import appJSON from '${normalizePath(absoluteAppJSONPath)}';
     ${shellStr}
 
     ${renderHtmlFnc}
