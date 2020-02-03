@@ -5,8 +5,8 @@
     "lint": "eslint --cache --ext .js ./",
     "lint-fix": "eslint --cache --ext .js ./ --fix",
     "test": "jest --logHeapUsage --detectOpenHandles",
-    "build": "npm run clean && npm run build:packages",
-    "build:packages": "node ./scripts/compile-packages.js",
+    "build": "npm run clean && npm run build:compile",
+    "build:compile": "node ./scripts/compile-packages.js",
     "clean": "rm -rf ./packages/*/lib && rm -rf ./packages/*/node_modules",
     "check-and-publish": "node ./scripts/check-and-publish"
   },
