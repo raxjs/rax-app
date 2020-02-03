@@ -18,7 +18,7 @@
     "img",
     "src"
   ],
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "dependencies": {
     "image-size": "^0.5.1"
   }
