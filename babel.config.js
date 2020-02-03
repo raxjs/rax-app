@@ -8,6 +8,12 @@ module.exports = {
           'node': 'current',
         },
       },
+
     ],
   ],
+  'plugins': [
+    'babel-plugin-transform-jsx-to-html',
+    '@babel/plugin-transform-react-jsx'
+  ]
 };
+
