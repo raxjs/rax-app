@@ -1,5 +1,6 @@
 const path = require('path');
 
+// Do not use `web/index.html` directly, for Windows, `path.join` will return a Windows-style paths.
 const HTMLAssetPath = path.join('web', 'index.html');
 
 module.exports = (config) => {
