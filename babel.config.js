@@ -1,10 +1,14 @@
 module.exports = {
   'presets': [
-    ['@babel/preset-env', {
-      'loose': true
-    }],
-    ['@babel/preset-react', {
-      'pragma': 'createElement'
-    }]
+  	[
+      '@babel/preset-env',
+      {
+        'loose': true,
+        'targets': {
+          'node': 'current',
+        },
+      },
+    ],
+    '@babel/preset-react'
   ]
 };
