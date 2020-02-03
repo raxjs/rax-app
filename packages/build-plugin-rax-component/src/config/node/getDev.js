@@ -92,8 +92,8 @@ module.exports = (context, options) => {
           content = `Error: ${error.message}<br>${stackMessage.join('<br>')}`;
         }
 
-        const existsCSS = outputFs.existsSync(path.join(rootDir, `${demo.name}.css`));
-        const style = existsCSS ? `<link href="/${demo.name}.css" rel="stylesheet"></head>` : '';
+        const existsCSS = outputFs.existsSync(path.join(rootDir, `dist/${demo.name}.css`));
+        const style = existsCSS ? `<link href="/${demo.name}.css" rel="stylesheet">` : '';
         const srcipt = hydrate ? `<script type="text/javascript" src="/${demo.name}.js"></script>` : '';
 
         const html = `
