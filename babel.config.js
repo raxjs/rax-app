@@ -10,7 +10,7 @@ module.exports = {
       },
     ],
     [
-    	'@babel/preset-react', 
+      '@babel/preset-react',
       {
         'pragma': 'createElement'
       }
