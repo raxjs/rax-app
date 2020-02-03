@@ -13,7 +13,7 @@ const isWin = process.platform === 'win32';
  * Because 'C:\Windows\system32' will be escaped to 'C:Windowssystem32'
  * @param {*} p
  */
-const normalizePath = (p) => {
+const formatPath = (p) => {
   return isWin ? p.split(path.sep).join('/') : p;
 };
 
@@ -32,7 +32,7 @@ module.exports = function() {
   } = query;
 
   const hasShell = fs.existsSync(absoluteShellPath);
-  const shellStr = hasShell ? `import Shell from '${normalizePath(absoluteShellPath)}'` : 'const Shell = function (props) { return props.children };';
+  const shellStr = hasShell ? `import Shell from '${formatPath(absoluteShellPath)}'` : 'const Shell = function (props) { return props.children };';
 
   const renderHtmlFnc = `
     async function renderComponentToHTML(Component, ctx) {
@@ -80,9 +80,9 @@ module.exports = function() {
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
 
-    import Page from '${normalizePath(absolutePagePath)}';
-    import Document from '${normalizePath(absoluteDocumentPath)}';
-    import appJSON from '${normalizePath(absoluteAppJSONPath)}';
+    import Page from '${formatPath(absolutePagePath)}';
+    import Document from '${formatPath(absoluteDocumentPath)}';
+    import appJSON from '${formatPath(absoluteAppJSONPath)}';
     ${shellStr}
 
     ${renderHtmlFnc}
