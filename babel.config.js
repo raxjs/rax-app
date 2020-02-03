@@ -1,19 +1,22 @@
 module.exports = {
   'presets': [
-    [
-      '@babel/preset-env',
-      {
-        'loose': true,
-        'targets': {
-          'node': 'current',
-        },
-      },
-
-    ],
+    '@babel/preset-flow',
+    ['@babel/preset-env', {
+      'loose': true
+    }],
+    ['@babel/preset-react', {
+      'pragma': 'createElement'
+    }]
   ],
   'plugins': [
-    'babel-plugin-transform-jsx-to-html',
-    '@babel/plugin-transform-react-jsx'
-  ]
+    '@babel/plugin-proposal-export-default-from',
+    ['@babel/plugin-proposal-class-properties', { 'loose': false }],
+    'babel-plugin-transform-jsx-stylesheet',
+    ['@babel/plugin-proposal-decorators', { 'legacy': true }],
+  ],
+  'ignore': [
+    'src/generator/templates',
+    '__mockc__',
+    'dist'
+  ],
 };
-
