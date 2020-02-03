@@ -1,70 +1,7 @@
 import jSXStylePlugin from '../index';
 import syntaxJSX from 'babel-plugin-syntax-jsx';
 import { transform } from 'babel-core';
-
-const mergeStylesFunctionTemplate = `function _mergeStyles() {
-  var newTarget = {};
-
-  for (var index = 0; index < arguments.length; index++) {
-    var target = arguments[index];
-
-    for (var key in target) {
-      newTarget[key] = Object.assign(newTarget[key] || {}, target[key]);
-    }
-  }
-
-  return newTarget;
-}`;
-
-const getClassNameFunctionTemplate = `function _getClassName() {
-  var className = [];
-  var args = arguments[0];
-  var type = Object.prototype.toString.call(args).slice(8, -1).toLowerCase();
-
-  if (type === 'string') {
-    args = args.trim();
-    args && className.push(args);
-  } else if (type === 'array') {
-    args.forEach(function (cls) {
-      cls = _getClassName(cls).trim();
-      cls && className.push(cls);
-    });
-  } else if (type === 'object') {
-    for (var k in args) {
-      k = k.trim();
-
-      if (k && args.hasOwnProperty(k) && args[k]) {
-        className.push(k);
-      }
-    }
-  }
-
-  return className.join(' ').trim();
-}`;
-
-const getStyleFunctionTemplete = `function _getStyle(classNameExpression) {
-  var cache = _styleSheet.__cache || (_styleSheet.__cache = {});
-
-  var className = _getClassName(classNameExpression);\n
-  var classNameArr = className.split(/\\s+/);
-  var style = cache[className];
-
-  if (!style) {
-    style = {};
-
-    if (classNameArr.length === 1) {
-      style = _styleSheet[classNameArr[0].trim()];
-    } else {
-      classNameArr.forEach(function (cls) {
-        style = Object.assign(style, _styleSheet[cls.trim()]);
-      });
-    }
-
-    cache[className] = style;
-  }
-
-  return style;
-}`;
+import { mergeStylesFunctionString, getClassNameFunctionString, getStyleFunctionString } from '../constants';
 
 function getTransfromCode(code, opts) {
   return transform(code, {
@@ -138,9 +75,9 @@ import appStyleSheet from './app.css';
 
 var _styleSheet = appStyleSheet;
 
-${getClassNameFunctionTemplate}
+${getClassNameFunctionString}
 
-${getStyleFunctionTemplete}
+${getStyleFunctionString}
 
 class App extends Component {
   render() {
@@ -338,7 +275,7 @@ import './app1.css';
 import './app2.css';
 
 render(<div className="header1 header2" />);
-`)).toBe(`${mergeStylesFunctionTemplate}
+`)).toBe(`${mergeStylesFunctionString}
 
 import { createElement, render } from 'rax';
 import app1StyleSheet from './app1.css';
