@@ -9,7 +9,6 @@
 const fs = require('fs');
 const path = require('path');
 const spawnSync = require('child_process').spawnSync;
-
 const babel = require('@babel/core');
 const chalk = require('chalk');
 const glob = require('glob');
@@ -20,10 +19,8 @@ const babelConfig = require('../babel.config');
 const SRC_DIR = 'src';
 const JS_FILES_PATTERN = '**/*.js';
 const IGNORE_PATTERN = '**/{__tests__,__mocks__}/**';
-
 const args = parseArgs(process.argv);
 const customPackages = args.packages;
-
 
 const fixedWidth = str => {
   const WIDTH = 80;
