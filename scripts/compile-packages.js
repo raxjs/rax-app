@@ -3,10 +3,6 @@
  * By default it transpiles all files for all packages and writes them
  * into `lib/` directory.
  * Non-js or files matching IGNORE_PATTERN will be copied without transpiling.
- *
- * Example:
- *  compile all packages: node ./scripts/compile.js
- *  watch compile some packages: node ./scripts/compile.js --watch --packages rax,rax-cli
  */
 'use strict';
 
@@ -19,7 +15,6 @@ const chalk = require('chalk');
 const glob = require('glob');
 const minimatch = require('minimatch');
 const parseArgs = require('minimist');
-const chokidar = require('chokidar');
 const babelConfig = require('../babel.config');
 
 const SRC_DIR = 'src';
@@ -75,14 +70,12 @@ function buildFile(packagesDir, file) {
   const relativeToSrcPath = path.relative(packageSrcPath, file);
   const destPath = path.resolve(packageBuildPath, relativeToSrcPath);
 
-  let babelOptions = babelConfig;
-
   spawnSync('mkdir', ['-p', path.dirname(destPath)]);
   if (!minimatch(file, IGNORE_PATTERN)) {
     if (!minimatch(file, JS_FILES_PATTERN)) {
       fs.createReadStream(file).pipe(fs.createWriteStream(destPath));
     } else {
-      const transformed = babel.transformFileSync(file, babelOptions).code;
+      const transformed = babel.transformFileSync(file, babelConfig).code;
       spawnSync('mkdir', ['-p', path.dirname(destPath)]);
       fs.writeFileSync(destPath, transformed);
     }
