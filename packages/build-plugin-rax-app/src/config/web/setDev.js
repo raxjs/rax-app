@@ -1,8 +1,8 @@
 const HTMLAssetPath = 'web/index.html';
 
-module.exports = (config) => {
+module.exports = (config, context, index) => {
   config.devServer.set('before', (app, devServer) => {
-    const compiler = devServer.compiler.compilers[0];
+    const compiler = devServer.compiler.compilers[index];
     const httpResponseQueue = [];
     let fallbackHTMLContent;
 
