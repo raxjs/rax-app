@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "esNext",
+    "target": "es2015",
+    "outDir": "build",
+    "jsx": "preserve",
+    "jsxFactory": "createElement",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "alwaysStrict": true,
+    "baseUrl": ".",
+    "paths": {
+      "rax": [
+        "node_modules/@rax-types/rax"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+    }
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}
