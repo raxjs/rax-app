@@ -39,14 +39,29 @@ module.exports = function(rootDir, options = {}) {
 
   // ├── demo
   // |  ├── index
-  // |  |  ├── entry-client.jsx
-  // |  |  ├── entry-server.jsx
-  const platformEntry = isNode ? 'entry-server.jsx' : 'entry-client.jsx';
+  // |  |  ├── index.client.jsx
+  // |  |  ├── index.server.jsx
+  const platform = isNode ? 'server' : 'client';
   folders.forEach((folder) => {
-    demos.push({
-      name: folder,
-      filePath: path.resolve(rootDir, 'demo', folder, platformEntry),
+    let platformEntry;
+
+    glob.sync(path.resolve(rootDir, `demo/${folder}/index.${platform}.{js,jsx}`)).forEach(filePath => {
+      platformEntry = filePath;
     });
+
+    // If index.{platform}.{js,jsx} are not found, use index.{js,jsx}
+    if (!platformEntry) {
+      glob.sync(path.resolve(rootDir, `demo/${folder}/index.{js,jsx}`)).forEach(filePath => {
+        platformEntry = filePath;
+      });
+    }
+
+    if (platformEntry) {
+      demos.push({
+        name: folder,
+        filePath: platformEntry,
+      });
+    }
   });
 
   return demos;
