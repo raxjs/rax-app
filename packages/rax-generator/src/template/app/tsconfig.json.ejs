@@ -13,6 +13,11 @@
       "rax": [
         "node_modules/@rax-types/rax"
       ],
+      <%_ if (useReact) { -%>,
+      "react": [
+        "node_modules/@rax-types/rax"
+      ],
+      <%_ } -%>
       "@components/*": [
         "./src/components/*"
       ],
