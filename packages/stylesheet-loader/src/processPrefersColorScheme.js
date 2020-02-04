@@ -10,7 +10,7 @@
 //   body { background-color: #ffffff; }
 // }
 // ```
-// It's works in web app whether it with inline stlye. 
+// It's works in web app whether it with inline stlye.
 // Weex project need compile to `-weex-dark-scheme-xxx` and `-weex-light-scheme-xxx`, like:
 // ```css
 // body {
