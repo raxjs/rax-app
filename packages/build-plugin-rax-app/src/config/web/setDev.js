@@ -1,8 +1,11 @@
-const HTMLAssetPath = 'web/index.html';
+const path = require('path');
 
-module.exports = (config) => {
+// Do not use `web/index.html` directly, for Windows, `path.join` will return a Windows-style paths.
+const HTMLAssetPath = path.join('web', 'index.html');
+
+module.exports = (config, context, index) => {
   config.devServer.set('before', (app, devServer) => {
-    const compiler = devServer.compiler.compilers[0];
+    const compiler = devServer.compiler.compilers[index];
     const httpResponseQueue = [];
     let fallbackHTMLContent;
 
