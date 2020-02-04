@@ -21,9 +21,9 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
   const jsx2mpDevTargets = [];
 
   targets.forEach(target => {
-    if ([WEB, WEEX, KRAKEN].indexOf(target) > - 1) {
+    if ([WEB, WEEX, KRAKEN].includes(target)) {
       buildScriptsDevTargets.push(target);
-    } else if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > - 1) {
+    } else if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
       options[target] = options[target] || {};
       addMpPlatform(target, options[target]);
       if (options[target].buildType === 'runtime') {
@@ -47,23 +47,17 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
   // Collect jsx2mp dev task
   jsx2mpDevTargets.forEach(target => {
-    if (buildScriptsDevTargets.length) {
-      onHook('after.start.devServer', () => {
-        startJSX2MpDev(context, options[target], (args) => {
-          devCompletedArr.push(args);
-        });
+    asyncTask.push(new Promise(resolve => {
+      startJSX2MpDev(context, options[target], (args) => {
+        devCompletedArr.push(args);
+        resolve();
       });
-    } else {
-      asyncTask.push(new Promise(resolve => {
-        startJSX2MpDev(context, options[target], (args) => {
-          devCompletedArr.push(args);
-          resolve();
-        });
-      }));
-    }
+    }));
   });
 
-  if (asyncTask.length) {
+  const ONLY_MINIAPP_TARGETS = asyncTask.length && buildScriptsDevTargets.length === 0;
+
+  if (ONLY_MINIAPP_TARGETS) {
     // Run jsx2mp dev
     Promise.all(asyncTask).then(() => {
       devCompileLog();
@@ -73,10 +67,11 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
   onHook('after.start.compile', async(args) => {
     devUrl = args.url;
     devCompletedArr.push(args);
-    // run miniapp build while targets have web or weex, for log control
-    if (devCompletedArr.length === jsx2mpDevTargets.length + 1) {
-      devCompileLog();
+    // Run miniapp build while targets have web or weex or kraken, for log control
+    if (asyncTask.length) {
+      await Promise.all(asyncTask);
     }
+    devCompileLog();
   });
 
   function devCompileLog() {
@@ -165,9 +160,9 @@ function addMpPlatform(target, originalConfig = {}) {
 }
 
 function getConfig(target) {
-  if ([WEB, WEEX].indexOf(target) > -1) {
-    return [require(`./config/${target}/getBase`), require(`./config/${target}/setDev`)];
-  } else {
+  // Only miniapp runtime mode will use base webpack config
+  if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > -1) {
     return [require('./config/miniapp/runtime/getBase')];
   }
+  return [require(`./config/${target}/getBase`), require(`./config/${target}/setDev`)];
 }
