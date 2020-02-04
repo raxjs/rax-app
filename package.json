@@ -4,6 +4,10 @@
     "setup": "lerna bootstrap --no-ci",
     "lint": "eslint --cache --ext .js ./",
     "lint-fix": "eslint --cache --ext .js ./ --fix",
+    "test": "jest --logHeapUsage --detectOpenHandles",
+    "build": "npm run clean:lib && npm run build:compile",
+    "build:compile": "node ./scripts/compile-packages.js",
+    "clean:lib": "rm -rf ./packages/*/lib",
     "clean": "rm -rf ./packages/*/node_modules",
     "check-and-publish": "node ./scripts/check-and-publish"
   },
@@ -13,16 +17,26 @@
     }
   },
   "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-react": "7.0.0",
     "@commitlint/cli": "^7.5.2",
     "@commitlint/config-conventional": "^7.5.0",
     "axios": "^0.19.0",
     "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.9.0",
     "eslint": "^6.8.0",
-    "eslint-config-rax": "0.0.1",
+    "eslint-config-rax": "^0.0.1",
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-react": "^7.18.0",
     "husky": "^1.3.1",
+    "jest": "^24.9.0",
     "lerna": "^3.16.4",
-    "semver": "^7.1.1"
+    "semver": "^7.1.1",
+    "chalk": "^2.4.1",
+    "chokidar": "^2.0.4",
+    "glob": "^7.1.3",
+    "minimatch": "^3.0.4",
+    "minimist": "^1.2.0"
   }
 }

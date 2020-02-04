@@ -79,6 +79,7 @@ module.exports = {
     'comma-style': ['error', 'last'],
     'new-cap': ['error', {
       'newIsCap': true,
+      'capIsNew': false
     }],
     'key-spacing': ['error', {
       'beforeColon': false,
@@ -142,6 +143,7 @@ module.exports = {
           '**/config/*.js',
           '**/*.conf.js',
           '**/tests/*.test.js',
+          '**/demo/**'
         ],
       },
     ],
