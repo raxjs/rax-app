@@ -58,6 +58,7 @@ function setCSSRule(configRule, context, value) {
         .loader(require.resolve('stylesheet-loader'))
         .options({
           transformDescendantCombinator: true,
+          taskName,
         });
     }
 
@@ -67,6 +68,7 @@ function setCSSRule(configRule, context, value) {
         .loader(require.resolve('stylesheet-loader'))
         .options({
           transformDescendantCombinator: true,
+          taskName,
         })
         .end()
         .use('postcss')

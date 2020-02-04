@@ -6,7 +6,7 @@ const getDemos = require('../getDemos');
 
 module.exports = (context, options) => {
   const config = getBaseWebpack(context);
-  const { rootDir } = context;
+  const { rootDir, taskName } = context;
   const demos = getDemos(rootDir);
 
   demos.forEach(({ name, filePath }) => {
@@ -32,13 +32,15 @@ module.exports = (context, options) => {
       .rule('css')
       .test(/\.css?$/)
       .use('css')
-      .loader(require.resolve('stylesheet-loader'));
+      .loader(require.resolve('stylesheet-loader'))
+      .options({ taskName });
 
     config.module
       .rule('less')
       .test(/\.less?$/)
       .use('css')
       .loader(require.resolve('stylesheet-loader'))
+      .options({ taskName })
       .end()
       .use('less')
       .loader(require.resolve('less-loader'));
