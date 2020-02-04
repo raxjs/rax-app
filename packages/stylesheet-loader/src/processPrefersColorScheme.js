@@ -27,17 +27,24 @@ export function isPrefersColorScheme(mediaKey) {
 }
 
 export function processPrefersColorScheme(mediaRules, styles, taskName = 'web') {
-  mediaRules.forEach((rule) => {
-    if (taskName === 'weex' && isPrefersColorScheme(rule.key)) {
-      for (var className in rule.data) {
-        for (var key in rule.data[className]) {
-          if (!styles[className]) {
-            styles[className] = {};
+  try {
+    mediaRules.forEach((rule) => {
+      if (taskName === 'weex' && isPrefersColorScheme(rule.key)) {
+        for (var className in rule.data) {
+          for (var key in rule.data[className]) {
+            if (key.indexOf('--') !== 0) {
+              // Ignore css variables like --color
+              if (!styles[className]) {
+                styles[className] = {};
+              }
+              styles[className][`-weex-${rule.key.match(PREFERS_COLOR_SCHEME_REG)[1]}-scheme-${key}`] = rule.data[className][key];
+            }
           }
-          styles[className][`-weex-${rule.key.match(PREFERS_COLOR_SCHEME_REG)[1]}-scheme-${key}`] = rule.data[className][key];
         }
       }
-    }
-  });
+    });
+  } catch (e) {
+    console.log('Weex process prefers-color-scheme failed: ', e);
+  }
   return styles;
 }
