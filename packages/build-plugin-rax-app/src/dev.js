@@ -160,9 +160,9 @@ function addMpPlatform(target, originalConfig = {}) {
 }
 
 function getConfig(target) {
-  if ([WEB, WEEX].indexOf(target) > -1) {
-    return [require(`./config/${target}/getBase`), require(`./config/${target}/setDev`)];
-  } else {
+  // Only miniapp runtime mode will use base webpack config
+  if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > -1) {
     return [require('./config/miniapp/runtime/getBase')];
   }
+  return [require(`./config/${target}/getBase`), require(`./config/${target}/setDev`)];
 }
