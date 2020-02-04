@@ -1,4 +1,7 @@
-const HTMLAssetPath = 'web/index.html';
+const path = require('path');
+
+// Do not use `web/index.html` directly, for Windows, `path.join` will return a Windows-style paths.
+const HTMLAssetPath = path.join('web', 'index.html');
 
 module.exports = (config, context, index) => {
   config.devServer.set('before', (app, devServer) => {
