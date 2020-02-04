@@ -34,13 +34,13 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     }
   });
 
-  buildScriptsDevTargets.forEach(target => {
+  buildScriptsDevTargets.forEach((target, index) => {
     const [getBase, setDev] = getConfig(target);
     registerTask(target, getBase(context, target));
 
     if (setDev) {
       onGetWebpackConfig(target, (config) => {
-        setDev(config, context);
+        setDev(config, context, index);
       });
     }
   });
