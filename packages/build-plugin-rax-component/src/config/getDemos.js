@@ -24,18 +24,8 @@ module.exports = function(rootDir, options = {}) {
     });
   }
 
-  const files = fs.readdirSync(path.resolve(rootDir, 'demo'));
-  const folders = files.filter((f) => {
-    if (/\.(js|jsx|md)$/.test(f)) {
-      return false;
-    }
-
-    if (/(wechat-miniprogram|miniapp)$/.test(f)) {
-      return false;
-    }
-
-    return true;
-  });
+  const demoDir = path.resolve(rootDir, 'demo');
+  const folders = fs.readdirSync(demoDir).filter(f => fs.statSync(path.join(demoDir, f)).isDirectory());
 
   // ├── demo
   // |  ├── index
@@ -45,13 +35,13 @@ module.exports = function(rootDir, options = {}) {
   folders.forEach((folder) => {
     let platformEntry;
 
-    glob.sync(path.resolve(rootDir, `demo/${folder}/index.${platform}.{js,jsx}`)).forEach(filePath => {
+    glob.sync(path.resolve(demoDir, `${folder}/index.${platform}.{js,jsx}`)).forEach(filePath => {
       platformEntry = filePath;
     });
 
     // If index.{platform}.{js,jsx} are not found, use index.{js,jsx}
     if (!platformEntry) {
-      glob.sync(path.resolve(rootDir, `demo/${folder}/index.{js,jsx}`)).forEach(filePath => {
+      glob.sync(path.resolve(demoDir, `${folder}/index.{js,jsx}`)).forEach(filePath => {
         platformEntry = filePath;
       });
     }
