@@ -32,8 +32,8 @@ export function processPrefersColorScheme(mediaRules, styles, taskName = 'web') 
       if (taskName === 'weex' && isPrefersColorScheme(rule.key)) {
         for (var className in rule.data) {
           for (var key in rule.data[className]) {
-            if (key.indexOf('--') !== 0) {
-              // Ignore css variables like --color
+            if (/^[a-zA-Z].*$/.test(key)) {
+              // Ignore css variables(--color), css hack(_ *) and browser hack (-webkit)
               if (!styles[className]) {
                 styles[className] = {};
               }
