@@ -12,12 +12,15 @@ module.exports = {
     'my': 'readonly',
     // WeChat MiniProgram
     'wx': 'readonly',
+    // MiniApp
+    'Page': 'readonly',
+    'Component': 'readonly',
     // Web
     'webkitRequestAnimationFrame': 'readonly',
     'webkitCancelAnimationFrame': 'readonly',
     // React
     'React': 'readonly',
     // Rax
-    'Rax': 'readonly',
+    'Rax': 'readonly'
   },
 };
