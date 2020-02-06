@@ -1,3 +1,6 @@
 module.exports = {
-  extends: ['rax']
+  extends: ['rax'],
+  rules: {
+    'import/no-unresolved': ['error', { commonjs: true }],
+  }
 };

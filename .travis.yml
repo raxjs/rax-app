@@ -4,8 +4,8 @@ node_js:
   - "8"
   - "12"
 script:
-  - npm run lint
   - npm run setup
+  - npm run lint
   - npm run test
 cache:
   directories:
