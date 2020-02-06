@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "setup": "lerna bootstrap --no-ci",
+    "setup": "lerna bootstrap --no-ci && && npm run build",
     "lint": "eslint --cache --ext .js ./",
     "lint-fix": "eslint --cache --ext .js ./ --fix",
     "test": "jest --logHeapUsage --detectOpenHandles",
