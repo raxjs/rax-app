@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-rax",
-  "version": "0.0.1",
+  "version": "0.0.1-0",
   "description": "The ESLint configs for Rax.",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
