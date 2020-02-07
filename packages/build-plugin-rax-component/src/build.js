@@ -10,7 +10,7 @@ const getDistConfig = require('./config/getDistConfig');
 const getUMDConfig = require('./config/getUMDConfig');
 const buildLib = require('./buildLib');
 
-const { WEB, WEEX, KRAKEN } = require('./constants');
+const { WEB, WEEX } = require('./constants');
 
 module.exports = (api, options = {}) => {
   const { registerTask, modifyUserConfig, context, onHook } = api;
@@ -19,7 +19,7 @@ module.exports = (api, options = {}) => {
   const { distDir, outputDir } = userConfig;
 
   targets.forEach(target => {
-    if (target === WEEX || target === WEB || target === KRAKEN) {
+    if (target === WEEX || target === WEB) {
       const config = getDistConfig(context, options);
       const umdConfig = getUMDConfig(context, options);
       // compress and minify all files
