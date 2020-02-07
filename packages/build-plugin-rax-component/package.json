@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-component",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "rax component base plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
@@ -17,6 +17,7 @@
     "console-clear": "^1.1.1",
     "css-loader": "^2.1.1",
     "deepmerge": "^4.0.0",
+    "error-stack-tracey": "^0.1.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
     "gulp": "^4.0.2",
