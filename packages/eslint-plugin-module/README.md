@@ -1,20 +1,21 @@
-# eslint-plugin-rax
+# eslint-plugin-module
 
-The ESLint plugins for Rax.
+ESLint plugins for module.
 
 ```bash
-npm install eslint-plugin-rax -g
+npm install eslint-plugin-moudle -g
 ```
 
 ## rules
 
-### rax/no-extraneous-dependencies
+### no-extraneous-dependencies
 
 Forbid the import of external modules that are not declared in the `package.json`'s `dependencies`, `devDependencies`, `optionalDependencies`, `peerDependencies`, or `bundledDependencies`.
 The closest parent `package.json` will be used. If no `package.json` is found, the rule will not lint anything. This behaviour can be changed with the rule option `packageDir`.
 
-The difference between [import/no-extraneous-dependencies](https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/no-extraneous-dependencies.md), is that modules don't have to be installed for this rule to work.
+This rule is inspired by [import/no-extraneous-dependencies](https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/no-extraneous-dependencies.md) and TSLint rule [no-implicit-dependencies](https://palantir.github.io/tslint/rules/no-implicit-dependencies/).
 
+The difference between [import/no-extraneous-dependencies](https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/no-extraneous-dependencies.md), is that modules don't have to be installed for this rule to work.
 
 This rule supports the following options:
 
@@ -31,16 +32,16 @@ This rule supports the following options:
 You can set the options like this:
 
 ```js
-"rax/no-extraneous-dependencies": ["error", {"devDependencies": false, "optionalDependencies": false, "peerDependencies": false}]
+"module/no-extraneous-dependencies": ["error", {"devDependencies": false, "optionalDependencies": false, "peerDependencies": false}]
 ```
 
 You can also use an array of globs instead of literal booleans:
 
 ```js
-"rax/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.test.js", "**/*.spec.js"]}]
+"module/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.test.js", "**/*.spec.js"]}]
 ```
 
 You can set the whitelist modules like this:
 ```js
-"rax/no-extraneous-dependencies": ["error", {"devDependencies": ["@components"]}]
+"module/no-extraneous-dependencies": ["error", {"devDependencies": ["@components"]}]
 ```

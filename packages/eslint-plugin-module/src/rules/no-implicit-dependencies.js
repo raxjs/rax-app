@@ -1,3 +1,9 @@
+/**
+ * Disallows importing modules that are not listed as dependency in the project’s package.json
+ * This rule is inspired by:
+ * import/no-extraneous-dependencies: https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/no-extraneous-dependencies.md
+ * TSLint rule no-implicit-dependencies: https://palantir.github.io/tslint/rules/no-implicit-dependencies/
+ */
 const path = require('path');
 const fs = require('fs');
 const builtins = require('builtin-modules');
