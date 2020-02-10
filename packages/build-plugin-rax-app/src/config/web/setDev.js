@@ -1,6 +1,6 @@
 const path = require('path');
 
-const HTMLAssetPath = path.join('web/index.html');
+const HTMLAssetPath = 'web/index.html';
 
 module.exports = (config, context, index) => {
   config.devServer.set('before', (app, devServer) => {
