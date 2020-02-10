@@ -19,7 +19,7 @@ const getDepPath = require('./getDepPath');
     "hydrate": false
   }
  */
-module.exports = function(appJSON) {
+module.exports = function (appJSON) {
   const options = getOptions(this) || {};
   const { type } = options;
   const appConfig = JSON.parse(appJSON);
@@ -41,16 +41,12 @@ module.exports = function(appJSON) {
       throw new Error('route object should have path and source.');
     }
 
-    let setTitle = '';
-    if (type === 'web') {
-      // Weex need Native App support title api.
-      if (route.window && route.window.title) {
-        // Set route title
-        setTitle = `document.title="${route.window.title}"`;
-      } else if (appConfig.window && appConfig.window.title) {
-        // Set default title
-        setTitle = `document.title="${appConfig.window.title}"`;
-      }
+    // Set page title: Web use document.title; Weex need Native App support title api;
+    // Default route title: appConfig.window.title
+    let routeTitle = appConfig.window && appConfig.window.title ? appConfig.window.title : '';
+    if (route.window && route.window.title) {
+      // Current route title: route.window.title
+      routeTitle = route.window.title;
     }
 
     // First level function to support hooks will autorun function type state,
@@ -63,7 +59,7 @@ module.exports = function(appJSON) {
         function Component(props) {
           return createElement(reference, Object.assign({}, routeProps, props));
         }
-        ${setTitle}
+        ${routeTitle ? `document.title="${routeTitle}"` : ''}
         Component.__path = '${route.path}';
         return Component;
       })
