@@ -3,7 +3,7 @@
 The ESLint plugins for Rax.
 
 ```bash
-npm install eslint-plugin-import -g
+npm install eslint-plugin-rax -g
 ```
 
 ## rules
