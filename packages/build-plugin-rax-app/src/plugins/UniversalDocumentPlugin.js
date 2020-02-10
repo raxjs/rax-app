@@ -36,8 +36,8 @@ module.exports = class UniversalDocumentPlugin {
 
     // Get output dir from filename instead of hard code.
     const outputFileName = compiler.options.output.filename;
-    // web/[name].js => web
-    const targetOutputDir = path.dirname(outputFileName);
+    // web/[name].js => web/[name].html
+    const outputHtmlFileName = outputFileName.replace('.js', '.html');
 
     const documentWebpackConfig = getWebpackConfigForDocument(this.context, {
       entry: absoluteDocumentPath,
@@ -104,7 +104,7 @@ module.exports = class UniversalDocumentPlugin {
         const pageSource = `<!DOCTYPE html>${renderToString(DocumentContextProviderElement)}`;
 
         // insert html file
-        compilation.assets[path.join(targetOutputDir, `${entry}.html`)] = new RawSource(pageSource);
+        compilation.assets[outputHtmlFileName.replace('[name]', entry)] = new RawSource(pageSource);
 
         delete compilation.assets[TEMP_FLIE_NAME];
       });
