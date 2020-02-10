@@ -1,7 +1,7 @@
 const path = require('path');
 
-// File name form compilation assets is related to the webpack output filename.
-// So it is will not vary based on the operating system.
+// The HTML assets path is related to the webpack output filename.
+// It is determined by webpack configuration, but not vary based on the operating system.
 const HTMLAssetPath = 'web/index.html';
 
 module.exports = (config, context, index) => {
