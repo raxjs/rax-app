@@ -13,8 +13,7 @@ module.exports = {
         '**/*.conf.js',
         '**/tests/*.test.js',
         '**/demo/**'
-      ],
-      'whitelist': ['@generated']
+      ]
     }]
   }
 };
