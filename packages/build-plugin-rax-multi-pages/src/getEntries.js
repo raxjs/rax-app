@@ -17,8 +17,8 @@ module.exports = (context) => {
   return routes.map((route) => {
     let entryName = 'index';
     if (route.path && route.path !== '/') {
-      // Example: '/page1' -> 'page1/index'
-      entryName = path.join(route.path, 'index').replace(/^\//, '');
+      // Example: '/page1/' -> 'page1/index'
+      entryName = `${route.path.replace(/^\/|\/$/g, '')}/index`;
     }
 
     return {
