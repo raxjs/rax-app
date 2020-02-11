@@ -3,7 +3,8 @@
   "author": "<%= projectAuthor %>",
   "scripts": {
     "build": "build-scripts build",
-    "start": "build-scripts start"
+    "start": "build-scripts start",
+    "lint": "eslint --ext .js --ext .jsx ./"
   },
   "dependencies": {
     <%_ if (projectFeatures.includes('ssr')) { -%>
@@ -38,6 +39,11 @@
     "build-plugin-rax-app": "^2.0.0",
     "@alib/build-scripts": "^0.1.0",
     "@rax-types/rax": "^1.0.6",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.8.0",
+    "eslint-config-rax": "^0.0.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-react": "^7.18.0",
     "typescript": "^3.7.5"
   }
 }

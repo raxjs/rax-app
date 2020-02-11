@@ -1,0 +1,27 @@
+{
+  "name": "eslint-plugin-module",
+  "version": "0.0.1",
+  "description": "The ESLint configs for module.",
+  "license": "BSD-3-Clause",
+  "main": "src/index.js",
+  "keywords": [
+    "module",
+    "eslint"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-scripts/issues"
+  },
+  "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/eslint-plugin-module#readme",
+  "peerDependencies": {
+    "eslint": "^5.16.0 || ^6.7.2"
+  },
+  "dependencies": {
+    "builtin-modules": "^3.1.0",
+    "minimatch": "^3.0.4",
+    "read-pkg-up": "^7.0.1"
+  }
+}
