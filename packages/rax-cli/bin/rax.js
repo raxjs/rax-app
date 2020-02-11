@@ -53,32 +53,54 @@ if (argv._.length === 0 && (argv.v || argv.version)) {
   process.exit();
 }
 
+function printHelp() {
+  console.log(`Usage: rax <command> [options]
+Options:
+  -v, --version                              output the version number
+  -h, --help                                 output usage information
+
+Commands:
+  init <app-name>                            generate project directory based on templates
+  
+Run rax <command> --help for detailed usage of given command.
+`);
+}
+
+function printInitHelp() {
+  console.log(`Usage: rax init [options] <app-name>
+
+Options:
+  -v, --verbose                               show project init details         
+`);
+}
+
+if (argv._.length === 0 && (argv.h || argv.help)) {
+  printHelp();
+  process.exit();
+}
+
 // check commands
 const commands = argv._;
 let createInCurrent = true;
 
 if (commands.length === 0) {
-  console.error(
-    'You did not pass any commands, did you mean to run `rax init`?',
-  );
+  printHelp();
   process.exit(1);
 }
 switch (commands[0]) {
   case 'init':
-    if (argv.h) {
-      console.log();
-      console.log('Usage: rax init <ProjectName> [--verbose]');
-      console.log();
+    if (argv.h || argv.help) {
+      printInitHelp();
       process.exit();
     }
 
-    init(commands[1], argv.verbose, argv.template);
+    init(commands[1], argv.v || argv.verbose, argv.t || argv.template);
     break;
   default:
     console.error(
-      'Command `%s` unrecognized.',
-      commands[0],
+      chalk.red(`Command \`${commands[0]}\` unrecognized.`),
     );
+    printHelp();
     process.exit(1);
     break;
 }
