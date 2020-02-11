@@ -13,6 +13,7 @@ export default function Home() {
   const [account, setAccount] = useState('');
 
   useEffect(() => {
+    // eslint-disable-next-line
     fetch(`${__FAAS_API__}/user`)
       .then(res => {
         return res.json();
