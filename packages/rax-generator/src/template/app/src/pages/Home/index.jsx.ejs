@@ -1,6 +1,8 @@
 <%_ const useFaaS = projectFeatures.includes('faas') -%>
 <%_ const useReact = projectFeatures.includes('react') -%>
-<%_ if (useFaaS) { -%>/* global __FAAS_API__ */<%_ } -%>
+<%_ if (useFaaS) { -%>
+/* global __FAAS_API__ */
+<%_ } -%>
 import { createElement<%_ if (useFaaS) { -%>, useState, useEffect<%_ } -%> } from '<%_ if (useReact) { -%>react<%_ } else { -%>rax<%_ } -%>';
 import View from 'rax-view';
 import Text from 'rax-text';
