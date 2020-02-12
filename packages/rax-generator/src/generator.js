@@ -24,7 +24,7 @@ function ejsRender(data) {
   };
 }
 
-// process different languageType file, rules: __{key}_{value}.xxx
+// process different languageType file, rules: @languageType_{value}.xxx
 // example: if languageType is ts,
 // `@languageType_ts.index.tsx` -> `index.tsx`
 // `@languageType_js.index.jsx` will be removed
