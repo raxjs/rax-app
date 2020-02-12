@@ -24,6 +24,27 @@ function ejsRender(data) {
   };
 }
 
+// process different languageType file, rules: __{key}_{value}.xxx
+// example: if languageType is ts,
+// `__languageType_ts.index.tsx` -> `index.tsx`
+// `__languageType_js.index.jsx` will be removed
+function processLanguageType(args) {
+  const { languageType } = args;
+  return (files) => {
+    for (let i = 0; i < files.length; i++) {
+      let file = files[i];
+      if (file.name.indexOf(`__languageType_${languageType}`) > -1) {
+        // `__languageType_ts.index.tsx` -> `index.tsx`
+        file.name = file.name.replace(`__languageType_${languageType}.`, '');
+      } else if (file.name.indexOf('__languageType_') > -1) {
+        // remove `__languageType_js.index.jsx`
+        files.splice(i, 1);
+        i--;
+      }
+    }
+  };
+}
+
 // get ignore files of template
 function getIgnore(args) {
   const { appType, componentType, projectFeatures, projectTargets } = args;
@@ -88,6 +109,7 @@ module.exports = function(template, args) {
   new TemplateProcesser(template)
     .use(ejsRender(ejsData))
     .use(renameFile)
+    .use(processLanguageType(args))
     .ignore(getIgnore(args))
     .done(projectDir);
 

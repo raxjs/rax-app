@@ -33,10 +33,10 @@ module.exports = class TemplateProcesser {
   // process and write files
   done(target) {
     const files = this._processFiles();
-
+    console.log(files);
     this
-      .writeTo(target)
-      .writeFiles(files);
+      .writeTo(target);
+    // .writeFiles(files);
   }
 
   // write files to `target`
