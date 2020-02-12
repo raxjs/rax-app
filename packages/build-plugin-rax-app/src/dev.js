@@ -101,7 +101,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     if (~targets.indexOf(WEB)) {
       console.log(chalk.green('[Web] Development server at:'));
-      console.log('   ', chalk.underline.white(devUrl));
+      console.log('   ', chalk.underline.white(`${devUrl}web/index.html`));
       console.log();
     }
 
