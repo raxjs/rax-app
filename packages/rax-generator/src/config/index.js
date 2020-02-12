@@ -177,7 +177,7 @@ const promptQuestion = [
     type: 'confirm',
     name: 'autoInstallModules',
     message: 'Do you want to install dependences automatically after initialization?',
-    default: false,
+    default: 'y',
   },
 ];
 

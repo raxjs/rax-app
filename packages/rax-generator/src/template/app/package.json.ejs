@@ -36,6 +36,9 @@
     <%_ if (appType === 'mpa') { -%>
     "build-plugin-rax-multi-pages": "^0.1.2",
     <%_ } -%>
+    <%_ if (languageType === 'ts') { -%>
+    "typescript": "^3.7.5",
+    <%_ } -%>
     "build-plugin-rax-app": "^2.0.0",
     "@alib/build-scripts": "^0.1.0",
     "@rax-types/rax": "^1.0.6",
@@ -43,7 +46,6 @@
     "eslint": "^6.8.0",
     "eslint-config-rax": "^0.0.0",
     "eslint-plugin-import": "^2.20.0",
-    "eslint-plugin-react": "^7.18.0",
-    "typescript": "^3.7.5"
+    "eslint-plugin-react": "^7.18.0"
   }
 }
