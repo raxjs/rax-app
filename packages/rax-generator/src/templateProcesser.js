@@ -33,6 +33,7 @@ module.exports = class TemplateProcesser {
   // process and write files
   done(target) {
     const files = this._processFiles();
+
     this
       .writeTo(target)
       .writeFiles(files);
