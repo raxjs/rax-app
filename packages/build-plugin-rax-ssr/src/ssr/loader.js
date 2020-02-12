@@ -25,7 +25,6 @@ module.exports = function() {
     absoluteShellPath,
     absolutePagePath,
     absoluteAppJSONPath,
-    pageName,
     pagePath,
     styles = [],
     scripts = [],
@@ -59,7 +58,6 @@ module.exports = function() {
         return {
           __initialHtml: initialHtml,
           __initialData: JSON.stringify(initialData),
-          __pageName: '${pageName}',
           __styles: ${JSON.stringify(styles)},
           __scripts: ${JSON.stringify(scripts)},
         };

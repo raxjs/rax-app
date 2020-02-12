@@ -19,11 +19,18 @@ module.exports = ({ onGetWebpackConfig, context, onHook }, options = {}) => {
         throw new Error(`function name for component '${route.source}' is missing, please config it in 'app.json'`);
       }
 
+      let path = '.';
+
+      // Example: '/about/' -> './about'
+      if (route.path && route.path !== '/') {
+        path = `./${route.path.replace(/^\/|\/$/g, '')}`;
+      }
+
       return {
         name: route.name,
-        handler: `${route.name}.render`,
+        handler: 'index.render',
         methods: ['GET'],
-        path: '.',
+        path: path,
       };
     });
 
