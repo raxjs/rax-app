@@ -7,6 +7,7 @@ const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
 
 const getDistConfig = require('./config/getDistConfig');
+const getUMDConfig = require('./config/getUMDConfig');
 const buildLib = require('./buildLib');
 
 const { WEB, WEEX } = require('./constants');
@@ -20,9 +21,11 @@ module.exports = (api, options = {}) => {
   targets.forEach(target => {
     if (target === WEEX || target === WEB) {
       const config = getDistConfig(context, options);
+      const umdConfig = getUMDConfig(context, options);
       // compress and minify all files
       modifyUserConfig('outputDir', 'build');
       registerTask(`component-build-${target}`, config);
+      registerTask(`component-build-${target}-umd`, umdConfig);
     }
   });
 
