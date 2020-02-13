@@ -9,6 +9,7 @@ module.exports = {
   },
   'plugins': [
     'import',
+    'module',
   ],
   'parserOptions': {
     'sourceType': 'module',
@@ -137,6 +138,7 @@ module.exports = {
         'peerDependencies': true,
         'devDependencies': [
           '**/scripts/*.js',
+          '**/scripts/**/*.js',
           '**/__tests__/*.js',
           '**/__tests__/**/*.js',
           '**/*.config.js',
@@ -147,5 +149,19 @@ module.exports = {
         ],
       },
     ],
+    'module/no-implicit-dependencies': ['error', {
+      'peerDependencies': true,
+      'devDependencies': [
+        '**/scripts/*.js',
+        '**/scripts/**/*.js',
+        '**/__tests__/*.js',
+        '**/__tests__/**/*.js',
+        '**/*.config.js',
+        '**/config/*.js',
+        '**/*.conf.js',
+        '**/tests/*.test.js',
+        '**/demo/**'
+      ]
+    }]
   },
 };

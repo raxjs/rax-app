@@ -45,7 +45,7 @@ module.exports = function(appJSON) {
     // Second level function to support rax-use-router rule autorun function type component.
     const dynamicImportComponent =
       `(routeProps) => 
-      import(/* webpackChunkName: "${getRouteName(route, this.rootContext)}" */ '${getDepPath(route.source, this.rootContext)}')
+      import(/* webpackChunkName: "${getRouteName(route, this.rootContext).toLocaleLowerCase()}.chunk" */ '${getDepPath(route.source, this.rootContext)}')
       .then((mod) => () => {
         const reference = interopRequire(mod);
         function Component(props) {
