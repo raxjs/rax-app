@@ -63,7 +63,7 @@ module.exports = (context) => {
   });
 
   config.output
-    .filename('server/[name].js')
+    .filename('node/[name].js')
     .libraryTarget('commonjs2');
 
   config.plugins.delete('document');

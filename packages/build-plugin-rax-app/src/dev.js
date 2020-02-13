@@ -99,7 +99,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     console.log(chalk.green('Rax development server has been started:'));
     console.log();
 
-    if (~targets.indexOf(WEB)) {
+    if (~targets.indexOf(WEB) && !process.env.RAX_SSR) {
       console.log(chalk.green('[Web] Development server at:'));
       console.log('   ', chalk.underline.white(`${devUrl}web/index.html`));
       console.log();

@@ -34,7 +34,7 @@ module.exports = ({ onGetWebpackConfig, context, onHook }, options = {}) => {
       };
     });
 
-    const output = path.resolve(root, 'build/server');
+    const output = path.resolve(root, 'build/node');
 
     if (command === 'build') {
       onHook('after.build.compile', () => {

@@ -15,7 +15,7 @@ module.exports = ({ onGetWebpackConfig, context, onHook }) => {
       name: packageJSON.name,
       builds: [
         {src: '/web/**', use: '@now/static' },
-        {src: '/server/**', use: '@now/node' },
+        {src: '/node/**', use: '@now/node' },
       ],
       routes: [],
     };
@@ -30,7 +30,7 @@ module.exports = ({ onGetWebpackConfig, context, onHook }) => {
 
       nowJSON.routes.push({
         src: route.path,
-        dest: `/server/${destFile}.js`,
+        dest: `/node/${destFile}.js`,
       });
     });
 

@@ -45,8 +45,8 @@ module.exports = (config, context) => {
 
   routes.forEach((route) => {
     const entryName = getEntryName(route.path);
-    routes.entryName = entryName;
-    routes.componentPath = path.join(distDir, filename.replace('[name]', entryName));
+    route.entryName = entryName;
+    route.componentPath = path.join(distDir, filename.replace('[name]', entryName));
   });
 
   config.devServer.hot(false);
