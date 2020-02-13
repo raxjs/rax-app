@@ -20,13 +20,15 @@ module.exports = class UniversalDocumentPlugin {
       this.context = options.context;
     }
 
+    // [{ entryName: 'index', path: '/' }]
+    this.pages = options.pages;
+
     // for internal weex publish
     if (options.publicPath) {
       this.publicPath = options.publicPath;
     }
 
     this.documentPath = options.path;
-    this.command = options.command;
   }
 
   apply(compiler) {
@@ -81,10 +83,9 @@ module.exports = class UniversalDocumentPlugin {
     // Render into index.html
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
       const Document = loadDocument(documentContent);
-      const entryObj = config.entry;
 
-      Object.keys(entryObj).forEach(entry => {
-        const files = compilation.entrypoints.get(entry).getFiles();
+      this.pages.forEach(page => {
+        const files = compilation.entrypoints.get(page.entryName).getFiles();
         const assets = getAssetsForPage(files, publicPath);
 
         const DocumentContextProvider = function() { };
@@ -92,7 +93,7 @@ module.exports = class UniversalDocumentPlugin {
           return {
             __styles: assets.styles,
             __scripts: assets.scripts,
-            __pageName: entry,
+            __pagePath: page.path,
           };
         };
         DocumentContextProvider.prototype.render = function() {
@@ -105,7 +106,7 @@ module.exports = class UniversalDocumentPlugin {
         const pageSource = `<!DOCTYPE html>${renderToString(DocumentContextProviderElement)}`;
 
         // insert html file
-        compilation.assets[path.join(targetOutputDir, `${entry}.html`)] = new RawSource(pageSource);
+        compilation.assets[path.join(targetOutputDir, `${page.entryName}.html`)] = new RawSource(pageSource);
 
         delete compilation.assets[TEMP_FLIE_NAME];
       });
