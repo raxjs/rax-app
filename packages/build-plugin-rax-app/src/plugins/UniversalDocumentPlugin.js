@@ -38,8 +38,7 @@ module.exports = class UniversalDocumentPlugin {
 
     // Get output dir from filename instead of hard code.
     const outputFileName = compiler.options.output.filename;
-    // web/[name].js => web
-    const targetOutputDir = path.dirname(outputFileName);
+    const outputFilePrefix = getPathInfoFromFileName(outputFileName);
 
     const documentWebpackConfig = getWebpackConfigForDocument(this.context, {
       entry: absoluteDocumentPath,
@@ -107,7 +106,7 @@ module.exports = class UniversalDocumentPlugin {
         const pageSource = `<!DOCTYPE html>${renderToString(DocumentContextProviderElement)}`;
 
         // insert html file
-        compilation.assets[path.join(targetOutputDir, `${entryName}.html`)] = new RawSource(pageSource);
+        compilation.assets[`${outputFilePrefix}${entryName}.html`] = new RawSource(pageSource);
 
         delete compilation.assets[TEMP_FLIE_NAME];
       });
@@ -116,6 +115,18 @@ module.exports = class UniversalDocumentPlugin {
     });
   }
 };
+
+/**
+ * Get path info from the output filename
+ * 'web/[name].js' => 'web/'
+ * '[name].js' => ''
+ * @param {*} fileName webpack output file name
+ */
+function getPathInfoFromFileName(fileName) {
+  const paths = fileName.split('/');
+  paths.pop();
+  return paths.length ? paths.join('/') + '/' : '';
+}
 
 /**
  * custom webpack config for document
