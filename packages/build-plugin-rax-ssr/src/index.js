@@ -5,7 +5,7 @@ const setSSRDev = require('./ssr/setDev');
 const setWebDev = require('./web/setDev');
 
 // can‘t clone webpack chain object
-module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }) => {
+module.exports = ({ onGetWebpackConfig, registerTask, context }) => {
   process.env.RAX_SSR = 'true';
   const { command } = context;
   const ssrConfig = getSSRBase(context);
@@ -21,7 +21,6 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }) => {
     onGetWebpackConfig('ssr', (config) => {
       setSSRDev(config, context);
     });
-
     onGetWebpackConfig('web', (config) => {
       setWebDev(config, context);
     });
