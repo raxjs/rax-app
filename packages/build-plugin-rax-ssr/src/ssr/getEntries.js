@@ -1,6 +1,5 @@
 const path = require('path');
 const qs = require('qs');
-const { getRouteName } = require('rax-compile-config');
 const getEntryName = require('./getEntryName');
 
 const SSRLoader = require.resolve('./loader');
