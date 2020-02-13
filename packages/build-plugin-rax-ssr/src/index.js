@@ -1,5 +1,3 @@
-const chalk = require('chalk');
-
 const getSSRBase = require('./ssr/getBase');
 const setSSRBuild = require('./ssr/setBuild');
 const setSSRDev = require('./ssr/setDev');
@@ -26,13 +24,6 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }) => {
 
     onGetWebpackConfig('web', (config) => {
       setWebDev(config, context);
-    });
-
-    onHook('after.start.compile', async(args) => {
-      const devUrl = args.url;
-      console.log(chalk.green('[SSR] Development server at:'));
-      console.log('   ', chalk.underline.white(`${devUrl}`));
-      console.log();
     });
   }
 };
