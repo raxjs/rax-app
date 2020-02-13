@@ -85,7 +85,8 @@ module.exports = class UniversalDocumentPlugin {
       const Document = loadDocument(documentContent);
 
       this.pages.forEach(page => {
-        const files = compilation.entrypoints.get(page.entryName).getFiles();
+        const { entryName, path } = page;
+        const files = compilation.entrypoints.get(entryName).getFiles();
         const assets = getAssetsForPage(files, publicPath);
 
         const DocumentContextProvider = function() { };
@@ -93,7 +94,7 @@ module.exports = class UniversalDocumentPlugin {
           return {
             __styles: assets.styles,
             __scripts: assets.scripts,
-            __pagePath: page.path,
+            __pagePath: path,
           };
         };
         DocumentContextProvider.prototype.render = function() {
@@ -106,7 +107,7 @@ module.exports = class UniversalDocumentPlugin {
         const pageSource = `<!DOCTYPE html>${renderToString(DocumentContextProviderElement)}`;
 
         // insert html file
-        compilation.assets[path.join(targetOutputDir, `${page.entryName}.html`)] = new RawSource(pageSource);
+        compilation.assets[path.join(targetOutputDir, `${entryName}.html`)] = new RawSource(pageSource);
 
         delete compilation.assets[TEMP_FLIE_NAME];
       });
