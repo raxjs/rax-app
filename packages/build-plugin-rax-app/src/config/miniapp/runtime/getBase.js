@@ -4,7 +4,9 @@ const getAppConfig = require('./getAppConfig');
 const setEntry = require('./setEntry');
 
 module.exports = (context, target) => {
-  const config = getWebpackBase(context);
+  const config = getWebpackBase(context, {
+    disableRegenerator: true
+  });
 
   const appConfig = getAppConfig(context);
   setEntry(config, context, appConfig.routes);
