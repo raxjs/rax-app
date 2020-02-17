@@ -1,8 +1,12 @@
+const path = require('path');
+
+// The HTML assets path is related to the webpack output filename.
+// It is determined by webpack configuration, but not vary based on the operating system.
 const HTMLAssetPath = 'web/index.html';
 
-module.exports = (config) => {
+module.exports = (config, context, index) => {
   config.devServer.set('before', (app, devServer) => {
-    const compiler = devServer.compiler.compilers[0];
+    const compiler = devServer.compiler.compilers[index];
     const httpResponseQueue = [];
     let fallbackHTMLContent;
 
