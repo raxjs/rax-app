@@ -10,7 +10,7 @@ let logOnce = true;
 
 module.exports = (userOptions = {}) => {
   const options = Object.assign({}, defaultOptions, userOptions);
-  const { styleSheet, disableJSXPlus, custom = {}, isSSR } = options;
+  const { styleSheet, disableJSXPlus, custom = {}, isSSR, disableRegenerator = false } = options;
 
   const baseConfig = {
     presets: [
@@ -45,7 +45,7 @@ module.exports = (userOptions = {}) => {
         {
           'corejs': false,
           'helpers': false,
-          'regenerator': true,
+          'regenerator': !disableRegenerator,
           'useESModules': false,
         },
       ],
