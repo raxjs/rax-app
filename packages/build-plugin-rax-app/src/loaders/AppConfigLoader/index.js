@@ -41,6 +41,14 @@ module.exports = function(appJSON) {
       throw new Error('route object should have path and source.');
     }
 
+    // Set page title: Web use document.title; Weex need Native App support title api;
+    // Default route title: appConfig.window.title
+    let routeTitle = appConfig.window && appConfig.window.title ? appConfig.window.title : '';
+    if (route.window && route.window.title) {
+      // Current route title: route.window.title
+      routeTitle = route.window.title;
+    }
+
     // First level function to support hooks will autorun function type state,
     // Second level function to support rax-use-router rule autorun function type component.
     const dynamicImportComponent =
@@ -51,6 +59,7 @@ module.exports = function(appJSON) {
         function Component(props) {
           return createElement(reference, Object.assign({}, routeProps, props));
         }
+        ${routeTitle ? `document.title="${routeTitle}"` : ''}
         Component.__path = '${route.path}';
         return Component;
       })
