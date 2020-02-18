@@ -29,7 +29,7 @@ module.exports = class UniversalDocumentPlugin {
     this.command = options.command;
 
     // Disable doctype in `build.json`
-    this.doctype = options.doctype === 'none' ? '' : `<!DOCTYPE ${options.doctype || 'html'}>`;
+    this.doctype = options.doctype === 'none' ? '' : '<!DOCTYPE html>';
   }
 
   apply(compiler) {
