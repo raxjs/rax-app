@@ -33,7 +33,7 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
   targets.forEach(async(target) => {
     if ([WEB, WEEX, KRAKEN].includes(target)) {
       const getBase = require(`./config/${target}/getBase`);
-      registerTask(target, getBase(context));
+      registerTask(target, getBase(context, target, options[target]));
     }
 
     if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
