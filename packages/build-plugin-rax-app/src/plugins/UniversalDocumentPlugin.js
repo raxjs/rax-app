@@ -20,13 +20,15 @@ module.exports = class UniversalDocumentPlugin {
       this.context = options.context;
     }
 
+    // [{ entryName: 'index', path: '/' }]
+    this.pages = options.pages;
+
     // for internal weex publish
     if (options.publicPath) {
       this.publicPath = options.publicPath;
     }
 
     this.documentPath = options.path;
-    this.command = options.command;
 
     // Disable doctype in `build.json`
     this.doctype = options.doctype === null ? '' : `<!DOCTYPE ${options.doctype || 'html'}>`;
@@ -83,10 +85,10 @@ module.exports = class UniversalDocumentPlugin {
     // Render into index.html
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
       const Document = loadDocument(documentContent);
-      const entryObj = config.entry;
 
-      Object.keys(entryObj).forEach(entry => {
-        const files = compilation.entrypoints.get(entry).getFiles();
+      this.pages.forEach(page => {
+        const { entryName, path } = page;
+        const files = compilation.entrypoints.get(entryName).getFiles();
         const assets = getAssetsForPage(files, publicPath);
 
         const DocumentContextProvider = function() { };
@@ -94,6 +96,7 @@ module.exports = class UniversalDocumentPlugin {
           return {
             __styles: assets.styles,
             __scripts: assets.scripts,
+            __pagePath: path,
           };
         };
         DocumentContextProvider.prototype.render = function() {
@@ -106,7 +109,7 @@ module.exports = class UniversalDocumentPlugin {
         const pageSource = `${this.doctype}${renderToString(DocumentContextProviderElement)}`;
 
         // insert html file
-        compilation.assets[`${outputFilePrefix}${entry}.html`] = new RawSource(pageSource);
+        compilation.assets[`${outputFilePrefix}${entryName}.html`] = new RawSource(pageSource);
 
         delete compilation.assets[TEMP_FLIE_NAME];
       });

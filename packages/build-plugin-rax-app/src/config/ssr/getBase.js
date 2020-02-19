@@ -24,6 +24,9 @@ module.exports = (context) => {
       });
   });
 
+  // Disable process app.json file in base webpack config
+  config.module.rules.delete('appJSON');
+
   // Map user config in build.json to webpack config.
   // In the normal entry task, `registerUserConfig` is provide by `scripts-core`.
   // But here we get webpack config for SSR to render `Document` in sub webpack compiler.

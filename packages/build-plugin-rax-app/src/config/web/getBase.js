@@ -19,11 +19,18 @@ module.exports = (context, target, options = {}) => {
     },
   ]);
 
+  const entries = config.entryPoints.entries();
+  const pages = Object.keys(entries).map(entryName => {
+    return {
+      entryName
+    };
+  });
+
   config.plugin('document')
     .use(UniversalDocumentPlugin, [{
       context,
+      pages,
       path: 'src/document/index.jsx',
-      command,
       doctype: options.doctype
     }]);
 
