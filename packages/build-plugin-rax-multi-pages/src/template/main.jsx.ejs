@@ -68,9 +68,9 @@
     <ul>
       <% entries.forEach(function(entry){ %>
       <li>
-        <div class="title">/pages/<%= entry.entryName %></div>
+        <div class="title">path: "<%= entry.path %>"</div>
         <%_ if (hasWeb) { -%>
-          <button type="button" class="btn" onclick="openUrl('/pages/<%= entry.entryName %>')">Web Preview</button>
+          <button type="button" class="btn" onclick="openUrl('/web/<%= entry.entryName %>.html')">Web Preview</button>
         <%_ } -%>
         <%_ if (hasWeex) { -%>
           <button type="button" class="btn" onclick="openUrl('/weex/<%= entry.entryName %>.js?wh_weex=true')">Weex Preview</button>
