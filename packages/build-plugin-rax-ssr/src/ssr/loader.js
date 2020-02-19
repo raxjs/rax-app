@@ -60,6 +60,7 @@ module.exports = function() {
           __initialHtml: initialHtml,
           __initialData: JSON.stringify(initialData),
           __pageName: '${pageName}',
+          __pagePath: '${pagePath}',
           __styles: ${JSON.stringify(styles)},
           __scripts: ${JSON.stringify(scripts)},
         };
