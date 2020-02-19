@@ -1,6 +1,5 @@
 const _ = require('lodash');
 const { getWebBase } = require('build-plugin-rax-app');
-const setPublicPath = require('../setPublicPath');
 const getEntries = require('./getEntries');
 const setUserConfig = require('../setUserConfig');
 
@@ -10,10 +9,6 @@ module.exports = (context) => {
 
   const config = getWebBase(context);
   setUserConfig(config, context);
-
-  if (command === 'dev') {
-    setPublicPath(config);
-  }
 
   config.entryPoints.clear();
 
@@ -63,7 +58,7 @@ module.exports = (context) => {
   });
 
   config.output
-    .filename('server/[name].js')
+    .filename('node/[name].js')
     .libraryTarget('commonjs2');
 
   config.plugins.delete('document');

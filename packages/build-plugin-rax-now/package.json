@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-now",
-  "version": "0.1.1",
+  "version": "2.0.0",
   "description": "Rax plugin for deploy app with ZEIT Now",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
