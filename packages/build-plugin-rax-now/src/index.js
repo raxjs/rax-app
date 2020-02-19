@@ -14,20 +14,23 @@ module.exports = ({ onGetWebpackConfig, context, onHook }) => {
     const nowJSON = {
       name: packageJSON.name,
       builds: [
-        {src: '/web/*', use: '@now/static' },
-        {src: '/server/*', use: '@now/node' },
+        {src: '/web/**', use: '@now/static' },
+        {src: '/node/**', use: '@now/node' },
       ],
       routes: [],
     };
 
     routes.forEach(route => {
-      if (!route.name) {
-        throw new Error(`function name for component '${route.source}' is missing, please config it in 'app.json'`);
+      let destFile = 'index';
+
+      // Example: '/about/' -> 'about/index'
+      if (route.path && route.path !== '/') {
+        destFile = `${route.path.replace(/^\/|\/$/g, '')}/index`;
       }
 
       nowJSON.routes.push({
         src: route.path,
-        dest: `/server/${route.name}.js`,
+        dest: `/node/${destFile}.js`,
       });
     });
 
