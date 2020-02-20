@@ -3,7 +3,7 @@ const PWAAppShellPlugin = require('../../plugins/PWAAppShellPlugin');
 const getWebpackBase = require('../getWebpackBase');
 const setEntry = require('../setEntry');
 
-module.exports = (context) => {
+module.exports = (context, target, options = {}) => {
   const { command } = context;
   const config = getWebpackBase(context);
   setEntry(config, context, 'web');
@@ -31,6 +31,7 @@ module.exports = (context) => {
       context,
       pages,
       path: 'src/document/index.jsx',
+      doctype: options.doctype
     }]);
 
   config.plugin('PWAAppShell')
