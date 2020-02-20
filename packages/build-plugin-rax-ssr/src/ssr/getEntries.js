@@ -1,6 +1,6 @@
 const path = require('path');
 const qs = require('qs');
-const { getRouteName } = require('rax-compile-config');
+const getEntryName = require('./getEntryName');
 
 const SSRLoader = require.resolve('./loader');
 
@@ -23,22 +23,22 @@ module.exports = (config, context) => {
   const entries = {};
 
   routes.forEach((route) => {
-    const entry = getRouteName(route, rootDir);
+    let entryName = getEntryName(route.path);
+
     const absolutePagePath = path.resolve(appSrc, route.source);
 
     const query = {
       pagePath: route.path,
-      pageName: entry,
       absoluteDocumentPath,
       absoluteShellPath,
       absoluteAppPath,
       absolutePagePath,
       absoluteAppJSONPath,
-      styles: inlineStyle ? [] : [`${publicPath}web/${entry}.css`],
-      scripts: isMultiPages ? [`${publicPath}web/${entry}.js`] : [`${publicPath}web/${entry}.js`, `${publicPath}web/index.js`],
+      styles: isMultiPages && !inlineStyle ? [`${publicPath}web/${entryName}.css`] : [],
+      scripts: isMultiPages ? [`${publicPath}web/${entryName}.js`] : [`${publicPath}web/index.js`],
     };
 
-    entries[entry] = `${SSRLoader}?${qs.stringify(query)}!${absolutePagePath}`;
+    entries[entryName] = `${SSRLoader}?${qs.stringify(query)}!${absolutePagePath}`;
   });
 
   return entries;

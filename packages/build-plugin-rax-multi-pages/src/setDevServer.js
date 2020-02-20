@@ -38,7 +38,7 @@ module.exports = ({
       });
 
       entries.forEach(({ entryName }) => {
-        app.get(`/pages/${entryName}`, function(req, res) {
+        app.get(`/web/${entryName}.html`, function(req, res) {
           const assetPath = `web/${entryName}.html`;
           const send = () => {
             const content = compilationAssets[assetPath]

@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs-extra');
-const { getRouteName } = require('rax-compile-config');
 
 module.exports = (context) => {
   const { rootDir } = context;
@@ -16,7 +15,11 @@ module.exports = (context) => {
   }
 
   return routes.map((route) => {
-    const entryName = getRouteName(route, rootDir);
+    let entryName = 'index';
+    if (route.path && route.path !== '/') {
+      // Example: '/page1/' -> 'page1/index'
+      entryName = `${route.path.replace(/^\/|\/$/g, '')}/index`;
+    }
 
     return {
       entryName,
