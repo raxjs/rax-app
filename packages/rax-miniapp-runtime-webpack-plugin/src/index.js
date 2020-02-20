@@ -668,9 +668,10 @@ class MpPlugin {
 
           // Adjust css content
           if (ext === 'css') {
-            compilation.assets[filePath] = new RawSource(
+            compilation.assets[`${filePath}.${adapter[target].css}`] = new RawSource(
               adjustCss(compilation.assets[filePath].source()),
             );
+            delete compilation.assets[filePath];
           }
         });
 
