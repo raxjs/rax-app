@@ -30,13 +30,12 @@ function ejsRender(data) {
 // `@languageType_ts.index.tsx` -> `index.tsx`
 // `@languageType_js.index.jsx` will be removed
 function processFileWithConfig(args) {
+  const CONFIG_REG = new RegExp(`@([${Object.keys(args).join('|')}]+)_[^\.]+`);
   return (files) => {
     for (let i = 0; i < files.length; i++) {
       let file = files[i];
-      const config = file.name.match(/@([^_]+)_[^\.]+/);
-      // Match xx/@{key}_{value}.xxx and key in config args.
-      if (config && args[config[1]]) {
-        const configKey = config[1];
+      if (CONFIG_REG.test(file.name)) {
+        const configKey = file.name.match(CONFIG_REG)[1];
         const configVale = args[configKey];
         if (file.name.indexOf(`@${configKey}_${configVale}`) > -1) {
           // Example: `@languageType_ts.index.tsx` -> `index.tsx`
