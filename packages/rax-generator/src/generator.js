@@ -24,22 +24,28 @@ function ejsRender(data) {
   };
 }
 
-// process different languageType file, rules: @languageType_{value}.xxx
-// example: if languageType is ts,
+// Process file which contains config key and value in file name, like: @{key}_{value}.xxx
+// Retain value matched current config files, and update it's file name.
+// Example: if languageType is ts,
 // `@languageType_ts.index.tsx` -> `index.tsx`
 // `@languageType_js.index.jsx` will be removed
-function processLanguageType(args) {
-  const { languageType } = args;
+function processFileWithConfig(args) {
   return (files) => {
     for (let i = 0; i < files.length; i++) {
       let file = files[i];
-      if (file.name.indexOf(`@languageType_${languageType}`) > -1) {
-        // `@languageType_ts.index.tsx` -> `index.tsx`
-        file.name = file.name.replace(`@languageType_${languageType}.`, '');
-      } else if (file.name.indexOf('@languageType_') > -1) {
-        // remove `@languageType_js.index.jsx`
-        files.splice(i, 1);
-        i--;
+      const config = file.name.match(/@([^_]+)_([^\.]+)/);
+      // Match xx/@{key}_{value}.xxx and key in config args.
+      if (config && args[config[1]]) {
+        const configKey = config[1];
+        const configVale = config[2];
+        if (file.name.indexOf(`@${configKey}_${configVale}`) > -1) {
+          // Example: `@languageType_ts.index.tsx` -> `index.tsx`
+          file.name = file.name.replace(`@${configKey}_${configVale}.`, '');
+        } else if (file.name.indexOf('@${configKey}_') > -1) {
+          // Example: remove `@languageType_js.index.jsx`
+          files.splice(i, 1);
+          i--;
+        }
       }
     }
   };
@@ -109,7 +115,7 @@ module.exports = function(template, args) {
   new TemplateProcesser(template)
     .use(ejsRender(ejsData))
     .use(renameFile)
-    .use(processLanguageType(args))
+    .use(processFileWithConfig(args))
     .ignore(getIgnore(args))
     .done(projectDir);
 
