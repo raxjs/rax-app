@@ -33,15 +33,15 @@ function processFileWithConfig(args) {
   return (files) => {
     for (let i = 0; i < files.length; i++) {
       let file = files[i];
-      const config = file.name.match(/@([^_]+)_([^\.]+)/);
+      const config = file.name.match(/@([^_]+)_[^\.]+/);
       // Match xx/@{key}_{value}.xxx and key in config args.
       if (config && args[config[1]]) {
         const configKey = config[1];
-        const configVale = config[2];
+        const configVale = args[configKey];
         if (file.name.indexOf(`@${configKey}_${configVale}`) > -1) {
           // Example: `@languageType_ts.index.tsx` -> `index.tsx`
           file.name = file.name.replace(`@${configKey}_${configVale}.`, '');
-        } else if (file.name.indexOf('@${configKey}_') > -1) {
+        } else if (file.name.indexOf(`@${configKey}_`) > -1) {
           // Example: remove `@languageType_js.index.jsx`
           files.splice(i, 1);
           i--;
