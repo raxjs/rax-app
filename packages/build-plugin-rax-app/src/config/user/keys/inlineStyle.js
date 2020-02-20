@@ -77,15 +77,20 @@ function setCSSRule(configRule, context, value) {
       // extract css file in web while inlineStyle is disabled
       const postcssConfig = {
         ident: 'postcss',
-        plugins: () => [
-          require('postcss-preset-env')({
-            autoprefixer: {
-              flexbox: 'no-2009',
-            },
-            stage: 3,
-          }),
-          isWebStandard && require('postcss-plugin-rpx2vw')(),
-        ],
+        plugins: () => {
+          const plugins = [
+            require('postcss-preset-env')({
+              autoprefixer: {
+                flexbox: 'no-2009',
+              },
+              stage: 3,
+            })
+          ];
+          if (isWebStandard) {
+            plugins.push(require('postcss-plugin-rpx2vw')());
+          }
+          return plugins;
+        },
       };
 
       configRule
