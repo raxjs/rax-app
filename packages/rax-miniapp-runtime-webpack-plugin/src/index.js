@@ -1,12 +1,12 @@
 const path = require('path');
-const { readFileSync, readJsonSync, writeJsonSync, ensureDirSync, copySync } = require('fs-extra');
+const { readFileSync, readJsonSync, writeJsonSync, ensureDirSync, copySync, copy } = require('fs-extra');
 const ConcatSource = require('webpack-sources').ConcatSource;
 const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 const { RawSource } = require('webpack-sources');
 const pathToRegexp = require('path-to-regexp');
 const chalk = require('chalk');
 const adjustCss = require('./tool/adjust-css');
-const { md5File, copyDir, copyFile } = require('./tool/file-helper');
+const { md5File } = require('./tool/file-helper');
 const deepMerge = require('./tool/deep-merge');
 const includes = require('./tool/includes');
 const defaultConfig = require('./defaultConfig');
@@ -362,7 +362,7 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
         ? md5File(path.resolve('src', item.icon)) + path.extname(item.icon)
         : '';
       if (iconPathName)
-        copyFile(
+        copy(
           path.resolve('src', item.icon),
           path.resolve(outputPath, `images/${iconPathName}`),
         );
@@ -371,7 +371,7 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
           path.extname(item.activeIcon)
         : '';
       if (selectedIconPathName)
-        copyFile(
+        copy(
           path.resolve('src', item.activeIcon),
           path.resolve(outputPath, `images/${selectedIconPathName}`),
         );
@@ -391,7 +391,7 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
       // 自定义 tabBar
       const customTabBarDir = tabBar.custom;
       tabBar.custom = true;
-      copyDir(
+      copy(
         customTabBarDir,
         path.resolve(outputPath, '../custom-tab-bar'),
       );
@@ -496,7 +496,7 @@ function handlePackageJSON(compilation, userPackageConfigJson = {}, target) {
 
 function handleCustomComponent(compilation, customComponentRoot, customComponents, outputPath, target) {
   if (customComponentRoot) {
-    copyDir(
+    copy(
       customComponentRoot,
       path.resolve(outputPath, 'custom-component/components'),
     );
