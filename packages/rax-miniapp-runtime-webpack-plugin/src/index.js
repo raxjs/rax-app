@@ -507,7 +507,7 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
       key =>
         realUsingComponents[
           key
-        ] = `components/${customComponents[key].path}`,
+        ] = `./components/${customComponents[key].path}`,
     );
 
     // custom-component/index.js
