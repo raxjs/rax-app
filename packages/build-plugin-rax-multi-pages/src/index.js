@@ -25,6 +25,13 @@ module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) =
       }
 
       setEntry(config, context, entries, 'web');
+
+      config.plugin('document').tap(args => {
+        return [{
+          ...args[0],
+          pages: entries
+        }];
+      });
     });
   }
 

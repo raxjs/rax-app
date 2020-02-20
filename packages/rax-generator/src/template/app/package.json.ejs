@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     <%_ if (projectFeatures.includes('ssr')) { -%>
-    "build-plugin-rax-ssr": "^1.0.0",
+    "build-plugin-rax-ssr": "^2.0.0",
     <%_ } -%>
     <%_ if (projectFeatures.includes('faas')) { -%>
     "build-plugin-rax-faas": "^0.1.0",
@@ -34,9 +34,9 @@
     "build-plugin-rax-compat-react": "^0.1.0",
     <%_ } -%>
     <%_ if (appType === 'mpa') { -%>
-    "build-plugin-rax-multi-pages": "^0.1.2",
+    "build-plugin-rax-multi-pages": "^2.0.0",
     <%_ } -%>
-    "build-plugin-rax-app": "^2.0.0",
+    "build-plugin-rax-app": "^3.0.0",
     "@alib/build-scripts": "^0.1.0",
     "babel-eslint": "^10.0.3",
     "eslint": "^6.8.0",
