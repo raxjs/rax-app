@@ -251,10 +251,9 @@ function handlePageJSON(compilation, pageConfig, pageExtraConfig, customComponen
     },
   };
   if (customComponentRoot) {
-    // FIXME:
     pageJson.usingComponents[
       'custom-component'
-    ] = `${assetPathPrefix}../../custom-component/index`;
+    ] = getAssetPath(assetPathPrefix, `${target}/custom-component/index`, {}, `${pageRoute}.js`, target);
   }
   if (reachBottom && typeof reachBottomDistance === 'number') {
     pageJson.onReachBottomDistance = reachBottomDistance;
