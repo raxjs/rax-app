@@ -1,12 +1,12 @@
 const path = require('path');
-const { readFileSync, ensureDirSync } = require('fs-extra');
+const { readFileSync, readJsonSync, writeJsonSync, ensureDirSync, copySync, copy } = require('fs-extra');
 const ConcatSource = require('webpack-sources').ConcatSource;
 const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 const { RawSource } = require('webpack-sources');
 const pathToRegexp = require('path-to-regexp');
 const chalk = require('chalk');
 const adjustCss = require('./tool/adjust-css');
-const { md5File, copyDir, copyFile } = require('./tool/file-helper');
+const { md5File } = require('./tool/file-helper');
 const deepMerge = require('./tool/deep-merge');
 const includes = require('./tool/includes');
 const defaultConfig = require('./defaultConfig');
@@ -133,7 +133,7 @@ function getSourceFromPath(routePath, routes) {
  */
 function mergeConfig(defaultConfig, passedOptions = {}) {
   // TODO: to be finished
-  const { routes = [], window, tabBar, subpackages, preloadRule, ...appExtraConfig } = passedOptions;
+  const { routes = [], window, tabBar, nativeCustomComponent = {}, subpackages, preloadRule, ...appExtraConfig } = passedOptions;
   const router = {};
   routes.forEach(({ entryName, path }) => {
     router[entryName] = [path];
@@ -151,6 +151,7 @@ function mergeConfig(defaultConfig, passedOptions = {}) {
     generate: {
       ...defaultConfig.generate,
       tabBar,
+      nativeCustomComponent
     },
     app: window,
     appExtraConfig,
@@ -204,7 +205,7 @@ function handlePageXML(compilation, customComponentRoot, pageConfig, pageRoute, 
     customComponentRoot
       ? 'generic:custom-component="custom-component"'
       : ''
-  }></element>`;
+  }> </element>`;
 
   if (target === WECHAT_MINIPROGRAM && (rem || pageStyle)) {
     pageXmlContent =
@@ -252,7 +253,7 @@ function handlePageJSON(compilation, pageConfig, pageExtraConfig, customComponen
   if (customComponentRoot) {
     pageJson.usingComponents[
       'custom-component'
-    ] = `${assetPathPrefix}../../custom-component/index`;
+    ] = getAssetPath(assetPathPrefix, `${target}/custom-component/index`, {}, `${pageRoute}.js`, target);
   }
   if (reachBottom && typeof reachBottomDistance === 'number') {
     pageJson.onReachBottomDistance = reachBottomDistance;
@@ -360,18 +361,18 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
         ? md5File(path.resolve('src', item.icon)) + path.extname(item.icon)
         : '';
       if (iconPathName)
-        copyFile(
+        copy(
           path.resolve('src', item.icon),
-          path.resolve(outputPath, target, `./images/${iconPathName}`),
+          path.resolve(outputPath, `images/${iconPathName}`),
         );
       const selectedIconPathName = item.activeIcon
         ? md5File(path.resolve('src', item.activeIcon)) +
           path.extname(item.activeIcon)
         : '';
       if (selectedIconPathName)
-        copyFile(
+        copy(
           path.resolve('src', item.activeIcon),
-          path.resolve(outputPath, target, `./images/${selectedIconPathName}`),
+          path.resolve(outputPath, `images/${selectedIconPathName}`),
         );
       tabBarMap[`/${item.pageName}`] = true;
 
@@ -389,7 +390,7 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
       // 自定义 tabBar
       const customTabBarDir = tabBar.custom;
       tabBar.custom = true;
-      copyDir(
+      copy(
         customTabBarDir,
         path.resolve(outputPath, '../custom-tab-bar'),
       );
@@ -494,9 +495,9 @@ function handlePackageJSON(compilation, userPackageConfigJson = {}, target) {
 
 function handleCustomComponent(compilation, customComponentRoot, customComponents, outputPath, target) {
   if (customComponentRoot) {
-    copyDir(
+    copy(
       customComponentRoot,
-      path.resolve(outputPath, '../custom-component/components'),
+      path.resolve(outputPath, 'custom-component/components'),
     );
 
     const realUsingComponents = {};
@@ -505,7 +506,7 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
       key =>
         realUsingComponents[
           key
-        ] = `components/${customComponents[key].path}`,
+        ] = `./components/${customComponents[key].path}`,
     );
 
     // custom-component/index.js
@@ -559,8 +560,11 @@ function handleNodeModules(compilation, target) {
   addFile(compilation, 'node_modules/.miniprogram', '', target);
 }
 
-function installDependencies(autoBuildNpm = false, stats, target, callback) {
+function installDependencies(autoBuildNpm = true, stats, target, customComponentConfig = {}, callback) {
   if (!autoBuildNpm) return callback();
+
+  const sourcePath = path.join(process.cwd(), 'src');
+  const customComponentRoot = customComponentConfig.root && path.resolve(sourcePath, customComponentConfig.root);
 
   const outputPath = path.resolve(
     stats.compilation.outputOptions.path,
@@ -570,11 +574,18 @@ function installDependencies(autoBuildNpm = false, stats, target, callback) {
   const build = () => {
     const outputNpmPath = path.resolve(outputPath, adapter[target].npmDirName);
     ensureDirSync(outputNpmPath);
+
     ['miniapp-element', 'miniapp-render'].forEach(name => {
-      copyDir(
-        path.resolve(process.cwd(), 'node_modules', name, 'dist', adapter[target].fileName),
-        path.resolve(outputPath, adapter[target].npmDirName, name),
-      );
+      const sourceNpmFileDir = path.resolve(process.cwd(), 'node_modules', name, 'dist', adapter[target].fileName);
+      const distNpmFileDir = path.resolve(outputPath, adapter[target].npmDirName, name);
+      copySync(sourceNpmFileDir, distNpmFileDir);
+      // Handle custom-component path in alibaba miniapp
+      if (target === 'miniapp' && customComponentRoot && name === 'miniapp-element') {
+        const elementJSONFilePath = path.resolve(distNpmFileDir, 'index.json');
+        const elementJSONContent = readJsonSync(elementJSONFilePath);
+        elementJSONContent.usingComponents['custom-component'] = '../../custom-component/index';
+        writeJsonSync(elementJSONFilePath, elementJSONContent, { space: 2 });
+      }
     });
   };
   console.log(chalk.green(`Start building deps for ${adapter[target].name}...`));
@@ -611,7 +622,8 @@ class MpPlugin {
     const generateConfig = options.generate || {};
 
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
-      const outputPath = compilation.outputOptions.path;
+      const outputPath = path.join(compilation.outputOptions.path, target);
+      const sourcePath = path.join(process.cwd(), 'src');
       const entryNames = Array.from(compilation.entrypoints.keys());
       const appJsEntryName = generateConfig.app || 'default';
       const globalConfig = options.global || {};
@@ -619,8 +631,8 @@ class MpPlugin {
       const subpackagesConfig = generateConfig.subpackages || {};
       const preloadRuleConfig = generateConfig.preloadRule || {};
       const tabBarConfig = generateConfig.tabBar || {};
-      const customComponentConfig = generateConfig.wxCustomComponent || {};
-      const customComponentRoot = customComponentConfig.root;
+      const customComponentConfig = generateConfig.nativeCustomComponent || {};
+      const customComponentRoot = customComponentConfig.root && path.resolve(sourcePath, customComponentConfig.root);
       const customComponents = customComponentConfig.usingComponents || {};
       const pages = [];
       const subpackagesMap = {}; // page - subpackage
@@ -656,9 +668,10 @@ class MpPlugin {
 
           // Adjust css content
           if (ext === 'css') {
-            compilation.assets[filePath] = new RawSource(
+            compilation.assets[`${filePath}.${adapter[target].css}`] = new RawSource(
               adjustCss(compilation.assets[filePath].source()),
             );
+            delete compilation.assets[filePath];
           }
         });
 
@@ -775,7 +788,8 @@ class MpPlugin {
 
     compiler.hooks.done.tapAsync(PluginName, (stats, callback) => {
       // Install dependency automatically
-      installDependencies(generateConfig.autoBuildNpm, stats, target, callback);
+      const customComponentConfig = generateConfig.nativeCustomComponent || {};
+      installDependencies(generateConfig.autoBuildNpm, stats, target, customComponentConfig, callback);
     });
   }
 }

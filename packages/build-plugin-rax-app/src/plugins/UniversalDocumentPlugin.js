@@ -29,6 +29,9 @@ module.exports = class UniversalDocumentPlugin {
     }
 
     this.documentPath = options.path;
+
+    // Disable doctype in `build.json`
+    this.doctype = options.doctype === null ? '' : `${options.doctype || '<!DOCTYPE html>'}`;
   }
 
   apply(compiler) {
@@ -103,7 +106,7 @@ module.exports = class UniversalDocumentPlugin {
         const DocumentContextProviderElement = createElement(DocumentContextProvider);
 
         // get document html string
-        const pageSource = `<!DOCTYPE html>${renderToString(DocumentContextProviderElement)}`;
+        const pageSource = `${this.doctype}${renderToString(DocumentContextProviderElement)}`;
 
         // insert html file
         compilation.assets[`${outputFilePrefix}${entryName}.html`] = new RawSource(pageSource);
