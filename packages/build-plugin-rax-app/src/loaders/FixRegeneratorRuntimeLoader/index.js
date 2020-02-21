@@ -1,6 +1,6 @@
 const babel = require('@babel/core');
 
-module.exports = function (content) {
+module.exports = function(content) {
   const parserOpts = {
     plugins: [
       'classProperties',
@@ -24,4 +24,4 @@ module.exports = function (content) {
   });
 
   return code;
-}
+};

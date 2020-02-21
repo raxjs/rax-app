@@ -3,7 +3,7 @@ module.exports = function visitor() {
     visitor: {
       CallExpression(path) {
         const { node } = path;
-        if(
+        if (
           node.callee.name === 'Function' &&
           node.arguments &&
           node.arguments.length === 2 &&
@@ -16,5 +16,5 @@ module.exports = function visitor() {
         }
       }
     }
-  }
-}
+  };
+};
