@@ -24,35 +24,19 @@ function ejsRender(data) {
   };
 }
 
-// Process file which contains config key and value in file name, like: @{key}_{value}.xxx
-// Retain value matched current config files, and update it's file name.
-// Example: if languageType is ts,
-// `@languageType_ts.index.tsx` -> `index.tsx`
-// `@languageType_js.index.jsx` will be removed
-function processFileWithConfig(args) {
-  const CONFIG_REG = new RegExp(`@([${Object.keys(args).join('|')}]+)_[^\.]+`);
+// languageType is js, src/js/xxx  -> src/xxx
+function processLanguageType(args) {
+  const { languageType } = args;
   return (files) => {
     for (let i = 0; i < files.length; i++) {
-      let file = files[i];
-      if (CONFIG_REG.test(file.name)) {
-        const configKey = file.name.match(CONFIG_REG)[1];
-        const configVale = args[configKey];
-        if (file.name.indexOf(`@${configKey}_${configVale}`) > -1) {
-          // Example: `@languageType_ts.index.tsx` -> `index.tsx`
-          file.name = file.name.replace(`@${configKey}_${configVale}.`, '');
-        } else if (file.name.indexOf(`@${configKey}_`) > -1) {
-          // Example: remove `@languageType_js.index.jsx`
-          files.splice(i, 1);
-          i--;
-        }
-      }
+      files[i].name = files[i].name.replace(new RegExp(`^src/${languageType}`), 'src');
     }
   };
 }
 
 // get ignore files of template
 function getIgnore(args) {
-  const { appType, componentType, projectFeatures, projectTargets } = args;
+  const { appType, componentType, languageType, projectFeatures, projectTargets } = args;
   let list = [];
 
   if (appType === 'lite') {
@@ -72,7 +56,8 @@ function getIgnore(args) {
     list = [
       'demo/basic.md.ejs',
       'demo/advance.md.ejs',
-      'src/style',
+      'src/ts/style',
+      'src/js/style',
       'CHANGELOG.md.ejs',
       'README.en-US.md.ejs',
       '.commitlintrc.js.ejs',
@@ -85,6 +70,14 @@ function getIgnore(args) {
 
   if (Array.isArray(projectFeatures) && !projectFeatures.includes('faas')) {
     list.push('src/api');
+  }
+
+  // Process languageType
+  if (languageType === 'js') {
+    list.push('src/ts');
+    list.push('tsconfig.json.ejs');
+  } else if (languageType === 'ts') {
+    list.push('src/js');
   }
 
   return list;
@@ -114,7 +107,7 @@ module.exports = function(template, args) {
   new TemplateProcesser(template)
     .use(ejsRender(ejsData))
     .use(renameFile)
-    .use(processFileWithConfig(args))
+    .use(processLanguageType(args))
     .ignore(getIgnore(args))
     .done(projectDir);
 
