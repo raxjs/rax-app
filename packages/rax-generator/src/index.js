@@ -24,6 +24,7 @@ module.exports = {
       root: process.cwd(),
       projectName: '',
       projectType: 'app',
+      languageType: 'js',
     };
 
     const projectInfo = Object.assign({}, defaultInfo, args);
@@ -34,7 +35,7 @@ module.exports = {
       // current work dir is projectInfo.root
       templatePath = path.resolve(template, projectInfo.projectType);
     } else {
-      templatePath = path.resolve(__dirname, 'template', projectInfo.projectType);
+      templatePath = path.resolve(__dirname, 'template', `${projectInfo.projectType}-${projectInfo.languageType}`);
     }
 
     return generate(templatePath, projectInfo).then(res => {
