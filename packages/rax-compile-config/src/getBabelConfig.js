@@ -10,7 +10,7 @@ let logOnce = true;
 
 module.exports = (userOptions = {}) => {
   const options = Object.assign({}, defaultOptions, userOptions);
-  const { styleSheet, disableJSXPlus, custom = {}, isSSR, disableRegenerator = false } = options;
+  const { styleSheet, disableJSXPlus, custom = {}, isSSR, disableRegenerator = false, presetEnvModules = 'auto' } = options;
 
   const baseConfig = {
     presets: [
@@ -25,7 +25,7 @@ module.exports = (userOptions = {}) => {
             ios: '8',
           },
           loose: true,
-          modules: 'auto',
+          modules: presetEnvModules,
           include: [
             'transform-computed-properties',
           ],
