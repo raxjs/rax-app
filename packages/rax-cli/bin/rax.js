@@ -8,6 +8,7 @@ const spawn = require('cross-spawn');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const semver = require('semver');
+const _ = require('lodash');
 const argv = require('minimist')(process.argv.slice(2));
 
 const generator = require('rax-generator');
@@ -117,7 +118,7 @@ async function init(name, verbose, template) {
 
   const answers = await askProjectInformaction();
 
-  createProject(projectName, verbose, template, answers);
+  createProject(_.kebabCase(projectName), verbose, template, answers);
 }
 
 function askProjectInformaction() {
