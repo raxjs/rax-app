@@ -48,7 +48,7 @@ module.exports = class PWAAppShellPlugin {
       const newConfig = Object.assign({}, config, {
         target: 'node',
         externals: {
-          rax: 'rax'
+          rax: 'rax',
         },
         entry: { [FILE_NAME]: [file] },
         output: Object.assign({}, config.output, { libraryTarget: 'commonjs2' }),
