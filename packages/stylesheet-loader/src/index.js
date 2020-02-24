@@ -103,8 +103,8 @@ const parse = (parsedQuery, stylesheet) => {
 };
 
 const genStyleContent = (parsedData, parsedQuery) => {
-  const { styles, fontFaceRules, mediaRules } = parsedData;
-  processPrefersColorScheme(mediaRules, styles, parsedQuery.taskName);
+  const { fontFaceRules, mediaRules } = parsedData;
+  const styles = processPrefersColorScheme(mediaRules, parsedData.styles, parsedQuery.taskName);
 
   const fontFaceContent = getFontFaceContent(fontFaceRules);
   const mediaContent = getMediaContent(mediaRules, parsedQuery);
