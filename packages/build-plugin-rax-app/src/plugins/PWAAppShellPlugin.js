@@ -48,13 +48,18 @@ module.exports = class PWAAppShellPlugin {
       const newConfig = Object.assign({}, config, {
         target: 'node',
         externals: {
-          rax: 'rax',
-          react: 'rax/lib/compat'
+          rax: 'rax'
         },
         entry: { [FILE_NAME]: [file] },
         output: Object.assign({}, config.output, { libraryTarget: 'commonjs2' }),
         plugins: config.plugins.filter(plugin => plugin !== this),
       });
+
+      // Support react compat
+      if (newConfig.resolve && newConfig.resolve.alias && newConfig.resolve.alias.react) {
+        newConfig.externals.react = 'rax/lib/compat';
+      }
+
       webpack(newConfig).run(() => {
         callback();
       });
