@@ -2,7 +2,7 @@ const chalk = require('chalk');
 const babelMerge = require('babel-merge');
 
 const defaultOptions = {
-  disableJSXPlus: process.env.DISABLE_JSX_PLUS,
+  jsxPlus: !process.env.DISABLE_JSX_PLUS,
   styleSheet: false,
 };
 
@@ -10,7 +10,14 @@ let logOnce = true;
 
 module.exports = (userOptions = {}) => {
   const options = Object.assign({}, defaultOptions, userOptions);
-  const { styleSheet, disableJSXPlus, custom = {}, isSSR, disableRegenerator = false } = options;
+  const { 
+    styleSheet, 
+    jsxPlus = true, 
+    custom = {}, 
+    jsxToHtml, 
+    isNode,
+    disableRegenerator = false 
+  } = options;
 
   const baseConfig = {
     presets: [
@@ -18,7 +25,7 @@ module.exports = (userOptions = {}) => {
       [
         require.resolve('@babel/preset-env'),
         {
-          targets: isSSR ? {
+          targets: isNode ? {
             node: '8',
           } : {
             chrome: '49',
@@ -76,7 +83,7 @@ module.exports = (userOptions = {}) => {
 
   const configArr = [baseConfig];
 
-  if (isSSR) {
+  if (jsxToHtml) {
     // Must transform before other jsx transformer
     configArr.push({
       plugins: [
@@ -86,7 +93,7 @@ module.exports = (userOptions = {}) => {
   }
 
   // Enable jsx plus default.
-  if (!disableJSXPlus) {
+  if (jsxPlus) {
     configArr.push({
       plugins: [
         require.resolve('babel-plugin-transform-jsx-list'),
