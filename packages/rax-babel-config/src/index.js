@@ -10,13 +10,13 @@ let logOnce = true;
 
 module.exports = (userOptions = {}) => {
   const options = Object.assign({}, defaultOptions, userOptions);
-  const { 
-    styleSheet, 
-    jsxPlus = true, 
-    custom = {}, 
-    jsxToHtml, 
+  const {
+    styleSheet,
+    jsxPlus = true,
+    custom = {},
+    jsxToHtml,
     isNode,
-    disableRegenerator = false 
+    disableRegenerator = false
   } = options;
 
   const baseConfig = {
