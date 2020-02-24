@@ -3,12 +3,15 @@ const { WEB, WEEX, NODE, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../../
 
 const webStandardList = [
   WEB,
-  MINIAPP,
-  WECHAT_MINIPROGRAM,
 ];
 
 const inlineStandardList = [
   WEEX, KRAKEN,
+];
+
+const miniappStandardList = [
+  MINIAPP,
+  WECHAT_MINIPROGRAM,
 ];
 
 module.exports = {
@@ -50,26 +53,15 @@ function setCSSRule(configRule, context, value) {
   const { modules, resourceQuery } = cssModules;
   const isInlineStandard = inlineStandardList.includes(taskName);
   const isWebStandard = webStandardList.includes(taskName);
+  const isMiniAppStandard = miniappStandardList.includes(taskName);
+  const isNodeStandard = taskName === NODE;
   // enbale inlineStyle
-  if (isInlineStandard || value) {
-    if (isInlineStandard) {
-      configRule
-        .use('css')
-        .loader(require.resolve('stylesheet-loader'))
-        .options({
-          transformDescendantCombinator: true,
-          taskName,
-        });
-    }
-
-    if (isWebStandard) {
-      configRule
-        .use('css')
-        .loader(require.resolve('stylesheet-loader'))
-        .options({
-          transformDescendantCombinator: true,
-          taskName,
-        })
+  if (value) {
+    if (isInlineStandard || isMiniAppStandard) {
+      configInlineStyle(configRule);
+    } else if (isWebStandard) {
+      // Only web need transfrom rpx to vw
+      configInlineStyle(configRule)
         .end()
         .use('postcss')
         .loader(require.resolve('postcss-loader'))
@@ -80,57 +72,72 @@ function setCSSRule(configRule, context, value) {
           ],
         });
     }
-    // disable inlineStyle
-  } else if (isWebStandard && !value) {
-    // extract css file in web while inlineStyle is disabled
+  } else {
+    if (isWebStandard || isMiniAppStandard) {
+      // extract css file in web while inlineStyle is disabled
+      const postcssConfig = {
+        ident: 'postcss',
+        plugins: () => {
+          const plugins = [
+            require('postcss-preset-env')({
+              autoprefixer: {
+                flexbox: 'no-2009',
+              },
+              stage: 3,
+            })
+          ];
+          if (isWebStandard) {
+            plugins.push(require('postcss-plugin-rpx2vw')());
+          }
+          return plugins;
+        },
+      };
 
-    const postcssConfig = {
-      ident: 'postcss',
-      plugins: () => [
-        require('postcss-preset-env')({
-          autoprefixer: {
-            flexbox: 'no-2009',
-          },
-          stage: 3,
-        }),
-        require('postcss-plugin-rpx2vw')(),
-      ],
-    };
-
-
-    configRule
-      .use('minicss')
-      .loader(MiniCssExtractPlugin.loader)
-      .end()
-      .oneOf('raw')
-      .resourceQuery(resourceQuery ? new RegExp(resourceQuery) : /\?raw$/)
-      .use('css')
-      .loader(require.resolve('css-loader'))
-      .end()
-      .use('postcss')
-      .loader(require.resolve('postcss-loader'))
-      .options(postcssConfig)
-      .end()
-      .end()
-      .oneOf('normal')
-      .use('css')
-      .loader(require.resolve('css-loader'))
+      configRule
+        .use('minicss')
+        .loader(MiniCssExtractPlugin.loader)
+        .end()
+        .oneOf('raw')
+        .resourceQuery(resourceQuery ? new RegExp(resourceQuery) : /\?raw$/)
+        .use('css')
+        .loader(require.resolve('css-loader'))
+        .end()
+        .use('postcss')
+        .loader(require.resolve('postcss-loader'))
+        .options(postcssConfig)
+        .end()
+        .end()
+        .oneOf('normal')
+        .use('css')
+        .loader(require.resolve('css-loader'))
       // reference: https://github.com/webpack-contrib/css-loader/tree/v2.1.1#localidentname
-      .options(
-        modules ? {
-          importLoaders: 2,
-          modules: true,
-          localIdentName: '[name]__[local]--[hash:base64:5]',
-        } : {})
-      .end()
-      .use('postcss')
-      .loader(require.resolve('postcss-loader'))
-      .options(postcssConfig);
-  } else if (taskName === NODE && !value) {
-    // Do not generate CSS file, it will be built by web complier
-    configRule
-      .use('ignorecss')
-      .loader(require.resolve('../../../loaders/ignoreLoader'))
-      .end();
+        .options(
+          modules ? {
+            importLoaders: 2,
+            modules: true,
+            localIdentName: '[name]__[local]--[hash:base64:5]',
+          } : {})
+        .end()
+        .use('postcss')
+        .loader(require.resolve('postcss-loader'))
+        .options(postcssConfig);
+    } else if (isInlineStandard) {
+      configInlineStyle(configRule);
+    } else if (isNodeStandard) {
+      // Do not generate CSS file, it will be built by web complier
+      configRule
+        .use('ignorecss')
+        .loader(require.resolve('../../../loaders/ignoreLoader'))
+        .end();
+    }
   }
+}
+
+function configInlineStyle(configRule) {
+  return configRule
+    .use('css')
+    .loader(require.resolve('stylesheet-loader'))
+    .options({
+      transformDescendantCombinator: true,
+    });
 }
