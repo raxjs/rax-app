@@ -112,12 +112,12 @@ async function init(name, verbose, template) {
   let projectName = name;
   createInCurrent = !projectName;
   if (!projectName) {
-    projectName = path.dirname(process.cwd()).split(path.sep).pop();
+    projectName = process.cwd().split(path.sep).pop();
   }
 
   const answers = await askProjectInformaction();
 
-  createProject(name, verbose, template, answers);
+  createProject(projectName, verbose, template, answers);
 }
 
 function askProjectInformaction() {
