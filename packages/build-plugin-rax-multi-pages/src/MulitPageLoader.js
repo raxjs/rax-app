@@ -21,7 +21,7 @@ module.exports = function() {
     let appRenderMethod = '';
     if (fs.existsSync(path.join(this.rootContext, 'src/shell/index.jsx'))) {
       // app shell
-      importStr += `import Shell from "${path.join(this.rootContext, 'src/shell/index')}";`;
+      importStr += `import Shell from "${formatPath(path.join(this.rootContext, 'src/shell/index'))}";`;
       appRenderMethod = `
         // process Shell.getInitialProps
         // use global props comProps as shell default props
