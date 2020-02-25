@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const babel = require('@babel/core');
 const { getOptions } = require('loader-utils');
 const { getBabelConfig } = require('rax-compile-config');
+const formatPath = require('./formatPath.js');
 
 const babelConfig = getBabelConfig();
 
@@ -54,7 +55,7 @@ module.exports = function() {
 
   const source = `
     import { render, createElement } from '${renderModule}';
-    import Component from '${this.resourcePath}';
+    import Component from '${formatPath(this.resourcePath)}';
     import DriverUniversal from 'driver-universal';
     ${importStr}
 

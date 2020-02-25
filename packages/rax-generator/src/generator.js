@@ -1,4 +1,5 @@
 const ejs = require('ejs');
+const path = require('path');
 const TemplateProcesser = require('./templateProcesser');
 
 // Rename files start with '_'
@@ -29,7 +30,7 @@ function processLanguageType(args) {
   const { languageType } = args;
   return (files) => {
     for (let i = 0; i < files.length; i++) {
-      files[i].name = files[i].name.replace(new RegExp(`^src/${languageType}`), 'src');
+      files[i].name = files[i].name.replace(`src${path.sep}${languageType}`, 'src');
     }
   };
 }
@@ -69,7 +70,8 @@ function getIgnore(args) {
   }
 
   if (Array.isArray(projectFeatures) && !projectFeatures.includes('faas')) {
-    list.push('src/api');
+    list.push('src/ts/api');
+    list.push('src/js/api');
   }
 
   // Process languageType
