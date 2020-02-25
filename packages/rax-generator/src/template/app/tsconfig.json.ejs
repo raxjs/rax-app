@@ -1,0 +1,27 @@
+<%_ const useReact = projectFeatures.includes('react') -%>
+{
+  "compilerOptions": {
+    "module": "esNext",
+    "target": "es2015",
+    "outDir": "build",
+    "jsx": "preserve",
+    "jsxFactory": "createElement",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "alwaysStrict": true,
+    "baseUrl": ".",
+    "paths": {
+      "rax": [
+        "node_modules/@rax-types/rax"
+      ],
+      <%_ if (useReact) { -%>,
+      "react": [
+        "node_modules/@rax-types/rax"
+      ],
+      <%_ } -%>
+    }
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}

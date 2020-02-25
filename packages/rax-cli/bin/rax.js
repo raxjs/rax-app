@@ -8,6 +8,7 @@ const spawn = require('cross-spawn');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const semver = require('semver');
+const kebabCase = require('lodash.kebabcase');
 const argv = require('minimist')(process.argv.slice(2));
 
 const generator = require('rax-generator');
@@ -112,12 +113,12 @@ async function init(name, verbose, template) {
   let projectName = name;
   createInCurrent = !projectName;
   if (!projectName) {
-    projectName = path.dirname(process.cwd()).split(path.sep).pop();
+    projectName = process.cwd().split(path.sep).pop();
   }
 
   const answers = await askProjectInformaction();
 
-  createProject(name, verbose, template, answers);
+  createProject(kebabCase(projectName), verbose, template, answers);
 }
 
 function askProjectInformaction() {

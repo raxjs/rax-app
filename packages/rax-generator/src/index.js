@@ -24,6 +24,7 @@ module.exports = {
       root: process.cwd(),
       projectName: '',
       projectType: 'app',
+      languageType: 'js',
     };
 
     const projectInfo = Object.assign({}, defaultInfo, args);
