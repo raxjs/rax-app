@@ -27,7 +27,7 @@ module.exports = function() {
     scripts = [],
   } = query;
 
-  const absolutePagePath = this.resourcePath;
+  const absolutePagePath = formatPath(this.resourcePath);
   const hasShell = fs.existsSync(absoluteShellPath);
   const shellStr = hasShell ? `import Shell from '${formatPath(absoluteShellPath)}'` : 'const Shell = function (props) { return props.children };';
 
