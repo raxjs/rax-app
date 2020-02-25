@@ -19,17 +19,15 @@ const formatPath = (p) => {
 
 module.exports = function() {
   const query = typeof this.query === 'string' ? qs.parse(this.query.substr(1)) : this.query;
-
   const {
     absoluteDocumentPath,
     absoluteShellPath,
-    absolutePagePath,
-    absoluteAppJSONPath,
     pagePath,
     styles = [],
     scripts = [],
   } = query;
 
+  const absolutePagePath = this.resourcePath;
   const hasShell = fs.existsSync(absoluteShellPath);
   const shellStr = hasShell ? `import Shell from '${formatPath(absoluteShellPath)}'` : 'const Shell = function (props) { return props.children };';
 
@@ -81,7 +79,6 @@ module.exports = function() {
 
     import Page from '${formatPath(absolutePagePath)}';
     import Document from '${formatPath(absoluteDocumentPath)}';
-    import appJSON from '${formatPath(absoluteAppJSONPath)}';
     ${shellStr}
 
     ${renderHtmlFnc}
