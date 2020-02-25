@@ -57,7 +57,7 @@ module.exports = class PWAAppShellPlugin {
 
       // Support react compat
       if (newConfig.resolve && newConfig.resolve.alias && newConfig.resolve.alias.react) {
-        newConfig.externals.react = 'rax/lib/compat';
+        newConfig.externals.react = newConfig.resolve.alias.react;
       }
 
       webpack(newConfig).run(() => {
