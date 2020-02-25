@@ -1,0 +1,21 @@
+{
+    "name": "rax-types",
+    "version": "1.0.0",
+    "description": "TypeScript definitions for Rax",
+    "types": "src/index",
+    "keywords": [
+      "rax"
+    ],
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/raxjs/rax-scripts.git"
+    },
+    "bugs": {
+      "url": "https://github.com/raxjs/rax-scripts/issues"
+    },
+    "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-types#readme",
+    "dependencies": {
+      "@types/prop-types": "^15.7.3",
+      "csstype": "^2.2.0"
+    }
+  }
