@@ -1,0 +1,20 @@
+/**
+ * Recommend to use BEM： http://getbem.com/introduction/
+ */
+
+import { StyleProviderFunction } from '@rax-ui/styles';
+
+const StyleProvider: StyleProviderFunction = (theme) => {
+  const core = theme.Core;
+
+  return {
+    'component': {
+      padding: core['s-4'],
+    },
+    'component--text': {
+      color: core['color-brand1-6'],
+    },
+  };
+};
+
+export default StyleProvider;
