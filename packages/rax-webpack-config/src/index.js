@@ -44,7 +44,7 @@ module.exports = (context) => {
     .end()
     .use('ts')
     .loader(require.resolve('ts-loader'));
-  
+
   config.module
     .rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
