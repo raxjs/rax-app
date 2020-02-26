@@ -1,20 +1,13 @@
 const webpack = require('webpack');
 const path = require('path');
 const Chain = require('webpack-chain');
-const getBabelConfig = require('rax-babel-config');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
-const babelConfig = getBabelConfig({
-  styleSheet: true,
-  custom: {
-    ignore: ['**/**/*.d.ts'],
-  },
-});
 
 module.exports = (context) => {
-  const { rootDir, command } = context;
+  const { rootDir, command, babelConfig } = context;
 
   const config = new Chain();
 
@@ -25,7 +18,6 @@ module.exports = (context) => {
 
   config.target('web');
   config.context(rootDir);
-
   config.externals([
     function(ctx, request, callback) {
       if (request.indexOf('@weex-module') !== -1) {
@@ -36,7 +28,6 @@ module.exports = (context) => {
   ]);
 
   config.resolve.extensions.merge(['.js', '.json', '.jsx', '.ts', '.tsx', '.html']);
-
   config.module
     .rule('jsx')
     .test(/\.(js|mjs|jsx)$/)
@@ -53,7 +44,7 @@ module.exports = (context) => {
     .end()
     .use('ts')
     .loader(require.resolve('ts-loader'));
-
+  
   config.module
     .rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
@@ -63,7 +54,6 @@ module.exports = (context) => {
   config.plugin('caseSensitivePaths').use(CaseSensitivePathsPlugin);
 
   config.plugin('noError').use(webpack.NoEmitOnErrorsPlugin);
-
   if (command === 'start') {
     config.mode('development');
     config.devtool('inline-module-source-map');
@@ -86,6 +76,5 @@ module.exports = (context) => {
       .minimizer('optimizeCSS')
       .use(OptimizeCSSAssetsPlugin);
   }
-
   return config;
 };

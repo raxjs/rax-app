@@ -17,11 +17,16 @@
     "webpack-chain": "^6.0.0",
     "webpack-node-externals": "^1.7.2",
     "webpack-sources": "^1.4.3",
-    "rax-babel-config": "^0.0.1",
     "case-sensitive-paths-webpack-plugin": "^2.1.2",
     "terser-webpack-plugin": "^2.1.3",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "babel-runtime-jsx-plus": "^0.1.3",
+    "babel-loader": "^8.0.4",
+    "ts-loader": "^5.3.3",
+    "image-source-loader": "^0.6.5",
+    "@babel/core": "7.2.0",
     "@babel/runtime": "^7.2.0"
+
+
   }
 }

@@ -13,7 +13,6 @@ module.exports = (userOptions = {}) => {
   const {
     styleSheet,
     jsxPlus = true,
-    custom = {},
     jsxToHtml,
     isNode,
     disableRegenerator = false
@@ -118,9 +117,6 @@ module.exports = (userOptions = {}) => {
       ],
     });
   }
-
-  // merge custom config
-  configArr.push(custom);
 
   const result = babelMerge.all(configArr);
 
