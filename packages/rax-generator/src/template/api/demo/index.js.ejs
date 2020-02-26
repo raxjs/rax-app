@@ -4,16 +4,18 @@ import View from 'rax-view';
 import Text from 'rax-text';
 import api from '../src/index';
 
-function App () {
+function App() {
   const handleClick = () => {
     api().then(() => {
       alert('click!');
     });
-  }
+  };
 
-  return (<View>
-    <Text onClick={handleClick}>Click</Text>
-  </View>);
+  return (
+    <View>
+      <Text onClick={handleClick}>Click</Text>
+    </View>
+  );
 }
 
 render(<App />, document.body, { driver: UniversalDriver });

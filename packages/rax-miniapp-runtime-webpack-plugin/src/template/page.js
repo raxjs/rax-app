@@ -1,6 +1,6 @@
 /* global APINamespace,TARGET, Page,init */
 const render = require('miniapp-render');
-/* eslint-disable import/no-absolute-path, module/no-implicit-dependencies */
+/* eslint-disable-next-line */
 const config = require('/* CONFIG_PATH */');
 
 /* INIT_FUNCTION */

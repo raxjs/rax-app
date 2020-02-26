@@ -17,6 +17,11 @@ module.exports = (context, target) => {
     .libraryExport('default')
     .libraryTarget('window');
 
+  config.module.rule('jsx')
+    .use('fixRegeneratorRuntime')
+    .loader(require.resolve('../../../loaders/FixRegeneratorRuntimeLoader'));
+
+
   config.externals([
     function(ctx, request, callback) {
       if (request.indexOf('@weex-module') !== -1) {

@@ -50,6 +50,22 @@ const promptQuestion = [
   },
   {
     type: 'list',
+    name: 'languageType',
+    message: 'What type of language do you want to use?',
+    choices: [
+      {
+        name: 'JavaScript',
+        value: 'js',
+      },
+      {
+        name: 'TypeScript',
+        value: 'ts',
+      },
+    ],
+    default: 'js',
+  },
+  {
+    type: 'list',
     name: 'componentType',
     message: 'What\'s your component type?',
     when(answers) {
