@@ -8,11 +8,11 @@
 
 **config**
 
-* config.styleSheet use transform jsx stylesheet plugin
-* config.jsxPlus use transform jsx+ plugins
-* config.jsxToHtml use transform jsx to html plugin
-* config.isNode preset-env targets is node
-* config.disableRegenerator transform runtime config regenerator
+* styleSheet： transform jsx stylesheet plugin
+* jsxPlus： transform jsx+ plugins
+* jsxToHtml： transform jsx to html plugin
+* isNode： preset-env targets is node
+* disableRegenerator： transform runtime config regenerator
 
 ## Example
 

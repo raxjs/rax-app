@@ -8,9 +8,9 @@
 
 **config**
 
-* config.rootDir
-* config.command command is 'start' or 'build'
-* config.babelConfig
+* rootDir
+* command command is 'start' or 'build'
+* babelConfig
 
 ## Example
 
