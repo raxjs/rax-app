@@ -5,10 +5,8 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
-
 module.exports = (context) => {
   const { rootDir, command, babelConfig } = context;
-
   const config = new Chain();
 
   config.resolve.alias
