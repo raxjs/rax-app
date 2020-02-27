@@ -11,6 +11,7 @@ module.exports = function() {
   const options = getOptions(this) || {};
   const renderModule = options.renderModule || 'rax';
   const withSSR = process.env.RAX_SSR === 'true';
+  const appConfig = fs.readJsonSync(path.join(this.rootContext, 'src/app.json'));
 
   let appRender = '';
   let importStr = '';
@@ -35,7 +36,7 @@ module.exports = function() {
       `;
     } else {
       // common web app
-      appRenderMethod = 'render(createElement(Entry), document.getElementById("root"), { driver: DriverUniversal, hydrate: withSSR });';
+      appRenderMethod = `render(createElement(Entry), document.getElementById("root"), { driver: DriverUniversal, hydrate: ${appConfig.hydrate || 'withSSR'} });`;
     }
 
     appRender = `
