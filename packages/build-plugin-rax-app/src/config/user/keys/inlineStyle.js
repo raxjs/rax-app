@@ -27,7 +27,7 @@ module.exports = {
       config.module.rule('less')
         .use('less')
         .loader(require.resolve('less-loader'));
-    } else if (webStandardList.includes(taskName) && !value) {
+    } else if ((webStandardList.includes(taskName) || miniappStandardList.includes(taskName)) && !value) {
       config.module.rule('less')
         .oneOf('raw')
         .use('less')
