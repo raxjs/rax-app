@@ -1,11 +1,15 @@
+const path = require('path');
 const _ = require('lodash');
 const { getWebBase } = require('build-plugin-rax-app');
-const getEntries = require('./getEntries');
 const setUserConfig = require('../setUserConfig');
+const getEntryName = require('./getEntryName');
+const EntryPlugin = require('./entryPlugin');
+
+const EntryLoader = require.resolve('./entryLoader');
 
 // Can‘t clone webpack chain object, so generate a new chain and reset config
 module.exports = (context) => {
-  const { userConfig, command } = context;
+  const { userConfig, rootDir } = context;
 
   const config = getWebBase(context);
   setUserConfig(config, context);
@@ -41,12 +45,6 @@ module.exports = (context) => {
       });
   });
 
-  const entries = getEntries(config, context);
-  Object.keys(entries).forEach((key) => {
-    config.entry(key)
-      .add(entries[key]);
-  });
-
   config.target('node');
 
   ['jsx', 'tsx'].forEach(tag => {
@@ -56,6 +54,27 @@ module.exports = (context) => {
         platform: 'node',
       });
   });
+
+  const { plugins, inlineStyle } = userConfig;
+  const isMultiPages = !!~plugins.indexOf('build-plugin-rax-multi-pages');
+  const appJSON = require(path.resolve(rootDir, 'src/app.json'));
+  const entries = appJSON.routes.map((route) => {
+    return {
+      name: getEntryName(route.path),
+      sourcePath: path.join(rootDir, 'src', route.source),
+      pagePath: route.path,
+    };
+  });
+
+  config.plugin('entryPlugin')
+    .use(EntryPlugin, [{
+      entries,
+      loader: EntryLoader,
+      isMultiPages: isMultiPages,
+      isInlineStyle: inlineStyle,
+      absoluteDocumentPath: path.join(rootDir, 'src/document/index.jsx'),
+      absoluteShellPath: path.join(rootDir, 'src/shell/index.jsx'),
+    }]);
 
   config.output
     .filename('node/[name].js')

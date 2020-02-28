@@ -1,0 +1,27 @@
+<%_ const useSSR = projectFeatures.includes('ssr') -%>
+<%_ const useReact = projectFeatures.includes('react') -%>
+import { createElement } from '<%_ if (useReact) { -%>react<%_ } else { -%>rax<%_ } -%>';
+import { Root, Style, Script<%_ if (useSSR) { -%>, Data <%_ } -%>} from 'rax-document';
+
+function Document() {
+  return (
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover" />
+        <title><%= npmName %></title>
+        <Style />
+      </head>
+      <body>
+        {/* root container */}
+        <Root />
+        <%_ if (useSSR) { -%>
+        {/* initial data from server side */}
+        <Data />
+        <%_ } -%>
+        <Script />
+      </body>
+    </html>
+  );
+}
+export default Document;

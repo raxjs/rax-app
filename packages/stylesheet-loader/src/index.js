@@ -5,6 +5,7 @@ import transformer from './transformer';
 import globalCSSVariable from './globalCSSVariable';
 import loaderUtils from 'loader-utils';
 import { getErrorMessages, getWarnMessages, resetMessage } from './promptMessage';
+import { isPrefersColorScheme, processPrefersColorScheme } from './processPrefersColorScheme';
 
 const RULE = 'rule';
 const FONT_FACE_RULE = 'font-face';
@@ -89,7 +90,7 @@ const parse = (parsedQuery, stylesheet) => {
     if (rule.type === MEDIA_RULE) {
       mediaRules.push({
         key: rule.media,
-        data: parse(parsedQuery, rule).data
+        data: parse(parsedQuery, rule).styles
       });
     }
   });
@@ -102,13 +103,15 @@ const parse = (parsedQuery, stylesheet) => {
 };
 
 const genStyleContent = (parsedData, parsedQuery) => {
-  const { styles, fontFaceRules, mediaRules } = parsedData;
+  const { fontFaceRules, mediaRules } = parsedData;
+  const styles = processPrefersColorScheme(mediaRules, parsedData.styles, parsedQuery.taskName);
+
   const fontFaceContent = getFontFaceContent(fontFaceRules);
-  const mediaContent = getMediaContent(mediaRules);
+  const mediaContent = getMediaContent(mediaRules, parsedQuery);
   const warnMessageOutput = parsedQuery.log ? getWarnMessageOutput() : '';
   resetMessage();
 
-  return `${parsedQuery.theme ? globalCSSVariable({ styles, globalCSSVarName: GLOBAL_CSS_VAR}) : ''}
+  return `${parsedQuery.theme ? globalCSSVariable({ styles, globalCSSVarName: GLOBAL_CSS_VAR }) : ''}
   var _styles = ${stringifyData(styles, parsedQuery.theme)};
   ${fontFaceContent}
   ${mediaContent}
@@ -140,11 +143,13 @@ const getWarnMessageOutput = () => {
   return output;
 };
 
-const getMediaContent = (mediaRules) => {
+const getMediaContent = (mediaRules, parsedQuery) => {
   let content = '';
 
   mediaRules.forEach((rule, index) => {
-    content += `
+    // Weex no need to process prefers-color-scheme media
+    if (parsedQuery.taskName !== 'weex' || !isPrefersColorScheme(rule.key)) {
+      content += `
   if (window.matchMedia && window.matchMedia('${rule.key}').matches) {
     var ruleData = ${stringifyData(rule.data)};
     for(var key in ruleData) {
@@ -152,6 +157,7 @@ const getMediaContent = (mediaRules) => {
     }
   }
     `;
+    }
   });
 
   return content;
