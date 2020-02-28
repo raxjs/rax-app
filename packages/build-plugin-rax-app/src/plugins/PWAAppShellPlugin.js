@@ -48,7 +48,7 @@ module.exports = class PWAAppShellPlugin {
       const newConfig = Object.assign({}, config, {
         target: 'node',
         externals: {
-          rax: 'rax',
+          rax: 'rax', // Excluding rax dependencies from the output bundles.
         },
         entry: { [FILE_NAME]: [file] },
         output: Object.assign({}, config.output, { libraryTarget: 'commonjs2' }),
@@ -57,6 +57,7 @@ module.exports = class PWAAppShellPlugin {
 
       // Support react compat
       if (newConfig.resolve && newConfig.resolve.alias && newConfig.resolve.alias.react) {
+        // Excluding rax(from react compat) dependencies from the output bundles.
         newConfig.externals.react = newConfig.resolve.alias.react;
       }
 
