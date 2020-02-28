@@ -6,7 +6,7 @@ const getBaseWebpack = require('./getBaseWebpack');
 module.exports = (context, options) => {
   const config = getBaseWebpack(context);
 
-  const { rootDir } = context;
+  const { rootDir, taskName } = context;
 
   config.target('web');
 
@@ -28,12 +28,14 @@ module.exports = (context, options) => {
     config.module.rule('css')
       .test(/\.css?$/)
       .use('css')
-      .loader(require.resolve('stylesheet-loader'));
+      .loader(require.resolve('stylesheet-loader'))
+      .options({ taskName });
 
     config.module.rule('less')
       .test(/\.less?$/)
       .use('css')
       .loader(require.resolve('stylesheet-loader'))
+      .options({ taskName })
       .end()
       .use('less')
       .loader(require.resolve('less-loader'));

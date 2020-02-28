@@ -1,4 +1,5 @@
 const ejs = require('ejs');
+const path = require('path');
 const TemplateProcesser = require('./templateProcesser');
 
 // Rename files start with '_'
@@ -24,9 +25,19 @@ function ejsRender(data) {
   };
 }
 
+// languageType is js, src/js/xxx  -> src/xxx
+function processLanguageType(args) {
+  const { languageType } = args;
+  return (files) => {
+    for (let i = 0; i < files.length; i++) {
+      files[i].name = files[i].name.replace(`src${path.sep}${languageType}`, 'src');
+    }
+  };
+}
+
 // get ignore files of template
 function getIgnore(args) {
-  const { appType, componentType, projectFeatures, projectTargets } = args;
+  const { appType, componentType, languageType, projectFeatures, projectTargets } = args;
   let list = [];
 
   if (appType === 'lite') {
@@ -46,7 +57,8 @@ function getIgnore(args) {
     list = [
       'demo/basic.md.ejs',
       'demo/advance.md.ejs',
-      'src/style',
+      'src/ts/style',
+      'src/js/style',
       'CHANGELOG.md.ejs',
       'README.en-US.md.ejs',
       '.commitlintrc.js.ejs',
@@ -58,7 +70,16 @@ function getIgnore(args) {
   }
 
   if (Array.isArray(projectFeatures) && !projectFeatures.includes('faas')) {
-    list.push('src/api');
+    list.push('src/ts/api');
+    list.push('src/js/api');
+  }
+
+  // Process languageType
+  if (languageType === 'js') {
+    list.push('src/ts');
+    list.push('tsconfig.json.ejs');
+  } else if (languageType === 'ts') {
+    list.push('src/js');
   }
 
   return list;
@@ -88,6 +109,7 @@ module.exports = function(template, args) {
   new TemplateProcesser(template)
     .use(ejsRender(ejsData))
     .use(renameFile)
+    .use(processLanguageType(args))
     .ignore(getIgnore(args))
     .done(projectDir);
 

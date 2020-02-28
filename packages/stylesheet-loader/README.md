@@ -176,6 +176,31 @@ You can write `var()` in css. Variables need to be defined in `:root`
 }
 ```
 
+### Support light or dark color theme.
+
+**Web:**
+
+```css
+body { background-color: #ffffff; }
+@media (prefers-color-scheme: dark) {
+  body { background-color: #000000; }
+}
+@media (prefers-color-scheme: light) {
+  body { background-color: #ffffff; }
+}
+```
+**Weex:**
+
+Compile to -weex-dark-scheme-xxx and -weex-light-scheme-xxx
+
+```css
+body {
+  background-color: #ffffff;
+  -weex-dark-scheme-background-color: #000000;
+  -weex-light-scheme-background-color: #ffffff;
+}
+```
+
 ## Validation
 
 We followed the [css-layout](https://github.com/facebook/yoga) style standard. There will be a friendly reminder on the console when your code is not standardized.
