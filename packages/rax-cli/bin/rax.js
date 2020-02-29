@@ -13,6 +13,7 @@ const argv = require('minimist')(process.argv.slice(2));
 
 const generator = require('rax-generator');
 const pkg = require('../package.json');
+let projectName = '';
 
 // notify package update
 updateNotifier({pkg}).notify();
@@ -110,7 +111,7 @@ switch (commands[0]) {
  * rax init
  */
 async function init(name, verbose, template) {
-  let projectName = name;
+  projectName = name;
   createInCurrent = !projectName;
   if (!projectName) {
     projectName = process.cwd().split(path.sep).pop();
@@ -122,7 +123,28 @@ async function init(name, verbose, template) {
 }
 
 function askProjectInformaction() {
-  return inquirer.prompt(generator.config.promptQuestion);
+  const prompts = generator.config.promptQuestion;
+  let rootDir = process.cwd();
+  rootDir = path.resolve(projectName);
+
+  if (fs.existsSync(rootDir)) {
+    prompts.unshift({
+      type: 'input',
+      name: 'projectName',
+      message: 'Folder already exists, please rename it',
+      validate: (newName) => {
+        if (newName === projectName) {
+          return 'Same as the original name, please change the name';
+        } else if (!newName) {
+          return 'Please enter a name that cannot be empty';
+        }
+        projectName = newName;
+        return true;
+      }
+    });
+  }
+
+  return inquirer.prompt(prompts);
 }
 
 function createProject(name, verbose, template, userAnswers) {
