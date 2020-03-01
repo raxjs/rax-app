@@ -13,6 +13,7 @@ const argv = require('minimist')(process.argv.slice(2));
 
 const generator = require('rax-generator');
 const pkg = require('../package.json');
+
 let projectName = '';
 
 // notify package update
