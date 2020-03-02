@@ -132,12 +132,12 @@ function askProjectInformaction() {
     prompts.unshift({
       type: 'input',
       name: 'projectName',
-      message: 'Folder already exists, please rename it',
+      message: 'Either try using a new directory name.',
       validate: (newName) => {
         if (newName === projectName) {
-          return 'Same as the original name, please change the name';
+          return 'Same as the original name, please change the name.';
         } else if (!newName) {
-          return 'Please enter a name that cannot be empty';
+          return 'Please enter a name that cannot be empty.';
         }
         projectName = newName;
         return true;
