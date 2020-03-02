@@ -103,7 +103,7 @@ Page({
 
     // Handle whether to show share menu
     if (!pageConfig.share) {
-      APINamespace.hideShareMenu();
+      APINamespace.hideShareMenu && APINamespace.hideShareMenu();
     }
 
     // Handle update of document
