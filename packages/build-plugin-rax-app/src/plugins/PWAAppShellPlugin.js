@@ -33,6 +33,11 @@ module.exports = class PWAAppShellPlugin {
       throw new Error('Please make sure shell config contains source!');
     }
 
+    if (appConfig.shell.preCompile === false) {
+      // Disable pre-compile AppShell
+      return;
+    }
+
     const file = path.resolve(config.context, `src/${appConfig.shell.source}`);
     // build/web/[FILE_NAME].js
     const outputFile = path.join(config.output.path, config.output.filename.replace('[name]', FILE_NAME));
@@ -43,12 +48,19 @@ module.exports = class PWAAppShellPlugin {
       const newConfig = Object.assign({}, config, {
         target: 'node',
         externals: {
-          rax: 'rax',
+          rax: 'rax', // Excluding rax dependencies from the output bundles.
         },
         entry: { [FILE_NAME]: [file] },
         output: Object.assign({}, config.output, { libraryTarget: 'commonjs2' }),
         plugins: config.plugins.filter(plugin => plugin !== this),
       });
+
+      // Support react compat
+      if (newConfig.resolve && newConfig.resolve.alias && newConfig.resolve.alias.react) {
+        // Excluding rax(from react compat) dependencies from the output bundles.
+        newConfig.externals.react = newConfig.resolve.alias.react;
+      }
+
       webpack(newConfig).run(() => {
         callback();
       });
