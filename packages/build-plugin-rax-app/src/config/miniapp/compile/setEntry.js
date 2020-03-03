@@ -1,4 +1,4 @@
-const { dirname, sep } = require('path');
+const { dirname, sep, join } = require('path');
 
 const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
 const PageLoader = require.resolve('jsx2mp-loader/src/page-loader');
@@ -42,9 +42,8 @@ function getEntry(entryAppFilePath, routes, options) {
 function getDepPath(source, rootDir) {
   if (source[0] === '.' || source[0] === sep) {
     return join(rootDir, source);
-  } else {
-    return ['.', rootDir, source].join(sep);
   }
+  return ['.', rootDir, source].join(sep);
 }
 
 module.exports = (config, routes, options) => {

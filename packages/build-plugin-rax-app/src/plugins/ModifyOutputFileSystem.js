@@ -4,4 +4,4 @@ module.exports = class ModifyOutputFileSystemPlugin {
   apply(compiler) {
     compiler.outputFileSystem = new MemFs();
   }
-}
+};

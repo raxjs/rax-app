@@ -106,8 +106,8 @@ module.exports = (context, target, options = {}) => {
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
 
-  if(!disableCopyNpm) {
-    config.plugin('runtime').use(RuntimeWebpackPlugin, [{ platform, mode }])
+  if (!disableCopyNpm) {
+    config.plugin('runtime').use(RuntimeWebpackPlugin, [{ platform, mode }]);
   }
 
   // config.devServer.writeToDisk(true).noInfo(true).inline(false);

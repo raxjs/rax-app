@@ -39,7 +39,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     }
 
     // To inform Ali Miniapp IDE to use self watch
-    if(targets.includes(MINIAPP)) {
+    if (targets.includes(MINIAPP)) {
       console.log('Watching for changes...');
     }
     consoleClear(true);
