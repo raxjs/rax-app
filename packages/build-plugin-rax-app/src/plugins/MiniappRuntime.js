@@ -13,7 +13,7 @@ function getHighestPriorityPackageJSON(packageName, rootDir) {
   resolvePaths.unshift(join(rootDir, 'node_modules'));
   const packageJSONPath = require.resolve(targetFile, {
     paths: resolvePaths
-  })
+  });
   return packageJSONPath;
 }
 
