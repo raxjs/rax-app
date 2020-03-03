@@ -107,7 +107,7 @@ module.exports = (context, target, options = {}) => {
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
 
   if (!disableCopyNpm) {
-    config.plugin('runtime').use(RuntimeWebpackPlugin, [{ platform, mode }]);
+    config.plugin('runtime').use(RuntimeWebpackPlugin, [{ platform, mode, rootDir: context.rootDir }]);
   }
 
   // config.devServer.writeToDisk(true).noInfo(true).inline(false);

@@ -3,24 +3,45 @@ const { copySync, writeFileSync, ensureFileSync, readJSONSync, readFileSync } = 
 const { minify } = require('terser');
 
 /**
- * Runtime packages should be a dependency of jsx2mp-cli,
- * for convenient to copy vendors.
+ *  Runtime packages should be a dependency of build-plugin-rax-app. But if the project has installed it, then it will take the priority.
+ * @param {string} packageName
+ * @param {string} rootDir
  */
-const runtime = 'jsx2mp-runtime';
-const runtimePackageJSONPath = require.resolve(join(runtime, 'package.json'));
-const runtimePackageJSON = readJSONSync(runtimePackageJSONPath);
-const runtimePackagePath = join(runtimePackageJSONPath, '..');
+function getHighestPriorityPackageJSON(packageName, rootDir) {
+  const targetFile = join(packageName, 'package.json');
+  const resolvePaths = require.resolve.paths(targetFile);
+  resolvePaths.unshift(join(rootDir, 'node_modules'));
+  const packageJSONPath = require.resolve(targetFile, {
+    paths: resolvePaths
+  })
+  return packageJSONPath;
+}
 
+const runtime = 'jsx2mp-runtime';
+let runtimePackageJSONPath = null;
+let runtimePackageJSON = null;
+let runtimePackagePath = null;
+
+/**
+ * For convenient to copy vendors.
+ */
 module.exports = class JSX2MPRuntimePlugin {
-  constructor({ platform = 'ali', mode = 'build' }) {
+  constructor({ platform = 'ali', mode = 'build', rootDir = '' }) {
     this.platform = platform;
     this.mode = mode;
+    this.rootDir = rootDir;
   }
 
   apply(compiler) {
     compiler.hooks.emit.tapAsync(
       'JSX2MPRuntimePlugin',
       (compilation, callback) => {
+        if (!runtimePackageJSONPath) {
+          runtimePackageJSONPath = getHighestPriorityPackageJSON(runtime, this.rootDir);
+          runtimePackageJSON = readJSONSync(runtimePackageJSONPath);
+          runtimePackagePath = join(runtimePackageJSONPath, '..');
+        }
+
         const runtimeTargetPath = runtimePackageJSON.miniprogram && runtimePackageJSON.miniprogram[this.platform]
           ? runtimePackageJSON.miniprogram[this.platform]
           : runtimePackageJSON.main || 'index.js';
