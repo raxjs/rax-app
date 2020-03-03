@@ -1,4 +1,4 @@
-const { readJSONSync, readFileSync, existsSync, mkdirSync } = require('fs-extra');
+const { readJSONSync, readFileSync, existsSync, mkdirpSync } = require('fs-extra');
 const { join, sep, extname } = require('path');
 const compiler = require('jsx-compiler');
 const { getOptions } = require('loader-utils');
@@ -46,7 +46,7 @@ module.exports = async function appLoader(content) {
   const config = readJSONSync(appConfigPath);
 
   const outputPath = this._compiler.outputPath;
-  if (!existsSync(outputPath)) mkdirSync(outputPath);
+  if (!existsSync(outputPath)) mkdirpSync(outputPath);
 
   const sourcePath = join(this.rootContext, entryPath);
 
