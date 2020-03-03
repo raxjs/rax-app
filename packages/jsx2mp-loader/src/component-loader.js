@@ -1,11 +1,10 @@
 const { readFileSync, existsSync, mkdirpSync } = require('fs-extra');
 const { relative, join, dirname, resolve } = require('path');
-const compiler = require('jsx-compiler');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
 const PrettyError = require('pretty-error');
 const cached = require('./cached');
-const { removeExt, isFromTargetDirs, doubleBackslash, normalizeOutputFilePath, addRelativePathPrefix } = require('./utils/pathHelper');
+const { removeExt, isFromTargetDirs, doubleBackslash, normalizeOutputFilePath, addRelativePathPrefix, getHighestPriorityPackage } = require('./utils/pathHelper');
 const eliminateDeadCode = require('./utils/dce');
 const { isTypescriptFile } = require('./utils/judgeModule');
 const processCSS = require('./styleProcessor');
@@ -30,6 +29,9 @@ module.exports = async function componentLoader(content) {
   const distFileWithoutExt = removeExt(join(outputPath, relativeSourcePath), platform.type);
 
   const isFromConstantDir = cached(isFromTargetDirs(absoluteConstantDir));
+
+  const JSXCompilerPath = getHighestPriorityPackage('jsx-compiler', this.rootContext);
+  const compiler = require(JSXCompilerPath);
 
   const compilerOptions = Object.assign({}, compiler.baseOptions, {
     resourcePath: this.resourcePath,

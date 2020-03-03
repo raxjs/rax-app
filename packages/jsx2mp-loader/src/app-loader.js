@@ -1,11 +1,10 @@
 const { readJSONSync, readFileSync, existsSync, mkdirpSync } = require('fs-extra');
-const { join, sep, extname } = require('path');
-const compiler = require('jsx-compiler');
+const { join, sep } = require('path');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
 const PrettyError = require('pretty-error');
 const moduleResolve = require('./utils/moduleResolve');
-const { removeExt, doubleBackslash, normalizeOutputFilePath } = require('./utils/pathHelper');
+const { removeExt, doubleBackslash, normalizeOutputFilePath, getHighestPriorityPackage } = require('./utils/pathHelper');
 const eliminateDeadCode = require('./utils/dce');
 const defaultStyle = require('./defaultStyle');
 const processCSS = require('./styleProcessor');
@@ -49,6 +48,9 @@ module.exports = async function appLoader(content) {
   if (!existsSync(outputPath)) mkdirpSync(outputPath);
 
   const sourcePath = join(this.rootContext, entryPath);
+
+  const JSXCompilerPath = getHighestPriorityPackage('jsx-compiler', this.rootContext);
+  const compiler = require(JSXCompilerPath);
 
   const compilerOptions = Object.assign({}, compiler.baseOptions, {
     resourcePath: this.resourcePath,
