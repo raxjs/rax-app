@@ -10,6 +10,7 @@ const babelConfig = getBabelConfig();
 module.exports = function() {
   const options = getOptions(this) || {};
   const renderModule = options.renderModule || 'rax';
+  const appConfig = fs.readJsonSync(path.join(this.rootContext, 'src/app.json'));
   const withSSR = process.env.RAX_SSR === 'true';
 
   let appRender = '';
@@ -35,7 +36,7 @@ module.exports = function() {
       `;
     } else {
       // common web app
-      appRenderMethod = 'render(createElement(Entry), document.getElementById("root"), { driver: DriverUniversal, hydrate: withSSR });';
+      appRenderMethod = `render(createElement(Entry), document.getElementById("root"), { driver: DriverUniversal, hydrate: ${appConfig.hydrate} || withSSR });`;
     }
 
     appRender = `

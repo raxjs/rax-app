@@ -1,10 +1,8 @@
 const UniversalDocumentPlugin = require('../../plugins/UniversalDocumentPlugin');
-const PWAAppShellPlugin = require('../../plugins/PWAAppShellPlugin');
 const getWebpackBase = require('../getWebpackBase');
 const setEntry = require('../setEntry');
 
 module.exports = (context, target, options = {}) => {
-  const { command } = context;
   const config = getWebpackBase(context);
   setEntry(config, context, 'web');
 
@@ -30,12 +28,8 @@ module.exports = (context, target, options = {}) => {
     .use(UniversalDocumentPlugin, [{
       context,
       pages,
-      path: 'src/document/index.jsx',
       doctype: options.doctype
     }]);
-
-  config.plugin('PWAAppShell')
-    .use(PWAAppShellPlugin);
 
   return config;
 };
