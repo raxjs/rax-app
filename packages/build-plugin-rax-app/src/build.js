@@ -9,27 +9,6 @@ const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants'
 module.exports = ({ registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
 
-  let jsx2mpBuildErr = null;
-
-  // Use build-scripts webpack
-  const buildScriptsBuildTargets = [];
-  // Use jsx2mp-cli webpack
-  const jsx2mpBuildTargets = [];
-
-  targets.forEach(target => {
-    if ([WEB, WEEX, KRAKEN].includes(target)) {
-      buildScriptsBuildTargets.push(target);
-    } else if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
-      options[target] = options[target] || {};
-      addMpPlatform(target, options[target]);
-      if (options[target].buildType === 'runtime') {
-        buildScriptsBuildTargets.push(target);
-      } else {
-        jsx2mpBuildTargets.push(target);
-      }
-    }
-  });
-
   targets.forEach(async(target) => {
     if ([WEB, WEEX, KRAKEN].includes(target)) {
       const getBase = require(`./config/${target}/getBase`);
@@ -40,50 +19,21 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
       if (options[target] && options[target].buildType === 'runtime') {
         const getBase = require('./config/miniapp/runtime/getBase');
         registerTask(target, getBase(context, target));
-      } else if (buildScriptsBuildTargets.length) {
-        onHook('after.build.compile', async() => {
-          jsx2mpBuildErr = await invokeJSX2MPBuilder(context, options[target]);
-        });
-      } else if (jsx2mpBuildTargets.length) {
-        jsx2mpBuildErr = await invokeJSX2MPBuilder(context, options[target]);
-        consoleClear(true);
-        if (jsx2mpBuildErr) {
-          const err = jsx2mpBuildErr.err;
-          const stats = jsx2mpBuildErr.stats;
-          if (!handleWebpackErr(err, stats)) {
-            return;
-          }
-        }
-        logBuildResult(targets, context);
+      } else {
+        const getBase = require('./config/miniapp/compile/getBase');
+        registerTask(target, getBase(context, target, options[target]));
       }
     }
   });
 
   onHook('after.build.compile', ({err, stats}) => {
     consoleClear(true);
-    if (jsx2mpBuildErr) {
-      err = jsx2mpBuildErr.err;
-      stats = jsx2mpBuildErr.stats;
-    }
     if (!handleWebpackErr(err, stats)) {
       return;
     }
     logBuildResult(targets, context);
   });
 };
-
-/**
- * Add mp platform
- * */
-function addMpPlatform(target, originalConfig = {}) {
-  switch (target) {
-    case WECHAT_MINIPROGRAM:
-      originalConfig.platform = 'wechat';
-      break;
-    default:
-      break;
-  }
-}
 
 /**
  * Log build result
@@ -128,18 +78,4 @@ function logBuildResult(targets = [], context = {}) {
     })));
     console.log();
   }
-}
-
-/**
- *
- * @param {*} context
- * @param {*} config
- */
-async function invokeJSX2MPBuilder(context, config) {
-  const jsx2mpBuilder = require('./config/miniapp/compile/build');
-  const jsx2mpBuildInfo = await jsx2mpBuilder(context, config);
-  if (jsx2mpBuildInfo.err || jsx2mpBuildInfo.stats.hasErrors()) {
-    return jsx2mpBuildInfo;
-  }
-  return null;
 }
