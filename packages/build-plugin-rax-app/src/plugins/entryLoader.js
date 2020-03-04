@@ -28,8 +28,8 @@ module.exports = function() {
   const formatedShellPath = absoluteShellPath ? formatPath(absoluteShellPath) : null;
   const formatedPagePath = absolutePagePath ? formatPath(absoluteShellPath) : null;
 
-  const shellStr = formatedShellPath && fs.existsSync(formatedShellPath) ? `import Shell from '${formatedShellPath};'` : 'const Shell = null;';
-  const pageStr = formatedPagePath && fs.existsSync(formatedPagePath) ? `import Page from '${formatedPagePath};'` : 'const Page = null;';
+  const shellStr = formatedShellPath && fs.existsSync(formatedShellPath) ? `import Shell from '${formatedShellPath}';` : 'const Shell = null;';
+  const pageStr = formatedPagePath && fs.existsSync(formatedPagePath) ? `import Page from '${formatedPagePath}';` : 'const Page = null;';
   const doctypeStr = doctype === null || doctype === '' ? '' : `${doctype || '<!DOCTYPE html>'}`;
 
   const renderHtmlFnc = `
