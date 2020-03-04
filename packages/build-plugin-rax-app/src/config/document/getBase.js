@@ -48,7 +48,7 @@ module.exports = (context, options) => {
   pages.forEach((page) => {
     const { entryName, source } = page;
 
-    const script = filenameForWeb.includes("[name]") ? filenameForWeb.replace('[name]', entryName) : `${entryName}.js`;
+    const script = filenameForWeb.includes('[name]') ? filenameForWeb.replace('[name]', entryName) : `${entryName}.js`;
     const scriptWithPublicPath = path.join(publicPathForDocument, script);
 
     const query = {
@@ -97,7 +97,7 @@ module.exports = (context, options) => {
     },
   });
 
-  // Custom config for document though plugin 
+  // Custom config for document though plugin
   if (configWebpack) {
     configWebpack(config);
   }
@@ -109,7 +109,7 @@ function getAbsoluteFilePath(rootDir, filePath) {
   const exts = ['.js', '.jsx', '.tsx'];
 
   const files = exts.map((ext) => {
-    return `${path.join(rootDir, filePath)}${ext}`
+    return `${path.join(rootDir, filePath)}${ext}`;
   });
 
   return files.find((f) => fs.existsSync(f));
