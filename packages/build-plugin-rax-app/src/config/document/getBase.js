@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const getWebpackBase = require('../getWebpackBase');
 const setUserConfig = require('../user/setConfig');
 
-const EntryLoader = require.resolve('../../plugins/entryLoader');
+const DocumentLoader = require.resolve('../../loaders/DocumentLoader/');
 
 const USERCONFIGKEY_IGNORED = {
   hash: true, // There is no need to change output config no matter `hash` is `true` or `false`
@@ -20,7 +20,7 @@ module.exports = (context, options) => {
   const publicPathForWeb = webConfig.output.publicPath;
 
   const publicPathForDocument = publicPath || publicPathForWeb;
-  const loaderForDocument = loader || EntryLoader;
+  const loaderForDocument = loader || DocumentLoader;
 
   // Shell is enabled by config in app.json
   const appConfig = fs.readJsonSync(path.join(rootDir, 'src/app.json'));

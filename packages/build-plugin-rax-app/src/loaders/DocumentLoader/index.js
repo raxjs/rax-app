@@ -32,29 +32,24 @@ module.exports = function() {
   const pageStr = formatedPagePath && fs.existsSync(formatedPagePath) ? `import Page from '${formatedPagePath}';` : 'const Page = null;';
   const doctypeStr = doctype === null || doctype === '' ? '' : `${doctype || '<!DOCTYPE html>'}`;
 
-  const renderHtmlFnc = `
-    async function renderComponentToHTML(Component, ctx) {
+  const source = `
+    import { createElement } from 'rax';
+    import renderer from 'rax-server-renderer';
+    import Document from '${formatPath(absoluteDocumentPath)}';
+    ${shellStr}
+    ${pageStr}
 
-      const shellData = Shell ? await getInitialProps(Shell, ctx) : null;
-      const pageData = Page ? await getInitialProps(Component, ctx) : null;
-      const documentData = Document ? await getInitialProps(Document, ctx) : null;
-
-      const initialData = {
-        shellData : {},
-        pageData: {},
-        pagePath: '${pagePath}'
-      };
-
+    function renderToHTML() {
       let contentElement;
 
       if (Shell) {
-        if (Component) {
-          contentElement = createElement(Shell, shellData, createElement(Component, pageData));
+        if (Page) {
+          contentElement = createElement(Shell, {}, createElement(Page, {}));
         } else {
-          contentElement = createElement(Shell, shellData);
+          contentElement = createElement(Shell, {});
         }
-      } else if (Component) {
-        contentElement = createElement(Component, pageData)
+      } else if (Page) {
+        contentElement = createElement(Page, {})
       }
 
       const initialHtml = contentElement ? renderer.renderToString(contentElement, {
@@ -66,7 +61,6 @@ module.exports = function() {
       DocumentContextProvider.prototype.getChildContext = function() {
         return {
           __initialHtml: initialHtml,
-          __initialData: JSON.stringify(initialData),
           __pagePath: '${pagePath}',
           __styles: ${JSON.stringify(styles)},
           __scripts: ${JSON.stringify(scripts)}
@@ -74,7 +68,7 @@ module.exports = function() {
       };
 
       DocumentContextProvider.prototype.render = function() {
-        return createElement(Document, documentData);
+        return createElement(Document, {});
       };
 
       const DocumentContextProviderElement = createElement(DocumentContextProvider);
@@ -85,60 +79,10 @@ module.exports = function() {
 
       return html;
     }
-  `;
-
-  const source = `
-    import { createElement } from 'rax';
-    import renderer from 'rax-server-renderer';
-    import Document from '${formatPath(absoluteDocumentPath)}';
-    ${shellStr}
-    ${pageStr}
-
-    ${renderHtmlFnc}
-
-    async function render(req, res) {
-      const html = await renderToHTML(req, res);
-
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(html);
-    }
-
-    async function renderToHTML(req, res) {
-      const html = await renderComponentToHTML(Page, {
-        req: req,
-        res: res
-      });
-      return html;
-    }
-
-    // Handler for Midway FaaS and Koa
-    async function renderWithContext(ctx) {
-      const html = await renderComponentToHTML(Page, ctx);
-
-      ctx.set('Content-Type', 'text/html; charset=utf-8');
-      ctx.body = html;
-    }
 
     export {
-      render,
       renderToHTML,
-      renderWithContext
     };
-
-    export default render;
-
-    async function getInitialProps(Component, ctx) {
-      if (!Component.getInitialProps) return null;
-
-      const props = await Component.getInitialProps(ctx);
-
-      if (!props || typeof props !== 'object') {
-        const message = '"getInitialProps()" should resolve to an object. But found "' + props + '" instead.';
-        throw new Error(message);
-      }
-
-      return props;
-    }
   `;
 
   return source;

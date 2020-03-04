@@ -5,10 +5,23 @@ const { RawSource } = require('webpack-sources');
 const { handleWebpackErr } = require('rax-compile-config');
 const getDocumentBaseConfig = require('../config/document/getBase');
 
-const PLUGIN_NAME = 'UniversalDocumentPlugin';
+const PLUGIN_NAME = 'DocumentPlugin';
 
-module.exports = class UniversalDocumentPlugin {
+module.exports = class DocumentPlugin {
   constructor(options) {
+    /**
+     * An plugin which generate HTML files
+     * @param {object} options
+     * @param {object} options.context build plugin context
+     * @param {object[]} options.pages pages need to generate HTML
+     * @param {string} options.pages[].entryName
+     * @param {string} options.pages[].path  page path in route config
+     * @param {string} options.pages[].source page path in route config
+     * @param {boolean} [options.static] static exporting
+     * @param {string} [options.loader] custom document loader
+     * @param {string} [options.publicPath] for internal weex publish
+     * @param {function} [options.configWebpack] custom webpack config for document
+     */
     this.options = options;
   }
 

@@ -1,4 +1,4 @@
-const UniversalDocumentPlugin = require('../../plugins/UniversalDocumentPlugin');
+const DocumentPlugin = require('../../plugins/DocumentPlugin');
 const getWebpackBase = require('../getWebpackBase');
 const setEntry = require('../setEntry');
 
@@ -18,7 +18,7 @@ module.exports = (context, target, options = {}) => {
   ]);
 
   config.plugin('document')
-    .use(UniversalDocumentPlugin, [{
+    .use(DocumentPlugin, [{
       context,
       pages: {
         entryName: 'index',
