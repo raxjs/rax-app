@@ -30,7 +30,7 @@ module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }, o
         return [{
           ...args[0],
           pages: entries,
-          static: options.staticExport
+          staticExport: options.staticExport
         }];
       });
     });
