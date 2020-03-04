@@ -10,8 +10,8 @@ const babelConfig = getBabelConfig();
 module.exports = function() {
   const options = getOptions(this) || {};
   const renderModule = options.renderModule || 'rax';
-  const appConfig = fs.readJsonSync(path.join(this.rootContext, 'src/app.json'));
   const withSSR = process.env.RAX_SSR === 'true';
+  const appConfig = fs.readJsonSync(path.join(this.rootContext, 'src/app.json'));
 
   let appRender = '';
   let importStr = '';
