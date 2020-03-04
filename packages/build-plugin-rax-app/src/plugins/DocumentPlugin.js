@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const webpack = require('webpack');
 const { RawSource } = require('webpack-sources');
 const { handleWebpackErr } = require('rax-compile-config');
@@ -58,6 +56,10 @@ module.exports = class DocumentPlugin {
 
     // Executed before finishing the compilation.
     compiler.hooks.make.tapAsync(PLUGIN_NAME, (mainCompilation, callback) => {
+      /**
+       * Need to run document compiler as a child compiler, so it can push html file to the web compilation assets.
+       * Because there are other plugins get html file from the compilation of web.
+       */
       const childCompiler = webpack(documentWebpackConfig);
       childCompiler.parentCompilation = mainCompilation;
 
@@ -121,14 +123,4 @@ function loadDocument(content) {
   }
 
   return tempModule.exports;
-}
-
-function getAbsoluteFilePath(rootDir, filePath) {
-  const exts = ['.js', '.jsx', '.tsx'];
-
-  const files = exts.map((ext) => {
-    return `${path.join(rootDir, filePath)}${ext}`;
-  });
-
-  return files.find((f) => fs.existsSync(f));
 }
