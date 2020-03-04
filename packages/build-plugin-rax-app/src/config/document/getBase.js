@@ -54,7 +54,7 @@ module.exports = (context, options) => {
     const query = {
       absoluteDocumentPath,
       absoluteShellPath,
-      absolutePagePath: static ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '',
+      absolutePagePath: static && source ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '',
       pagePath: page.path,
       styles: inlineStyle ? [] : [ scriptWithPublicPath.replace('.js', '.css') ],
       scripts: [ scriptWithPublicPath ],

@@ -6,7 +6,7 @@ const getEntries = require('./getEntries');
 const setEntry = require('./setEntry');
 const setDevServer = require('./setDevServer');
 
-module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) => {
+module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }, options = {}) => {
   const { command } = context;
   const entries = getEntries(context);
 
@@ -29,7 +29,8 @@ module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) =
       config.plugin('document').tap(args => {
         return [{
           ...args[0],
-          pages: entries
+          pages: entries,
+          static: options.staticExport
         }];
       });
     });

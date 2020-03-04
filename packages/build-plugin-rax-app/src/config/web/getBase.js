@@ -17,17 +17,13 @@ module.exports = (context, target, options = {}) => {
     },
   ]);
 
-  const entries = config.entryPoints.entries();
-  const pages = Object.keys(entries).map(entryName => {
-    return {
-      entryName
-    };
-  });
-
   config.plugin('document')
     .use(UniversalDocumentPlugin, [{
       context,
-      pages,
+      pages: {
+        entryName: 'index',
+        path: '/'
+      },
       doctype: options.doctype
     }]);
 
