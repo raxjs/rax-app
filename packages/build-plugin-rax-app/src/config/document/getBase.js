@@ -1,6 +1,6 @@
-const fs = require('fs');
 const qs = require('qs');
 const path = require('path');
+const fs = require('fs-extra');
 const getWebpackBase = require('../getWebpackBase');
 const setUserConfig = require('../user/setConfig');
 
@@ -22,8 +22,11 @@ module.exports = (context, options) => {
   const publicPathForDocument = publicPath || publicPathForWeb;
   const loaderForDocument = loader || EntryLoader;
 
+  // Shell is enabled by config in app.json
+  const appConfig = fs.readJsonSync(path.join(rootDir, 'src/app.json'));
+  const shellPath = appConfig.shell && appConfig.shell.source;
+  const absoluteShellPath = shellPath ? getAbsoluteFilePath(rootDir, path.join('src', shellPath)) : null;
   const absoluteDocumentPath = getAbsoluteFilePath(rootDir, 'src/document/index');
-  const absoluteShellPath = getAbsoluteFilePath(rootDir, 'src/shell/index');
 
   const config = getWebpackBase(context, {
     isSSR: true,
