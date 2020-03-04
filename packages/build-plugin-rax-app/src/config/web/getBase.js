@@ -20,10 +20,10 @@ module.exports = (context, target, options = {}) => {
   config.plugin('document')
     .use(DocumentPlugin, [{
       context,
-      pages: {
+      pages: [{
         entryName: 'index',
         path: '/'
-      },
+      }],
       doctype: options.doctype
     }]);
 
