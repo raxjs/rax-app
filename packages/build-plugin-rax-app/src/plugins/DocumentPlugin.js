@@ -31,7 +31,7 @@ module.exports = class DocumentPlugin {
     const { pages } = options;
 
     options.webConfig = mainConfig;
-    
+
     const config = getDocumentBaseConfig(context, options);
     const documentWebpackConfig = config.toConfig();
 
@@ -74,8 +74,8 @@ module.exports = class DocumentPlugin {
     });
 
     // Render into index.html
-    compiler.hooks.emit.tapAsync(PLUGIN_NAME, async(compilation, callback) => {
-      for(let i = 0, n = pages.length ; i < n ; i ++ ) {
+    compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
+      pages.forEach(page => {
         const page = pages[i];
         const { entryName } = page;
 
@@ -83,13 +83,13 @@ module.exports = class DocumentPlugin {
         const documentContent = compilation.assets[documentTempFile].source();
 
         const Document = loadDocument(documentContent);
-        const pageSource = await Document.renderToHTML();
+        const pageSource = Document.renderToHTML();
 
         // insert html file
         compilation.assets[`${outputFilePrefix}${entryName}.html`] = new RawSource(pageSource);
 
         delete compilation.assets[documentTempFile];
-      }
+      });
 
       callback();
     });
@@ -128,7 +128,7 @@ function getAbsoluteFilePath(rootDir, filePath) {
   const exts = ['.js', '.jsx', '.tsx'];
 
   const files = exts.map((ext) => {
-    return `${path.join(rootDir, filePath)}${ext}`
+    return `${path.join(rootDir, filePath)}${ext}`;
   });
 
   return files.find((f) => fs.existsSync(f));
