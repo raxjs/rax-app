@@ -12,7 +12,7 @@ const USERCONFIGKEY_IGNORED = {
 
 module.exports = (context, options) => {
   const { rootDir, userConfig } = context;
-  const { pages, publicPath, doctype, loader, static, webConfig, configWebpack } = options;
+  const { pages, publicPath, doctype, loader, staticExport, webConfig, configWebpack } = options;
   const { inlineStyle } = userConfig;
 
   const aliasForWeb = webConfig.resolve ? webConfig.resolve.alias : {};
@@ -54,7 +54,7 @@ module.exports = (context, options) => {
     const query = {
       absoluteDocumentPath,
       absoluteShellPath,
-      absolutePagePath: static && source ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '',
+      absolutePagePath: staticExport && source ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '',
       pagePath: page.path,
       styles: inlineStyle ? [] : [ scriptWithPublicPath.replace('.js', '.css') ],
       scripts: [ scriptWithPublicPath ],

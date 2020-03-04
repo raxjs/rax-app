@@ -17,7 +17,7 @@ module.exports = class DocumentPlugin {
      * @param {string} options.pages[].entryName
      * @param {string} options.pages[].path  page path in route config
      * @param {string} options.pages[].source page path in route config
-     * @param {boolean} [options.static] static exporting
+     * @param {boolean} [options.staticExport] static exporting
      * @param {string} [options.loader] custom document loader
      * @param {string} [options.publicPath] for internal weex publish
      * @param {function} [options.configWebpack] custom webpack config for document
