@@ -48,8 +48,12 @@ module.exports = (context, options) => {
   pages.forEach((page) => {
     const { entryName, source } = page;
 
-    const script = filenameForWeb.includes('[name]') ? filenameForWeb.replace('[name]', entryName) : `${entryName}.js`;
-    const scriptWithPublicPath = path.join(publicPathForDocument, script);
+    /**
+     * Get script path by filename and entryname.
+     * eg: filename: 'web/[name].js', entryname: 'index', so the script path is web/index.js
+     */
+    const scriptPath = filenameForWeb.includes('[name]') ? filenameForWeb.replace('[name]', entryName) : `${entryName}.js`;
+    const scriptWithPublicPath = path.join(publicPathForDocument, scriptPath);
 
     const query = {
       absoluteDocumentPath,
@@ -73,10 +77,12 @@ module.exports = (context, options) => {
   // Disable process app.json file in base webpack config
   config.module.rules.delete('appJSON');
 
-  // Map user config in build.json to webpack config.
-  // In the normal entry task, `registerUserConfig` is provide by `scripts-core`.
-  // But here we get webpack config for SSR to render `Document` in sub webpack compiler.
-  // To avoid pass `registerUserConfig` layer by layer, here we reimplement the `registerUserConfig`
+  /**
+   * Map user config in build.json to webpack config.
+   * In the normal entry task, `registerUserConfig` is called by `scripts-core`.
+   * But here we get webpack config  for `Document` in sub webpack compiler.
+   * To avoid pass `registerUserConfig` layer by layer, here we reimplement the `registerUserConfig`
+   */
   setUserConfig({
     registerUserConfig: (registers) => {
       // Each registers define how keys in build.json be mapped to webpack config, they are defined in `../user/keys`
