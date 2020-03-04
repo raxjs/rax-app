@@ -76,7 +76,6 @@ module.exports = class DocumentPlugin {
     // Render into index.html
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
       pages.forEach(page => {
-        const page = pages[i];
         const { entryName } = page;
 
         const documentTempFile = '__' + entryName.replace(/\//g, '_') + '_doucment.js';
