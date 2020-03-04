@@ -4,6 +4,7 @@ const { RawSource } = require('webpack-sources');
 const { existsSync, readFileSync, unlinkSync } = require('fs');
 const { createElement } = require('rax');
 const { renderToString } = require('rax-server-renderer');
+const UniversalDocumentPlugin = require('./UniversalDocumentPlugin');
 
 const NAME = 'PWAAppShellPlugin';
 const FILE_NAME = '__PWA_APP_SHELL__';
@@ -52,7 +53,10 @@ module.exports = class PWAAppShellPlugin {
         },
         entry: { [FILE_NAME]: [file] },
         output: Object.assign({}, config.output, { libraryTarget: 'commonjs2' }),
-        plugins: config.plugins.filter(plugin => plugin !== this),
+        plugins: config.plugins.filter(plugin => {
+          // Exculde Document Plugin
+          return plugin !== this && plugin.constructor !== UniversalDocumentPlugin;
+        }),
       });
 
       // Support react compat
