@@ -79,7 +79,8 @@ module.exports = class DocumentPlugin {
         const page = pages[i];
         const { entryName } = page;
 
-        const documentContent = compilation.assets[`__doucment_for_${entryName}.js`].source();
+        const documentTempFile = '__' + entryName.replace(/\//g, '_') + '_doucment.js';
+        const documentContent = compilation.assets[documentTempFile].source();
 
         const Document = loadDocument(documentContent);
         const pageSource = await Document.renderToHTML();
@@ -87,7 +88,7 @@ module.exports = class DocumentPlugin {
         // insert html file
         compilation.assets[`${outputFilePrefix}${entryName}.html`] = new RawSource(pageSource);
 
-        delete compilation.assets[`__doucment_for_${entryName}.js`];
+        delete compilation.assets[documentTempFile];
       }
 
       callback();

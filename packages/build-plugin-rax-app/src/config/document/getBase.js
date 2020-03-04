@@ -61,7 +61,8 @@ module.exports = (context, options) => {
       doctype: doctype
     };
 
-    config.entry(`__doucment_for_${entryName}`).add(`${loaderForDocument}?${qs.stringify(query)}!${absoluteDocumentPath}`);
+    const documentTempFile = '__' + entryName.replace(/\//g, '_') + '_doucment';
+    config.entry(documentTempFile).add(`${loaderForDocument}?${qs.stringify(query)}!${absoluteDocumentPath}`);
   });
 
   // Sync the alias from webpack config for Web. eg. react, react-dom
