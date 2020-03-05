@@ -3,7 +3,7 @@ const { dirname, sep, join } = require('path');
 const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
 const PageLoader = require.resolve('jsx2mp-loader/src/page-loader');
 
-const platformConfig = require('./map/platformConfig');
+const platformConfig = require('./platformConfig');
 
 
 function getEntry(entryAppFilePath, routes, options) {

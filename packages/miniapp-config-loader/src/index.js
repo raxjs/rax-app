@@ -11,7 +11,7 @@ module.exports = function(appJSON) {
     spaces: 2
   });
   if (type === 'complie') {
-    writeFileSync(join(outputPath, 'app.config.js'), `module.exports = ${JSON.stringify(config, null, 2)}`);
+    writeFileSync(join(outputPath, 'app.config.js'), `module.exports = ${JSON.stringify(appConfig, null, 2)}`);
   }
   return appJSON;
 };

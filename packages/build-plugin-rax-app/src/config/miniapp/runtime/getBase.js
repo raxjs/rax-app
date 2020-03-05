@@ -5,7 +5,8 @@ const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 
 module.exports = (context, target) => {
-  const { rootDir, outputDir } = context;
+  const { rootDir, userConfig } = context;
+  const { outputDir } = userConfig;
   const config = getWebpackBase(context, {
     disableRegenerator: true
   });
@@ -14,6 +15,7 @@ module.exports = (context, target) => {
   setEntry(config, context, appConfig.routes);
 
   config.output.path(path.resolve(rootDir, outputDir));
+
   config.output
     .filename(`${target}/common/[name].js`)
     .library('createApp')

@@ -8,8 +8,8 @@ const ModifyOutputFileSystemPlugin = require('../../../plugins/ModifyOutputFileS
 const RuntimeWebpackPlugin = require('../../../plugins/MiniappRuntime');
 
 
-const platformConfig = require('./map/platformConfig');
-const targetPlatformMap = require('./map/targetPlatformMap');
+const platformConfig = require('./platformConfig');
+const targetPlatformMap = require('../targetPlatformMap');
 
 const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
