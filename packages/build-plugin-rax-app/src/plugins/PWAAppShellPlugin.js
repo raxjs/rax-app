@@ -54,7 +54,7 @@ module.exports = class PWAAppShellPlugin {
         entry: { [FILE_NAME]: [file] },
         output: Object.assign({}, config.output, { libraryTarget: 'commonjs2' }),
         plugins: config.plugins.filter(plugin => {
-          // Exculde Document Plugin
+          // Exculde document plugin, there is no need to render docuemnt in shell plugin
           return plugin !== this && plugin.constructor !== UniversalDocumentPlugin;
         }),
       });
