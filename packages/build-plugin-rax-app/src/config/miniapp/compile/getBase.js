@@ -14,10 +14,13 @@ const targetPlatformMap = require('./map/targetPlatformMap');
 const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
+const APP_JSON_REGX = /app\.json$/;
+
 module.exports = (context, target, options = {}) => {
   const { platform = targetPlatformMap[target], mode = 'build', constantDir = [], disableCopyNpm = false, turnOffSourceMap = false } = options;
 
   const entryPath = './src/app.js';
+  const outputPath = getOutputPath(context, { platform });
 
   const config = getWebpackBase(context, {
     disableRegenerator: true
@@ -35,7 +38,7 @@ module.exports = (context, target, options = {}) => {
     platform: platformConfig[platform]
   };
 
-  config.output.path(getOutputPath(context, { platform }));
+  config.output.path(outputPath);
   config
     .mode('production')
     .target('node');
@@ -55,11 +58,32 @@ module.exports = (context, target, options = {}) => {
       entryPath
     });
 
+  // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
+  // Add MiniAppConfigLoader
+  config.module
+    .rule('appJSON')
+    .type('javascript/auto')
+    .test(APP_JSON_REGX)
+    .use('json-loader')
+    .loader('json-loader')
+    .end()
+    .use('miniapp-app-config-loader')
+    .loader(require.resolve('../../../../../miniapp-config-loader'))
+    .options({
+      target,
+      type: 'complie',
+      outputPath
+    });
+
+  // Exclude app.json
   config.module
     .rule('json')
     .test(/\.json$/)
+    .exclude
+    .add(APP_JSON_REGX)
+    .end()
     .use('script-loader')
     .loader(ScriptLoader)
     .options(loaderParams)

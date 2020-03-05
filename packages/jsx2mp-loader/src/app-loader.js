@@ -1,15 +1,13 @@
-const { readJSONSync, readFileSync, existsSync, mkdirpSync } = require('fs-extra');
+const { readFileSync, existsSync, mkdirpSync } = require('fs-extra');
 const { join, sep } = require('path');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
 const PrettyError = require('pretty-error');
-const moduleResolve = require('./utils/moduleResolve');
-const { removeExt, doubleBackslash, normalizeOutputFilePath, getHighestPriorityPackage } = require('./utils/pathHelper');
+const { doubleBackslash, getHighestPriorityPackage } = require('./utils/pathHelper');
 const eliminateDeadCode = require('./utils/dce');
 const defaultStyle = require('./defaultStyle');
 const processCSS = require('./styleProcessor');
 const output = require('./output');
-const adaptAppConfig = require('./adaptConfig');
 const { isTypescriptFile } = require('./utils/judgeModule');
 
 const pe = new PrettyError();
@@ -40,9 +38,7 @@ function getRelativePath(filePath) {
 module.exports = async function appLoader(content) {
   const loaderOptions = getOptions(this);
   const { entryPath, platform, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
-  const appConfigPath = removeExt(this.resourcePath) + '.json';
   const rawContent = readFileSync(this.resourcePath, 'utf-8');
-  const config = readJSONSync(appConfigPath);
 
   const outputPath = this._compiler.outputPath;
   if (!existsSync(outputPath)) mkdirpSync(outputPath);
@@ -77,23 +73,15 @@ module.exports = async function appLoader(content) {
   transformed.style = style;
   transformed.assets = assets;
 
-  this.addDependency(appConfigPath);
-
-  const transformedAppConfig = transformAppConfig(entryPath, config, platform.type);
-
   const outputContent = {
     code: transformed.code,
     map: transformed.map,
-    config: `module.exports = ${JSON.stringify(config, null, 2)}`,
     css: transformed.style ? defaultStyle + transformed.style : defaultStyle,
-    json: transformedAppConfig
   };
   const outputOption = {
     outputPath: {
       code: join(outputPath, 'app.js'),
-      json: join(outputPath, 'app.json'),
       css: join(outputPath, 'app' + platform.extension.css),
-      config: join(outputPath, 'app.config.js')
     },
     mode,
     isTypescriptFile: isTypescriptFile(this.resourcePath)
@@ -106,45 +94,3 @@ module.exports = async function appLoader(content) {
     generateDependencies(transformed.imported),
   ].join('\n');
 };
-
-function transformAppConfig(entryPath, originalConfig, platform) {
-  const config = {};
-  for (let key in originalConfig) {
-    const value = originalConfig[key];
-
-    switch (key) {
-      case 'routes':
-        const pages = [];
-        if (Array.isArray(value)) {
-          // Only resolve first level of routes.
-          value.forEach(({ component, source, targets }) => {
-            // Compatible with old version definition of `component`.
-            if (!Array.isArray(targets)) {
-              pages.push(normalizeOutputFilePath(moduleResolve(entryPath, getRelativePath(source || component))));
-            }
-            if (Array.isArray(targets) && targets.indexOf('miniapp') > -1) {
-              pages.push(normalizeOutputFilePath(moduleResolve(entryPath, getRelativePath(source || component))));
-            }
-          });
-        }
-        config.pages = pages;
-        break;
-      case 'window':
-        adaptAppConfig(value, 'window', platform);
-        config[key] = value;
-        break;
-      case 'tabBar':
-        if (value.items) {
-          adaptAppConfig(value, 'items', platform, originalConfig);
-        }
-        adaptAppConfig(value, 'tabBar', platform);
-        config[key] = value;
-        break;
-      default:
-        config[key] = value;
-        break;
-    }
-  }
-
-  return config;
-}
