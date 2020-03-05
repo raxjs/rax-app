@@ -16,6 +16,9 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
     // Change webpack outputPath from  'xx/build'      to 'xx/build/web'
     // Change source file's name from  'web/[name].js' to '[name].js'
     if (config.output.get('publicPath') === './') {
+      // Update output path
+      config.output.path(path.resolve(config.output.get('path'), WEB));
+
       // Update css file path
       if (config.plugins.get('minicss')) {
         config.plugin('minicss').tap((args) => args.map((arg) => {
@@ -25,8 +28,8 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
           return arg;
         }));
       }
+
       // Update js file path
-      config.output.path(path.resolve(config.output.get('path'), WEB));
       config.output.filename('[name].js');
     }
   });
