@@ -1,4 +1,4 @@
-const { MINIAPP, WECHAT_MINIPROGRAM } = require('../../../../constants');
+const { MINIAPP, WECHAT_MINIPROGRAM } = require('../../constants');
 
 module.exports = {
   [MINIAPP]: 'ali',
