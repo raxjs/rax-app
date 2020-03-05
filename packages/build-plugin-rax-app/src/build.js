@@ -6,8 +6,30 @@ const { handleWebpackErr } = require('rax-compile-config');
 const getMpOuput = require('./config/miniapp/getOutputPath');
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
-module.exports = ({ registerTask, context, onHook }, options = {}) => {
+module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
+
+  // Set publicPath './', make Web App serving the same build from different paths.
+  // It will make all the asset paths are relative to index.html.
+  // User can be able to move their app anywhere without having to rebuild it.
+  onGetWebpackConfig(WEB, (config) => {
+    // Change webpack outputPath from  'xx/build'      to 'xx/build/web'
+    // Change source file's name from  'web/[name].js' to '[name].js'
+    if (config.output.get('publicPath') === './') {
+      // Update css file path
+      if (config.plugins.get('minicss')) {
+        config.plugin('minicss').tap((args) => args.map((arg) => {
+          if (typeof arg === 'object' && arg.filename === 'web/[name].css') {
+            return Object.assign(arg, {filename: '[name].css'});
+          }
+          return arg;
+        }));
+      }
+      // Update js file path
+      config.output.path(path.resolve(config.output.get('path'), WEB));
+      config.output.filename('[name].js');
+    }
+  });
 
   let jsx2mpBuildErr = null;
 
