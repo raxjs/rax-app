@@ -112,6 +112,7 @@ function getConfig(target, options = {}) {
     if (options[target] && options[target].buildType === 'runtime') {
       return [require('./config/miniapp/runtime/getBase')];
     } else {
+      options.mode = 'watch';
       return [require('./config/miniapp/compile/getBase')];
     }
   }
