@@ -1,4 +1,7 @@
 const webpack = require('webpack');
+const { join } = require('path');
+
+const MiniAppConfigPlugin = require('../../../../../miniapp-config-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
@@ -14,20 +17,18 @@ const targetPlatformMap = require('../targetPlatformMap');
 const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
-const APP_JSON_REGX = /app\.json$/;
-
 module.exports = (context, target, options = {}) => {
   const { platform = targetPlatformMap[target], mode = 'build', constantDir = [], disableCopyNpm = false, turnOffSourceMap = false } = options;
 
+  const platformInfo = platformConfig[target];
+  const { rootDir } = context;
   const entryPath = './src/app.js';
-  const outputPath = getOutputPath(context, { platform });
-
+  const outputPath = getOutputPath(context, { target });
   const config = getWebpackBase(context, {
     disableRegenerator: true
   });
 
   const appConfig = getAppConfig(context);
-  setEntry(config, appConfig.routes, { platform, mode, constantDir, disableCopyNpm, turnOffSourceMap });
 
   const loaderParams = {
     mode,
@@ -35,8 +36,10 @@ module.exports = (context, target, options = {}) => {
     constantDir,
     disableCopyNpm,
     turnOffSourceMap,
-    platform: platformConfig[platform]
+    platform: platformInfo
   };
+
+  setEntry(config, appConfig.routes, { target, loaderParams });
 
   config.output.path(outputPath);
   config
@@ -61,29 +64,10 @@ module.exports = (context, target, options = {}) => {
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
-  // Add MiniAppConfigLoader
-  config.module
-    .rule('appJSON')
-    .type('javascript/auto')
-    .test(APP_JSON_REGX)
-    .use('json-loader')
-    .loader('json-loader')
-    .end()
-    .use('miniapp-app-config-loader')
-    .loader(require.resolve('../../../../../miniapp-config-loader'))
-    .options({
-      target,
-      type: 'complie',
-      outputPath
-    });
-
   // Exclude app.json
   config.module
     .rule('json')
     .test(/\.json$/)
-    .exclude
-    .add(APP_JSON_REGX)
-    .end()
     .use('script-loader')
     .loader(ScriptLoader)
     .options(loaderParams)
@@ -129,13 +113,18 @@ module.exports = (context, target, options = {}) => {
   }]);
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
+  config.plugin('MiniAppConfigPlugin').use(MiniAppConfigPlugin, [
+    {
+      type: 'complie',
+      resourcePath: join(rootDir, 'src', 'app.json'),
+      outputPath,
+      target
+    }
+  ]);
 
   if (!disableCopyNpm) {
     config.plugin('runtime').use(RuntimeWebpackPlugin, [{ platform, mode, rootDir: context.rootDir }]);
   }
-
-  // config.devServer.writeToDisk(true).noInfo(true).inline(false);
-  // config.devtool('none');
 
   return config;
 };

@@ -1,38 +1,7 @@
-const { dirname, sep, join } = require('path');
+const { dirname, join, sep } = require('path');
 
 const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
 const PageLoader = require.resolve('jsx2mp-loader/src/page-loader');
-
-const platformConfig = require('./platformConfig');
-
-
-function getEntry(entryAppFilePath, routes, options) {
-  const rootDir = dirname(entryAppFilePath);
-  const entry = {};
-  const { platform, constantDir, mode, disableCopyNpm, turnOffSourceMap } = options;
-
-  const pageLoaderParams = {
-    platform: platformConfig[platform],
-    entryPath: entryAppFilePath,
-    constantDir,
-    mode,
-    disableCopyNpm,
-    turnOffSourceMap
-  };
-
-  const appLoaderParams = JSON.stringify({ entryPath: rootDir, platform: platformConfig[platform], mode, disableCopyNpm, turnOffSourceMap });
-
-  entry.app = `${AppLoader}?${appLoaderParams}!./${entryAppFilePath}`;
-
-  if (Array.isArray(routes)) {
-    routes.filter(({ targets }) => {
-      return !Array.isArray(targets) || targets.indexOf('miniapp') > -1;
-    }).forEach(({ source, window = {} }) => {
-      entry[`page@${source}`] = `${PageLoader}?${JSON.stringify(Object.assign({ pageConfig: window }, pageLoaderParams))}!${getDepPath(source, rootDir)}`;
-    });
-  }
-  return entry;
-}
 
 /**
  * ./pages/foo -> based on src, return original
@@ -44,6 +13,29 @@ function getDepPath(source, rootDir) {
     return join(rootDir, source);
   }
   return ['.', rootDir, source].join(sep);
+}
+
+function getEntry(entryAppFilePath, routes, options) {
+  const rootDir = dirname(entryAppFilePath);
+  const entry = {};
+  const { target, loaderParams } = options;
+
+  const pageLoaderParams = {
+    ...loaderParams,
+    entryPath: entryAppFilePath,
+  };
+
+  const appLoaderParams = JSON.stringify({ ...loaderParams, entryPath: rootDir });
+
+  entry.app = `${AppLoader}?${appLoaderParams}!./${entryAppFilePath}`;
+  if (Array.isArray(routes)) {
+    routes.filter(({ targets }) => {
+      return !Array.isArray(targets) || targets.indexOf(target) > -1;
+    }).forEach(({ source, window = {} }) => {
+      entry[`page@${source}`] = `${PageLoader}?${JSON.stringify(Object.assign({ pageConfig: window }, pageLoaderParams))}!${getDepPath(source, rootDir)}`;
+    });
+  }
+  return entry;
 }
 
 module.exports = (config, routes, options) => {

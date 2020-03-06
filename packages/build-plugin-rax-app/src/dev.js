@@ -5,7 +5,6 @@ const qrcode = require('qrcode-terminal');
 
 const { handleWebpackErr } = require('rax-compile-config');
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
-const miniappTargetPlatformMap = require('./config/miniapp/targetPlatformMap');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
@@ -101,7 +100,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     if (targets.includes(WECHAT_MINIPROGRAM)) {
       console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { platform: miniappTargetPlatformMap[WECHAT_MINIPROGRAM]})));
+      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: WECHAT_MINIPROGRAM })));
       console.log();
     }
   }
@@ -112,6 +111,7 @@ function getConfig(target, options = {}) {
     if (options[target] && options[target].buildType === 'runtime') {
       return [require('./config/miniapp/runtime/getBase')];
     } else {
+      options.mode = 'watch';
       return [require('./config/miniapp/compile/getBase')];
     }
   }

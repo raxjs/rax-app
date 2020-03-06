@@ -1,5 +1,12 @@
 const path = require('path');
-const { readFileSync, readJsonSync, writeJsonSync, ensureDirSync, copySync, copy } = require('fs-extra');
+const {
+  readFileSync,
+  readJsonSync,
+  writeJsonSync,
+  ensureDirSync,
+  copySync,
+  copy
+} = require('fs-extra');
 const ConcatSource = require('webpack-sources').ConcatSource;
 const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 const { RawSource } = require('webpack-sources');
@@ -13,46 +20,44 @@ const defaultConfig = require('./defaultConfig');
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 const adapter = require('./adapter');
 
-const PluginName = 'MpPlugin';
+const PluginName = 'MiniAppRuntimePlugin';
 const appJsTmpl = readFileSync(
   path.resolve(__dirname, './template/app.js'),
-  'utf8',
+  'utf8'
 );
 const pageJsTmpl = readFileSync(
   path.resolve(__dirname, './template/page.js'),
-  'utf8',
+  'utf8'
 );
 const appDisplayCssTmpl = readFileSync(
   path.resolve(__dirname, './template/app.display.css'),
-  'utf8',
+  'utf8'
 );
 const appExtraCssTmpl = readFileSync(
   path.resolve(__dirname, './template/app.extra.css'),
-  'utf8',
+  'utf8'
 );
 const appCssTmpl = readFileSync(
   path.resolve(__dirname, './template/app.css'),
-  'utf8',
+  'utf8'
 );
 const customComponentJsTmpl = readFileSync(
   path.resolve(__dirname, './template/custom-component.js'),
-  'utf8',
+  'utf8'
 );
 const projectConfigJsonTmpl = require('./template/project.config.json');
 const packageConfigJsonTmpl = require('./template/package.json');
 
 process.env.isMiniprogram = true; // Set env variable
-const globalVars = [
-  'HTMLElement',
-];
+const globalVars = ['HTMLElement'];
 
 /**
  * Add file to compilation
  */
-function addFile(compilation, filename, content, target = WECHAT_MINIPROGRAM) {
-  compilation.assets[`${target}/${filename}`] = {
+function addFile(compilation, filename, content) {
+  compilation.assets[filename] = {
     source: () => content,
-    size: () => Buffer.from(content).length,
+    size: () => Buffer.from(content).length
   };
 }
 
@@ -64,16 +69,13 @@ function wrapChunks(compilation, chunks, globalVarsConfig) {
     chunk.files.forEach(fileName => {
       if (ModuleFilenameHelpers.matchObject({ test: /\.js$/ }, fileName)) {
         // Page js
-        const headerContent =
-          `module.exports = function(window, document) {const App = function(options) {window.appOptions = options};${
-            globalVars.map(item => `var ${item} = window.${item}`).join(';')
-          };`;
+        const headerContent = `module.exports = function(window, document) {const App = function(options) {window.appOptions = options};${globalVars
+          .map(item => `var ${item} = window.${item}`)
+          .join(';')};`;
         let customHeaderContent = globalVarsConfig
           .map(
             item =>
-              `var ${item[0]} = ${
-                item[1] ? item[1] : `window['${item[0]}']`
-              }`,
+              `var ${item[0]} = ${item[1] ? item[1] : `window['${item[0]}']`}`
           )
           .join(';');
         customHeaderContent = customHeaderContent
@@ -84,7 +86,7 @@ function wrapChunks(compilation, chunks, globalVarsConfig) {
         compilation.assets[fileName] = new ConcatSource(
           headerContent + customHeaderContent,
           compilation.assets[fileName],
-          footerContent,
+          footerContent
         );
       }
     });
@@ -99,7 +101,7 @@ function getAssetPath(
   filePath,
   assetsSubpackageMap,
   selfFilePath,
-  target = WECHAT_MINIPROGRAM,
+  target = WECHAT_MINIPROGRAM
 ) {
   if (assetsSubpackageMap[filePath]) {
     assetPathPrefix = '';
@@ -107,7 +109,7 @@ function getAssetPath(
 
   return `${assetPathPrefix}./${path.relative(
     path.dirname(`${target}/${selfFilePath}`),
-    filePath,
+    filePath
   )}`;
 }
 
@@ -133,7 +135,15 @@ function getSourceFromPath(routePath, routes) {
  */
 function mergeConfig(defaultConfig, passedOptions = {}) {
   // TODO: to be finished
-  const { routes = [], window, tabBar, nativeCustomComponent = {}, subpackages, preloadRule, ...appExtraConfig } = passedOptions;
+  const {
+    routes = [],
+    window,
+    tabBar,
+    nativeCustomComponent = {},
+    subpackages,
+    preloadRule,
+    ...appExtraConfig
+  } = passedOptions;
   const router = {};
   routes.forEach(({ entryName, path }) => {
     router[entryName] = [path];
@@ -154,19 +164,36 @@ function mergeConfig(defaultConfig, passedOptions = {}) {
       nativeCustomComponent
     },
     app: window,
-    appExtraConfig,
+    appExtraConfig
   };
   return Object.assign({}, defaultConfig, config);
 }
 
-function handlePageJS(compilation, assets, assetPathPrefix, assetsSubpackageMap, pageRoute, pageConfig, target) {
+function handlePageJS(
+  compilation,
+  assets,
+  assetPathPrefix,
+  assetsSubpackageMap,
+  pageRoute,
+  pageConfig,
+  target
+) {
   const addPageScroll = pageConfig && pageConfig.windowScroll;
   const reachBottom = pageConfig && pageConfig.reachBottom;
   const pullDownRefresh = pageConfig && pageConfig.pullDownRefresh;
   let pageJsContent = pageJsTmpl
     .replace(/APINamespace/g, adapter[target].APINamespace)
     .replace(/TARGET/g, `'${target}'`)
-    .replace('/* CONFIG_PATH */', `${getAssetPath(assetPathPrefix, `${target}/config.js`, assetsSubpackageMap, `${pageRoute}.js`, target)}`)
+    .replace(
+      '/* CONFIG_PATH */',
+      `${getAssetPath(
+        assetPathPrefix,
+        `${target}/config.js`,
+        assetsSubpackageMap,
+        `${pageRoute}.js`,
+        target
+      )}`
+    )
     .replace(
       '/* INIT_FUNCTION */',
       `function init(window, document) {${assets.js
@@ -177,47 +204,70 @@ function handlePageJS(compilation, assets, assetPathPrefix, assetsSubpackageMap,
               js,
               assetsSubpackageMap,
               `${pageRoute}.js`,
-              target,
-            )}')(window, document)`,
+              target
+            )}')(window, document)`
         )
-        .join(';')}}`,
+        .join(';')}}`
     );
-  const pageScrollFunction = addPageScroll ? () =>
-    'onPageScroll({ scrollTop }) {if (this.window) {this.window.document.documentElement.scrollTop = scrollTop || 0;this.window.$$trigger("scroll");}},' : '';
-  const reachBottomFunction = reachBottom ? () =>
-    'onReachBottom() {if (this.window) {this.window.$$trigger("reachbottom");}},' : '';
-  const pullDownRefreshFunction = pullDownRefresh ? () =>
-    'onPullDownRefresh() {if (this.window) {this.window.$$trigger("pulldownrefresh");}},' : '';
+  const pageScrollFunction = addPageScroll
+    ? () =>
+      'onPageScroll({ scrollTop }) {if (this.window) {this.window.document.documentElement.scrollTop = scrollTop || 0;this.window.$$trigger("scroll");}},'
+    : '';
+  const reachBottomFunction = reachBottom
+    ? () =>
+      'onReachBottom() {if (this.window) {this.window.$$trigger("reachbottom");}},'
+    : '';
+  const pullDownRefreshFunction = pullDownRefresh
+    ? () =>
+      'onPullDownRefresh() {if (this.window) {this.window.$$trigger("pulldownrefresh");}},'
+    : '';
 
   pageJsContent = pageJsContent
     .replace('/* PAGE_SCROLL_FUNCTION */', pageScrollFunction)
     .replace('/* REACH_BOTTOM_FUNCTION */', reachBottomFunction)
     .replace('/* PULL_DOWN_REFRESH_FUNCTION */', pullDownRefreshFunction);
 
-  addFile(compilation, `${pageRoute}.js`, pageJsContent, target);
+  addFile(compilation, `${pageRoute}.js`, pageJsContent);
 }
 
-function handlePageXML(compilation, customComponentRoot, pageConfig, pageRoute, target) {
+function handlePageXML(
+  compilation,
+  customComponentRoot,
+  pageConfig,
+  pageRoute,
+  target
+) {
   const rem = pageConfig && pageConfig.rem;
   const pageStyle = pageConfig && pageConfig.pageStyle;
 
-  let pageXmlContent = `<element ${adapter[target].directive.if}="{{pageId}}" class="{{bodyClass}}" style="{{bodyStyle}}" data-private-node-id="e-body" data-private-page-id="{{pageId}}" ${
-    customComponentRoot
-      ? 'generic:custom-component="custom-component"'
-      : ''
+  let pageXmlContent = `<element ${
+    adapter[target].directive.if
+  }="{{pageId}}" class="{{bodyClass}}" style="{{bodyStyle}}" data-private-node-id="e-body" data-private-page-id="{{pageId}}" ${
+    customComponentRoot ? 'generic:custom-component="custom-component"' : ''
   }> </element>`;
 
   if (target === WECHAT_MINIPROGRAM && (rem || pageStyle)) {
-    pageXmlContent =
-      `<page-meta ${rem ? 'root-font-size="{{rootFontSize}}"' : ''} ${
-        pageStyle ? 'page-style="{{pageStyle}}"' : ''
-      }></page-meta>${pageXmlContent}`;
+    pageXmlContent = `<page-meta ${
+      rem ? 'root-font-size="{{rootFontSize}}"' : ''
+    } ${
+      pageStyle ? 'page-style="{{pageStyle}}"' : ''
+    }></page-meta>${pageXmlContent}`;
   }
-  addFile(compilation, `${pageRoute}.${adapter[target].xml}`, pageXmlContent, target);
+  addFile(compilation, `${pageRoute}.${adapter[target].xml}`, pageXmlContent);
 }
 
-function handlePageCSS(compilation, pageConfig, assets, assetPathPrefix, assetsSubpackageMap, pageRoute, target) {
-  const pageBackgroundColor = pageConfig && (pageConfig.pageBackgroundColor || pageConfig.backgroundColor); // Compatible with original backgroundColor
+function handlePageCSS(
+  compilation,
+  pageConfig,
+  assets,
+  assetPathPrefix,
+  assetsSubpackageMap,
+  pageRoute,
+  target
+) {
+  const pageBackgroundColor =
+    pageConfig &&
+    (pageConfig.pageBackgroundColor || pageConfig.backgroundColor); // Compatible with original backgroundColor
 
   let pageCssContent = assets.css
     .map(
@@ -227,18 +277,28 @@ function handlePageCSS(compilation, pageConfig, assets, assetPathPrefix, assetsS
           css,
           assetsSubpackageMap,
           `${pageRoute}.${adapter[target].css}`,
-          target,
-        )}";`,
+          target
+        )}";`
     )
     .join('\n');
   if (pageBackgroundColor)
-    pageCssContent =
-      `page { background-color: ${pageBackgroundColor}; }\n${
-        pageCssContent}`;
-  addFile(compilation, `${pageRoute}.${adapter[target].css}`, adjustCss(pageCssContent), target);
+    pageCssContent = `page { background-color: ${pageBackgroundColor}; }\n${pageCssContent}`;
+  addFile(
+    compilation,
+    `${pageRoute}.${adapter[target].css}`,
+    adjustCss(pageCssContent)
+  );
 }
 
-function handlePageJSON(compilation, pageConfig, pageExtraConfig, customComponentRoot, assetPathPrefix, pageRoute, target) {
+function handlePageJSON(
+  compilation,
+  pageConfig,
+  pageExtraConfig,
+  customComponentRoot,
+  assetPathPrefix,
+  pageRoute,
+  target
+) {
   const pullDownRefresh = pageConfig && pageConfig.pullDownRefresh;
   const reachBottom = pageConfig && pageConfig.reachBottom;
   const reachBottomDistance = pageConfig && pageConfig.reachBottomDistance;
@@ -247,42 +307,42 @@ function handlePageJSON(compilation, pageConfig, pageExtraConfig, customComponen
     ...pageExtraConfig,
     enablePullDownRefresh: !!pullDownRefresh,
     usingComponents: {
-      element: 'miniapp-element',
-    },
+      element: 'miniapp-element'
+    }
   };
   if (customComponentRoot) {
-    pageJson.usingComponents[
-      'custom-component'
-    ] = getAssetPath(assetPathPrefix, `${target}/custom-component/index`, {}, `${pageRoute}.js`, target);
+    pageJson.usingComponents['custom-component'] = getAssetPath(
+      assetPathPrefix,
+      `${target}/custom-component/index`,
+      {},
+      `${pageRoute}.js`,
+      target
+    );
   }
   if (reachBottom && typeof reachBottomDistance === 'number') {
     pageJson.onReachBottomDistance = reachBottomDistance;
   }
   const pageJsonContent = JSON.stringify(pageJson, null, '\t');
-  addFile(compilation, `${pageRoute}.json`, pageJsonContent, target);
+  addFile(compilation, `${pageRoute}.json`, pageJsonContent);
 }
 
 function handleWebview(compilation, pages, { redirect }, target) {
-  if (redirect && (redirect.notFound === 'webview' || redirect.accessDenied === 'webview')) {
+  if (
+    redirect &&
+    (redirect.notFound === 'webview' || redirect.accessDenied === 'webview')
+  ) {
     addFile(
       compilation,
       'pages/webview/index.js',
-      'Page({data:{url:""},onLoad: function(query){this.setData({url:decodeURIComponent(query.url)})}})',
-      target,
+      'Page({data:{url:""},onLoad: function(query){this.setData({url:decodeURIComponent(query.url)})}})'
     );
     addFile(
       compilation,
       `pages/webview/index.${adapter[target].xml}`,
-      '<web-view src="{{url}}"></web-view>',
-      target,
+      '<web-view src="{{url}}"></web-view>'
     );
-    addFile(compilation, `pages/webview/index.${adapter[target].css}`, '', target);
-    addFile(
-      compilation,
-      'pages/webview/index.json',
-      '{"usingComponents":{}}',
-      target,
-    );
+    addFile(compilation, `pages/webview/index.${adapter[target].css}`, '');
+    addFile(compilation, 'pages/webview/index.json', '{"usingComponents":{}}');
     pages.push('pages/webview/index');
   }
 }
@@ -293,21 +353,28 @@ function handleAppJS(compilation, appAssets, assetsSubpackageMap, target) {
     `const fakeWindow = {};const fakeDocument = {};${appAssets.js
       .map(
         js =>
-          `require('${
-            getAssetPath('', js, assetsSubpackageMap, 'app.js', target)
-          }')(fakeWindow, fakeDocument)`,
+          `require('${getAssetPath(
+            '',
+            js,
+            assetsSubpackageMap,
+            'app.js',
+            target
+          )}')(fakeWindow, fakeDocument)`
       )
-      .join(';')};const appConfig = fakeWindow.appOptions || {};`,
+      .join(';')};const appConfig = fakeWindow.appOptions || {};`
   );
-  addFile(compilation, 'app.js', appJsContent, target);
+  addFile(compilation, 'app.js', appJsContent);
 }
 
-function handleAppCSS(compilation, appAssets, assetsSubpackageMap, appCssConfig = 'default', target) {
+function handleAppCSS(
+  compilation,
+  appAssets,
+  assetsSubpackageMap,
+  appCssConfig = 'default',
+  target
+) {
   const cssTmpl = appCssConfig === 'display' ? appDisplayCssTmpl : appCssTmpl;
-  let appCssContent =
-    appCssConfig === 'none'
-      ? ''
-      : cssTmpl;
+  let appCssContent = appCssConfig === 'none' ? '' : cssTmpl;
   if (appAssets.css.length) {
     appCssContent += `\n${appAssets.css
       .map(
@@ -317,8 +384,8 @@ function handleAppCSS(compilation, appAssets, assetsSubpackageMap, appCssConfig 
             css,
             assetsSubpackageMap,
             `app.${adapter[target].css}`,
-            target,
-          )}";`,
+            target
+          )}";`
       )
       .join('\n')}`;
   }
@@ -326,10 +393,22 @@ function handleAppCSS(compilation, appAssets, assetsSubpackageMap, appCssConfig 
   if (appCssConfig !== 'none' && appCssConfig !== 'display') {
     appCssContent += `\n${appExtraCssTmpl}`;
   }
-  addFile(compilation, `app.${adapter[target].css}`, appCssContent, target);
+  addFile(compilation, `app.${adapter[target].css}`, appCssContent);
 }
 
-function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpackagesMap, userAppJson = {}, tabBarConfig, outputPath, tabBarMap, pages, { app }, target) {
+function handleAppJSON(
+  compilation,
+  subpackagesConfig,
+  preloadRuleConfig,
+  subpackagesMap,
+  userAppJson = {},
+  tabBarConfig,
+  outputPath,
+  tabBarMap,
+  pages,
+  { app },
+  target
+) {
   const subpackages = [];
   const preloadRule = {};
   Object.keys(subpackagesConfig).forEach(packageName => {
@@ -337,14 +416,12 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
     subpackages.push({
       name: packageName,
       root: packageName,
-      pages,
+      pages
     });
   });
   Object.keys(preloadRuleConfig).forEach(entryName => {
     const packageName = subpackagesMap[entryName];
-    const pageRoute = `${
-      packageName ? `${packageName}/` : ''
-    }${entryName}`;
+    const pageRoute = `${packageName ? `${packageName}/` : ''}${entryName}`;
     preloadRule[pageRoute] = preloadRuleConfig[entryName];
   });
   const appJson = {
@@ -352,7 +429,7 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
     window: app || {},
     subpackages,
     preloadRule,
-    ...userAppJson,
+    ...userAppJson
   };
   if (tabBarConfig.items && tabBarConfig.items.length) {
     const tabBar = Object.assign({}, tabBarConfig);
@@ -363,7 +440,7 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
       if (iconPathName)
         copy(
           path.resolve('src', item.icon),
-          path.resolve(outputPath, `images/${iconPathName}`),
+          path.resolve(outputPath, `images/${iconPathName}`)
         );
       const selectedIconPathName = item.activeIcon
         ? md5File(path.resolve('src', item.activeIcon)) +
@@ -372,7 +449,7 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
       if (selectedIconPathName)
         copy(
           path.resolve('src', item.activeIcon),
-          path.resolve(outputPath, `images/${selectedIconPathName}`),
+          path.resolve(outputPath, `images/${selectedIconPathName}`)
         );
       tabBarMap[`/${item.pageName}`] = true;
 
@@ -382,7 +459,7 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
         icon: iconPathName ? `./images/${iconPathName}` : '',
         activeIcon: selectedIconPathName
           ? `./images/${selectedIconPathName}`
-          : '',
+          : ''
       };
     });
 
@@ -390,30 +467,25 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
       // 自定义 tabBar
       const customTabBarDir = tabBar.custom;
       tabBar.custom = true;
-      copy(
-        customTabBarDir,
-        path.resolve(outputPath, '../custom-tab-bar'),
-      );
+      copy(customTabBarDir, path.resolve(outputPath, '../custom-tab-bar'));
     }
 
     appJson.tabBar = tabBar;
   }
   const appJsonContent = JSON.stringify(appJson, null, '\t');
-  addFile(compilation, 'app.json', appJsonContent, target);
+  addFile(compilation, 'app.json', appJsonContent);
 }
 
 function handleProjectConfig(compilation, { projectConfig = {} }, target) {
   if (target === WECHAT_MINIPROGRAM) {
     const userProjectConfigJson = projectConfig;
-    const projectConfigJson = JSON.parse(
-      JSON.stringify(projectConfigJsonTmpl),
-    );
+    const projectConfigJson = JSON.parse(JSON.stringify(projectConfigJsonTmpl));
     const projectConfigJsonContent = JSON.stringify(
       deepMerge(projectConfigJson, userProjectConfigJson),
       null,
-      '\t',
+      '\t'
     );
-    addFile(compilation, 'project.config.json', projectConfigJsonContent, target);
+    addFile(compilation, 'project.config.json', projectConfigJsonContent);
   }
 }
 
@@ -424,21 +496,29 @@ function handleSiteMap(compilation, { sitemapConfig }, target) {
       const sitemapConfigJsonContent = JSON.stringify(
         userSitemapConfigJson,
         null,
-        '\t',
+        '\t'
       );
-      addFile(compilation, 'sitemap.json', sitemapConfigJsonContent, target);
+      addFile(compilation, 'sitemap.json', sitemapConfigJsonContent);
     }
   }
 }
 
-function handleConfigJS(compilation, subpackagesMap, tabBarMap, pageConfigMap, customComponentConfig, { router, origin, entry, redirect, optimization, runtime }, target) {
+function handleConfigJS(
+  compilation,
+  subpackagesMap,
+  tabBarMap,
+  pageConfigMap,
+  customComponentConfig,
+  { router, origin, entry, redirect, optimization, runtime },
+  target
+) {
   const processedRouter = {};
   if (router) {
     // Handle router
     Object.keys(router).forEach(key => {
       const pathObjList = [];
       let pathList = router[key];
-      pathList = Array.isArray(pathList) ? pathList : [ pathList ];
+      pathList = Array.isArray(pathList) ? pathList : [pathList];
 
       for (const pathItem of pathList) {
         if (pathItem && typeof pathItem === 'string') {
@@ -450,37 +530,35 @@ function handleConfigJS(compilation, subpackagesMap, tabBarMap, pageConfigMap, c
             regexp: pattern.source,
             options: `${pattern.global ? '' : ''}${
               pattern.ignoreCase ? 'i' : ''
-            }${pattern.multiline ? 'm' : ''}`,
+            }${pattern.multiline ? 'm' : ''}`
           });
         }
       }
       processedRouter[key] = pathObjList;
     });
   }
-  const configJsContent =
-    `module.exports = ${
-      JSON.stringify(
+  const configJsContent = `module.exports = ${JSON.stringify(
+    {
+      target,
+      origin: origin || 'https://miniapp.default',
+      entry: entry || '/',
+      router: processedRouter,
+      runtime: Object.assign(
         {
-          target,
-          origin: origin || 'https://miniapp.default',
-          entry: entry || '/',
-          router: processedRouter,
-          runtime: Object.assign(
-            {
-              subpackagesMap,
-              tabBarMap,
-              usingComponents: customComponentConfig.usingComponents || {},
-            },
-            runtime || {},
-          ),
-          pages: pageConfigMap,
-          redirect: redirect || {},
-          optimization: optimization || {},
+          subpackagesMap,
+          tabBarMap,
+          usingComponents: customComponentConfig.usingComponents || {}
         },
-        null,
-        '\t',
-      )}`;
-  addFile(compilation, 'config.js', configJsContent, target);
+        runtime || {}
+      ),
+      pages: pageConfigMap,
+      redirect: redirect || {},
+      optimization: optimization || {}
+    },
+    null,
+    '\t'
+  )}`;
+  addFile(compilation, 'config.js', configJsContent);
 }
 
 function handlePackageJSON(compilation, userPackageConfigJson = {}, target) {
@@ -488,16 +566,22 @@ function handlePackageJSON(compilation, userPackageConfigJson = {}, target) {
   const packageConfigJsonContent = JSON.stringify(
     deepMerge(packageConfigJson, userPackageConfigJson),
     null,
-    '\t',
+    '\t'
   );
-  addFile(compilation, 'package.json', packageConfigJsonContent, target);
+  addFile(compilation, 'package.json', packageConfigJsonContent);
 }
 
-function handleCustomComponent(compilation, customComponentRoot, customComponents, outputPath, target) {
+function handleCustomComponent(
+  compilation,
+  customComponentRoot,
+  customComponents,
+  outputPath,
+  target
+) {
   if (customComponentRoot) {
     copy(
       customComponentRoot,
-      path.resolve(outputPath, 'custom-component/components'),
+      path.resolve(outputPath, 'custom-component/components')
     );
 
     const realUsingComponents = {};
@@ -506,16 +590,11 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
       key =>
         realUsingComponents[
           key
-        ] = `./components/${customComponents[key].path}`,
+        ] = `./components/${customComponents[key].path}`
     );
 
     // custom-component/index.js
-    addFile(
-      compilation,
-      'custom-component/index.js',
-      customComponentJsTmpl,
-      target,
-    );
+    addFile(compilation, 'custom-component/index.js', customComponentJsTmpl);
 
     // custom-component/index.xml
     addFile(
@@ -532,12 +611,11 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
             .map(name => `bind${name}="on${name}"`)
             .join(' ')}><slot/></${key}>`;
         })
-        .join('\n'),
-      target,
+        .join('\n')
     );
 
     // custom-component/index.css
-    addFile(compilation, `custom-component/index.${adapter[target].css}`, '', target);
+    addFile(compilation, `custom-component/index.${adapter[target].css}`, '');
 
     // custom-component/index.json
     addFile(
@@ -546,55 +624,81 @@ function handleCustomComponent(compilation, customComponentRoot, customComponent
       JSON.stringify(
         {
           component: true,
-          usingComponents: realUsingComponents,
+          usingComponents: realUsingComponents
         },
         null,
-        '\t',
-      ),
-      target,
+        '\t'
+      )
     );
   }
 }
 
-function handleNodeModules(compilation, target) {
-  addFile(compilation, 'node_modules/.miniprogram', '', target);
+function handleNodeModules(compilation) {
+  addFile(compilation, 'node_modules/.miniprogram', '');
 }
 
-function installDependencies(autoBuildNpm = true, stats, target, customComponentConfig = {}, callback) {
+function installDependencies(
+  autoBuildNpm = true,
+  stats,
+  target,
+  customComponentConfig = {},
+  callback
+) {
   if (!autoBuildNpm) return callback();
 
   const sourcePath = path.join(process.cwd(), 'src');
-  const customComponentRoot = customComponentConfig.root && path.resolve(sourcePath, customComponentConfig.root);
+  const customComponentRoot =
+    customComponentConfig.root &&
+    path.resolve(sourcePath, customComponentConfig.root);
 
-  const outputPath = path.resolve(
-    stats.compilation.outputOptions.path,
-    target,
-  );
+  const outputPath = path.resolve(stats.compilation.outputOptions.path);
 
   const build = () => {
     const outputNpmPath = path.resolve(outputPath, adapter[target].npmDirName);
     ensureDirSync(outputNpmPath);
 
     ['miniapp-element', 'miniapp-render'].forEach(name => {
-      const sourceNpmFileDir = path.resolve(process.cwd(), 'node_modules', name, 'dist', adapter[target].fileName);
-      const distNpmFileDir = path.resolve(outputPath, adapter[target].npmDirName, name);
+      const sourceNpmFileDir = path.resolve(
+        process.cwd(),
+        'node_modules',
+        name,
+        'dist',
+        adapter[target].fileName
+      );
+      const distNpmFileDir = path.resolve(
+        outputPath,
+        adapter[target].npmDirName,
+        name
+      );
       copySync(sourceNpmFileDir, distNpmFileDir);
       // Handle custom-component path in alibaba miniapp
-      if (target === 'miniapp' && customComponentRoot && name === 'miniapp-element') {
+      if (
+        target === 'miniapp' &&
+        customComponentRoot &&
+        name === 'miniapp-element'
+      ) {
         const elementJSONFilePath = path.resolve(distNpmFileDir, 'index.json');
         const elementJSONContent = readJsonSync(elementJSONFilePath);
-        elementJSONContent.usingComponents['custom-component'] = '../../custom-component/index';
+        elementJSONContent.usingComponents['custom-component'] =
+          '../../custom-component/index';
         writeJsonSync(elementJSONFilePath, elementJSONContent, { space: 2 });
       }
     });
   };
-  console.log(chalk.green(`Start building deps for ${adapter[target].name}...`));
+  console.log(
+    chalk.green(`Start building deps for ${adapter[target].name}...`)
+  );
 
   build();
   callback();
 }
 
-function handleWrapChunks(compilation, globalVars = [], afterOptimizations, pluginName) {
+function handleWrapChunks(
+  compilation,
+  globalVars = [],
+  afterOptimizations,
+  pluginName
+) {
   if (afterOptimizations) {
     compilation.hooks.afterOptimizeChunkAssets.tap(pluginName, chunks => {
       wrapChunks(compilation, chunks, globalVars);
@@ -605,12 +709,12 @@ function handleWrapChunks(compilation, globalVars = [], afterOptimizations, plug
       (chunks, callback) => {
         wrapChunks(compilation, chunks, globalVars);
         callback();
-      },
+      }
     );
   }
 }
 
-class MpPlugin {
+class MiniAppRuntimePlugin {
   constructor(passedOptions) {
     this.options = mergeConfig(defaultConfig, passedOptions);
     this.target = passedOptions.target || MINIAPP;
@@ -622,7 +726,7 @@ class MpPlugin {
     const generateConfig = options.generate || {};
 
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
-      const outputPath = path.join(compilation.outputOptions.path, target);
+      const outputPath = compilation.outputOptions.path;
       const sourcePath = path.join(process.cwd(), 'src');
       const entryNames = Array.from(compilation.entrypoints.keys());
       const appJsEntryName = generateConfig.app || 'default';
@@ -632,7 +736,9 @@ class MpPlugin {
       const preloadRuleConfig = generateConfig.preloadRule || {};
       const tabBarConfig = generateConfig.tabBar || {};
       const customComponentConfig = generateConfig.nativeCustomComponent || {};
-      const customComponentRoot = customComponentConfig.root && path.resolve(sourcePath, customComponentConfig.root);
+      const customComponentRoot =
+        customComponentConfig.root &&
+        path.resolve(sourcePath, customComponentConfig.root);
       const customComponents = customComponentConfig.usingComponents || {};
       const pages = [];
       const subpackagesMap = {}; // page - subpackage
@@ -668,9 +774,9 @@ class MpPlugin {
 
           // Adjust css content
           if (ext === 'css') {
-            compilation.assets[`${filePath}.${adapter[target].css}`] = new RawSource(
-              adjustCss(compilation.assets[filePath].source()),
-            );
+            compilation.assets[
+              `${filePath}.${adapter[target].css}`
+            ] = new RawSource(adjustCss(compilation.assets[filePath].source()));
             delete compilation.assets[filePath];
           }
         });
@@ -708,7 +814,7 @@ class MpPlugin {
       Object.keys(customComponents).forEach(key => {
         if (typeof customComponents[key] === 'string') {
           customComponents[key] = {
-            path: customComponents[key],
+            path: customComponents[key]
           };
         }
       });
@@ -719,27 +825,55 @@ class MpPlugin {
         pageConfigMap[entryName] = Object.assign(
           {},
           globalConfig,
-          pageConfigMap[entryName] || {},
+          pageConfigMap[entryName] || {}
         );
         const pageConfig = pageConfigMap[entryName];
         const pageExtraConfig = pageConfig && pageConfig.extra || {};
         const packageName = subpackagesMap[entryName];
-        const pageRoute = `${
-          packageName ? `${packageName}/` : ''
-        }${entryName}`;
+        const pageRoute = `${packageName ? `${packageName}/` : ''}${entryName}`;
         const assetPathPrefix = packageName ? '../' : '';
 
         // Page js
-        handlePageJS(compilation, assets, assetPathPrefix, assetsSubpackageMap, pageRoute, pageConfig, target);
+        handlePageJS(
+          compilation,
+          assets,
+          assetPathPrefix,
+          assetsSubpackageMap,
+          pageRoute,
+          pageConfig,
+          target
+        );
 
         // Page xml
-        handlePageXML(compilation, customComponentRoot, pageConfig, pageRoute, target);
+        handlePageXML(
+          compilation,
+          customComponentRoot,
+          pageConfig,
+          pageRoute,
+          target
+        );
 
         // Page css
-        handlePageCSS(compilation, pageConfig, assets, assetPathPrefix, assetsSubpackageMap, pageRoute, target);
+        handlePageCSS(
+          compilation,
+          pageConfig,
+          assets,
+          assetPathPrefix,
+          assetsSubpackageMap,
+          pageRoute,
+          target
+        );
 
         // Page json
-        handlePageJSON(compilation, pageConfig, pageExtraConfig, customComponentRoot, assetPathPrefix, pageRoute, target);
+        handlePageJSON(
+          compilation,
+          pageConfig,
+          pageExtraConfig,
+          customComponentRoot,
+          assetPathPrefix,
+          pageRoute,
+          target
+        );
 
         // Record page path
         if (!packageName) pages.push(pageRoute);
@@ -755,10 +889,16 @@ class MpPlugin {
         // App js
         handleAppJS(compilation, appAssets, assetsSubpackageMap, target);
         // App css
-        handleAppCSS(compilation, appAssets, assetsSubpackageMap, generateConfig.appWxss, target);
+        handleAppCSS(
+          compilation,
+          appAssets,
+          assetsSubpackageMap,
+          generateConfig.appWxss,
+          target
+        );
 
         // App json
-        handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpackagesMap, options.appExtraConfig, tabBarConfig, outputPath, tabBarMap, pages, options, target);
+        // handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpackagesMap, options.appExtraConfig, tabBarConfig, outputPath, tabBarMap, pages, options, target);
 
         // Project.config.json
         handleProjectConfig(compilation, options, target);
@@ -768,30 +908,55 @@ class MpPlugin {
       }
 
       // Config js
-      handleConfigJS(compilation, subpackagesMap, tabBarMap, pageConfigMap, customComponentConfig, options, target);
+      handleConfigJS(
+        compilation,
+        subpackagesMap,
+        tabBarMap,
+        pageConfigMap,
+        customComponentConfig,
+        options,
+        target
+      );
 
       // Package.json
       handlePackageJSON(compilation, options.packageConfig, target);
 
       // Node_modules
-      handleNodeModules(compilation, target);
+      handleNodeModules(compilation);
 
       // Custom-component
-      handleCustomComponent(compilation, customComponentRoot, customComponents, outputPath, target);
+      handleCustomComponent(
+        compilation,
+        customComponentRoot,
+        customComponents,
+        outputPath,
+        target
+      );
 
       callback();
     });
 
     compiler.hooks.compilation.tap(PluginName, compilation => {
-      handleWrapChunks(compilation, generateConfig.globalVars, this.afterOptimizations, PluginName);
+      handleWrapChunks(
+        compilation,
+        generateConfig.globalVars,
+        this.afterOptimizations,
+        PluginName
+      );
     });
 
     compiler.hooks.done.tapAsync(PluginName, (stats, callback) => {
       // Install dependency automatically
       const customComponentConfig = generateConfig.nativeCustomComponent || {};
-      installDependencies(generateConfig.autoBuildNpm, stats, target, customComponentConfig, callback);
+      installDependencies(
+        generateConfig.autoBuildNpm,
+        stats,
+        target,
+        customComponentConfig,
+        callback
+      );
     });
   }
 }
 
-module.exports = MpPlugin;
+module.exports = MiniAppRuntimePlugin;

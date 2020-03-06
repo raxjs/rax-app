@@ -23,18 +23,6 @@ function generateDependencies(dependencies) {
     .join('\n');
 }
 
-function getRelativePath(filePath) {
-  let relativePath;
-  if (filePath[0] === sep) {
-    relativePath = `.${filePath}`;
-  } else if (filePath[0] === '.') {
-    relativePath = filePath;
-  } else {
-    relativePath = `.${sep}${filePath}`;
-  }
-  return relativePath;
-}
-
 module.exports = async function appLoader(content) {
   const loaderOptions = getOptions(this);
   const { entryPath, platform, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;

@@ -3,9 +3,8 @@ const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
 
-const getMpOuput = require('./config/miniapp/getOutputPath');
+const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
-const miniappTargetPlatformMap = require('./config/miniapp/targetPlatformMap');
 
 module.exports = ({ registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
@@ -68,14 +67,14 @@ function logBuildResult(targets = [], context = {}) {
 
   if (targets.includes(MINIAPP)) {
     console.log(chalk.green('[Alibaba MiniApp] Bundle at:'));
-    console.log('   ', chalk.underline.white(getMpOuput(context)));
+    console.log('   ', chalk.underline.white(getMiniAppOutput(context)));
     console.log();
   }
 
   if (targets.includes(WECHAT_MINIPROGRAM)) {
     console.log(chalk.green('[WeChat MiniProgram] Bundle at:'));
-    console.log('   ', chalk.underline.white(getMpOuput(context, {
-      platform: miniappTargetPlatformMap[WECHAT_MINIPROGRAM],
+    console.log('   ', chalk.underline.white(getMiniAppOutput(context, {
+      target: WECHAT_MINIPROGRAM,
     })));
     console.log();
   }

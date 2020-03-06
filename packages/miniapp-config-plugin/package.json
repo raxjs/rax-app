@@ -1,7 +1,7 @@
 {
-  "name": "miniapp-config-loader",
+  "name": "miniapp-config-plugin",
   "version": "1.0.0",
-  "description": "miniapp config loader",
+  "description": "miniapp config plugin",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,7 +9,6 @@
   "author": "Rax Team",
   "license": "MIT",
   "dependencies": {
-    "fs-extra": "^8.1.0",
-    "loader-utils": "^1.4.0"
+    "fs-extra": "^8.1.0"
   }
 }
