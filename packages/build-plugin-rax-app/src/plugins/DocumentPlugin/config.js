@@ -1,41 +1,16 @@
 const qs = require('qs');
 const path = require('path');
 const fs = require('fs-extra');
-// const getWebpackBase = require('rax-webpack-config');
-// const getBabelConfig = require('rax-babel-config');
-
-// const babelConfig = getBabelConfig({
-//   styleSheet: true,
-// });
-
-// const getWebpackBase = require('../getWebpackBase');
-const setUserConfig = require('../user/setConfig');
-
-const DocumentLoader = require.resolve('../../loaders/DocumentLoader/');
-
-const USERCONFIGKEY_IGNORED = {
-  hash: true, // There is no need to change output config no matter `hash` is `true` or `false`
-};
+const klawSync = require('klaw-sync');
+const getWebpackBase = require('../../config/getWebpackBase');
 
 module.exports = (context, options) => {
   const { rootDir, userConfig } = context;
-  const { pages, publicPath, doctype, loader, staticExport, webConfig, configWebpack } = options;
-  const { inlineStyle } = userConfig;
+  const { pages, doctype, loader, staticExport, webConfig, configWebpack } = options;
 
-  const aliasForWeb = webConfig.resolve ? webConfig.resolve.alias : {};
-  const filenameForWeb = webConfig.output.filename;
-  const publicPathForWeb = webConfig.output.publicPath;
-
-  const publicPathForDocument = publicPath || publicPathForWeb;
-  const loaderForDocument = loader || DocumentLoader;
-
-  // Shell is enabled by config in app.json
-  const appConfig = fs.readJsonSync(path.join(rootDir, 'src/app.json'));
-  const shellPath = appConfig.shell && appConfig.shell.source;
-  const absoluteShellPath = shellPath ? getAbsoluteFilePath(rootDir, path.join('src', shellPath)) : null;
-  const absoluteDocumentPath = getAbsoluteFilePath(rootDir, 'src/document/index');
-
-  const config = getWebpackBase(context);
+  const config = getWebpackBase(context, {
+    isSSR: true
+  });
 
   config.target('node');
 
@@ -50,25 +25,22 @@ module.exports = (context, options) => {
       });
   });
 
+  const loaderForDocument = loader || require.resolve('./loader');
+  const absoluteDocumentPath = getAbsoluteFilePath(rootDir, 'src/document/index');
+  
+  // Shell is enabled by config in app.json
+  const appConfig = fs.readJsonSync(path.join(rootDir, 'src/app.json'));
+  const shellPath = appConfig.shell && appConfig.shell.source;
+  const absoluteShellPath = shellPath ? getAbsoluteFilePath(rootDir, path.join('src', shellPath)) : null;
+
   pages.forEach((page) => {
     const { entryName, source } = page;
 
-    /**
-     * Get script path by filename and entryname.
-     * eg: filename: 'web/[name].js', entryname: 'index', so the script path is web/index.js
-     */
-    const scriptPath = filenameForWeb.includes('[name]') ? filenameForWeb.replace('[name]', entryName) : `${entryName}.js`;
-    const scriptWithPublicPath = path.join(publicPathForDocument, scriptPath);
-
-    console.log(filenameForWeb);
-    console.log(scriptPath);
     const query = {
       absoluteDocumentPath,
       absoluteShellPath,
       absolutePagePath: staticExport && source ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '',
       pagePath: page.path,
-      styles: inlineStyle ? [] : [ scriptWithPublicPath.replace('.js', '.css') ],
-      scripts: [ scriptWithPublicPath ],
       doctype: doctype
     };
 
@@ -77,40 +49,24 @@ module.exports = (context, options) => {
   });
 
   // Sync the alias from webpack config for Web. eg. react, react-dom
+  const aliasForWeb = webConfig.resolve ? webConfig.resolve.alias : {};
   Object.keys(aliasForWeb).forEach((key) => {
     config.resolve.alias.set(key, aliasForWeb[key]);
   });
 
-  // Disable process app.json file in base webpack config
-  config.module.rules.delete('appJSON');
-
-  /**
-   * Map user config in build.json to webpack config.
-   * In the normal entry task, `registerUserConfig` is called by `scripts-core`.
-   * But here we get webpack config  for `Document` in sub webpack compiler.
-   * To avoid pass `registerUserConfig` layer by layer, here we reimplement the `registerUserConfig`
-   */
-  setUserConfig({
-    registerUserConfig: (registers) => {
-      // Each registers define how keys in build.json be mapped to webpack config, they are defined in `../user/keys`
-      registers.forEach((register) => {
-        const userConfigKey = register.name;
-        if (USERCONFIGKEY_IGNORED[userConfigKey]) {
-          return;
-        }
-
-        if (register.configWebpack) {
-          const value = userConfig[userConfigKey] || register.defaultValue;
-          register.configWebpack(config, value, {
-            ...context,
-            taskName: 'node',
-          });
-        }
-      });
-    },
+  // Sync the user config in build.json to document config.
+  const files = klawSync(path.resolve(__dirname, '../../config/user/keys'));
+  files.map(fileInfo => {
+    const userConfigKey = path.basename(fileInfo.path).replace('.js', '');
+    const userConfigRegister = require(fileInfo.path);
+    const value = userConfig[userConfigKey] || userConfigRegister.defaultValue;
+    userConfigRegister.configWebpack(config, value, {
+      ...context,
+      taskName: 'node',
+    });
   });
 
-  // Custom config for document though plugin
+  // Sync the custom config for document.
   if (configWebpack) {
     configWebpack(config);
   }

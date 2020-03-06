@@ -20,8 +20,6 @@ module.exports = function() {
     absoluteShellPath,
     absolutePagePath,
     pagePath,
-    styles = [],
-    scripts = [],
     doctype,
   } = query;
 
@@ -62,8 +60,8 @@ module.exports = function() {
         return {
           __initialHtml: initialHtml,
           __pagePath: '${pagePath}',
-          __styles: ${JSON.stringify(styles)},
-          __scripts: ${JSON.stringify(scripts)}
+          __styles: assets.styles,
+          __scripts: assets.scripts
         };
       };
 

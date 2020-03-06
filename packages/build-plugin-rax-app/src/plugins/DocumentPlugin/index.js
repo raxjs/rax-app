@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const { RawSource } = require('webpack-sources');
 const { handleWebpackErr } = require('rax-compile-config');
-const getDocumentBaseConfig = require('../config/document/getBase');
+const getConfig = require('./config');
 
 const PLUGIN_NAME = 'DocumentPlugin';
 
@@ -30,7 +30,9 @@ module.exports = class DocumentPlugin {
 
     options.webConfig = mainConfig;
 
-    const config = getDocumentBaseConfig(context, options);
+    const publicPath = options.publicPath ? options.publicPath : mainConfig.output.publicPath;
+
+    const config = getConfig(context, options);
     const documentWebpackConfig = config.toConfig();
 
     // Get output dir from filename instead of hard code.
@@ -77,17 +79,21 @@ module.exports = class DocumentPlugin {
 
     // Render into index.html
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
-      console.log("web config eimit");
+      // Get all entry point names for this html file
+      const entryNames = Array.from(compilation.entrypoints.keys());
+
       pages.forEach(page => {
         const { entryName } = page;
+
+        const files = compilation.entrypoints.get(entryName).getFiles();
+        const assets = getAssetsForPage(files, publicPath);
 
         const documentTempFile = '__' + entryName.replace(/\//g, '_') + '_doucment.js';
         const documentContent = compilation.assets[documentTempFile].source();
 
         const Document = loadDocument(documentContent);
         const pageSource = Document.renderToHTML({
-          scripts,
-          styles,
+          ...assets,
           pagePath: '/'
         });
 
@@ -128,4 +134,19 @@ function loadDocument(content) {
   }
 
   return tempModule.exports;
+}
+
+/**
+ * get assets from webpack outputs
+ * @param {*} files [ 'web/detail.css', 'web/detail.js' ]
+ * @param {*} publicPath
+ */
+function getAssetsForPage(files, publicPath) {
+  const jsFiles = files.filter(v => /\.js$/i.test(v));
+  const cssFiles = files.filter(v => /\.css$/i.test(v));
+
+  return {
+    scripts: jsFiles.map(script => publicPath + script),
+    styles: cssFiles.map(style => publicPath + style),
+  };
 }

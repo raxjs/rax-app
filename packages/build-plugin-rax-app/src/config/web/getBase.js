@@ -1,4 +1,4 @@
-const DocumentPlugin = require('../../plugins/DocumentPlugin');
+const DocumentPlugin = require('../../plugins/DocumentPlugin/');
 const getWebpackBase = require('../getWebpackBase');
 const setEntry = require('../setEntry');
 
