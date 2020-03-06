@@ -1,6 +1,6 @@
 /* global APINamespace,TARGET, Page,init */
+/* eslint-disable module/no-implicit-dependencies */
 const render = require('miniapp-render');
-/* eslint-disable-next-line */
 const config = require('/* CONFIG_PATH */');
 
 /* INIT_FUNCTION */
@@ -103,7 +103,8 @@ Page({
 
     // Handle whether to show share menu
     if (!pageConfig.share) {
-      APINamespace.hideShareMenu();
+      // Avoid error in DingTalk Miniapp for lack of hideShareMenu
+      APINamespace.hideShareMenu && APINamespace.hideShareMenu();
     }
 
     // Handle update of document
