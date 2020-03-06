@@ -13,6 +13,9 @@ const formatPath = (p) => {
   return isWin ? p.split(path.sep).join('/') : p;
 };
 
+/**
+ * loader for wrap document and pages to be server render function, which can render page to html
+ */
 module.exports = function() {
   const query = typeof this.query === 'string' ? qs.parse(this.query.substr(1)) : this.query;
   const {

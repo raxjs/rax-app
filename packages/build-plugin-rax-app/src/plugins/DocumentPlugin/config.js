@@ -2,6 +2,9 @@ const path = require('path');
 const klawSync = require('klaw-sync');
 const getWebpackBase = require('../../config/getWebpackBase');
 
+/**
+ * webpack config for document
+ */
 module.exports = (context, options) => {
   const { userConfig } = context;
   const { alias = {}, configWebpack } = options;
