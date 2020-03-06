@@ -56,7 +56,7 @@ module.exports = class DocumentPlugin {
         const pageInfo = pages[page.entryName];
         if (pageInfo) {
           Object.assign(pageInfo, {
-            pathPath: page.path,
+            pagePath: page.path,
             source: page.source
           });
         }
