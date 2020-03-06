@@ -39,7 +39,7 @@ module.exports = function() {
     ${shellStr}
     ${pageStr}
 
-    function renderToHTML() {
+    function renderToHTML(assets) {
       let contentElement;
 
       if (Shell) {

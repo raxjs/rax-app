@@ -1,7 +1,14 @@
 const qs = require('qs');
 const path = require('path');
 const fs = require('fs-extra');
-const getWebpackBase = require('../getWebpackBase');
+// const getWebpackBase = require('rax-webpack-config');
+// const getBabelConfig = require('rax-babel-config');
+
+// const babelConfig = getBabelConfig({
+//   styleSheet: true,
+// });
+
+// const getWebpackBase = require('../getWebpackBase');
 const setUserConfig = require('../user/setConfig');
 
 const DocumentLoader = require.resolve('../../loaders/DocumentLoader/');
@@ -28,9 +35,7 @@ module.exports = (context, options) => {
   const absoluteShellPath = shellPath ? getAbsoluteFilePath(rootDir, path.join('src', shellPath)) : null;
   const absoluteDocumentPath = getAbsoluteFilePath(rootDir, 'src/document/index');
 
-  const config = getWebpackBase(context, {
-    isSSR: true,
-  });
+  const config = getWebpackBase(context);
 
   config.target('node');
 
@@ -55,6 +60,8 @@ module.exports = (context, options) => {
     const scriptPath = filenameForWeb.includes('[name]') ? filenameForWeb.replace('[name]', entryName) : `${entryName}.js`;
     const scriptWithPublicPath = path.join(publicPathForDocument, scriptPath);
 
+    console.log(filenameForWeb);
+    console.log(scriptPath);
     const query = {
       absoluteDocumentPath,
       absoluteShellPath,

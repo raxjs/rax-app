@@ -77,6 +77,7 @@ module.exports = class DocumentPlugin {
 
     // Render into index.html
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
+      console.log("web config eimit");
       pages.forEach(page => {
         const { entryName } = page;
 
@@ -84,7 +85,11 @@ module.exports = class DocumentPlugin {
         const documentContent = compilation.assets[documentTempFile].source();
 
         const Document = loadDocument(documentContent);
-        const pageSource = Document.renderToHTML();
+        const pageSource = Document.renderToHTML({
+          scripts,
+          styles,
+          pagePath: '/'
+        });
 
         // insert html file
         compilation.assets[`${outputFilePrefix}${entryName}.html`] = new RawSource(pageSource);
