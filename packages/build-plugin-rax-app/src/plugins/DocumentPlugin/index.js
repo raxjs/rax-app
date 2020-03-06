@@ -18,7 +18,7 @@ module.exports = class DocumentPlugin {
      * @param {object[]} options.pages pages need to generate HTML
      * @param {string} options.pages[].entryName
      * @param {string} options.pages[].path  page path for MPA to get pageInfo in route config 
-     * @param {string} options.pages[].source page source for static ecport 
+     * @param {string} options.pages[].source page source for static export 
      * 
      * @param {boolean} [options.staticExport] static exporting
      * @param {string} [options.loader] custom document loader
