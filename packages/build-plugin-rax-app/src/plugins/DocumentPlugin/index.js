@@ -150,7 +150,7 @@ module.exports = class DocumentPlugin {
         // insert html file
         compilation.assets[fileName] = new RawSource(pageSource);
 
-        delete compilation.assets[tempFile];
+        delete compilation.assets[`${tempFile}.js`];
       });
 
       callback();
