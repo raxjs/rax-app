@@ -13,7 +13,6 @@ const { RawSource } = require('webpack-sources');
 const pathToRegexp = require('path-to-regexp');
 const chalk = require('chalk');
 const adjustCss = require('./tool/adjust-css');
-const { md5File, isUrl } = require('./tool/file-helper');
 const deepMerge = require('./tool/deep-merge');
 const includes = require('./tool/includes');
 const defaultConfig = require('./defaultConfig');
@@ -46,7 +45,6 @@ const customComponentJsTmpl = readFileSync(
   'utf8'
 );
 const projectConfigJsonTmpl = require('./template/project.config.json');
-const packageConfigJsonTmpl = require('./template/package.json');
 
 process.env.isMiniprogram = true; // Set env variable
 const globalVars = ['HTMLElement'];
@@ -396,98 +394,6 @@ function handleAppCSS(
   addFile(compilation, `app.${adapter[target].css}`, appCssContent);
 }
 
-function handleAppJSON(
-  compilation,
-  subpackagesConfig,
-  preloadRuleConfig,
-  subpackagesMap,
-  userAppJson = {},
-  tabBarConfig,
-  outputPath,
-  tabBarMap,
-  pages,
-  { app },
-  target
-) {
-  const subpackages = [];
-  const preloadRule = {};
-  Object.keys(subpackagesConfig).forEach(packageName => {
-    const pages = subpackagesConfig[packageName] || [];
-    subpackages.push({
-      name: packageName,
-      root: packageName,
-      pages
-    });
-  });
-  Object.keys(preloadRuleConfig).forEach(entryName => {
-    const packageName = subpackagesMap[entryName];
-    const pageRoute = `${packageName ? `${packageName}/` : ''}${entryName}`;
-    preloadRule[pageRoute] = preloadRuleConfig[entryName];
-  });
-  const appJson = {
-    pages,
-    window: app || {},
-    subpackages,
-    preloadRule,
-    ...userAppJson
-  };
-  if (tabBarConfig.items && tabBarConfig.items.length) {
-    const tabBar = Object.assign({}, tabBarConfig);
-    tabBar.items = tabBarConfig.items.map(item => {
-      let iconPathName, isUrlIcon;
-      let selectedIconPathName, isUrlActiveIcon;
-      if (item.icon) {
-        isUrlIcon = isUrl(item.icon);
-        iconPathName = isUrlIcon ? item.icon : md5File(path.resolve('src', item.icon)) + path.extname(item.icon);
-        if (iconPathName && !isUrlIcon) {
-          copy(
-            path.resolve('src', item.icon),
-            path.resolve(outputPath, `images/${iconPathName}`),
-          );
-        }
-      }
-      if (item.activeIcon) {
-        isUrlActiveIcon = isUrl(item.activeIcon);
-        selectedIconPathName = isUrlActiveIcon ? item.activeIcon : md5File(path.resolve('src', item.activeIcon)) + path.extname(item.activeIcon);
-        if (selectedIconPathName && !isUrlActiveIcon) {
-          copy(
-            path.resolve('src', item.activeIcon),
-            path.resolve(outputPath, `images/${selectedIconPathName}`),
-          );
-        }
-      }
-
-      tabBarMap[`/${item.pageName}`] = true;
-
-      return {
-        pagePath: `${item.pagePath}`,
-        name: item.name,
-        icon: iconPathName
-          ? isUrlIcon
-            ? iconPathName
-            : `./images/${iconPathName}`
-          : '',
-        activeIcon: selectedIconPathName
-          ? isUrlActiveIcon
-            ? selectedIconPathName
-            : `./images/${selectedIconPathName}`
-          : '',
-      };
-    });
-
-    if (tabBar.custom) {
-      // 自定义 tabBar
-      const customTabBarDir = tabBar.custom;
-      tabBar.custom = true;
-      copy(customTabBarDir, path.resolve(outputPath, '../custom-tab-bar'));
-    }
-
-    appJson.tabBar = tabBar;
-  }
-  const appJsonContent = JSON.stringify(appJson, null, '\t');
-  addFile(compilation, 'app.json', appJsonContent);
-}
-
 function handleProjectConfig(compilation, { projectConfig = {} }, target) {
   if (target === WECHAT_MINIPROGRAM) {
     const userProjectConfigJson = projectConfig;
@@ -571,16 +477,6 @@ function handleConfigJS(
     '\t'
   )}`;
   addFile(compilation, 'config.js', configJsContent);
-}
-
-function handlePackageJSON(compilation, userPackageConfigJson = {}, target) {
-  const packageConfigJson = Object.assign({}, packageConfigJsonTmpl);
-  const packageConfigJsonContent = JSON.stringify(
-    deepMerge(packageConfigJson, userPackageConfigJson),
-    null,
-    '\t'
-  );
-  addFile(compilation, 'package.json', packageConfigJsonContent);
 }
 
 function handleCustomComponent(
@@ -745,8 +641,6 @@ class MiniAppRuntimePlugin {
       const globalConfig = options.global || {};
       const pageConfigMap = options.pages || {};
       const subpackagesConfig = generateConfig.subpackages || {};
-      const preloadRuleConfig = generateConfig.preloadRule || {};
-      const tabBarConfig = generateConfig.tabBar || {};
       const customComponentConfig = generateConfig.nativeCustomComponent || {};
       const customComponentRoot =
         customComponentConfig.root &&
@@ -909,9 +803,6 @@ class MiniAppRuntimePlugin {
           target
         );
 
-        // App json
-        // handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpackagesMap, options.appExtraConfig, tabBarConfig, outputPath, tabBarMap, pages, options, target);
-
         // Project.config.json
         handleProjectConfig(compilation, options, target);
 
@@ -929,9 +820,6 @@ class MiniAppRuntimePlugin {
         options,
         target
       );
-
-      // Package.json
-      handlePackageJSON(compilation, options.packageConfig, target);
 
       // Node_modules
       handleNodeModules(compilation);

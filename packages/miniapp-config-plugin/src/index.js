@@ -1,6 +1,5 @@
 const transformAppConfig = require('./transformAppConfig');
-const { dirname, join } = require('path');
-const { readJSONSync } = require('fs-extra');
+const { join } = require('path');
 const safeWriteFile = require('./safeWriteFile');
 
 const PluginName = 'MiniAppConfigPlugin';
@@ -10,10 +9,9 @@ module.exports = class MiniAppConfigPlugin {
     this.options = passedOptions;
   }
   apply(compiler) {
-    const { resourcePath, outputPath, target, type } = this.options;
+    const { outputPath, appConfig, target, type } = this.options;
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
-      const appConfig = readJSONSync(resourcePath);
-      const config = transformAppConfig(dirname(resourcePath), appConfig, target);
+      const config = transformAppConfig(outputPath, appConfig, target);
 
       safeWriteFile(join(outputPath, 'app.json'), config, true);
       if (type === 'complie') {

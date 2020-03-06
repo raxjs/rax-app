@@ -1,4 +1,3 @@
-const { resolve, join } = require('path');
 const MiniAppPlugin = require('rax-miniapp-runtime-webpack-plugin');
 const MiniAppConfigPlugin = require('../../../../../miniapp-config-plugin');
 const getWebpackBase = require('../../getWebpackBase');
@@ -7,15 +6,13 @@ const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 
 module.exports = (context, target) => {
-  const { rootDir } = context;
   const outputPath = getMiniAppOutput(context, { target });
-  console.log('outputPath', outputPath);
 
   const config = getWebpackBase(context, {
     disableRegenerator: true
   });
 
-  const appConfig = getAppConfig(context);
+  const appConfig = getAppConfig(context, target);
   setEntry(config, context, appConfig.routes);
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
@@ -44,7 +41,7 @@ module.exports = (context, target) => {
   config.plugin('MiniAppConfigPlugin').use(MiniAppConfigPlugin, [
     {
       type: 'runtime',
-      resourcePath: join(rootDir, 'src', 'app.json'),
+      appConfig,
       outputPath,
       target
     }

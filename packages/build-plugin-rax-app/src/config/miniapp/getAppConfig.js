@@ -1,25 +1,48 @@
-const path = require('path');
-const fs = require('fs-extra');
+const { join, resolve } = require('path');
+const { readJSONSync } = require('fs-extra');
 const { getRouteName } = require('rax-compile-config');
 
-module.exports = (context) => {
-  const { rootDir } = context;
+const {
+  moduleResolve,
+  normalizeOutputFilePath,
+  getRelativePath
+} = require('./pathHelper');
 
-  let config = {};
-  try {
-    config = fs.readJsonSync(path.resolve(rootDir, 'src/app.json'));
-  } catch (e) {
-    console.error(e);
+module.exports = (context, target) => {
+  const { rootDir } = context;
+  const entryPath = join(rootDir, 'src');
+
+  const appConfig = readJSONSync(resolve(rootDir, 'src', 'app.json'));
+  appConfig.pages = [];
+  const routes = [];
+
+  if (!Array.isArray(appConfig.routes)) {
     throw new Error('routes in app.json must be array');
   }
 
-  config.routes = config.routes.map(route => {
-    route.name = route.source; // Use source as route name
-    return {
-      entryName: getRouteName(route, rootDir),
-      ...route,
-    };
+  appConfig.routes.map((route, index) => {
+    route.name = route.source;
+    route.entryName = getRouteName(route, rootDir);
+
+    if (!Array.isArray(route.targets)) {
+      appConfig.pages.push(
+        normalizeOutputFilePath(
+          moduleResolve(entryPath, getRelativePath(route.source))
+        )
+      );
+      routes.push(route);
+    }
+    if (Array.isArray(route.targets) && route.targets.indexOf(target) > -1) {
+      appConfig.pages.push(
+        normalizeOutputFilePath(
+          moduleResolve(entryPath, getRelativePath(route.source))
+        )
+      );
+      routes.push(route);
+    }
   });
 
-  return config;
+  appConfig.routes = routes;
+
+  return appConfig;
 };

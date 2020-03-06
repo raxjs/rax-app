@@ -28,7 +28,7 @@ module.exports = (context, target, options = {}) => {
     disableRegenerator: true
   });
 
-  const appConfig = getAppConfig(context);
+  const appConfig = getAppConfig(context, target);
 
   const loaderParams = {
     mode,
@@ -116,7 +116,7 @@ module.exports = (context, target, options = {}) => {
   config.plugin('MiniAppConfigPlugin').use(MiniAppConfigPlugin, [
     {
       type: 'complie',
-      resourcePath: join(rootDir, 'src', 'app.json'),
+      appConfig,
       outputPath,
       target
     }

@@ -1,11 +1,5 @@
-const {
-  join,
-  relative
-} = require('path');
-const {
-  existsSync,
-  statSync,
-} = require('fs-extra');
+const { join, relative, sep } = require('path');
+const { existsSync, statSync } = require('fs-extra');
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -46,14 +40,44 @@ function loadAsDirectory(module) {
 }
 
 /**
-* Resolve node path.
+ * Resolve node path.
  * @param {string} script
  * @param {string} dependency
-* @return {*}
-*/
-module.exports = function resolve(script, dependency) {
+ * @return {*}
+ */
+function moduleResolve(script, dependency) {
   if (startsWithArr(dependency, ['./', '../', '/', '.\\', '..\\', '\\'])) {
     let dependencyPath = join(script, dependency);
-    return relative(script, loadAsFile(dependencyPath) || loadAsDirectory(dependencyPath));
+    return relative(
+      script,
+      loadAsFile(dependencyPath) || loadAsDirectory(dependencyPath)
+    );
   } else throw new Error('The page source path does not meet the requirements');
+};
+
+/**
+ * Use '/' as path sep regardless of OS when outputting the path to code
+ * @param {string} filepath
+ */
+function normalizeOutputFilePath(filepath) {
+  return filepath.replace(/\\/g, '/');
+}
+
+function getRelativePath(filePath) {
+  let relativePath;
+  if (filePath[0] === sep) {
+    relativePath = `.${filePath}`;
+  } else if (filePath[0] === '.') {
+    relativePath = filePath;
+  } else {
+    relativePath = `.${sep}${filePath}`;
+  }
+  return relativePath;
+}
+
+
+module.exports = {
+  moduleResolve,
+  normalizeOutputFilePath,
+  getRelativePath
 };

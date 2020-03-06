@@ -1,64 +1,45 @@
-const { sep } = require('path');
+const { resolve } = require('path');
+const { copy } = require('fs-extra');
 const adaptAppConfig = require('./adaptConfig');
-const moduleResolve = require('./moduleResolve');
+const handleIcon = require('./handleIcon');
 
-/**
- * Use '/' as path sep regardless of OS when outputting the path to code
- * @param {string} filepath
- */
-function normalizeOutputFilePath(filepath) {
-  return filepath.replace(/\\/g, '/');
-}
-
-function getRelativePath(filePath) {
-  let relativePath;
-  if (filePath[0] === sep) {
-    relativePath = `.${filePath}`;
-  } else if (filePath[0] === '.') {
-    relativePath = filePath;
-  } else {
-    relativePath = `.${sep}${filePath}`;
-  }
-  return relativePath;
-}
-
-module.exports = function transformAppConfig(entryPath, originalConfig, target) {
-  const config = {};
-  for (let key in originalConfig) {
-    const value = originalConfig[key];
-
-    switch (key) {
+module.exports = function transformAppConfig(outputPath, originalAppConfig, target) {
+  const appConfig = {};
+  for (let configKey in originalAppConfig) {
+    const config = originalAppConfig[configKey];
+    switch (configKey) {
       case 'routes':
-        const pages = [];
-        if (Array.isArray(value)) {
-          // Only resolve first level of routes.
-          value.forEach(({ source, targets }) => {
-            if (!Array.isArray(targets)) {
-              pages.push(normalizeOutputFilePath(moduleResolve(entryPath, getRelativePath(source))));
-            }
-            if (Array.isArray(targets) && targets.indexOf(target) > -1) {
-              pages.push(normalizeOutputFilePath(moduleResolve(entryPath, getRelativePath(source))));
-            }
-          });
-        }
-        config.pages = pages;
+        // filter routes
         break;
       case 'window':
-        adaptAppConfig(value, 'window', target);
-        config[key] = value;
+        appConfig[configKey] = adaptAppConfig(config, 'window', target);
         break;
       case 'tabBar':
-        if (value.items) {
-          adaptAppConfig(value, 'items', target, originalConfig);
+        // Handle tab item
+        if (config.items) {
+          config.items = config.items.map(itemConfig => {
+            if (itemConfig.icon) {
+              itemConfig.icon = handleIcon(itemConfig.icon, outputPath);
+            }
+            if (itemConfig.activeIcon) {
+              itemConfig.activeIcon = handleIcon(itemConfig.activeIcon, outputPath);
+            }
+            return adaptAppConfig(itemConfig, 'items', target);
+          });
         }
-        adaptAppConfig(value, 'tabBar', target);
-        config[key] = value;
+        // Handle custom tabBar
+        if (config.custom) {
+          // Custom tab bar should be native component
+          copy(resolve('src', config.custom), resolve(outputPath, 'custom-tab-bar'));
+          config.custom = true;
+        }
+        appConfig[configKey] = adaptAppConfig(config, 'tabBar', target);
         break;
       default:
-        config[key] = value;
+        appConfig[configKey] = config;
         break;
     }
   }
 
-  return config;
+  return appConfig;
 };

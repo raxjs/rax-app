@@ -9,6 +9,7 @@
   "author": "Rax Team",
   "license": "MIT",
   "dependencies": {
+    "crypto": "^1.0.1",
     "fs-extra": "^8.1.0"
   }
 }
