@@ -14,12 +14,10 @@ module.exports = class DocumentPlugin {
      * An plugin which generate HTML files
      * @param {object} options
      * @param {object} options.context build plugin context
-     * 
      * @param {object[]} options.pages pages need to generate HTML
      * @param {string} options.pages[].entryName
-     * @param {string} options.pages[].path  page path for MPA to get pageInfo in route config 
-     * @param {string} options.pages[].source page source for static export 
-     * 
+     * @param {string} options.pages[].path  page path for MPA to get pageInfo in route config
+     * @param {string} options.pages[].source page source for static export
      * @param {boolean} [options.staticExport] static exporting
      * @param {string} [options.loader] custom document loader
      * @param {string} [options.publicPath] for internal weex publish
@@ -70,7 +68,7 @@ module.exports = class DocumentPlugin {
 
     // Document path is specified
     const absoluteDocumentPath = getAbsoluteFilePath(rootDir, 'src/document/index');
-     
+
     // Shell is enabled by config in app.json, so it can be disabled without delete code
     const appConfig = fs.readJsonSync(path.join(rootDir, 'src/app.json'));
     const shellPath = appConfig.shell && appConfig.shell.source;
@@ -90,7 +88,7 @@ module.exports = class DocumentPlugin {
         pagePath,
         doctype: options.doctype
       };
-  
+
       basConfig.entry(tempFile).add(`${loaderForDocument}?${qs.stringify(query)}!${absoluteDocumentPath}`);
     });
 
