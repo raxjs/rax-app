@@ -11,6 +11,7 @@ module.exports = function() {
   const options = getOptions(this) || {};
   const renderModule = options.renderModule || 'rax';
   const withSSR = process.env.RAX_SSR === 'true';
+  const appConfig = fs.readJsonSync(path.join(this.rootContext, 'src/app.json'));
 
   let appRender = '';
   let importStr = '';
@@ -19,9 +20,9 @@ module.exports = function() {
     appRender = 'render(createElement(Entry), null, { driver: DriverUniversal });';
   } else if (options.type === 'web') {
     let appRenderMethod = '';
-    if (fs.existsSync(path.join(this.rootContext, 'src/shell/index.jsx'))) {
-      // app shell
-      importStr += `import Shell from "${formatPath(path.join(this.rootContext, 'src/shell/index'))}";`;
+    if (appConfig.shell && appConfig.shell.source) {
+      // App shell. same as SPA
+      importStr += `import Shell from "${formatPath(path.join(this.rootContext, `src/${appConfig.shell.source}`))}";`;
       appRenderMethod = `
         // process Shell.getInitialProps
         // use global props comProps as shell default props
@@ -35,7 +36,7 @@ module.exports = function() {
       `;
     } else {
       // common web app
-      appRenderMethod = 'render(createElement(Entry), document.getElementById("root"), { driver: DriverUniversal, hydrate: withSSR });';
+      appRenderMethod = `render(createElement(Entry), document.getElementById("root"), { driver: DriverUniversal, hydrate: ${appConfig.hydrate || 'withSSR'} });`;
     }
 
     appRender = `
