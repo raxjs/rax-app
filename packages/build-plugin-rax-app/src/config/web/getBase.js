@@ -24,7 +24,8 @@ module.exports = (context, target, options = {}) => {
         entryName: 'index',
         path: '/'
       }],
-      doctype: options.doctype
+      doctype: options.doctype,
+      staticExport: options.staticExport
     }]);
 
   return config;
