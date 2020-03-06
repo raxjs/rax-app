@@ -1,7 +1,10 @@
+const qs = require('qs');
+const path = require('path');
+const fs = require('fs-extra');
 const webpack = require('webpack');
 const { RawSource } = require('webpack-sources');
 const { handleWebpackErr } = require('rax-compile-config');
-const getConfig = require('./config');
+const getBaseConfig = require('./config');
 
 const PLUGIN_NAME = 'DocumentPlugin';
 
@@ -11,10 +14,12 @@ module.exports = class DocumentPlugin {
      * An plugin which generate HTML files
      * @param {object} options
      * @param {object} options.context build plugin context
+     * 
      * @param {object[]} options.pages pages need to generate HTML
      * @param {string} options.pages[].entryName
-     * @param {string} options.pages[].path  page path in route config
-     * @param {string} options.pages[].source page path in route config
+     * @param {string} options.pages[].path  page path for MPA to get pageInfo in route config 
+     * @param {string} options.pages[].source page source for static ecport 
+     * 
      * @param {boolean} [options.staticExport] static exporting
      * @param {string} [options.loader] custom document loader
      * @param {string} [options.publicPath] for internal weex publish
@@ -24,20 +29,72 @@ module.exports = class DocumentPlugin {
   }
 
   apply(compiler) {
-    const mainConfig = compiler.options;
     const { context, ...options} = this.options;
-    const { pages } = options;
+    const { rootDir } = context;
 
-    options.webConfig = mainConfig;
-
-    const publicPath = options.publicPath ? options.publicPath : mainConfig.output.publicPath;
-
-    const config = getConfig(context, options);
-    const documentWebpackConfig = config.toConfig();
+    const mainConfig = compiler.options;
+    const basConfig = getBaseConfig(context, {
+      alias: mainConfig.alias,
+      configWebpack: options.configWebpack
+    });
 
     // Get output dir from filename instead of hard code.
-    const outputFileName = mainConfig.output.filename;
-    const outputFilePrefix = getPathInfoFromFileName(outputFileName);
+    const outputFilePrefix = getPathInfoFromFileName(mainConfig.output.filename);
+    const publicPath = options.publicPath ? options.publicPath : mainConfig.output.publicPath;
+
+    const pages = {};
+
+    // Get all entry point names for html file
+    Object.keys(mainConfig.entry).map(entryName => {
+      pages[entryName] = {
+        tempFile: `__${entryName.replace(/\//g, '_')}_doucment`,
+        fileName: `${outputFilePrefix}${entryName}.html`
+      };
+    });
+
+    // Merge the page info from options
+    if (options.pages) {
+      options.pages.map(page => {
+        const pageInfo = pages[page.entryName];
+        if (pageInfo) {
+          Object.assign(pageInfo, {
+            pathPath: page.path,
+            source: page.source
+          });
+        }
+      });
+    }
+
+    // Support custom loader
+    const loaderForDocument = options.loader || require.resolve('./loader');
+
+    // Document path is specified
+    const absoluteDocumentPath = getAbsoluteFilePath(rootDir, 'src/document/index');
+     
+    // Shell is enabled by config in app.json, so it can be disabled without delete code
+    const appConfig = fs.readJsonSync(path.join(rootDir, 'src/app.json'));
+    const shellPath = appConfig.shell && appConfig.shell.source;
+    const absoluteShellPath = shellPath ? getAbsoluteFilePath(rootDir, path.join('src', shellPath)) : null;
+
+    // Add ssr loader for each entry
+    Object.keys(pages).map((entryName) => {
+      const pageInfo = pages[entryName];
+      const { tempFile, source, pagePath } = pageInfo;
+
+      const absolutePagePath = options.staticExport && source ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '';
+
+      const query = {
+        absoluteDocumentPath,
+        absoluteShellPath,
+        absolutePagePath,
+        pagePath,
+        doctype: options.doctype
+      };
+  
+      basConfig.entry(tempFile).add(`${loaderForDocument}?${qs.stringify(query)}!${absoluteDocumentPath}`);
+    });
+
+    const config = basConfig.toConfig();
 
     let fileDependencies = [];
 
@@ -62,7 +119,7 @@ module.exports = class DocumentPlugin {
        * Need to run document compiler as a child compiler, so it can push html file to the web compilation assets.
        * Because there are other plugins get html file from the compilation of web.
        */
-      const childCompiler = webpack(documentWebpackConfig);
+      const childCompiler = webpack(config);
       childCompiler.parentCompilation = mainCompilation;
 
       // Run as child to get child compilation
@@ -79,28 +136,21 @@ module.exports = class DocumentPlugin {
 
     // Render into index.html
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
-      // Get all entry point names for this html file
-      const entryNames = Array.from(compilation.entrypoints.keys());
-
-      pages.forEach(page => {
-        const { entryName } = page;
+      Object.keys(pages).forEach(entryName => {
+        const { tempFile, fileName } = pages[entryName];
 
         const files = compilation.entrypoints.get(entryName).getFiles();
         const assets = getAssetsForPage(files, publicPath);
 
-        const documentTempFile = '__' + entryName.replace(/\//g, '_') + '_doucment.js';
-        const documentContent = compilation.assets[documentTempFile].source();
+        const documentContent = compilation.assets[`${tempFile}.js`].source();
 
         const Document = loadDocument(documentContent);
-        const pageSource = Document.renderToHTML({
-          ...assets,
-          pagePath: '/'
-        });
+        const pageSource = Document.renderToHTML(assets);
 
         // insert html file
-        compilation.assets[`${outputFilePrefix}${entryName}.html`] = new RawSource(pageSource);
+        compilation.assets[fileName] = new RawSource(pageSource);
 
-        delete compilation.assets[documentTempFile];
+        delete compilation.assets[tempFile];
       });
 
       callback();
@@ -121,7 +171,7 @@ function getPathInfoFromFileName(fileName) {
 }
 
 /**
- * load Document after webpack compilation
+ * Load Document after webpack compilation
  * @param {*} content document output
  */
 function loadDocument(content) {
@@ -137,7 +187,7 @@ function loadDocument(content) {
 }
 
 /**
- * get assets from webpack outputs
+ * Get assets from webpack outputs
  * @param {*} files [ 'web/detail.css', 'web/detail.js' ]
  * @param {*} publicPath
  */
@@ -149,4 +199,19 @@ function getAssetsForPage(files, publicPath) {
     scripts: jsFiles.map(script => publicPath + script),
     styles: cssFiles.map(style => publicPath + style),
   };
+}
+
+/**
+ * Get the exact file
+ * @param {*} rootDir '/Document/work/code/rax-demo/'
+ * @param {*} filePath 'src/shell/index'
+ */
+function getAbsoluteFilePath(rootDir, filePath) {
+  const exts = ['.js', '.jsx', '.tsx'];
+
+  const files = exts.map((ext) => {
+    return `${path.join(rootDir, filePath)}${ext}`;
+  });
+
+  return files.find((f) => fs.existsSync(f));
 }
