@@ -13,23 +13,14 @@
 ## Example
 
 ```
-const getSSRBase = require('rax-ssr-config');
-const getBabelConfig = require('rax-babel-config');
+const getSSRBaseConfig = require('rax-ssr-config');
 
-const babelConfig = getBabelConfig({
-  styleSheet: true,
+const config = getSSRBaseConfig({
+  ...context,
+  output: {
+    fileName: 'nsr/[name].js',
+    libraryTarget: 'umd'
+  }
 });
-
-const config = getSSRBase({
-  ...context, 
-  babelConfig: babelConfig,
-});
-
-config.module.rule('tsx')
-  .use('ts')
-  .loader(require.resolve('ts-loader'))
-  .options({
-    transpileOnly: true,
-  });
 
 ```

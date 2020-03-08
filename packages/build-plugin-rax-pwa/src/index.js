@@ -2,7 +2,6 @@ const path = require('path');
 const { readdirSync } = require('fs');
 
 const getNSRBase = require('./nsr/getBase');
-const setNSRBuild = require('./nsr/setBuild');
 
 const pluginDir = path.join(__dirname, './plugins');
 const pluginList = readdirSync(pluginDir);
@@ -14,12 +13,6 @@ module.exports = ({ onGetWebpackConfig, context, registerTask }, option) => {
   if (nsr) {
     const nsrConfig = getNSRBase(context);
     registerTask('nsr', nsrConfig);
-
-    if (command === 'build') {
-      onGetWebpackConfig('nsr', (config) => {
-        setNSRBuild(config, context);
-      });
-    }
   }
 
   onGetWebpackConfig('web', (config) => {
