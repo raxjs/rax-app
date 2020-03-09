@@ -1,4 +1,5 @@
 /* global Component */
+/* eslint-disable module/no-implicit-dependencies */
 const render = require('miniapp-render');
 
 const { Event, cache, tool } = render.$$adapter;
