@@ -12,6 +12,11 @@ function md5File(filePath) {
     .digest('hex');
 }
 
+function isUrl(src) {
+  return /^(https?:)?\/\//.test(src);
+}
+
 module.exports = {
   md5File,
+  isUrl
 };

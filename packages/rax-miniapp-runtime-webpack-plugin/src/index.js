@@ -6,7 +6,7 @@ const { RawSource } = require('webpack-sources');
 const pathToRegexp = require('path-to-regexp');
 const chalk = require('chalk');
 const adjustCss = require('./tool/adjust-css');
-const { md5File } = require('./tool/file-helper');
+const { md5File, isUrl } = require('./tool/file-helper');
 const deepMerge = require('./tool/deep-merge');
 const includes = require('./tool/includes');
 const defaultConfig = require('./defaultConfig');
@@ -141,7 +141,7 @@ function mergeConfig(defaultConfig, passedOptions = {}) {
 
   if (tabBar && tabBar.items) {
     tabBar.items.forEach(item => {
-      item.pagePath = getSourceFromPath(item.path, routes);
+      item.pagePath = item.pagePath || getSourceFromPath(item.path, routes);
     });
   }
 
@@ -357,31 +357,43 @@ function handleAppJSON(compilation, subpackagesConfig, preloadRuleConfig, subpac
   if (tabBarConfig.items && tabBarConfig.items.length) {
     const tabBar = Object.assign({}, tabBarConfig);
     tabBar.items = tabBarConfig.items.map(item => {
-      const iconPathName = item.icon
-        ? md5File(path.resolve('src', item.icon)) + path.extname(item.icon)
-        : '';
-      if (iconPathName)
-        copy(
-          path.resolve('src', item.icon),
-          path.resolve(outputPath, `images/${iconPathName}`),
-        );
-      const selectedIconPathName = item.activeIcon
-        ? md5File(path.resolve('src', item.activeIcon)) +
-          path.extname(item.activeIcon)
-        : '';
-      if (selectedIconPathName)
-        copy(
-          path.resolve('src', item.activeIcon),
-          path.resolve(outputPath, `images/${selectedIconPathName}`),
-        );
+      let iconPathName, isUrlIcon;
+      let selectedIconPathName, isUrlActiveIcon;
+      if (item.icon) {
+        isUrlIcon = isUrl(item.icon);
+        iconPathName = isUrlIcon ? item.icon : md5File(path.resolve('src', item.icon)) + path.extname(item.icon);
+        if (iconPathName && !isUrlIcon) {
+          copy(
+            path.resolve('src', item.icon),
+            path.resolve(outputPath, `images/${iconPathName}`),
+          );
+        }
+      }
+      if (item.activeIcon) {
+        isUrlActiveIcon = isUrl(item.activeIcon);
+        selectedIconPathName = isUrlActiveIcon ? item.activeIcon : md5File(path.resolve('src', item.activeIcon)) + path.extname(item.activeIcon);
+        if (selectedIconPathName && !isUrlActiveIcon) {
+          copy(
+            path.resolve('src', item.activeIcon),
+            path.resolve(outputPath, `images/${selectedIconPathName}`),
+          );
+        }
+      }
+
       tabBarMap[`/${item.pageName}`] = true;
 
       return {
         pagePath: `${item.pagePath}`,
         name: item.name,
-        icon: iconPathName ? `./images/${iconPathName}` : '',
+        icon: iconPathName
+          ? isUrlIcon
+            ? iconPathName
+            : `./images/${iconPathName}`
+          : '',
         activeIcon: selectedIconPathName
-          ? `./images/${selectedIconPathName}`
+          ? isUrlActiveIcon
+            ? selectedIconPathName
+            : `./images/${selectedIconPathName}`
           : '',
       };
     });
