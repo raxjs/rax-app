@@ -103,7 +103,7 @@ function getHighestPriorityPackage(packageName, rootDir) {
   const packagePath = require.resolve(packageName, {
     paths: resolvePaths
   });
-  return require.resolve(packageName);
+  return require.resolve(packagePath);
 }
 
 module.exports = {
