@@ -21,6 +21,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
     onGetWebpackConfig(target, (config) => {
       // Change webpack outputPath from  'xx/build'            to `xx/build/${target}`
       // Change source file's name from  `${target}/[name].js` to '[name].js'
+      // After the above changes, all the asset paths are relative to the entry file (like index.html).
       const publicPath = config.output.get('publicPath');
       if (publicPath.startsWith('.')) {
         config.output.publicPath(publicPath.endsWith('/') ? publicPath : `${publicPath}/`);
@@ -31,7 +32,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
         if (config.plugins.get('minicss')) {
           config.plugin('minicss').tap((args) => args.map((arg) => {
             if (typeof arg === 'object' && arg.filename === 'web/[name].css') {
-              return Object.assign(arg, { filename: '[name].css' });
+              return Object.assign({}, arg, { filename: '[name].css' });
             }
             return arg;
           }));
