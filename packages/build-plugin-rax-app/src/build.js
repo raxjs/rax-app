@@ -4,7 +4,7 @@ const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
 
 const getMpOuput = require('./config/miniapp/getOutputPath');
-const { WEB, WEEX, NODE, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
+const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
@@ -31,7 +31,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
         if (config.plugins.get('minicss')) {
           config.plugin('minicss').tap((args) => args.map((arg) => {
             if (typeof arg === 'object' && arg.filename === 'web/[name].css') {
-              return Object.assign(arg, {filename: '[name].css'});
+              return Object.assign(arg, { filename: '[name].css' });
             }
             return arg;
           }));
