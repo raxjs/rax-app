@@ -4,35 +4,10 @@ const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
 
 const getMpOuput = require('./config/miniapp/getOutputPath');
-const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
+const { WEB, WEEX, NODE, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
-
-  // Set publicPath './', make Web App serving the same build from different paths.
-  // It will make all the asset paths are relative to index.html.
-  // User can be able to move their app anywhere without having to rebuild it.
-  onGetWebpackConfig(WEB, (config) => {
-    // Change webpack outputPath from  'xx/build'      to 'xx/build/web'
-    // Change source file's name from  'web/[name].js' to '[name].js'
-    if (config.output.get('publicPath') === './') {
-      // Update output path
-      config.output.path(path.resolve(config.output.get('path'), WEB));
-
-      // Update css file path
-      if (config.plugins.get('minicss')) {
-        config.plugin('minicss').tap((args) => args.map((arg) => {
-          if (typeof arg === 'object' && arg.filename === 'web/[name].css') {
-            return Object.assign(arg, {filename: '[name].css'});
-          }
-          return arg;
-        }));
-      }
-
-      // Update js file path
-      config.output.filename('[name].js');
-    }
-  });
 
   let jsx2mpBuildErr = null;
 
@@ -42,6 +17,28 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
   const jsx2mpBuildTargets = [];
 
   targets.forEach(target => {
+    // Support publicPath use relative path.
+    onGetWebpackConfig(target, (config) => {
+      // Change webpack outputPath from  'xx/build'            to `xx/build/${target}`
+      // Change source file's name from  `${target}/[name].js` to '[name].js'
+      const publicPath = config.output.get('publicPath');
+      if (publicPath.startsWith('.')) {
+        config.output.publicPath(publicPath.endsWith('/') ? publicPath : `${publicPath}/`);
+        // Update output path and filename
+        config.output.path(path.resolve(config.output.get('path'), target));
+        config.output.filename('[name].js');
+        // Update css file path
+        if (config.plugins.get('minicss')) {
+          config.plugin('minicss').tap((args) => args.map((arg) => {
+            if (typeof arg === 'object' && arg.filename === 'web/[name].css') {
+              return Object.assign(arg, {filename: '[name].css'});
+            }
+            return arg;
+          }));
+        }
+      }
+    });
+
     if ([WEB, WEEX, KRAKEN].includes(target)) {
       buildScriptsBuildTargets.push(target);
     } else if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
@@ -84,7 +81,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
     }
   });
 
-  onHook('after.build.compile', ({err, stats}) => {
+  onHook('after.build.compile', ({ err, stats }) => {
     consoleClear(true);
     if (jsx2mpBuildErr) {
       err = jsx2mpBuildErr.err;
