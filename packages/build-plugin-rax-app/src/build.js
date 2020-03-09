@@ -31,7 +31,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
         // Update css file path
         if (config.plugins.get('minicss')) {
           config.plugin('minicss').tap((args) => args.map((arg) => {
-            if (typeof arg === 'object' && arg.filename === 'web/[name].css') {
+            if (typeof arg === 'object' && arg.filename === `${target}/[name].css`) {
               return Object.assign({}, arg, { filename: '[name].css' });
             }
             return arg;
