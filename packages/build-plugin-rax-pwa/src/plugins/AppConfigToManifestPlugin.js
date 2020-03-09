@@ -8,6 +8,12 @@ const { transformAppConfig, getPageManifestByPath } = manifestHelpers;
 
 const PLUGIN_NAME = 'PHA_AppConfigToManifestPlugin';
 
+// transform data to string
+function stringifyData(list) {
+  // use JSON.stringify html parse error
+  return JSON.stringify(list).replace(/"/g, '\'');
+}
+
 module.exports = class AppConfigToManifestPlugin {
   constructor(options) {
     this.options = options;
@@ -15,8 +21,9 @@ module.exports = class AppConfigToManifestPlugin {
 
   apply(compiler) {
     const { context, appConfigWriteToHTML, nsr } = this.options;
+    const enableNSR = nsr && nsr.enable;
 
-    if (!appConfigWriteToHTML && !nsr) {
+    if (!appConfigWriteToHTML && !enableNSR) {
       return;
     }
 
@@ -35,12 +42,18 @@ module.exports = class AppConfigToManifestPlugin {
             path,
             decamelizeAppConfig
           });
-          const manifestData = `var __manifestData__ = ${JSON.stringify(pageManifestData)};`;
+          const manifestData = `var __MANIFEST_Data__ = ${JSON.stringify(pageManifestData)};`;
           let source = originSource.replace('<head>', `<head><script>${manifestData}</script>`);
 
-          if (nsr) {
+          if (enableNSR) {
+            const { dataConfig = 'static' } = nsr;
+            const { data_prefetches } = pageManifestData;
             // inject nsr meta
             source = source.replace('<head>', `<head><meta name="nsr" content="source" /><meta name="nsr_script" content="${pageManifestData.nsr_script}" />`);
+            if (dataConfig === 'static' && data_prefetches) {
+              // prefetch data is simple, generate meta
+              source = source.replace('<head>', `<head><meta name="nsr_data" content="${stringifyData(data_prefetches)}" />`);
+            }
           }
           compilation.assets[assetPath] = new RawSource(
             minify(
