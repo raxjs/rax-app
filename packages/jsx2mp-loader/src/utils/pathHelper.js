@@ -98,11 +98,11 @@ function addRelativePathPrefix(filepath) {
  * @param {string} rootDir
  */
 function getHighestPriorityPackage(packageName, rootDir) {
-  // const resolvePaths = require.resolve.paths(packageName);
-  // resolvePaths.unshift(join(rootDir, 'node_modules'));
-  // const packagePath = require.resolve(packageName, {
-  //   paths: resolvePaths
-  // });
+  const resolvePaths = require.resolve.paths(packageName);
+  resolvePaths.unshift(join(rootDir, 'node_modules'));
+  const packagePath = require.resolve(packageName, {
+    paths: resolvePaths
+  });
   return require.resolve(packageName);
 }
 
