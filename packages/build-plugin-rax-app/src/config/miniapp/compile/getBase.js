@@ -6,8 +6,9 @@ const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getOutputPath = require('../getOutputPath');
 
-const ModifyOutputFileSystemPlugin = require('../../../plugins/ModifyOutputFileSystem');
-const RuntimeWebpackPlugin = require('../../../plugins/MiniappRuntime');
+const ModifyOutputFileSystemPlugin = require('../../../plugins/miniapp/ModifyOutputFileSystem');
+const CopyJsx2mpRuntimePlugin = require('../../../plugins/miniapp/CopyJsx2mpRuntime');
+const CopyPublicFilePlugin = require('../../../plugins/miniapp/CopyPublicFile');
 
 
 const platformConfig = require('./platformConfig');
@@ -17,6 +18,7 @@ const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
 module.exports = (context, target, options = {}) => {
+  const { rootDir } = context;
   const { platform = targetPlatformMap[target], mode = 'build', constantDir = [], disableCopyNpm = false, turnOffSourceMap = false } = options;
 
   const platformInfo = platformConfig[target];
@@ -96,15 +98,6 @@ module.exports = (context, target, options = {}) => {
     },
   ]);
 
-  if (config.plugins.get('copyWebpackPlugin')) {
-    config.plugin('copyWebpackPlugin')
-      .tap(args => {
-        args[0][0].ignore = ['*.js'];
-        return args;
-      });
-  }
-
-
   config.plugin('define').use(webpack.DefinePlugin, [{
     'process.env': {
       NODE_ENV: mode === 'build' ? '"production"' : '"development"'
@@ -112,7 +105,7 @@ module.exports = (context, target, options = {}) => {
   }]);
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
-  config.plugin('MiniAppConfigPlugin').use(MiniAppConfigPlugin, [
+  config.plugin('miniAppConfig').use(MiniAppConfigPlugin, [
     {
       type: 'complie',
       appConfig,
@@ -120,9 +113,10 @@ module.exports = (context, target, options = {}) => {
       target
     }
   ]);
+  config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir }]);
 
   if (!disableCopyNpm) {
-    config.plugin('runtime').use(RuntimeWebpackPlugin, [{ platform, mode, outputPath, rootDir: context.rootDir }]);
+    config.plugin('runtime').use(CopyJsx2mpRuntimePlugin, [{ platform, mode, outputPath, rootDir }]);
   }
 
   return config;
