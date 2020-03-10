@@ -71,7 +71,7 @@ module.exports = (context, target, options = {}) => {
     .options(loaderParams)
     .end()
     .use('json-loader')
-    .loader('json-loader');
+    .loader(require.resolve('json-loader'));
 
 
   config.resolve.extensions
