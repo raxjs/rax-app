@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const { join } = require('path');
 
-const MiniAppConfigPlugin = require('../../../../../miniapp-config-plugin');
+const MiniAppConfigPlugin = require('rax-miniapp-config-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
