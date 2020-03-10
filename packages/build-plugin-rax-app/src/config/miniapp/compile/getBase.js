@@ -56,7 +56,8 @@ module.exports = (context, target, options = {}) => {
     .use('file')
     .loader(FileLoader)
     .options({
-      entryPath
+      entryPath,
+      outputPath
     });
 
   // Remove all app.json before it
