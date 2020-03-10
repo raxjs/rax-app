@@ -98,15 +98,19 @@ function getAssetPath(
   assetPathPrefix,
   filePath,
   assetsSubpackageMap,
-  selfFilePath,
-  target = WECHAT_MINIPROGRAM
+  selfFilePath
 ) {
   if (assetsSubpackageMap[filePath]) {
     assetPathPrefix = '';
   }
-
+  console.log('selfFilePath', selfFilePath);
+  console.log('filePath', filePath);
+  console.log('relative', path.relative(
+    path.dirname(selfFilePath),
+    filePath
+  ));
   return `${assetPathPrefix}./${path.relative(
-    path.dirname(`${target}/${selfFilePath}`),
+    path.dirname(selfFilePath),
     filePath
   )}`;
 }
@@ -186,10 +190,9 @@ function handlePageJS(
       '/* CONFIG_PATH */',
       `${getAssetPath(
         assetPathPrefix,
-        `${target}/config.js`,
+        'config.js',
         assetsSubpackageMap,
-        `${pageRoute}.js`,
-        target
+        `${pageRoute}.js`
       )}`
     )
     .replace(
@@ -201,8 +204,7 @@ function handlePageJS(
               assetPathPrefix,
               js,
               assetsSubpackageMap,
-              `${pageRoute}.js`,
-              target
+              `${pageRoute}.js`
             )}')(window, document)`
         )
         .join(';')}}`
@@ -274,8 +276,7 @@ function handlePageCSS(
           assetPathPrefix,
           css,
           assetsSubpackageMap,
-          `${pageRoute}.${adapter[target].css}`,
-          target
+          `${pageRoute}.${adapter[target].css}`
         )}";`
     )
     .join('\n');
@@ -311,10 +312,9 @@ function handlePageJSON(
   if (customComponentRoot) {
     pageJson.usingComponents['custom-component'] = getAssetPath(
       assetPathPrefix,
-      `${target}/custom-component/index`,
+      'custom-component/index',
       {},
-      `${pageRoute}.js`,
-      target
+      `${pageRoute}.js`
     );
   }
   if (reachBottom && typeof reachBottomDistance === 'number') {
@@ -355,8 +355,7 @@ function handleAppJS(compilation, appAssets, assetsSubpackageMap, target) {
             '',
             js,
             assetsSubpackageMap,
-            'app.js',
-            target
+            'app.js'
           )}')(fakeWindow, fakeDocument)`
       )
       .join(';')};const appConfig = fakeWindow.appOptions || {};`
@@ -381,8 +380,7 @@ function handleAppCSS(
             '',
             css,
             assetsSubpackageMap,
-            `app.${adapter[target].css}`,
-            target
+            `app.${adapter[target].css}`
           )}";`
       )
       .join('\n')}`;
