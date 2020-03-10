@@ -31,6 +31,7 @@ module.exports = (context, target, options = {}) => {
   const loaderParams = {
     mode,
     entryPath,
+    outputPath,
     constantDir,
     disableCopyNpm,
     turnOffSourceMap,
@@ -39,7 +40,6 @@ module.exports = (context, target, options = {}) => {
 
   setEntry(config, appConfig.routes, { target, loaderParams });
 
-  config.output.path(outputPath);
   config
     .mode('production')
     .target('node');
@@ -121,7 +121,7 @@ module.exports = (context, target, options = {}) => {
   ]);
 
   if (!disableCopyNpm) {
-    config.plugin('runtime').use(RuntimeWebpackPlugin, [{ platform, mode, rootDir: context.rootDir }]);
+    config.plugin('runtime').use(RuntimeWebpackPlugin, [{ platform, mode, outputPath, rootDir: context.rootDir }]);
   }
 
   return config;

@@ -17,10 +17,8 @@ module.exports = (context, target) => {
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
-  config.output.path(outputPath);
-
   config.output
-    .filename('common/[name].js')
+    .filename(`${target}/ccommon/[name].js`)
     .library('createApp')
     .libraryExport('default')
     .libraryTarget('window');

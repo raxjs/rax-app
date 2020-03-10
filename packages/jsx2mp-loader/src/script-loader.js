@@ -17,7 +17,7 @@ const MINIAPP_CONFIG_FIELD = 'miniappConfig';
 
 module.exports = function scriptLoader(content) {
   const loaderOptions = getOptions(this);
-  const { disableCopyNpm, mode, entryPath, platform, constantDir, importedComponent = '', isRelativeMiniappComponent = false } = loaderOptions;
+  const { disableCopyNpm, outputPath, mode, entryPath, platform, constantDir, importedComponent = '', isRelativeMiniappComponent = false } = loaderOptions;
   const rootContext = this.rootContext;
   const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
   const isFromConstantDir = cached(isFromTargetDirs(absoluteConstantDir));
@@ -32,7 +32,6 @@ module.exports = function scriptLoader(content) {
   const nodeModulesPathList = getNearestNodeModulesPath(rootContext, this.resourcePath);
   const currentNodeModulePath = nodeModulesPathList[nodeModulesPathList.length - 1];
   const rootNodeModulePath = join(rootContext, 'node_modules');
-  const outputPath = this._compiler.outputPath;
 
   const isFromNodeModule = cached(function isFromNodeModule(path) {
     return path.indexOf(rootNodeModulePath) === 0;

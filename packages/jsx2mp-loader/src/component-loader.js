@@ -17,12 +17,12 @@ const ScriptLoader = require.resolve('./script-loader');
 
 module.exports = async function componentLoader(content) {
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, constantDir, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
+  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
   const rawContent = readFileSync(this.resourcePath, 'utf-8');
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
   const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
-  const outputPath = this._compiler.outputPath;
+
   const sourcePath = join(rootContext, dirname(entryPath));
 
   const relativeSourcePath = relative(sourcePath, this.resourcePath);
