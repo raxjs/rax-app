@@ -1,5 +1,5 @@
 {
-  "name": "miniapp-config-plugin",
+  "name": "rax-miniapp-config-plugin",
   "version": "1.0.0",
   "description": "miniapp config plugin",
   "main": "src/index.js",
