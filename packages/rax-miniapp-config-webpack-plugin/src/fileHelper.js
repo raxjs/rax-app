@@ -1,4 +1,3 @@
-const path = require('path');
 const { readFileSync } = require('fs-extra');
 const crypto = require('crypto');
 

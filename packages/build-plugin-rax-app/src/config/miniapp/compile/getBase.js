@@ -17,8 +17,7 @@ const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
 module.exports = (context, target, options = {}) => {
-  const { platform = targetPlatformMap[target], mode = 'build', constantDir = [], disableCopyNpm = false, turnOffSourceMap = false } = options;
-
+  const { platform = targetPlatformMap[target], mode = 'build', constantDir = [], disableCopyNpm = false, turnOffSourceMap = false } = options[target] || {};
   const platformInfo = platformConfig[target];
   const entryPath = './src/app.js';
   const outputPath = getOutputPath(context, { target });
@@ -26,7 +25,7 @@ module.exports = (context, target, options = {}) => {
     disableRegenerator: true
   });
 
-  const appConfig = getAppConfig(context, target);
+  const appConfig = getAppConfig(context.rootDir, target);
 
   const loaderParams = {
     mode,
@@ -37,7 +36,7 @@ module.exports = (context, target, options = {}) => {
     platform: platformInfo
   };
 
-  setEntry(config, appConfig.routes, { target, loaderParams });
+  setEntry(config, appConfig.routes, { loaderParams });
 
   config.output.path(outputPath);
   config
@@ -115,6 +114,7 @@ module.exports = (context, target, options = {}) => {
     {
       type: 'complie',
       appConfig,
+      getAppConfig,
       outputPath,
       target
     }

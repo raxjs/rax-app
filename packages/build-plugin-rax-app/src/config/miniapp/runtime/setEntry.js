@@ -10,16 +10,16 @@ function getDepPath(rootDir, com) {
   }
 };
 
-module.exports = (config, context, entries) => {
+module.exports = (config, context, routes) => {
   const { rootDir } = context;
 
   config.entryPoints.clear();
 
-  entries.forEach(({ entryName, source }) => {
+  [...routes, { entryName: 'app', source: 'app.js' }].forEach(({ entryName, source }) => {
     const entryConfig = config.entry(entryName);
 
     const pageEntry = getDepPath(rootDir, source);
-    entryConfig.add(`${EntryLoader}?${JSON.stringify({routes: entries})}!${pageEntry}`);
+    entryConfig.add(`${EntryLoader}?${JSON.stringify({ routes })}!${pageEntry}`);
   });
 };
 

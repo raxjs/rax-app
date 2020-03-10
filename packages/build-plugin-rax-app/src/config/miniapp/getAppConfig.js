@@ -8,39 +8,44 @@ const {
   getRelativePath
 } = require('./pathHelper');
 
-module.exports = (context, target) => {
-  const { rootDir } = context;
+module.exports = (rootDir, target) => {
   const entryPath = join(rootDir, 'src');
 
   const appConfig = readJSONSync(resolve(rootDir, 'src', 'app.json'));
   appConfig.pages = [];
   const routes = [];
+  const pagesMap = {};
 
   if (!Array.isArray(appConfig.routes)) {
     throw new Error('routes in app.json must be array');
   }
 
-  appConfig.routes.map((route, index) => {
+  function addPage(route) {
+    const page = normalizeOutputFilePath(
+      moduleResolve(entryPath, getRelativePath(route.source))
+    );
+    appConfig.pages.push(page);
+    routes.push(route);
+    pagesMap[route.path] = page;
+  }
+
+  appConfig.routes.map(route => {
     route.name = route.source;
     route.entryName = getRouteName(route, rootDir);
 
     if (!Array.isArray(route.targets)) {
-      appConfig.pages.push(
-        normalizeOutputFilePath(
-          moduleResolve(entryPath, getRelativePath(route.source))
-        )
-      );
-      routes.push(route);
+      addPage(route);
     }
     if (Array.isArray(route.targets) && route.targets.indexOf(target) > -1) {
-      appConfig.pages.push(
-        normalizeOutputFilePath(
-          moduleResolve(entryPath, getRelativePath(route.source))
-        )
-      );
-      routes.push(route);
+      addPage(route);
     }
   });
+
+  if (appConfig.tabBar) {
+    appConfig.tabBar.items.map(tab => {
+      tab.path = pagesMap[tab.path];
+    });
+  }
 
   appConfig.routes = routes;
 

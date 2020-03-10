@@ -28,7 +28,7 @@ module.exports = function transformAppConfig(outputPath, originalAppConfig, targ
           });
         }
         // Handle custom tabBar
-        if (config.custom) {
+        if (config.custom && typeof config.custom === 'string') {
           // Custom tab bar should be native component
           copy(resolve('src', config.custom), resolve(outputPath, 'custom-tab-bar'));
           config.custom = true;

@@ -5,14 +5,13 @@ const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 
-module.exports = (context, target) => {
+module.exports = (context, target, options) => {
   const outputPath = getMiniAppOutput(context, { target });
 
   const config = getWebpackBase(context, {
     disableRegenerator: true
   });
-
-  const appConfig = getAppConfig(context, target);
+  const appConfig = getAppConfig(context.rootDir, target);
   setEntry(config, context, appConfig.routes);
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
@@ -43,11 +42,19 @@ module.exports = (context, target) => {
       type: 'runtime',
       appConfig,
       outputPath,
-      target
+      target,
+      getAppConfig
     }
   ]);
-
-  config.plugin('MiniAppPlugin').use(MiniAppPlugin, [{ ...appConfig, target }]);
+  console.log('options', options);
+  config.plugin('MiniAppPlugin').use(MiniAppPlugin, [
+    {
+      ...appConfig,
+      target,
+      config: options[target],
+      rootDir: context.rootDir
+    }
+  ]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
   config.devtool('none');
