@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-multi-pages",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "rax app base plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",

@@ -4,6 +4,7 @@ const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
 
 const getMpOuput = require('./config/miniapp/getOutputPath');
+const processRelativePublicPath = require('./config/processRelativePublicPath');
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
@@ -17,27 +18,9 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
   const jsx2mpBuildTargets = [];
 
   targets.forEach(target => {
-    // Support publicPath use relative path.
+    // Process relative publicPath.
     onGetWebpackConfig(target, (config) => {
-      // Change webpack outputPath from  'xx/build'            to `xx/build/${target}`
-      // Change source file's name from  `${target}/[name].js` to '[name].js'
-      // After the above changes, all the asset paths are relative to the entry file (like index.html).
-      const publicPath = config.output.get('publicPath');
-      if (publicPath.startsWith('.')) {
-        config.output.publicPath(publicPath.endsWith('/') ? publicPath : `${publicPath}/`);
-        // Update output path and filename
-        config.output.path(path.resolve(config.output.get('path'), target));
-        config.output.filename('[name].js');
-        // Update css file path
-        if (config.plugins.get('minicss')) {
-          config.plugin('minicss').tap((args) => args.map((arg) => {
-            if (typeof arg === 'object' && arg.filename === `${target}/[name].css`) {
-              return Object.assign({}, arg, { filename: '[name].css' });
-            }
-            return arg;
-          }));
-        }
-      }
+      processRelativePublicPath(target, config);
     });
 
     if ([WEB, WEEX, KRAKEN].includes(target)) {
