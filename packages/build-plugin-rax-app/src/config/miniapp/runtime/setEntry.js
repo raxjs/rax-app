@@ -15,7 +15,7 @@ module.exports = (config, context, routes) => {
 
   config.entryPoints.clear();
 
-  [...routes, { entryName: 'app', source: 'app.js' }].forEach(({ entryName, source }) => {
+  routes.forEach(({ entryName, source }) => {
     const entryConfig = config.entry(entryName);
 
     const pageEntry = getDepPath(rootDir, source);

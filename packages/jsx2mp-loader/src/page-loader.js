@@ -17,13 +17,12 @@ const pe = new PrettyError();
 
 module.exports = async function pageLoader(content) {
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, mode, disableCopyNpm, constantDir, turnOffSourceMap } = loaderOptions;
+  const { platform, entryPath, mode, disableCopyNpm, constantDir, turnOffSourceMap, outputPath } = loaderOptions;
   const rawContent = readFileSync(this.resourcePath, 'utf-8');
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
   const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
 
-  const outputPath = this._compiler.outputPath;
   const sourcePath = join(rootContext, dirname(entryPath));
   const relativeSourcePath = relative(sourcePath, this.resourcePath);
   const targetFilePath = join(outputPath, relativeSourcePath);

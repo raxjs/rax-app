@@ -26,10 +26,11 @@ let runtimePackagePath = null;
  * For convenient to copy vendors.
  */
 module.exports = class JSX2MPRuntimePlugin {
-  constructor({ platform = 'ali', mode = 'build', rootDir = '' }) {
+  constructor({ platform = 'ali', mode = 'build', rootDir = '', outputPath = '' }) {
     this.platform = platform;
     this.mode = mode;
     this.rootDir = rootDir;
+    this.outputPath = outputPath;
   }
 
   apply(compiler) {
@@ -46,7 +47,7 @@ module.exports = class JSX2MPRuntimePlugin {
           ? runtimePackageJSON.miniprogram[this.platform]
           : runtimePackageJSON.main || 'index.js';
         const sourceFile = require.resolve(join(runtimePackagePath, runtimeTargetPath));
-        const targetFile = join(compiler.outputPath, 'npm', runtime + '.js');
+        const targetFile = join(this.outputPath, 'npm', runtime + '.js');
         ensureFileSync(targetFile);
         if (this.mode === 'build') {
           const sourceCode = minify(readFileSync(sourceFile, 'utf-8')).code;

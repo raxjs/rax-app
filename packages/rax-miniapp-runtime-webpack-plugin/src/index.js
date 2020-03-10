@@ -42,8 +42,6 @@ const customComponentJsTmpl = readFileSync(
 );
 const projectConfigJsonTmpl = require('./template/project.config.json');
 
-const globalVars = ['HTMLElement'];
-
 /**
  * Add file to compilation
  */
@@ -62,12 +60,16 @@ function wrapChunks(compilation, chunks) {
     chunk.files.forEach(fileName => {
       if (ModuleFilenameHelpers.matchObject({ test: /\.js$/ }, fileName)) {
         // Page js
-        const headerContent = 'module.exports = function(window, document) {const App = function(options) {window.appOptions = options};';
+        let customHeaderContent = 'var HTMLElement = window["HTMLElement"];';
+        const headerContent = `module.exports = function(window, document) {const App = function(options) {window.appOptions = options};${customHeaderContent};`;
 
+        customHeaderContent = customHeaderContent
+          ? `${customHeaderContent};`
+          : '';
         const footerContent = '}';
 
         compilation.assets[fileName] = new ConcatSource(
-          headerContent,
+          headerContent + customHeaderContent,
           compilation.assets[fileName],
           footerContent
         );
@@ -151,7 +153,7 @@ function handlePageJS(
     .replace('/* REACH_BOTTOM_FUNCTION */', reachBottomFunction)
     .replace('/* PULL_DOWN_REFRESH_FUNCTION */', pullDownRefreshFunction);
 
-  addFile(compilation, `${pageRoute}.js`, pageJsContent);
+  addFile(compilation, `${target}/${pageRoute}.js`, pageJsContent);
 }
 
 function handlePageXML(
@@ -166,7 +168,7 @@ function handlePageXML(
     customComponentRoot ? 'generic:custom-component="custom-component"' : ''
   }> </element>`;
 
-  addFile(compilation, `${pageRoute}.${adapter[target].xml}`, pageXmlContent);
+  addFile(compilation, `${target}/${pageRoute}.${adapter[target].xml}`, pageXmlContent);
 }
 
 function handlePageCSS(
@@ -197,7 +199,7 @@ function handlePageCSS(
     pageCssContent = `page { background-color: ${pageBackgroundColor}; }\n${pageCssContent}`;
   addFile(
     compilation,
-    `${pageRoute}.${adapter[target].css}`,
+    `${target}/${pageRoute}.${adapter[target].css}`,
     adjustCss(pageCssContent)
   );
 }
@@ -207,7 +209,8 @@ function handlePageJSON(
   pageExtraConfig,
   customComponentRoot,
   assetPathPrefix,
-  pageRoute
+  pageRoute,
+  target
 ) {
   const pageConfig = {
     ...pageExtraConfig,
@@ -223,31 +226,10 @@ function handlePageJSON(
       `${pageRoute}.js`
     );
   }
-  addFile(compilation, `${pageRoute}.json`, JSON.stringify(pageConfig, null, 2));
+  addFile(compilation, `${target}/${pageRoute}.json`, JSON.stringify(pageConfig, null, 2));
 }
 
-function handleWebview(compilation, pages, { redirect }, target) {
-  if (
-    redirect &&
-    (redirect.notFound === 'webview' || redirect.accessDenied === 'webview')
-  ) {
-    addFile(
-      compilation,
-      'pages/webview/index.js',
-      'Page({data:{url:""},onLoad: function(query){this.setData({url:decodeURIComponent(query.url)})}})'
-    );
-    addFile(
-      compilation,
-      `pages/webview/index.${adapter[target].xml}`,
-      '<web-view src="{{url}}"></web-view>'
-    );
-    addFile(compilation, `pages/webview/index.${adapter[target].css}`, '');
-    addFile(compilation, 'pages/webview/index.json', '{"usingComponents":{}}');
-    pages.push('pages/webview/index');
-  }
-}
-
-function handleAppJS(compilation, appAssets, assetsSubpackageMap) {
+function handleAppJS(compilation, appAssets, assetsSubpackageMap, target) {
   const appJsContent = appJsTmpl.replace(
     '/* INIT_FUNCTION */',
     `const fakeWindow = {};const fakeDocument = {};${appAssets.js
@@ -262,7 +244,32 @@ function handleAppJS(compilation, appAssets, assetsSubpackageMap) {
       )
       .join(';')};const appConfig = fakeWindow.appOptions || {};`
   );
-  addFile(compilation, 'app.js', appJsContent);
+  addFile(compilation, `${target}/app.js`, appJsContent);
+}
+
+function handleAppCSS(
+  compilation,
+  appAssets,
+  assetsSubpackageMap,
+  target
+) {
+  const cssTmpl = appCssTmpl;
+  let appCssContent = cssTmpl;
+  if (appAssets.css.length) {
+    appCssContent += `\n${appAssets.css
+      .map(
+        css =>
+          `@import "${getAssetPath(
+            '',
+            css,
+            assetsSubpackageMap,
+            `app.${adapter[target].css}`
+          )}";`
+      )
+      .join('\n')}`;
+  }
+  appCssContent = adjustCss(appCssContent) + `\n${appExtraCssTmpl}`;
+  addFile(compilation, `${target}/app.${adapter[target].css}`, appCssContent);
 }
 
 function handleProjectConfig(compilation, { projectConfig = {} }, target) {
@@ -292,10 +299,10 @@ function handleSiteMap(compilation, { sitemapConfig }, target) {
   }
 }
 
-function handleConfigJS(compilation, optimization) {
-  addFile(compilation, 'config.js', JSON.stringify({
+function handleConfigJS(compilation, optimization, target) {
+  addFile(compilation, `${target}/config.js`, `module.exports = ${JSON.stringify({
     optimization
-  }));
+  })}`);
 }
 
 function handleCustomComponent(
@@ -391,6 +398,7 @@ function installDependencies(
       );
       const distNpmFileDir = resolve(
         outputPath,
+        target,
         adapter[target].npmDirName,
         name
       );
@@ -472,6 +480,7 @@ class MiniAppRuntimePlugin {
         const extRegex = /\.(css|js|wxss|acss)(\?|$)/;
         const entryFiles = compilation.entrypoints.get(entryName).getFiles();
         entryFiles.forEach(filePath => {
+          filePath = relative(target, filePath);
           // Skip non css or js
           const extMatch = extRegex.exec(filePath);
           if (!extMatch) return;
@@ -498,10 +507,10 @@ class MiniAppRuntimePlugin {
             delete compilation.assets[filePath];
           }
         });
-        console.log('entryName', entryName);
+
         assetsMap[entryName] = assets;
         let pageConfig = {};
-        const pageConfigPath = resolve(sourcePath, entryName);
+        const pageConfigPath = resolve(outputPath, entryName + '.json');
         if (existsSync(pageConfigPath)) {
           pageConfig = readJsonSync(pageConfigPath);
         }
@@ -545,7 +554,8 @@ class MiniAppRuntimePlugin {
           pageConfig,
           customComponentRoot,
           assetPathPrefix,
-          pageRoute
+          pageRoute,
+          target
         );
 
         // Record page path
@@ -587,13 +597,17 @@ class MiniAppRuntimePlugin {
         }
       });
 
-      // Add webview page
-      handleWebview(compilation, pages, options, target);
-
       const appAssets = assetsMap[appJsEntryName] || { js: [], css: [] };
 
       // App js
-      handleAppJS(compilation, appAssets, assetsSubpackageMap);
+      handleAppJS(compilation, appAssets, assetsSubpackageMap, target);
+      // App css
+      handleAppCSS(
+        compilation,
+        appAssets,
+        assetsSubpackageMap,
+        target
+      );
 
       // Project.config.json
       handleProjectConfig(compilation, options, target);
@@ -602,7 +616,7 @@ class MiniAppRuntimePlugin {
       handleSiteMap(compilation, options, target);
 
       // Config js
-      handleConfigJS(compilation, options.optimization);
+      handleConfigJS(compilation, options.optimization || {}, target);
 
       // Node_modules
       handleNodeModules(compilation);

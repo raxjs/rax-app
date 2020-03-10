@@ -30,6 +30,7 @@ module.exports = (context, target, options = {}) => {
   const loaderParams = {
     mode,
     entryPath,
+    outputPath,
     constantDir,
     disableCopyNpm,
     turnOffSourceMap,
@@ -38,7 +39,6 @@ module.exports = (context, target, options = {}) => {
 
   setEntry(config, appConfig.routes, { loaderParams });
 
-  config.output.path(outputPath);
   config
     .mode('production')
     .target('node');
@@ -55,7 +55,8 @@ module.exports = (context, target, options = {}) => {
     .use('file')
     .loader(FileLoader)
     .options({
-      entryPath
+      entryPath,
+      outputPath
     });
 
   // Remove all app.json before it
@@ -70,7 +71,7 @@ module.exports = (context, target, options = {}) => {
     .options(loaderParams)
     .end()
     .use('json-loader')
-    .loader('json-loader');
+    .loader(require.resolve('json-loader'));
 
 
   config.resolve.extensions
@@ -121,7 +122,7 @@ module.exports = (context, target, options = {}) => {
   ]);
 
   if (!disableCopyNpm) {
-    config.plugin('runtime').use(RuntimeWebpackPlugin, [{ platform, mode, rootDir: context.rootDir }]);
+    config.plugin('runtime').use(RuntimeWebpackPlugin, [{ platform, mode, outputPath, rootDir: context.rootDir }]);
   }
 
   return config;

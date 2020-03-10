@@ -5,19 +5,15 @@ const adaptConfig = require('./adaptConfig');
 
 const PluginName = 'MiniAppConfigPlugin';
 
-let called = false;
-
 module.exports = class MiniAppConfigPlugin {
   constructor(passedOptions) {
     this.options = passedOptions;
   }
   apply(compiler) {
     let { outputPath, appConfig, target, type, getAppConfig } = this.options;
-    compiler.hooks.watchRun.tapAsync(PluginName, (compilation, callback) => {
-      if (called) {
-        appConfig = getAppConfig(compilation.context, target);
-      }
-      called = true;
+    compiler.hooks.emit.tapAsync(PluginName, transformConfig);
+
+    function transformConfig(compilation, callback) {
       const config = transformAppConfig(outputPath, appConfig, target);
       safeWriteFile(join(outputPath, 'app.json'), config, true);
       if (type === 'complie') {
@@ -31,6 +27,8 @@ module.exports = class MiniAppConfigPlugin {
         }
       });
       callback();
-    });
+    }
   }
 };
+
+

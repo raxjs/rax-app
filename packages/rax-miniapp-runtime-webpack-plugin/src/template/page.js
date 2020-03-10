@@ -55,23 +55,6 @@ Page({
     if (typeof this.getTabBar === 'function')
       this.window.getTabBar = this.getTabBar.bind(this);
 
-    if (
-      query.type === 'open' ||
-      query.type === 'jump' ||
-      query.type === 'share'
-    ) {
-      this.window.$$miniprogram.init(
-        query.targeturl ? decodeURIComponent(query.targeturl) : null
-      );
-
-      if (query.search)
-        this.window.location.search = decodeURIComponent(query.search);
-      if (query.hash)
-        this.window.location.hash = decodeURIComponent(query.hash);
-    } else {
-      this.window.$$miniprogram.init();
-    }
-
     // Handle update of body
     this.document.documentElement.addEventListener('$$childNodesUpdate', () => {
       const domNode = this.document.body;
