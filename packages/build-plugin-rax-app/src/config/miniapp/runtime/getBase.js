@@ -1,5 +1,5 @@
 const MiniAppPlugin = require('rax-miniapp-runtime-webpack-plugin');
-const MiniAppConfigPlugin = require('rax-miniapp-config-plugin');
+const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');

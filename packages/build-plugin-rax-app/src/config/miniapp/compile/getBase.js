@@ -1,7 +1,6 @@
 const webpack = require('webpack');
-const { join } = require('path');
 
-const MiniAppConfigPlugin = require('rax-miniapp-config-plugin');
+const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
@@ -21,7 +20,6 @@ module.exports = (context, target, options = {}) => {
   const { platform = targetPlatformMap[target], mode = 'build', constantDir = [], disableCopyNpm = false, turnOffSourceMap = false } = options;
 
   const platformInfo = platformConfig[target];
-  const { rootDir } = context;
   const entryPath = './src/app.js';
   const outputPath = getOutputPath(context, { target });
   const config = getWebpackBase(context, {

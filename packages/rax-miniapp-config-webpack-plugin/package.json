@@ -1,7 +1,7 @@
 {
-  "name": "rax-miniapp-config-plugin",
+  "name": "rax-miniapp-config-webpack-plugin",
   "version": "1.0.0",
-  "description": "miniapp config plugin",
+  "description": "miniapp config webpack plugin",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
