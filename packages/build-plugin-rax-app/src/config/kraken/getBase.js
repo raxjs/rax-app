@@ -4,10 +4,8 @@ const { KRAKEN } = require('../../constants');
 
 
 module.exports = (context) => {
-  const config = getWebpackBase(context);
+  const config = getWebpackBase(context, {}, KRAKEN);
   setEntry(config, context, KRAKEN);
-
-  setFileName(KRAKEN);
 
   config.output.filename(`${KRAKEN}/[name].js`);
 

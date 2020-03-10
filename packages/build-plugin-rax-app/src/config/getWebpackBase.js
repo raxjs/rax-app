@@ -8,10 +8,8 @@ const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
 
-module.exports = (context, options = {}) => {
-  const { rootDir, command, taskName } = context;
-  console.log(111);
-  console.log(context);
+module.exports = (context, options = {}, target) => {
+  const { rootDir, command } = context;
   const config = new Chain();
 
   const babelConfig = getBabelConfig({
@@ -77,7 +75,7 @@ module.exports = (context, options = {}) => {
 
   if (fs.existsSync(path.resolve(rootDir, 'src/public'))) {
     config.plugin('copyWebpackPlugin')
-      .use(CopyWebpackPlugin, [[{ from: 'src/public', to: `${'web'}/public` }]]);
+      .use(CopyWebpackPlugin, [[{ from: 'src/public', to: `${target}/public` }]]);
   }
 
   config.plugin('noError')
