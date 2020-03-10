@@ -59,7 +59,7 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
     }
   });
 
-  onHook('after.build.compile', ({ err, stats }) => {
+  onHook('after.build.compile', ({err, stats}) => {
     consoleClear(true);
     if (jsx2mpBuildErr) {
       err = jsx2mpBuildErr.err;
