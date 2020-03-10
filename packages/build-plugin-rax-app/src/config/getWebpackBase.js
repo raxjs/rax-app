@@ -73,7 +73,7 @@ module.exports = (context, options = {}, target) => {
   config.plugin('caseSensitivePaths')
     .use(CaseSensitivePathsPlugin);
 
-  if (fs.existsSync(path.resolve(rootDir, 'src/public'))) {
+  if (target && fs.existsSync(path.resolve(rootDir, 'src/public'))) {
     config.plugin('copyWebpackPlugin')
       .use(CopyWebpackPlugin, [[{ from: 'src/public', to: `${target}/public` }]]);
   }
