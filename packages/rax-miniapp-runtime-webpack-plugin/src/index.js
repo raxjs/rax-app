@@ -103,12 +103,7 @@ function getAssetPath(
   if (assetsSubpackageMap[filePath]) {
     assetPathPrefix = '';
   }
-  console.log('selfFilePath', selfFilePath);
-  console.log('filePath', filePath);
-  console.log('relative', path.relative(
-    path.dirname(selfFilePath),
-    filePath
-  ));
+
   return `${assetPathPrefix}./${path.relative(
     path.dirname(selfFilePath),
     filePath
