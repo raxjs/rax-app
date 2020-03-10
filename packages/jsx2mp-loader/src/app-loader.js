@@ -26,7 +26,6 @@ function generateDependencies(dependencies) {
 module.exports = async function appLoader(content) {
   const loaderOptions = getOptions(this);
   const { entryPath, outputPath, platform, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
-  console.log("appLoader -> outputPath", outputPath)
   const rawContent = readFileSync(this.resourcePath, 'utf-8');
 
   if (!existsSync(outputPath)) mkdirpSync(outputPath);
