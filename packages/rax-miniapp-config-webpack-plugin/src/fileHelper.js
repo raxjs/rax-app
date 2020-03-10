@@ -1,5 +1,5 @@
 const path = require('path');
-const fs = require('fs');
+const { readFileSync } = require('fs-extra');
 const crypto = require('crypto');
 
 /**
@@ -8,7 +8,7 @@ const crypto = require('crypto');
 function md5File(filePath) {
   return crypto
     .createHash('md5')
-    .update(fs.readFileSync(filePath))
+    .update(readFileSync(filePath))
     .digest('hex');
 }
 

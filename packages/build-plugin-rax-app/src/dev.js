@@ -4,8 +4,7 @@ const consoleClear = require('console-clear');
 const qrcode = require('qrcode-terminal');
 
 const { handleWebpackErr } = require('rax-compile-config');
-const getMpOuput = require('./config/miniapp/getOutputPath');
-const miniappTargetPlatformMap = require('./config/miniapp/targetPlatformMap');
+const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
@@ -95,13 +94,13 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     if (targets.includes(MINIAPP)) {
       console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMpOuput(context)));
+      console.log('   ', chalk.underline.white(getMiniAppOutput(context)));
       console.log();
     }
 
     if (targets.includes(WECHAT_MINIPROGRAM)) {
       console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMpOuput(context, { platform: miniappTargetPlatformMap[WECHAT_MINIPROGRAM]})));
+      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: WECHAT_MINIPROGRAM })));
       console.log();
     }
   }

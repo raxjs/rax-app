@@ -1,4 +1,6 @@
 const webpack = require('webpack');
+
+const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
@@ -17,14 +19,14 @@ const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 module.exports = (context, target, options = {}) => {
   const { platform = targetPlatformMap[target], mode = 'build', constantDir = [], disableCopyNpm = false, turnOffSourceMap = false } = options;
 
+  const platformInfo = platformConfig[target];
   const entryPath = './src/app.js';
-
+  const outputPath = getOutputPath(context, { target });
   const config = getWebpackBase(context, {
     disableRegenerator: true
   });
 
-  const appConfig = getAppConfig(context);
-  setEntry(config, appConfig.routes, { platform, mode, constantDir, disableCopyNpm, turnOffSourceMap });
+  const appConfig = getAppConfig(context, target);
 
   const loaderParams = {
     mode,
@@ -32,10 +34,12 @@ module.exports = (context, target, options = {}) => {
     constantDir,
     disableCopyNpm,
     turnOffSourceMap,
-    platform: platformConfig[platform]
+    platform: platformInfo
   };
 
-  config.output.path(getOutputPath(context, { platform }));
+  setEntry(config, appConfig.routes, { target, loaderParams });
+
+  config.output.path(outputPath);
   config
     .mode('production')
     .target('node');
@@ -55,8 +59,10 @@ module.exports = (context, target, options = {}) => {
       entryPath
     });
 
+  // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
+  // Exclude app.json
   config.module
     .rule('json')
     .test(/\.json$/)
@@ -105,13 +111,18 @@ module.exports = (context, target, options = {}) => {
   }]);
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
+  config.plugin('MiniAppConfigPlugin').use(MiniAppConfigPlugin, [
+    {
+      type: 'complie',
+      appConfig,
+      outputPath,
+      target
+    }
+  ]);
 
   if (!disableCopyNpm) {
     config.plugin('runtime').use(RuntimeWebpackPlugin, [{ platform, mode, rootDir: context.rootDir }]);
   }
-
-  // config.devServer.writeToDisk(true).noInfo(true).inline(false);
-  // config.devtool('none');
 
   return config;
 };
