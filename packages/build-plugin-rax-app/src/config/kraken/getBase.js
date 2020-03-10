@@ -7,6 +7,8 @@ module.exports = (context) => {
   const config = getWebpackBase(context);
   setEntry(config, context, KRAKEN);
 
+  setFileName(KRAKEN);
+
   config.output.filename(`${KRAKEN}/[name].js`);
 
   return config;

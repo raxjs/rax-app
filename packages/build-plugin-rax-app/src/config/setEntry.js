@@ -1,6 +1,5 @@
 const path = require('path');
-const fs = require('fs-extra');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+
 const { hmrClient } = require('rax-compile-config');
 
 const { WECHAT_MINIPROGRAM, MINIAPP } = require('../constants');
@@ -26,11 +25,6 @@ module.exports = (config, context, target) => {
         platform: target,
       });
   });
-
-  if (fs.existsSync(path.resolve(rootDir, 'src/public'))) {
-    config.plugin('copyWebpackPlugin')
-      .use(CopyWebpackPlugin, [[{ from: 'src/public', to: `${target}/public` }]]);
-  }
 
   if (isDev && ![WECHAT_MINIPROGRAM, MINIAPP].includes(target)) {
     entryConfig.add(hmrClient);

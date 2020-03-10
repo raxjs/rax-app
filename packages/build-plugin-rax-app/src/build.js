@@ -6,7 +6,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 const getMpOuput = require('./config/miniapp/getOutputPath');
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
-module.exports = ({ registerTask, context, onHook }, options = {}) => {
+module.exports = ({ registerTask, context, onHook,onGetWebpackConfig }, options = {}) => {
   const { targets = [] } = options;
 
   let jsx2mpBuildErr = null;
@@ -17,6 +17,12 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
   const jsx2mpBuildTargets = [];
 
   targets.forEach(target => {
+    onGetWebpackConfig(target, (config) => {
+      const publicPath = config.output.get('publicPath');
+      console.log('----------');
+      console.log(publicPath);
+    })
+
     if ([WEB, WEEX, KRAKEN].includes(target)) {
       buildScriptsBuildTargets.push(target);
     } else if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
@@ -30,7 +36,9 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
     }
   });
 
-  targets.forEach(async(target) => {
+  targets.forEach(async (target) => {
+  
+
     if ([WEB, WEEX, KRAKEN].includes(target)) {
       const getBase = require(`./config/${target}/getBase`);
       registerTask(target, getBase(context, target, options));
@@ -41,7 +49,7 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
         const getBase = require('./config/miniapp/runtime/getBase');
         registerTask(target, getBase(context, target));
       } else if (buildScriptsBuildTargets.length) {
-        onHook('after.build.compile', async() => {
+        onHook('after.build.compile', async () => {
           jsx2mpBuildErr = await invokeJSX2MPBuilder(context, options[target]);
         });
       } else if (jsx2mpBuildTargets.length) {
@@ -59,7 +67,7 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
     }
   });
 
-  onHook('after.build.compile', ({err, stats}) => {
+  onHook('after.build.compile', ({ err, stats }) => {
     consoleClear(true);
     if (jsx2mpBuildErr) {
       err = jsx2mpBuildErr.err;
