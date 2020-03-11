@@ -2,13 +2,14 @@ const UniversalDocumentPlugin = require('../../plugins/UniversalDocumentPlugin')
 const PWAAppShellPlugin = require('../../plugins/PWAAppShellPlugin');
 const getWebpackBase = require('../getWebpackBase');
 const setEntry = require('../setEntry');
+const { WEB } = require('../../constants');
 
 module.exports = (context, target, options = {}) => {
   const { command } = context;
-  const config = getWebpackBase(context);
-  setEntry(config, context, 'web');
+  const config = getWebpackBase(context, {}, WEB);
+  setEntry(config, context, WEB);
 
-  config.output.filename('web/[name].js');
+  config.output.filename(`${WEB}/[name].js`);
 
   config.externals([
     function(ctx, request, callback) {
