@@ -1,30 +1,30 @@
 const path = require('path');
 const klawSync = require('klaw-sync');
-const getWebpackBase = require('../../config/getWebpackBase');
+const getWebpackBase = require('rax-webpack-config');
+const getBabelConfig = require('rax-babel-config');
+
+const babelConfig = getBabelConfig({
+  styleSheet: true,
+  isNode: true
+});
 
 /**
  * webpack config for document
  */
 module.exports = (context, options) => {
-  const { userConfig } = context;
+  const { userConfig, rootDir, command } = context;
   const { alias = {}, configWebpack } = options;
 
-  const config = getWebpackBase(context, {
-    isSSR: true
+  const config = getWebpackBase({
+    rootDir,
+    command,
+    babelConfig,
   });
 
   config.target('node');
 
   config.output
     .libraryTarget('commonjs2');
-
-  ['jsx', 'tsx'].forEach(tag => {
-    config.module.rule(tag)
-      .use('platform')
-      .options({
-        platform: 'node',
-      });
-  });
 
   // Sync the alias from webpack config for Web. eg. react, react-dom
   Object.keys(alias).forEach((key) => {
