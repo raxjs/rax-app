@@ -74,6 +74,7 @@ module.exports = function() {
 
       const DocumentContextProviderElement = createElement(DocumentContextProvider);
 
+      // For universal app, driver-universal will convert unitless style to rpx
       const html = '${doctypeStr}' + renderer.renderToString(DocumentContextProviderElement, {
         defaultUnit: 'rpx'
       });
