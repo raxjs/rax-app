@@ -18,7 +18,8 @@ module.exports = {
   defaultValue: true,
   validation: 'boolean',
   configWebpack: (config, value, context) => {
-    const { taskName } = context;
+    const { userConfig, taskName } = context;
+    const { publicPath } = userConfig;
 
     setCSSRule(config.module.rule('css').test(/\.css?$/), context, value);
     setCSSRule(config.module.rule('less').test(/\.less?$/), context, value);
@@ -40,7 +41,7 @@ module.exports = {
 
       config.plugin('minicss')
         .use(MiniCssExtractPlugin, [{
-          filename: `${taskName}/[name].css`,
+          filename: `${publicPath.startsWith('.') ? '' : `${taskName}/`}[name].css`,
         }]);
     }
   },
@@ -110,7 +111,7 @@ function setCSSRule(configRule, context, value) {
         .oneOf('normal')
         .use('css')
         .loader(require.resolve('css-loader'))
-      // reference: https://github.com/webpack-contrib/css-loader/tree/v2.1.1#localidentname
+        // reference: https://github.com/webpack-contrib/css-loader/tree/v2.1.1#localidentname
         .options(
           modules ? {
             importLoaders: 2,

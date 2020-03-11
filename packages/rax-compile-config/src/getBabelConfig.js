@@ -99,7 +99,7 @@ module.exports = (userOptions = {}) => {
     });
 
     if (logOnce) {
-      console.log(chalk.green('[JSX+] Stynax enabled.'));
+      console.log(chalk.green('JSX+ enabled, documentation: https://rax.js.org/docs/guide/jsxplus'));
       logOnce = false;
     }
   }

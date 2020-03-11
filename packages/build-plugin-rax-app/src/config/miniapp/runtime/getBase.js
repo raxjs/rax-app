@@ -2,11 +2,12 @@ const MiniAppPlugin = require('rax-miniapp-runtime-webpack-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('./getAppConfig');
 const setEntry = require('./setEntry');
+const { MINIAPP } = require('../../../constants');
 
 module.exports = (context, target) => {
   const config = getWebpackBase(context, {
     disableRegenerator: true
-  });
+  }, MINIAPP);
 
   const appConfig = getAppConfig(context);
   setEntry(config, context, appConfig.routes);
