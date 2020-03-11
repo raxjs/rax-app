@@ -68,7 +68,9 @@ module.exports = async function pageLoader(content) {
     ...transformed.config
   };
   if (existsSync(pageConfigPath)) {
-    Object.assign(config, readJSONSync(pageConfigPath));
+    const pageConfig = readJSONSync(pageConfigPath);
+    delete pageConfig.usingComponents;
+    Object.assign(config, pageConfig);
   }
   if (Array.isArray(transformed.dependencies)) {
     transformed.dependencies.forEach(dep => {
