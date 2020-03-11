@@ -27,9 +27,9 @@ module.exports = (userOptions = {}) => {
           targets: isNode ? {
             node: '8',
           } : {
-            chrome: '49',
-            ios: '8',
-          },
+              chrome: '49',
+              ios: '8',
+            },
           loose: true,
           modules: 'auto',
           include: [
@@ -105,7 +105,7 @@ module.exports = (userOptions = {}) => {
     });
 
     if (logOnce) {
-      console.log(chalk.green('[JSX+] Stynax enabled.'));
+      console.log(chalk.green('JSX+ enabled, documentation: https://rax.js.org/docs/guide/jsxplus'));
       logOnce = false;
     }
   }
