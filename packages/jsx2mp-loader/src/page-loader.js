@@ -2,7 +2,6 @@ const { readFileSync, existsSync, mkdirpSync, readJSONSync } = require('fs-extra
 const { relative, join, dirname, resolve } = require('path');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
-const PrettyError = require('pretty-error');
 const cached = require('./cached');
 const { removeExt, isFromTargetDirs, doubleBackslash, normalizeOutputFilePath, addRelativePathPrefix, getHighestPriorityPackage } = require('./utils/pathHelper');
 const eliminateDeadCode = require('./utils/dce');
@@ -12,8 +11,6 @@ const { isTypescriptFile } = require('./utils/judgeModule');
 
 const ComponentLoader = require.resolve('./component-loader');
 const ScriptLoader = require.resolve('./script-loader');
-
-const pe = new PrettyError();
 
 module.exports = async function pageLoader(content) {
   const loaderOptions = getOptions(this);
@@ -50,8 +47,12 @@ module.exports = async function pageLoader(content) {
     transformed = compiler(rawContentAfterDCE, compilerOptions);
   } catch (e) {
     console.log(chalk.red(`\n[${platform.name}] Error occured when handling Page ${this.resourcePath}`));
-    console.log(pe.render(e));
-    return '';
+    if (process.env.DEBUG === 'true') {
+      throw new Error(e);
+    } else {
+      const errMsg = e.node ? `${e.message}\nat ${this.resourcePath}` : `Unknown compile error! please check your code at ${this.resourcePath}`;
+      throw new Error(errMsg);
+    }
   }
 
   const { style, assets } = await processCSS(transformed.cssFiles, sourcePath);

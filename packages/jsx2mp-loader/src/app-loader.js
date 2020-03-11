@@ -52,8 +52,12 @@ module.exports = async function appLoader(content) {
     transformed = compiler(rawContentAfterDCE, compilerOptions);
   } catch (e) {
     console.log(chalk.red(`\n[${platform.name}] Error occured when handling App ${this.resourcePath}`));
-    console.log(pe.render(e));
-    return '';
+    if (process.env.DEBUG === 'true') {
+      throw new Error(e);
+    } else {
+      const errMsg = e.node ? `${e.message}\nat ${this.resourcePath}` : `Unknown compile error! please check your code at ${this.resourcePath}`;
+      throw new Error(errMsg);
+    }
   }
 
   const { style, assets } = await processCSS(transformed.cssFiles, sourcePath);
