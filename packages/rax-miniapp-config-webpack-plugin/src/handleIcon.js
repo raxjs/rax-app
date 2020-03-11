@@ -9,8 +9,9 @@ module.exports = function(path, outputPath) {
   if (!isUrl(path)) {
     const sourcePath = resolve('src', path);
     if (existsSync(sourcePath)) {
-      ensureDirSync(resolve(outputPath, dirname(path)));
-      copy(sourcePath, path);
+      const distPath = resolve(outputPath, path);
+      ensureDirSync(dirname(distPath));
+      copy(sourcePath, distPath);
     }
   }
   return path;
