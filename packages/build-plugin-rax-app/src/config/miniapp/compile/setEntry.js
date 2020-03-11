@@ -18,21 +18,19 @@ function getDepPath(source, rootDir) {
 function getEntry(entryAppFilePath, routes, options) {
   const rootDir = dirname(entryAppFilePath);
   const entry = {};
-  const { target, loaderParams } = options;
+  const { loaderParams } = options;
 
-  const pageLoaderParams = {
+  const pageLoaderParams = JSON.stringify({
     ...loaderParams,
     entryPath: entryAppFilePath,
-  };
+  });
 
   const appLoaderParams = JSON.stringify({ ...loaderParams, entryPath: rootDir });
 
   entry.app = `${AppLoader}?${appLoaderParams}!./${entryAppFilePath}`;
   if (Array.isArray(routes)) {
-    routes.filter(({ targets }) => {
-      return !Array.isArray(targets) || targets.indexOf(target) > -1;
-    }).forEach(({ source, window = {} }) => {
-      entry[`page@${source}`] = `${PageLoader}?${JSON.stringify(Object.assign({ pageConfig: window }, pageLoaderParams))}!${getDepPath(source, rootDir)}`;
+    routes.forEach(({ source }) => {
+      entry[`page@${source}`] = `${PageLoader}?${pageLoaderParams}!${getDepPath(source, rootDir)}`;
     });
   }
   return entry;

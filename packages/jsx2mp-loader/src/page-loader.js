@@ -1,4 +1,4 @@
-const { readFileSync, existsSync, mkdirpSync } = require('fs-extra');
+const { readFileSync, existsSync, mkdirpSync, readJSONSync } = require('fs-extra');
 const { relative, join, dirname, resolve } = require('path');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
@@ -8,7 +8,6 @@ const { removeExt, isFromTargetDirs, doubleBackslash, normalizeOutputFilePath, a
 const eliminateDeadCode = require('./utils/dce');
 const processCSS = require('./styleProcessor');
 const output = require('./output');
-const adaptPageConfig = require('./adaptConfig');
 const { isTypescriptFile } = require('./utils/judgeModule');
 
 const ComponentLoader = require.resolve('./component-loader');
@@ -18,7 +17,7 @@ const pe = new PrettyError();
 
 module.exports = async function pageLoader(content) {
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, outputPath, mode, disableCopyNpm, constantDir, turnOffSourceMap, pageConfig = {} } = loaderOptions;
+  const { platform, entryPath, mode, disableCopyNpm, constantDir, turnOffSourceMap, outputPath } = loaderOptions;
   const rawContent = readFileSync(this.resourcePath, 'utf-8');
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
@@ -63,9 +62,13 @@ module.exports = async function pageLoader(content) {
   if (!existsSync(pageDistDir)) mkdirpSync(pageDistDir);
 
   const distFileWithoutExt = removeExt(join(outputPath, relativeSourcePath), platform.type);
-  adaptPageConfig(pageConfig, 'window', platform.type);
-
-  const config = Object.assign(pageConfig, transformed.config);
+  const pageConfigPath = distFileWithoutExt + '.json';
+  let config = {
+    ...transformed.config
+  };
+  if (existsSync(pageConfigPath)) {
+    Object.assign(config, readJSONSync(pageConfigPath));
+  }
   if (Array.isArray(transformed.dependencies)) {
     transformed.dependencies.forEach(dep => {
       this.addDependency(dep);
@@ -97,7 +100,7 @@ module.exports = async function pageLoader(content) {
   const outputOption = {
     outputPath: {
       code: distFileWithoutExt + '.js',
-      json: distFileWithoutExt + '.json',
+      json: pageConfigPath,
       css: distFileWithoutExt + platform.extension.css,
       template: distFileWithoutExt + platform.extension.xml,
       assets: outputPath

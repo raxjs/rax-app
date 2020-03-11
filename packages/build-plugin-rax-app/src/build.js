@@ -18,10 +18,10 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
     if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
       if (options[target] && options[target].buildType === 'runtime') {
         const getBase = require('./config/miniapp/runtime/getBase');
-        registerTask(target, getBase(context, target));
+        registerTask(target, getBase(context, target, options));
       } else {
         const getBase = require('./config/miniapp/compile/getBase');
-        registerTask(target, getBase(context, target, options[target]));
+        registerTask(target, getBase(context, target, options));
       }
     }
   });

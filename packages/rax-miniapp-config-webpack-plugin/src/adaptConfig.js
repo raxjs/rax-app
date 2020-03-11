@@ -15,7 +15,7 @@ const configKeyMap = {
       name: 'name',
       icon: 'icon',
       activeIcon: 'activeIcon',
-      path: 'path'
+      path: 'pagePath'
     }
   },
   [WECHAT_MINIPROGRAM]: {
