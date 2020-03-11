@@ -21,9 +21,9 @@ module.exports = (userOptions = {}) => {
           targets: isSSR ? {
             node: '8',
           } : {
-              chrome: '49',
-              ios: '8',
-            },
+            chrome: '49',
+            ios: '8',
+          },
           loose: true,
           modules: 'auto',
           include: [
