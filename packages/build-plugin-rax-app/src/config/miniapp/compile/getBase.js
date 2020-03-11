@@ -119,7 +119,7 @@ module.exports = (context, target, options = {}) => {
     }
   ]);
 
-  if (publicFilePath) {
+  if (existsSync(publicFilePath)) {
     config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir }]);
   }
 
