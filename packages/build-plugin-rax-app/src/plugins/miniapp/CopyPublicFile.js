@@ -1,6 +1,6 @@
 const { resolve } = require('path');
 const { existsSync, copySync } = require('fs-extra');
-const chokidar = require('chokidar')
+const chokidar = require('chokidar');
 
 /**
  * Copy public directories to dist
