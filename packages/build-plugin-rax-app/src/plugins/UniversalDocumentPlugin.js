@@ -193,7 +193,9 @@ function getAssetsForPage(files, publicPath) {
   const cssFiles = files.filter(v => /\.css$/i.test(v));
 
   return {
-    scripts: jsFiles.map(script => publicPath + script),
-    styles: cssFiles.map(style => publicPath + style),
+    // Support publicPath use relative path.
+    // Change MPA 'pageName/index.js' to 'index.js', when use relative path.
+    scripts: jsFiles.map(script => publicPath + (publicPath.startsWith('.') ? path.basename(script) : script)),
+    styles: cssFiles.map(style => publicPath + (publicPath.startsWith('.') ? path.basename(style) : style)),
   };
 }

@@ -4,9 +4,10 @@ const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
 
 const getMpOuput = require('./config/miniapp/getOutputPath');
+const processRelativePublicPath = require('./config/processRelativePublicPath');
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
-module.exports = ({ registerTask, context, onHook }, options = {}) => {
+module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
 
   let jsx2mpBuildErr = null;
@@ -17,6 +18,11 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
   const jsx2mpBuildTargets = [];
 
   targets.forEach(target => {
+    // Process relative publicPath.
+    onGetWebpackConfig(target, (config) => {
+      processRelativePublicPath(target, config);
+    });
+
     if ([WEB, WEEX, KRAKEN].includes(target)) {
       buildScriptsBuildTargets.push(target);
     } else if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
@@ -59,7 +65,7 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
     }
   });
 
-  onHook('after.build.compile', ({err, stats}) => {
+  onHook('after.build.compile', ({ err, stats }) => {
     consoleClear(true);
     if (jsx2mpBuildErr) {
       err = jsx2mpBuildErr.err;
