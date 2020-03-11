@@ -55,6 +55,7 @@ module.exports = class JSX2MPRuntimePlugin {
         } else {
           copySync(sourceFile, targetFile);
         }
+
         callback();
       }
     );
