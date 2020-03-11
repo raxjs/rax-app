@@ -367,10 +367,6 @@ function handleCustomComponent(
   }
 }
 
-function handleNodeModules(compilation) {
-  addFile(compilation, 'node_modules/.miniprogram', '');
-}
-
 function installDependencies(
   stats,
   target,
@@ -614,9 +610,6 @@ class MiniAppRuntimePlugin {
 
       // Config js
       handleConfigJS(compilation, options.optimization || {}, target);
-
-      // Node_modules
-      // handleNodeModules(compilation);
 
       // Custom-component
       handleCustomComponent(
