@@ -281,7 +281,7 @@ function handleProjectConfig(compilation, { projectConfig = {} }, target) {
       null,
       '\t'
     );
-    addFile(compilation, 'project.config.json', projectConfigJsonContent);
+    addFile(compilation, `${target}/project.config.json`, projectConfigJsonContent);
   }
 }
 
@@ -385,9 +385,6 @@ function installDependencies(
   const outputPath = resolve(stats.compilation.outputOptions.path);
 
   const build = () => {
-    const outputNpmPath = resolve(outputPath, adapter[target].npmDirName);
-    ensureDirSync(outputNpmPath);
-
     ['miniapp-element', 'miniapp-render'].forEach(name => {
       const sourceNpmFileDir = resolve(
         process.cwd(),
@@ -405,7 +402,7 @@ function installDependencies(
       copySync(sourceNpmFileDir, distNpmFileDir);
       // Handle custom-component path in alibaba miniapp
       if (
-        target === 'miniapp' &&
+        target === MINIAPP &&
         customComponentRoot &&
         name === 'miniapp-element'
       ) {
@@ -619,7 +616,7 @@ class MiniAppRuntimePlugin {
       handleConfigJS(compilation, options.optimization || {}, target);
 
       // Node_modules
-      handleNodeModules(compilation);
+      // handleNodeModules(compilation);
 
       // Custom-component
       handleCustomComponent(
