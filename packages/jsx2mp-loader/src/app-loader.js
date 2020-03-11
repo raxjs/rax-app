@@ -2,15 +2,12 @@ const { readFileSync, existsSync, mkdirpSync } = require('fs-extra');
 const { join, sep } = require('path');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
-const PrettyError = require('pretty-error');
 const { doubleBackslash, getHighestPriorityPackage } = require('./utils/pathHelper');
 const eliminateDeadCode = require('./utils/dce');
 const defaultStyle = require('./defaultStyle');
 const processCSS = require('./styleProcessor');
 const output = require('./output');
 const { isTypescriptFile } = require('./utils/judgeModule');
-
-const pe = new PrettyError();
 
 function createImportStatement(req) {
   return `import '${doubleBackslash(req)}';`;
