@@ -1,5 +1,6 @@
 const path = require('path');
 const { readdirSync } = require('fs');
+const setManifestToDocument = require('./setManifestToDocument');
 
 const getNSRBase = require('./nsr/getBase');
 
@@ -25,6 +26,12 @@ module.exports = ({ onGetWebpackConfig, context, registerTask }, option) => {
             command,
           }]);
       }
+    });
+
+    setManifestToDocument({
+      ...option,
+      context,
+      config
     });
   });
 };

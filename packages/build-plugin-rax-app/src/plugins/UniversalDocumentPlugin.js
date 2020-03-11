@@ -23,6 +23,9 @@ module.exports = class UniversalDocumentPlugin {
     // [{ entryName: 'index', path: '/' }]
     this.pages = options.pages;
 
+    // manifest data [{ manifest: {}, path: '/' }]
+    this.manifests = options.manifests;
+
     // for internal weex publish
     if (options.publicPath) {
       this.publicPath = options.publicPath;
@@ -90,6 +93,9 @@ module.exports = class UniversalDocumentPlugin {
         const { entryName, path } = page;
         const files = compilation.entrypoints.get(entryName).getFiles();
         const assets = getAssetsForPage(files, publicPath);
+        const manifestData = this.manifests.find((item) => {
+          return item.path === path;
+        });
 
         const DocumentContextProvider = function() { };
         DocumentContextProvider.prototype.getChildContext = function() {
@@ -97,6 +103,7 @@ module.exports = class UniversalDocumentPlugin {
             __styles: assets.styles,
             __scripts: assets.scripts,
             __pagePath: path,
+            __manifest: manifestData
           };
         };
         DocumentContextProvider.prototype.render = function() {
