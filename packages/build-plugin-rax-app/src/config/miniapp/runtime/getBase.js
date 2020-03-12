@@ -1,4 +1,4 @@
-const MiniAppPlugin = require('rax-miniapp-runtime-webpack-plugin');
+const MiniAppRuntimePlugin = require('rax-miniapp-runtime-webpack-plugin');
 const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
@@ -45,7 +45,7 @@ module.exports = (context, target, options) => {
       getAppConfig
     }
   ]);
-  config.plugin('MiniAppPlugin').use(MiniAppPlugin, [
+  config.plugin('MiniAppRuntimePlugin').use(MiniAppRuntimePlugin, [
     {
       ...appConfig,
       target,
