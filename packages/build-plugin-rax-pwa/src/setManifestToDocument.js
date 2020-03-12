@@ -15,7 +15,7 @@ module.exports = (option) => {
   const { rootDir } = context;
   const appConfig = fs.readJsonSync(path.resolve(rootDir, 'src/app.json'));
   const decamelizeAppConfig = transformAppConfig(appConfig);
-  const manifests = [];
+  const configs = [];
 
   if (appConfig.routes && appConfig.routes.length > 0) {
     appConfig.routes.map((router) => {
@@ -26,24 +26,17 @@ module.exports = (option) => {
         decamelizeAppConfig
       });
 
-      const manifestData = {
+      const config = {
         manifest: pageManifestData,
         path
       };
-      if (enableNSR) {
-        const { dataConfig = 'static' } = nsr;
-        if (dataConfig !== 'static') {
-          // prefetch data is simple, generate meta
-          manifestData.dataConfig = dataConfig;
-        }
-      }
-      manifests.push(manifestData);
+      configs.push(config);
     });
   }
   config.plugin('document').tap(args => {
     return [{
       ...args[0],
-      manifests
+      phaConfigs: configs
     }];
   });
 };

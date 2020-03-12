@@ -24,7 +24,7 @@ module.exports = class UniversalDocumentPlugin {
     this.pages = options.pages;
 
     // manifest data [{ manifest: {}, path: '/' }]
-    this.manifests = options.manifests;
+    this.phaConfigs = options.phaConfigs || [];
 
     // for internal weex publish
     if (options.publicPath) {
@@ -93,7 +93,7 @@ module.exports = class UniversalDocumentPlugin {
         const { entryName, path } = page;
         const files = compilation.entrypoints.get(entryName).getFiles();
         const assets = getAssetsForPage(files, publicPath);
-        const manifestData = this.manifests.find((item) => {
+        const config = this.phaConfigs.find((item) => {
           return item.path === path;
         });
 
@@ -103,7 +103,7 @@ module.exports = class UniversalDocumentPlugin {
             __styles: assets.styles,
             __scripts: assets.scripts,
             __pagePath: path,
-            __manifest: manifestData
+            __manifest: config ? config.manifest : null
           };
         };
         DocumentContextProvider.prototype.render = function() {
