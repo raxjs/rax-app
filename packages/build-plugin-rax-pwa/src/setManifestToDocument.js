@@ -14,7 +14,7 @@ module.exports = (option) => {
   const { rootDir } = context;
   const appConfig = fs.readJsonSync(path.resolve(rootDir, 'src/app.json'));
   const decamelizeAppConfig = transformAppConfig(appConfig);
-  const configs = [];
+  const manifests = [];
 
   if (appConfig.routes && appConfig.routes.length > 0) {
     appConfig.routes.map((router) => {
@@ -25,17 +25,16 @@ module.exports = (option) => {
         decamelizeAppConfig
       });
 
-      const config = {
-        manifest: pageManifestData,
+      manifests.push({
+        data: pageManifestData,
         path
-      };
-      configs.push(config);
+      });
     });
   }
   config.plugin('document').tap(args => {
     return [{
       ...args[0],
-      phaConfigs: configs
+      manifests
     }];
   });
 };
