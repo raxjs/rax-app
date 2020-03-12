@@ -17,7 +17,7 @@ function dealWithPage(evt, window, value) {
     url = render.$$adapter.tool.completeURL(url, window.location.origin);
 
     const options = {
-      url: `/pages/webview/index?url=${encodeURIComponent(url)}`,
+      url: `/pages/webview/index?url=${encodeURIComponent(url)}`
     };
     if (type === 'jump') APINamespace.redirectTo(options);
     else if (type === 'open') APINamespace.navigateTo(options);
@@ -29,8 +29,8 @@ function dealWithPage(evt, window, value) {
     }/redirect?url=${encodeURIComponent(url)}`;
     const options = {
       url: `/pages/${value}/index?type=${type}&targeturl=${encodeURIComponent(
-        targeturl,
-      )}`,
+        targeturl
+      )}`
     };
     if (window.$$miniprogram.isTabBarPage(`/pages/${value}/index`))
       APINamespace.switchTab(options);
@@ -43,24 +43,9 @@ function dealWithPage(evt, window, value) {
 Page({
   data: {
     pageId: '',
-    bodyClass: 'h5-body miniprogram-root',
-    bodyStyle: '',
-    rootFontSize: '12px',
-    pageStyle: '',
+    bodyClass: 'h5-body miniprogram-root'
   },
   onLoad(query) {
-    const pageName = render.$$adapter.tool.getPageName(this.route);
-    this.pageConfig = config.pages[pageName] || {};
-    const pageConfig = this.pageConfig;
-
-    if (pageConfig.loadingText) {
-      APINamespace.showLoading({
-        title: pageConfig.loadingText,
-        content: pageConfig.loadingText,
-        mask: true,
-      });
-    }
-
     const mpRes = render.createPage(this.route, config);
     this.pageId = mpRes.pageId;
     this.window = mpRes.window;
@@ -70,75 +55,21 @@ Page({
     if (typeof this.getTabBar === 'function')
       this.window.getTabBar = this.getTabBar.bind(this);
 
-    // Handle the condition that redirected page doesn't exist
-    if (config.redirect && config.redirect.notFound) {
-      this.window.addEventListener('pagenotfound', evt => {
-        dealWithPage(evt, mpRes.window, config.redirect.notFound);
-      });
-    }
-
-    // Handle the condition that redirect to restricted pages
-    if (config.redirect && config.redirect.accessDenied) {
-      this.window.addEventListener('pageaccessdenied', evt => {
-        dealWithPage(evt, mpRes.window, config.redirect.accessDenied);
-      });
-    }
-
-    if (
-      query.type === 'open' ||
-      query.type === 'jump' ||
-      query.type === 'share'
-    ) {
-      this.window.$$miniprogram.init(
-        query.targeturl ? decodeURIComponent(query.targeturl) : null,
-      );
-
-      if (query.search)
-        this.window.location.search = decodeURIComponent(query.search);
-      if (query.hash)
-        this.window.location.hash = decodeURIComponent(query.hash);
-    } else {
-      this.window.$$miniprogram.init();
-    }
-
-    // Handle whether to show share menu
-    if (!pageConfig.share) {
-      // Avoid error in DingTalk Miniapp for lack of hideShareMenu
-      APINamespace.hideShareMenu && APINamespace.hideShareMenu();
-    }
-
-    // Handle update of document
-    this.document.documentElement.addEventListener('$$domNodeUpdate', () => {
-      if (pageConfig.rem) {
-        const rootFontSize = this.document.documentElement.style.fontSize;
-        if (rootFontSize && rootFontSize !== this.data.rootFontSize)
-          this.setData({ rootFontSize });
-      }
-      if (pageConfig.pageStyle) {
-        const pageStyle = this.document.documentElement.style.cssText;
-        if (pageStyle && pageStyle !== this.data.pageStyle)
-          this.setData({ pageStyle });
-      }
-    });
-
     // Handle update of body
     this.document.documentElement.addEventListener('$$childNodesUpdate', () => {
       const domNode = this.document.body;
       const data = {
-        bodyClass: `${domNode.className || ''} h5-body miniprogram-root`, // 增加默认 class
-        bodyStyle: domNode.style.cssText || '',
+        bodyClass: `${domNode.className || ''} h5-body miniprogram-root`
       };
 
-      if (
-        data.bodyClass !== this.data.bodyClass ||
-        data.bodyStyle !== this.data.bodyStyle
-      ) {
+      if (data.bodyClass !== this.data.bodyClass) {
         this.setData(data);
       }
     });
 
     // Hadle selectorQuery
-    this.window.$$createSelectorQuery = () => APINamespace.createSelectorQuery().in(this);
+    this.window.$$createSelectorQuery = () =>
+      APINamespace.createSelectorQuery().in(this);
 
     // Handle intersectionObserver
     this.window.$$createIntersectionObserver = options => {
@@ -153,7 +84,7 @@ Page({
 
     init(this.window, this.document);
     this.setData({
-      pageId: this.pageId,
+      pageId: this.pageId
     });
     this.app = this.window.createApp();
     this.window.$$trigger('load');
@@ -163,7 +94,6 @@ Page({
     this.window.$$trigger('pageShow');
   },
   onReady() {
-    if (this.pageConfig.loadingText) APINamespace.hideLoading();
     this.window.$$trigger('pageReady');
   },
   onHide() {
@@ -177,7 +107,6 @@ Page({
 
     render.destroyPage(this.pageId);
 
-    this.pageConfig = null;
     this.pageId = null;
     this.window.getTabBar = null;
     this.window = null;
@@ -210,7 +139,7 @@ Page({
 
       return shareOptions;
     }
-  },
+  }
   /* PAGE_SCROLL_FUNCTION */
   /* REACH_BOTTOM_FUNCTION */
   /* PULL_DOWN_REFRESH_FUNCTION */
