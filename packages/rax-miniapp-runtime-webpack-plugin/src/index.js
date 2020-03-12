@@ -94,7 +94,7 @@ function getAssetPath(
   return `${assetPathPrefix}./${relative(
     dirname(selfFilePath),
     filePath
-  )}`;
+  )}`.replace(/\\/g, '/'); // Avoid path error in Windows
 }
 
 function handlePageJS(
