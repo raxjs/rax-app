@@ -11,7 +11,7 @@ module.exports = ({ onGetWebpackConfig, context, registerTask }, option) => {
   const { command } = context;
 
   // register nsr plugin
-  if (nsr && nsr.enable) {
+  if (nsr) {
     const nsrConfig = getNSRBase(context);
     registerTask('nsr', nsrConfig);
   }

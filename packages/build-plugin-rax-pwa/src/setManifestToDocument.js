@@ -6,9 +6,8 @@ const { transformAppConfig, getPageManifestByPath } = manifestHelpers;
 
 module.exports = (option) => {
   const { config, context, appConfigWriteToHTML, nsr } = option;
-  const enableNSR = nsr && nsr.enable;
 
-  if (!appConfigWriteToHTML && !enableNSR) {
+  if (!appConfigWriteToHTML && !nsr) {
     return;
   }
 
