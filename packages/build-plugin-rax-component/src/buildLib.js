@@ -6,7 +6,7 @@ const gulpCompile = require('./gulp/compile');
 const gulpParams = require('./gulp/params');
 
 const jsx2mpBuilder = require('./config/miniapp/build');
-const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
+const { MINIAPP, WECHAT_MINIPROGRAM, WEB, WEEX, NODE } = require('./constants');
 
 module.exports = async(api, options = {}) => {
   const { context, log } = api;
@@ -19,6 +19,7 @@ module.exports = async(api, options = {}) => {
   const enableTypescript = fs.existsSync(path.join(rootDir, 'tsconfig.json'));
   const buildMiniapp = ~targets.indexOf(MINIAPP);
   const buildWechatMiniProgram = ~targets.indexOf(WECHAT_MINIPROGRAM);
+  const buildOtherPlatformBesidesMiniapp = targets.some(target => [WEB, WEEX, NODE].includes(target));
 
   const BUILD_DIR = path.resolve(rootDir, isDev ? devOutputDir : outputDir);
 
@@ -28,6 +29,9 @@ module.exports = async(api, options = {}) => {
   gulpParams.api = api;
   gulpParams.options = options;
 
+  if (buildOtherPlatformBesidesMiniapp) {
+    gulpCompile();
+  }
   if (buildMiniapp || buildWechatMiniProgram) {
     if (enableTypescript) {
       gulpParams.compileMiniappTS = true;
@@ -73,7 +77,5 @@ module.exports = async(api, options = {}) => {
         }
       }
     }
-  } else {
-    gulpCompile();
   }
 };
