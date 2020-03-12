@@ -5,7 +5,6 @@ module.exports = {
   validation: 'string',
   configWebpack: (config, value, context) => {
     const { rootDir } = context;
-
     config.output.path(path.resolve(rootDir, value));
   },
 };
