@@ -1,34 +1,15 @@
 
 const path = require('path');
-const SourceMap = require('source-map');
-const ErrorStackParser = require('error-stack-parser');
-const parseErrorStack = require('./parseEvalStackTrace');
-const extractSourceMap = require('./extractSourceMap');
+const Module = require('module');
+const { parse, print } = require('error-stack-tracey');
 const getEntryName = require('./getEntryName');
 
-function printErrorStack(error, bundleContent) {
-  const sourcemap = extractSourceMap.getSourceMap(bundleContent);
-  const sourceMapConsumer = new SourceMap.SourceMapConsumer(sourcemap);
-  // error-stack-parser can't parse the error message with eval, and it needs to be processed again.
-  const originalErrorStack = ErrorStackParser.parse(error);
-
-  sourceMapConsumer.then(consumer => {
-    const errorLineAndColumn = parseErrorStack.parseEvalStackTrace(error);
-    const mergedErrorStack = errorLineAndColumn.map(([line, column], index) => {
-      const errorFrame = originalErrorStack[index];
-      const originalSourcePosition = consumer.originalPositionFor({
-        line,
-        column,
-      });
-      errorFrame.columnNumber = originalSourcePosition.column;
-      errorFrame.lineNumber = originalSourcePosition.line;
-      errorFrame.fileName = originalSourcePosition.name;
-      errorFrame.source = parseErrorStack.parseWebpackPath(originalSourcePosition.source);
-      return errorFrame;
-    });
-
-    parseErrorStack.printError(error.message, mergedErrorStack);
-  });
+function exec(code, filename, filePath) {
+  const module = new Module(filename, this);
+  module.paths = Module._nodeModulePaths(filePath);
+  module.filename = filename;
+  module._compile(code, filename);
+  return module.exports;
 }
 
 module.exports = (config, context) => {
@@ -56,16 +37,20 @@ module.exports = (config, context) => {
     // outputFileSystem in devServer is MemoryFileSystem by defalut, but it can also be custom with other file systems.
     const outputFs = devServer.compiler.compilers[0].outputFileSystem;
     routes.forEach((route) => {
-      app.get(route.path, function(req, res) {
+      app.get(route.path, async function(req, res) {
         const bundleContent = outputFs.readFileSync(route.componentPath, 'utf8');
 
-        process.once('unhandledRejection', (error) => printErrorStack(error, bundleContent));
+        process.once('unhandledRejection', async (error) => {
+          const errorStack = await parse(error, bundleContent);
+          print(error.message, errorStack);
+        });
 
         try {
-          const mod = eval(bundleContent); // eslint-disable-line
+          const mod = exec(bundleContent, route.componentPath, route.componentPath);
           mod.render(req, res);
         } catch (error) {
-          printErrorStack(error, bundleContent);
+          const errorStack = await parse(error, bundleContent);
+          print(error.message, errorStack);
         }
       });
     });
