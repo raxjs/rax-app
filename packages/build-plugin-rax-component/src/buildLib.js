@@ -75,7 +75,6 @@ module.exports = async(api, options = {}) => {
         }
       };
       gulpCompile();
-
     }
   }
 };
