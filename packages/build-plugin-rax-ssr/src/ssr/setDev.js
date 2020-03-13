@@ -40,7 +40,7 @@ module.exports = (config, context) => {
       app.get(route.path, async function(req, res) {
         const bundleContent = outputFs.readFileSync(route.componentPath, 'utf8');
 
-        process.once('unhandledRejection', async (error) => {
+        process.once('unhandledRejection', async(error) => {
           const errorStack = await parse(error, bundleContent);
           print(error.message, errorStack);
         });

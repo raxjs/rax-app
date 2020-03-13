@@ -65,6 +65,5 @@ module.exports = (context) => {
       .end();
   }
 
-  console.log('aaaaaaaa')
   return config;
 };
