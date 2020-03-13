@@ -28,6 +28,9 @@ module.exports = (context) => {
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, `commonjs ${request}`);
       }
+      if (request.indexOf('@system') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
       callback();
     },
   ]);
