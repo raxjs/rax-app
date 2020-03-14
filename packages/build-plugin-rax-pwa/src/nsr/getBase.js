@@ -1,11 +1,32 @@
+const qs = require('qs');
 const path = require('path');
 const getWebpackBase = require('rax-webpack-config');
 const getBabelConfig = require('rax-babel-config');
 const setUserConfig = require('./setUserConfig');
 const getEntryName = require('./getEntryName');
-const EntryPlugin = require('./entryPlugin');
 
 const EntryLoader = require.resolve('./entryLoader');
+
+function setEntry(config, context, entries) {
+  const { rootDir } = context;
+  const absoluteShellPath = path.join(rootDir, 'src/shell/index.jsx');
+
+  entries.forEach((entry) => {
+    const {
+      name,
+      sourcePath,
+      pagePath,
+    } = entry;
+    const entryConfig = config.entry(name);
+
+    const query = {
+      pagePath,
+      absoluteShellPath,
+    };
+
+    entryConfig.add(`${EntryLoader}?${qs.stringify(query)}!${sourcePath}`);
+  });
+}
 
 module.exports = (context) => {
   const { userConfig, rootDir } = context;
@@ -22,8 +43,6 @@ module.exports = (context) => {
 
   setUserConfig(config, context);
 
-  const { plugins, inlineStyle } = userConfig;
-  const isMultiPages = !!~plugins.indexOf('build-plugin-rax-multi-pages');
   const appJSON = require(path.resolve(rootDir, 'src/app.json'));
   const entries = appJSON.routes.map((route) => {
     return {
@@ -33,15 +52,7 @@ module.exports = (context) => {
     };
   });
 
-  config.plugin('entryPlugin')
-    .use(EntryPlugin, [{
-      entries,
-      loader: EntryLoader,
-      isMultiPages: isMultiPages,
-      isInlineStyle: inlineStyle,
-      absoluteDocumentPath: path.join(rootDir, 'src/document/index.jsx'),
-      absoluteShellPath: path.join(rootDir, 'src/shell/index.jsx'),
-    }]);
+  setEntry(config, context, entries);
 
   config.output
     .filename('nsr/[name].js')
