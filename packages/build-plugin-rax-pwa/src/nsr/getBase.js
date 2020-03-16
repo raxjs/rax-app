@@ -2,7 +2,6 @@ const qs = require('qs');
 const path = require('path');
 const getWebpackBase = require('rax-webpack-config');
 const getBabelConfig = require('rax-babel-config');
-const setUserConfig = require('./setUserConfig');
 const getEntryName = require('./getEntryName');
 
 const EntryLoader = require.resolve('./entryLoader');
@@ -41,8 +40,6 @@ module.exports = (context) => {
     ...context,
     babelConfig: babelConfig,
   });
-
-  setUserConfig(config, context);
 
   const appJSON = require(path.resolve(rootDir, 'src/app.json'));
   const entries = appJSON.routes.map((route) => {
