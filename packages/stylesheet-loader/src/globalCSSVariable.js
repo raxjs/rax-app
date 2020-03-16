@@ -8,7 +8,7 @@ export default function getGlobalCSSVariable(config) {
   for (let key in styles) {
     if (key === globalCSSVarName && typeof styles[key] === 'object') {
       for (let name in styles[key]) {
-        globalCSSVariable += '__globalObject.__RootCSSVariable["' + name + '"] = "' + normalizeColor(styles[key][name]) + '";';
+        globalCSSVariable += '__globalObject.__RootCSSVariable["' + name + '"] = "' + (normalizeColor(styles[key][name]) || styles[key][name]) + '";';
       }
     }
   }
