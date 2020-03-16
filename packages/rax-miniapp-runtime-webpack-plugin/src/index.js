@@ -245,7 +245,7 @@ function handleAppJS(compilation, appAssets, assetsSubpackageMap, target) {
       )
       .join(';')};const appConfig = fakeWindow.appOptions || {};`
   );
-  addFile(compilation, `app.js`, appJsContent, target);
+  addFile(compilation, 'app.js', appJsContent, target);
 }
 
 function handleAppCSS(
@@ -282,7 +282,7 @@ function handleProjectConfig(compilation, { projectConfig = {} }, target) {
       null,
       '\t'
     );
-    addFile(compilation, `project.config.json`, projectConfigJsonContent, target);
+    addFile(compilation, 'project.config.json', projectConfigJsonContent, target);
   }
 }
 
@@ -304,7 +304,7 @@ function handleConfigJS(compilation, options = {}, target) {
   const exportedConfig = {
     optimization: options.optimization || {},
     nativeCustomComponent: options.config ? options.config.nativeCustomComponent ? options.config.nativeCustomComponent : undefined : undefined
-  }
+  };
   addFile(compilation, 'config.js', `module.exports = ${JSON.stringify(
     exportedConfig
   )}`, target);
@@ -351,7 +351,7 @@ function handleCustomComponent(
             .join(' ')}><slot/></${key}>`;
         })
         .join('\n'),
-        target
+      target
     );
 
     // custom-component/index.css
