@@ -74,7 +74,11 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     // Set Web and Weex log
     if (targets.includes(WEB) || targets.includes(WEEX)) {
-      if (type === 'mpa') {
+      if (
+        type === 'mpa' ||
+        // Compatibility old version build-plugin-rax-multi-pages
+        getValue('raxMpa')
+      ) {
         setDevLog({ url: devUrl, err, stats });
       } else {
         if (targets.includes(WEB)) {

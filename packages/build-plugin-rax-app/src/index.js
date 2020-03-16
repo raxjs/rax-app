@@ -8,7 +8,7 @@ const pluginApp = (api, options = {}) => {
   enterCheck(api, options);
 
   api.setValue('targets', options.targets);
-  api.setValue('appType', options.type);
+  api.setValue('appType', options.type || 'spa');
 
   const { context } = api;
   const { command } = context;

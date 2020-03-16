@@ -1,14 +1,32 @@
-const chalk = require('chalk');
-const consoleClear = require('console-clear');
-const { handleWebpackErr } = require('rax-compile-config');
+const { setConfig, setDevLog, setDevServer } = require('rax-multi-pages-config');
 
-const getEntries = require('./getEntries');
-const setEntry = require('./setEntry');
-const setDevServer = require('./setDevServer');
 
 module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) => {
+  if (getValue('appType')) {
+    console.warn('"build-plugin-rax-multi-pages" has been deprecated.');
+    console.warn('Please use type "mpa". example: ');
+    console.warn(`
+// app.json
+{
+  "plugins": [
+    [
+      "build-plugin-rax-app",
+      {
+        "targets": ["web"],
+        "type": "mpa"
+      }
+    ]
+  ]
+}    
+    `);
+    console.warn();
+
+    if (getValue('appType') === 'mpa') {
+      return;
+    }
+  }
+
   const { command } = context;
-  const entries = getEntries(context);
 
   const targets = getValue('targets');
   setValue('raxMpa', true);
@@ -20,39 +38,20 @@ module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) =
           config,
           context,
           targets,
-          entries,
         });
       }
 
-      setEntry(config, context, entries, 'web');
-
-      config.plugin('document').tap(args => {
-        return [{
-          ...args[0],
-          pages: entries
-        }];
-      });
+      setConfig(config, context, 'web');
     });
   }
 
   if (targets.includes('weex')) {
     onGetWebpackConfig('weex', config => {
-      setEntry(config, context, entries, 'weex');
+      setConfig(config, context, 'weex');
     });
   }
 
   onHook('after.start.compile', async({ url, err, stats }) => {
-    consoleClear(true);
-
-    if (!handleWebpackErr(err, stats)) {
-      return;
-    }
-
-    console.log(chalk.green('Rax development server has been started:'));
-    console.log();
-
-    console.log(chalk.green('Multi pages development server at:'));
-    console.log('   ', chalk.underline.white(url));
-    console.log();
+    setDevLog({ url, err, stats });
   });
 };
