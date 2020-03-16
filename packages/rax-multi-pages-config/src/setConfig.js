@@ -1,5 +1,6 @@
 const path = require('path');
 const { hmrClient } = require('rax-compile-config');
+const getEntries = require('./getEntries');
 
 const MulitPageLoader = require.resolve('./MulitPageLoader');
 
@@ -11,9 +12,10 @@ function getDepPath(rootDir, com) {
   }
 };
 
-module.exports = (config, context, entries, type) => {
+module.exports = (config, context, type) => {
   const { rootDir, command } = context;
   const isDev = command === 'start';
+  const entries = getEntries(context);
 
   config.entryPoints.clear();
 
@@ -26,4 +28,13 @@ module.exports = (config, context, entries, type) => {
     const pageEntry = getDepPath(rootDir, source);
     entryConfig.add(`${MulitPageLoader}?type=${type}!${pageEntry}`);
   });
+
+  if (type === 'web') {
+    config.plugin('document').tap(args => {
+      return [{
+        ...args[0],
+        pages: entries
+      }];
+    });
+  }
 };

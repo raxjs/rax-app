@@ -1,7 +1,7 @@
 {
-  "name": "build-plugin-rax-multi-pages",
-  "version": "2.1.0",
-  "description": "rax app base plugins",
+  "name": "rax-multi-pages-config",
+  "version": "0.0.1",
+  "description": "build-scripts config about rax mpa",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
   "peerDependencies": {
