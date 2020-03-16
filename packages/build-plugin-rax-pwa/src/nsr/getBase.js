@@ -34,6 +34,7 @@ module.exports = (context) => {
   const babelConfig = getBabelConfig({
     styleSheet: true,
     jsxToHtml: true,
+    isNode: true
   });
 
   const config = getWebpackBase({
