@@ -2,7 +2,7 @@ const ip = require('ip');
 const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const qrcode = require('qrcode-terminal');
-const { setConfig, setDevLog, setDevServer } = require('rax-multi-pages-config');
+const { setConfig, setDevLog, setDevServer } = require('rax-multi-pages-settings');
 const { handleWebpackErr } = require('rax-compile-config');
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 

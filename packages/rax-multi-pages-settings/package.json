@@ -1,7 +1,7 @@
 {
-  "name": "rax-multi-pages-config",
+  "name": "rax-multi-pages-settings",
   "version": "0.0.1",
-  "description": "build-scripts config about rax mpa",
+  "description": "build-scripts config settings about rax mpa",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
   "peerDependencies": {

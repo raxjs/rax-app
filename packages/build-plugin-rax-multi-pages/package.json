@@ -7,6 +7,6 @@
 
   "dependencies": {
     "chalk": "^2.4.2",
-    "rax-multi-pages-config": "^0.0.1"
+    "rax-multi-pages-settings": "^0.0.1"
   }
 }

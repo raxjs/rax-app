@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const { setConfig, setDevLog, setDevServer } = require('rax-multi-pages-config');
+const { setConfig, setDevLog, setDevServer } = require('rax-multi-pages-settings');
 
 
 module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) => {

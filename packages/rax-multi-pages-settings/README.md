@@ -1,4 +1,4 @@
-`build-scripts` plugin config which make rax app generate multiple html files.
+# rax-multi-pages-settings
 
 ## Usage
 

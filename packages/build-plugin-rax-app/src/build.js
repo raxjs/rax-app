@@ -2,7 +2,7 @@ const path = require('path');
 const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
-const { setConfig } = require('rax-multi-pages-config');
+const { setConfig } = require('rax-multi-pages-settings');
 
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 const processRelativePublicPath = require('./config/processRelativePublicPath');
