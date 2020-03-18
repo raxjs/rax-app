@@ -33,6 +33,10 @@ module.exports = (context, target, options) => {
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, 'undefined');
       }
+
+      if (request.indexOf('@system') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
       callback();
     },
   ]);
