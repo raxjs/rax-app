@@ -1,6 +1,7 @@
 const path = require('path');
 const { hmrClient } = require('rax-compile-config');
 const getEntries = require('./getEntries');
+const setDevServer = require('./setDevServer');
 
 const MulitPageLoader = require.resolve('./MulitPageLoader');
 
@@ -12,7 +13,7 @@ function getDepPath(rootDir, com) {
   }
 };
 
-module.exports = (config, context, type) => {
+module.exports = (config, context, targets, currentTarget) => {
   const { rootDir, command } = context;
   const isDev = command === 'start';
   const entries = getEntries(context);
@@ -26,15 +27,25 @@ module.exports = (config, context, type) => {
     }
 
     const pageEntry = getDepPath(rootDir, source);
-    entryConfig.add(`${MulitPageLoader}?type=${type}!${pageEntry}`);
+    entryConfig.add(`${MulitPageLoader}?type=${currentTarget}!${pageEntry}`);
   });
 
-  if (type === 'web') {
+  if (currentTarget === 'web') {
     config.plugin('document').tap(args => {
       return [{
         ...args[0],
         pages: entries
       }];
+    });
+  }
+
+  // Set MPA dev server.
+  // You can preview you MPA pages though guide page.
+  if (isDev) {
+    setDevServer({
+      config,
+      context,
+      targets,
     });
   }
 };

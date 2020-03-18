@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const { setConfig, setDevLog, setDevServer } = require('rax-multi-pages-settings');
+const { setConfig, setDevLog } = require('rax-multi-pages-settings');
 
 
 module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) => {
@@ -48,21 +48,13 @@ See: https://rax.js.org/docs/guide/rax-plugin-app
 
   if (targets.includes('web')) {
     onGetWebpackConfig('web', (config) => {
-      if (command === 'start' && process.env.RAX_SSR !== 'true') {
-        setDevServer({
-          config,
-          context,
-          targets,
-        });
-      }
-
-      setConfig(config, context, 'web');
+      setConfig(config, context, targets, 'web');
     });
   }
 
   if (targets.includes('weex')) {
     onGetWebpackConfig('weex', config => {
-      setConfig(config, context, 'weex');
+      setConfig(config, context, targets, 'weex');
     });
   }
 };

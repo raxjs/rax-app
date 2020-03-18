@@ -2,7 +2,7 @@ const ip = require('ip');
 const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const qrcode = require('qrcode-terminal');
-const { setConfig, setDevLog, setDevServer } = require('rax-multi-pages-settings');
+const { setConfig, setDevLog } = require('rax-multi-pages-settings');
 const { handleWebpackErr } = require('rax-compile-config');
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 
@@ -12,7 +12,6 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
   const { targets = [], type = 'spa' } = options;
   let devUrl = '';
   let devCompletedArr = [];
-  let MPADevServerStarted = false;
 
   targets.forEach((target, index) => {
     const [getBase, setDev] = getConfig(target, options);
@@ -27,15 +26,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
         type === 'mpa'
         && (target === 'web' || target === 'weex')
       ) {
-        setConfig(config, context, target);
-        if (!MPADevServerStarted) {
-          setDevServer({
-            config,
-            context,
-            targets,
-          });
-          MPADevServerStarted = true;
-        }
+        setConfig(config, context, targets, target);
       }
     });
   });

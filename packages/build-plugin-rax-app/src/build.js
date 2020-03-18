@@ -20,7 +20,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
         type === 'mpa'
         && (target === 'web' || target === 'weex')
       ) {
-        setConfig(config, context, target);
+        setConfig(config, context, targets, target);
       }
       processRelativePublicPath(target, config);
     });
