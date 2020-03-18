@@ -23,7 +23,7 @@ module.exports = (config, context, index, options) => {
         res.send(fallbackHTMLContent);
       }
     });
-    const reg = options.webEntry || /^\/?((?!\.(js|html|css|json)).)*$/
+    const reg = options.webDevEntry || /^\/?((?!\.(js|html|css|json)).)*$/
     app.get(reg, function(req, res) {
       if (fallbackHTMLContent !== undefined) {
         res.send(fallbackHTMLContent);
