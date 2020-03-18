@@ -8,25 +8,33 @@ const { isNpmModule, isJSONFile, isTypescriptFile } = require('./utils/judgeModu
 const isMiniappComponent = require('./utils/isMiniappComponent');
 const output = require('./output');
 
-const AppLoader = require.resolve('./app-loader');
-const PageLoader = require.resolve('./page-loader');
-const ComponentLoader = require.resolve('./component-loader');
 const ScriptLoader = __filename;
+
+const AppFlagLoader = require.resolve('./appFlagLoader');
+const PageFlagLoader = require.resolve('./pageFlagLoader.js');
+const ComponentFlagLoader = require.resolve('./componentFlagLoader');
 
 const MINIAPP_CONFIG_FIELD = 'miniappConfig';
 
 module.exports = function scriptLoader(content) {
+  // console.log(this.resourcePath)
+  // console.log('======');
+  const judgeFileRole = (flagLoader) => {
+    return this.loaders.some(({path}) => path === flagLoader);
+  }
+  const isAppFile = judgeFileRole(AppFlagLoader);
+  const isPageFile = judgeFileRole(PageFlagLoader);
+  const isComponentFile = judgeFileRole(ComponentFlagLoader);
+
+  if (isAppFile || isPageFile || isComponentFile) {
+    return content;
+  }
   const loaderOptions = getOptions(this);
   const { disableCopyNpm, outputPath, mode, entryPath, platform, constantDir, importedComponent = '', isRelativeMiniappComponent = false } = loaderOptions;
   const rootContext = this.rootContext;
   const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
   const isFromConstantDir = cached(isFromTargetDirs(absoluteConstantDir));
   const isAppJSon = this.resourcePath === join(rootContext, 'src', 'app.json');
-
-  const loaderHandled = this.loaders.some(
-    ({ path }) => [AppLoader, PageLoader, ComponentLoader].indexOf(path) !== -1
-  );
-  if (loaderHandled && !isFromConstantDir(this.resourcePath)) return;
 
   const rawContent = readFileSync(this.resourcePath, 'utf-8');
   const nodeModulesPathList = getNearestNodeModulesPath(rootContext, this.resourcePath);
@@ -169,7 +177,7 @@ module.exports = function scriptLoader(content) {
       const dependencies = [];
 
       if (isSingleComponent || isComponentLibrary || isRelativeMiniappComponent) {
-        const miniappComponentPath = isRelativeMiniappComponent ? relative(sourcePackagePath, this.resourcePath) : isSingleComponent ? pkg.miniappConfig[mainName] : pkg.miniappConfig.subPackages[importedComponent][mainName];
+        const miniappComponentPath = isRelativeMiniappComponent ? relative(sourcePackagePath, removeExt(this.resourcePath)) : isSingleComponent ? pkg.miniappConfig[mainName] : pkg.miniappConfig.subPackages[importedComponent][mainName];
         const sourceNativeMiniappScriptFile = join(sourcePackagePath, miniappComponentPath);
         dependencies.push({
           name: sourceNativeMiniappScriptFile,

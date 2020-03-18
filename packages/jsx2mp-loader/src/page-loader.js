@@ -9,13 +9,20 @@ const processCSS = require('./styleProcessor');
 const output = require('./output');
 const { isTypescriptFile } = require('./utils/judgeModule');
 
-const ComponentLoader = require.resolve('./component-loader');
 const ScriptLoader = require.resolve('./script-loader');
+const PageFlagLoader = require.resolve('./pageFlagLoader');
+const ComponentFlagLoader = require.resolve('./componentFlagLoader');
 
 module.exports = async function pageLoader(content) {
+  const isPageFile = this.loaders.some(({path}) => path === PageFlagLoader);
+  // Only handle page role file
+  if (!isPageFile) {
+    return content;
+  }
+
   const loaderOptions = getOptions(this);
   const { platform, entryPath, mode, disableCopyNpm, constantDir, turnOffSourceMap, outputPath } = loaderOptions;
-  const rawContent = readFileSync(this.resourcePath, 'utf-8');
+  const rawContent = content;
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
   const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
@@ -131,7 +138,7 @@ module.exports = async function pageLoader(content) {
       const componentPath = resolve(dirname(resourcePath), name);
       dependencies.push({
         name,
-        loader: isFromConstantDir(componentPath) ? ScriptLoader : ComponentLoader, // Native miniapp component js file will be loaded by script-loader
+        loader: isFromConstantDir(componentPath) ? null : ComponentFlagLoader, // Native miniapp component js file will be loaded by script-loader
         options: loaderOptions
       });
     } else {
