@@ -23,7 +23,7 @@ module.exports = (context) => {
 
   config.target('node');
 
-  const { plugins, inlineStyle } = userConfig;
+  const { plugins, inlineStyle = true } = userConfig;
   const isMultiPages = !!~plugins.indexOf('build-plugin-rax-multi-pages');
   const appJSON = require(path.resolve(rootDir, 'src/app.json'));
   const entries = appJSON.routes.map((route) => {
@@ -48,7 +48,7 @@ module.exports = (context) => {
     .filename('node/[name].js')
     .libraryTarget('commonjs2');
 
-  if (!userConfig.inlineStyle) {
+  if (!inlineStyle) {
     config.plugins.delete('minicss');
     config.module.rules.delete('css');
     config.module.rule('css')
