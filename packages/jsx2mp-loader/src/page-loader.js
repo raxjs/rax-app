@@ -21,7 +21,7 @@ module.exports = async function pageLoader(content) {
   }
 
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, mode, disableCopyNpm, constantDir, turnOffSourceMap, outputPath } = loaderOptions;
+  const { platform, entryPath, mode, disableCopyNpm, constantDir, turnOffSourceMap, outputPath, aliasEntries } = loaderOptions;
   const rawContent = content;
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
@@ -44,7 +44,8 @@ module.exports = async function pageLoader(content) {
     platform,
     sourceFileName: this.resourcePath,
     disableCopyNpm,
-    turnOffSourceMap
+    turnOffSourceMap,
+    aliasEntries
   });
 
   const rawContentAfterDCE = eliminateDeadCode(rawContent);

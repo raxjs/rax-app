@@ -15,7 +15,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
   targets.forEach((target, index) => {
     const [getBase, setDev] = getConfig(target, options);
-    registerTask(target, getBase(context, target, options));
+    registerTask(target, getBase(context, target, options, onGetWebpackConfig));
 
     if (setDev) {
       onGetWebpackConfig(target, (config) => {
@@ -42,7 +42,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     if (targets.includes(MINIAPP)) {
       console.log('Watching for changes...');
     }
-    // consoleClear(true);
+    consoleClear(true);
 
     devCompletedArr.forEach((devInfo) => {
       if (devInfo.err || devInfo.stats.hasErrors()) {

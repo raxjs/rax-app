@@ -22,7 +22,7 @@ const ComponentLoader = require.resolve('jsx2mp-loader/src/component-loader');
 const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
-module.exports = (context, target, options = {}) => {
+module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const { platform = targetPlatformMap[target], mode = 'build', disableCopyNpm = false, turnOffSourceMap = false } = options[target] || {};
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
@@ -47,7 +47,6 @@ module.exports = (context, target, options = {}) => {
     platform: platformInfo
   };
 
-
   const appEntry = 'src/app.js';
   setEntry(config, appConfig.routes, { appEntry });
 
@@ -65,6 +64,14 @@ module.exports = (context, target, options = {}) => {
     .mode('production')
     .target('node');
 
+  config.resolve.alias
+    .set('react', 'rax')
+    .set('react-dom', 'rax-dom');
+
+  onGetWebpackConfig(target, (config) => {
+    const aliasEntries = config.resolve.alias.entries();
+    pageLoaderParams.aliasEntries = appLoaderParams.aliasEntries = aliasEntries;
+  });
 
   config.module.rule('jsx').uses.clear();
   config.module.rule('tsx').uses.clear();

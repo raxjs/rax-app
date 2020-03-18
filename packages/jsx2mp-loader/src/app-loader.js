@@ -29,7 +29,7 @@ module.exports = async function appLoader(content) {
     return content;
   }
   const loaderOptions = getOptions(this);
-  const { entryPath, outputPath, platform, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
+  const { entryPath, outputPath, platform, mode, disableCopyNpm, turnOffSourceMap, aliasEntries } = loaderOptions;
   const rawContent = content;
 
   if (!existsSync(outputPath)) mkdirpSync(outputPath);
@@ -47,7 +47,8 @@ module.exports = async function appLoader(content) {
     type: 'app',
     sourceFileName: this.resourcePath,
     disableCopyNpm,
-    turnOffSourceMap
+    turnOffSourceMap,
+    aliasEntries
   });
   const rawContentAfterDCE = eliminateDeadCode(rawContent);
 

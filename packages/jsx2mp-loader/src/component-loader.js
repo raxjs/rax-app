@@ -1,4 +1,4 @@
-const { readFileSync, existsSync, mkdirpSync } = require('fs-extra');
+const { existsSync, mkdirpSync } = require('fs-extra');
 const { relative, join, dirname, resolve } = require('path');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
@@ -19,7 +19,7 @@ module.exports = async function componentLoader(content) {
     return content;
   }
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
+  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap, aliasEntries } = loaderOptions;
   const rawContent = content;
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
@@ -43,7 +43,8 @@ module.exports = async function componentLoader(content) {
     platform,
     sourceFileName: this.resourcePath,
     disableCopyNpm,
-    turnOffSourceMap
+    turnOffSourceMap,
+    aliasEntries
   });
 
   const rawContentAfterDCE = eliminateDeadCode(rawContent);

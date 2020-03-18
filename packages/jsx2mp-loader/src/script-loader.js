@@ -17,8 +17,6 @@ const ComponentFlagLoader = require.resolve('./componentFlagLoader');
 const MINIAPP_CONFIG_FIELD = 'miniappConfig';
 
 module.exports = function scriptLoader(content) {
-  // console.log(this.resourcePath)
-  // console.log('======');
   const judgeFileRole = (flagLoader) => {
     return this.loaders.some(({path}) => path === flagLoader);
   };
@@ -32,8 +30,6 @@ module.exports = function scriptLoader(content) {
   const loaderOptions = getOptions(this);
   const { disableCopyNpm, outputPath, mode, entryPath, platform, constantDir, importedComponent = '', isRelativeMiniappComponent = false } = loaderOptions;
   const rootContext = this.rootContext;
-  const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
-  const isFromConstantDir = cached(isFromTargetDirs(absoluteConstantDir));
   const isAppJSon = this.resourcePath === join(rootContext, 'src', 'app.json');
 
   const rawContent = readFileSync(this.resourcePath, 'utf-8');
