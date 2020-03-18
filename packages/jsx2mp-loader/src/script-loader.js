@@ -21,7 +21,7 @@ module.exports = function scriptLoader(content) {
   // console.log('======');
   const judgeFileRole = (flagLoader) => {
     return this.loaders.some(({path}) => path === flagLoader);
-  }
+  };
   const isAppFile = judgeFileRole(AppFlagLoader);
   const isPageFile = judgeFileRole(PageFlagLoader);
   const isComponentFile = judgeFileRole(ComponentFlagLoader);
