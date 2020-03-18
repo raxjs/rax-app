@@ -19,7 +19,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     if (setDev) {
       onGetWebpackConfig(target, (config) => {
-        setDev(config, context, index);
+        setDev(config, context, index, options);
       });
     }
   });

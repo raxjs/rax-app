@@ -4,7 +4,7 @@ const path = require('path');
 // It is determined by webpack configuration, but not vary based on the operating system.
 const HTMLAssetPath = 'web/index.html';
 
-module.exports = (config, context, index) => {
+module.exports = (config, context, index, options) => {
   config.devServer.set('before', (app, devServer) => {
     const compiler = devServer.compiler.compilers[index];
     const httpResponseQueue = [];
@@ -23,8 +23,8 @@ module.exports = (config, context, index) => {
         res.send(fallbackHTMLContent);
       }
     });
-
-    app.get(/^\/?((?!\.(js|html|css|json)).)*$/, function(req, res) {
+    const reg = options.webEntry || /^\/?((?!\.(js|html|css|json)).)*$/
+    app.get(reg, function(req, res) {
       if (fallbackHTMLContent !== undefined) {
         res.send(fallbackHTMLContent);
       } else {
