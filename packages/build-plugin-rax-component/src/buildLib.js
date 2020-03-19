@@ -56,22 +56,25 @@ module.exports = async(api, options = {}) => {
       };
       gulpCompile();
     } else {
-      if (buildMiniapp) {
-        const config = options[MINIAPP] || {};
-        const result = await jsx2mpBuilder(context, null, config);
-        if (result.err) {
-          return result;
+      gulpParams.callback = async() => {
+        if (buildMiniapp) {
+          const config = options[MINIAPP] || {};
+          const result = await jsx2mpBuilder(context, null, config);
+          if (result.err) {
+            return result;
+          }
         }
-      }
-      if (buildWechatMiniProgram) {
-        const config = Object.assign({
-          platform: 'wechat',
-        }, options[WECHAT_MINIPROGRAM]);
-        const result = await jsx2mpBuilder(context, null, config);
-        if (result.err) {
-          return result;
+        if (buildWechatMiniProgram) {
+          const config = Object.assign({
+            platform: 'wechat',
+          }, options[WECHAT_MINIPROGRAM]);
+          const result = await jsx2mpBuilder(context, null, config);
+          if (result.err) {
+            return result;
+          }
         }
-      }
+      };
+      gulpCompile();
     }
   } else {
     gulpCompile();

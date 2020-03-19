@@ -7,10 +7,10 @@ const babelConfig = getBabelConfig();
 
 module.exports = function() {
   const { routes = [] } = getOptions(this);
-
+  const resourcePath = this.resourcePath.replace(/\\/g, '/'); // Avoid path error in Windows
   const source = `
     import { render, createElement } from 'rax';
-    import Component from '${this.resourcePath}';
+    import Component from '${resourcePath}';
     import DriverUniversal from 'driver-universal';
     import { createMiniAppHistory } from 'miniapp-history';
 

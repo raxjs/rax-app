@@ -52,7 +52,7 @@ module.exports = function(appJSON) {
     // First level function to support hooks will autorun function type state,
     // Second level function to support rax-use-router rule autorun function type component.
     const dynamicImportComponent =
-      `(routeProps) => 
+      `(routeProps) =>
       import(/* webpackChunkName: "${getRouteName(route, this.rootContext).toLocaleLowerCase()}.chunk" */ '${getDepPath(route.source, this.rootContext)}')
       .then((mod) => () => {
         const reference = interopRequire(mod);
@@ -88,7 +88,7 @@ module.exports = function(appJSON) {
   }
 
   return `
-    import { createElement } from 'rax';    
+    import { createElement } from 'rax';
     const interopRequire = (mod) => mod && mod.__esModule ? mod.default : mod;
     const routes = [];
     ${assembleRoutes}
