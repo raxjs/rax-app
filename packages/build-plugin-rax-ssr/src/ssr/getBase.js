@@ -49,17 +49,9 @@ module.exports = (context) => {
     .libraryTarget('commonjs2');
 
   if (!inlineStyle) {
-    config.plugins.delete('minicss');
-    config.module.rules.delete('css');
-    config.module.rule('css')
-      .test(/\.css?$/)
-      .use('ignorecss')
-      .loader(require.resolve('null-loader'))
-      .end();
-
-    config.module.rules.delete('less');
-    config.module.rule('less')
-      .test(/\.less?$/)
+    // there is no need to generate css file in node
+    config.module.rule('ignorecss')
+      .test(/\.(css|less|saas|scss)?$/)
       .use('ignorecss')
       .loader(require.resolve('null-loader'))
       .end();
