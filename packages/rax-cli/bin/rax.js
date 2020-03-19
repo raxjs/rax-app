@@ -8,10 +8,13 @@ const spawn = require('cross-spawn');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const semver = require('semver');
+const kebabCase = require('lodash.kebabcase');
 const argv = require('minimist')(process.argv.slice(2));
 
-const cli = require('../src/');
+const generator = require('rax-generator');
 const pkg = require('../package.json');
+
+let projectName = '';
 
 // notify package update
 updateNotifier({pkg}).notify();
@@ -19,14 +22,14 @@ updateNotifier({pkg}).notify();
 // Check node version
 if (!semver.satisfies(process.version, '>=8')) {
   const message = `You are currently running Node.js ${
-    chalk.red(process.version)  }.\n` +
-    `\n` +
-    `Rax runs on Node 6.0 or newer. There are several ways to ` +
-    `upgrade Node.js depending on your preference.\n` +
-    `\n` +
-    `nvm:       nvm install node && nvm alias default node\n` +
-    `Homebrew:  brew install node\n` +
-    `Installer: download the Mac .pkg from https://nodejs.org/\n`;
+    chalk.red(process.version)}.\n` +
+    '\n' +
+    'Rax runs on Node 6.0 or newer. There are several ways to ' +
+    'upgrade Node.js depending on your preference.\n' +
+    '\n' +
+    'nvm:       nvm install node && nvm alias default node\n' +
+    'Homebrew:  brew install node\n' +
+    'Installer: download the Mac .pkg from https://nodejs.org/\n';
 
   console.log(message);
   process.exit(1);
@@ -38,13 +41,13 @@ if (!semver.satisfies(process.version, '>=8')) {
  * usage: rax -v or rax --version
  */
 if (argv._.length === 0 && (argv.v || argv.version)) {
-  console.log(`rax-cli: ${  pkg.version}`);
+  console.log(`rax-cli: ${pkg.version}`);
   try {
     const RAX_PACKAGE_JSON_PATH = path.resolve(
       process.cwd(),
       'node_modules',
       'rax',
-      'package.json'
+      'package.json',
     );
     console.log(`rax: ${require(RAX_PACKAGE_JSON_PATH).version}`);
   } catch (e) {
@@ -53,32 +56,54 @@ if (argv._.length === 0 && (argv.v || argv.version)) {
   process.exit();
 }
 
+function printHelp() {
+  console.log(`Usage: rax <command> [options]
+Options:
+  -v, --version                              output the version number
+  -h, --help                                 output usage information
+
+Commands:
+  init <app-name>                            generate project directory based on templates
+  
+Run rax <command> --help for detailed usage of given command.
+`);
+}
+
+function printInitHelp() {
+  console.log(`Usage: rax init [options] <app-name>
+
+Options:
+  -v, --verbose                               show project init details         
+`);
+}
+
+if (argv._.length === 0 && (argv.h || argv.help)) {
+  printHelp();
+  process.exit();
+}
+
 // check commands
 const commands = argv._;
 let createInCurrent = true;
 
 if (commands.length === 0) {
-  console.error(
-    'You did not pass any commands, did you mean to run `rax init`?'
-  );
+  printHelp();
   process.exit(1);
 }
 switch (commands[0]) {
   case 'init':
-    if (argv.h) {
-      console.log();
-      console.log('Usage: rax init <ProjectName> [--verbose]');
-      console.log();
+    if (argv.h || argv.help) {
+      printInitHelp();
       process.exit();
     }
 
-    init(commands[1], argv.verbose, argv.template);
+    init(commands[1], argv.v || argv.verbose, argv.t || argv.template);
     break;
   default:
     console.error(
-      'Command `%s` unrecognized.',
-      commands[0]
+      chalk.red(`Command \`${commands[0]}\` unrecognized.`),
     );
+    printHelp();
     process.exit(1);
     break;
 }
@@ -87,19 +112,40 @@ switch (commands[0]) {
  * rax init
  */
 async function init(name, verbose, template) {
-  let projectName = name;
+  projectName = name;
   createInCurrent = !projectName;
   if (!projectName) {
-    projectName = path.dirname(process.cwd()).split(path.sep).pop();
+    projectName = process.cwd().split(path.sep).pop();
   }
 
   const answers = await askProjectInformaction();
 
-  createProject(name, verbose, template, answers);
+  createProject(kebabCase(projectName), verbose, template, answers);
 }
 
 function askProjectInformaction() {
-  return inquirer.prompt(cli.config.promptQuestion);
+  const prompts = generator.config.promptQuestion;
+  let rootDir = process.cwd();
+  rootDir = path.resolve(projectName);
+
+  if (fs.existsSync(rootDir)) {
+    prompts.unshift({
+      type: 'input',
+      name: 'projectName',
+      message: `The directory ${projectName} already exists, either try using a new directory name.`,
+      validate: (newName) => {
+        if (newName === projectName) {
+          return 'Same as the original name, please change another name.';
+        } else if (!newName) {
+          return 'Please enter a name that cannot be empty.';
+        }
+        projectName = newName;
+        return true;
+      }
+    });
+  }
+
+  return inquirer.prompt(prompts);
 }
 
 function createProject(name, verbose, template, userAnswers) {
@@ -118,21 +164,15 @@ function createProject(name, verbose, template, userAnswers) {
 
   console.log(
     'Creating a new Rax project in',
-    rootDir
+    rootDir,
   );
 
-  cli.init({
-    ...userAnswers,
+  generator.init({
     root: rootDir,
     projectName,
-    projectType: userAnswers.projectType,
-    projectFeatures: userAnswers.projectFeatures || [],
-    projectAuthor: userAnswers.projectAuthor || '',
-    projectTargets: userAnswers.projectTargets || [],
-    projectAliyunId: userAnswers.projectAliyunId,
-    projectServerlessRegion: userAnswers.projectServerlessRegion,
     verbose,
     template,
+    ...userAnswers,
   }).then(function(directory) {
     if (autoInstallModules) {
       return install(directory, verbose);
@@ -142,12 +182,12 @@ function createProject(name, verbose, template, userAnswers) {
   }).then(function(isAutoInstalled) {
     console.log(chalk.white.bold('To run your app:'));
     if (!createInCurrent) {
-      console.log(chalk.white(`   cd ${  projectName}`));
+      console.log(chalk.white(`   cd ${projectName}`));
     }
     if (!isAutoInstalled) {
-      console.log(chalk.white(`   ${  pkgManager === 'npm' ? 'npm install' : 'yarn'}`));
+      console.log(chalk.white(`   ${pkgManager === 'npm' ? 'npm install' : 'yarn'}`));
     }
-    console.log(chalk.white(`   ${  pkgManager  } start`));
+    console.log(chalk.white(`   ${pkgManager} start`));
   });
 }
 
@@ -180,7 +220,7 @@ function install(directory, verbose) {
 
     proc.on('close', function(code) {
       if (code !== 0) {
-        console.error(`\`${  pkgManager  } install\` failed`);
+        console.error(`\`${pkgManager} install\` failed`);
         resolve(false);
       } else {
         resolve(true);

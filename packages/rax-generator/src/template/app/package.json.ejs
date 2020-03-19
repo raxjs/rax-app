@@ -1,0 +1,51 @@
+{
+  "name": "<%= npmName %>",
+  "author": "<%= projectAuthor %>",
+  "scripts": {
+    "build": "build-scripts build",
+    "start": "build-scripts start",
+    "lint": "eslint --ext .js --ext .jsx ./"
+  },
+  "dependencies": {
+    <%_ if (projectFeatures.includes('ssr')) { -%>
+    "rax-server-renderer": "^1.1.0",
+    <%_ } -%>
+    "rax": "^1.1.0",
+    <%_ if (appType === 'spa' || appType === 'mpa') { -%>
+    "rax-app": "^2.0.0",
+    <%_ } -%>
+    <%_ if (appType === 'lite' || appType === 'mpa') { -%>
+    "driver-universal": "^3.0.0",
+    <%_ } -%>
+    "rax-image": "^2.0.0",
+    "rax-link": "^1.0.1",
+    "rax-text": "^1.0.0",
+    "rax-view": "^1.0.0",
+    "rax-document": "^0.1.0"
+  },
+  "devDependencies": {
+    <%_ if (projectFeatures.includes('ssr')) { -%>
+    "build-plugin-rax-ssr": "^2.0.0",
+    <%_ } -%>
+    <%_ if (projectFeatures.includes('faas')) { -%>
+    "build-plugin-rax-faas": "^0.1.0",
+    <%_ } -%>
+    <%_ if (projectFeatures.includes('react')) { -%>
+    "build-plugin-rax-compat-react": "^0.1.0",
+    <%_ } -%>
+    <%_ if (appType === 'mpa') { -%>
+    "build-plugin-rax-multi-pages": "^2.0.0",
+    <%_ } -%>
+    <%_ if (languageType === 'ts') { -%>
+    "typescript": "^3.7.5",
+    "@rax-types/rax": "^1.0.6",
+    <%_ } -%>
+    "build-plugin-rax-app": "^4.0.0",
+    "@alib/build-scripts": "^0.1.0",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.8.0",
+    "eslint-config-rax": "^0.0.3",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-react": "^7.18.0"
+  }
+}

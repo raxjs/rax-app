@@ -171,7 +171,6 @@ function tryApplyUpdates(onHotUpdateSuccess) {
   }
 
   function handleApplyUpdates(err, updatedModules) {
-    console.log('handleApplyUpdates', err, updatedModules);
     if (err || !updatedModules) {
       window.location.reload();
       return;
@@ -199,7 +198,7 @@ function tryApplyUpdates(onHotUpdateSuccess) {
       },
       function(err) {
         handleApplyUpdates(err, null);
-      }
+      },
     );
   }
 }

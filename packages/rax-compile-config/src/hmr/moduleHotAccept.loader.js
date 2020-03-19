@@ -29,7 +29,7 @@ module.exports = function(source, inputMap) {
     `${source}
 
 // HMR append by rax-scripts/loaders/module-hot-accept.js
-// @see https://github.com/alibaba/rax
+// @see https://github.com/raxjs/rax-scripts
 if (module.hot) {
   module.hot.accept(function(err) {
     if (err) {
@@ -44,6 +44,6 @@ if (module.hot) {
   });
 }
 `,
-    inputMap
+    inputMap,
   );
 };

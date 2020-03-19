@@ -1,0 +1,14 @@
+{
+  "name": "build-plugin-rax-theme",
+  "version": "0.0.1",
+  "description": "Switching project themes with CSS variables",
+  "license": "BSD-3-Clause",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git"
+  },
+  "dependencies": {
+    "less-loader": "^5.0.0",
+    "stylesheet-loader": "^0.6.5"
+  }
+}

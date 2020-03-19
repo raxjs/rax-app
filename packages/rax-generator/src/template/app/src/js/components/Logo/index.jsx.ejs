@@ -1,0 +1,16 @@
+<%_ const useReact = projectFeatures.includes('react') -%>
+import { createElement } from '<%_ if (useReact) { -%>react<%_ } else { -%>rax<%_ } -%>';
+import Image from 'rax-image';
+
+import './index.css';
+
+export default (props) => {
+  return (
+    <Image
+      className="logo"
+      source={{
+        uri: '//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png',
+      }}
+    />
+  );
+};

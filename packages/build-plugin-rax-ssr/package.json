@@ -1,0 +1,21 @@
+{
+  "name": "build-plugin-rax-ssr",
+  "version": "2.0.2",
+  "description": "rax ssr plugins",
+  "license": "BSD-3-Clause",
+  "main": "src/index.js",
+  "peerDependencies": {
+    "build-plugin-rax-app": "^1.0.0"
+  },
+  "dependencies": {
+    "@babel/core": "7.2.0",
+    "address": "^1.0.1",
+    "babel-plugin-transform-jsx-to-html": "^0.1.0",
+    "error-stack-parser": "^2.0.3",
+    "klaw-sync": "^6.0.0",
+    "lodash": "^4.17.15",
+    "qs": "^6.8.0",
+    "rax-compile-config": "^0.2.0",
+    "source-map": "^0.7.3"
+  }
+}

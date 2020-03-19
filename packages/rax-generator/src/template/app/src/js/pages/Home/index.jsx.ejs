@@ -1,0 +1,40 @@
+<%_ const useFaaS = projectFeatures.includes('faas') -%>
+<%_ const useReact = projectFeatures.includes('react') -%>
+<%_ if (useFaaS) { -%>
+/* global __FAAS_API__ */
+<%_ } -%>
+import { createElement<%_ if (useFaaS) { -%>, useState, useEffect<%_ } -%> } from '<%_ if (useReact) { -%>react<%_ } else { -%>rax<%_ } -%>';
+import View from 'rax-view';
+import Text from 'rax-text';
+
+import './index.css';
+
+import Logo from '../../components/Logo';
+
+export default function Home() {
+<%_ if (useFaaS) { -%>
+  const [account, setAccount] = useState('');
+
+  useEffect(() => {
+    // `__FAAS_API__` Only work in WebApp
+    fetch(`${__FAAS_API__}/user`)
+      .then(res => {
+        return res.json();
+      })
+      .then(data => {
+        setAccount(data.account);
+      });
+  }, []);
+<%_ } -%>
+  return (
+    <View className="home"><%# className can work correctly whether `inlineStyle` is `true` or `false` %>
+      <Logo />
+      <Text className="title">Welcome to Your Rax App</Text>
+      <%_ if (useFaaS) { -%>
+      <Text className="info">Current user: {account}</Text>
+      <%_ } -%>
+      <Text className="info">More information about Rax</Text>
+      <Text className="info">Visit https://rax.js.org</Text>
+    </View>
+  );
+}

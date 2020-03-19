@@ -10,7 +10,7 @@ let logOnce = true;
 
 module.exports = (userOptions = {}) => {
   const options = Object.assign({}, defaultOptions, userOptions);
-  const { styleSheet, disableJSXPlus, custom = {} } = options;
+  const { styleSheet, disableJSXPlus, custom = {}, isSSR, disableRegenerator = false } = options;
 
   const baseConfig = {
     presets: [
@@ -18,7 +18,9 @@ module.exports = (userOptions = {}) => {
       [
         require.resolve('@babel/preset-env'),
         {
-          targets: {
+          targets: isSSR ? {
+            node: '8',
+          } : {
             chrome: '49',
             ios: '8',
           },
@@ -43,7 +45,7 @@ module.exports = (userOptions = {}) => {
         {
           'corejs': false,
           'helpers': false,
-          'regenerator': true,
+          'regenerator': !disableRegenerator,
           'useESModules': false,
         },
       ],
@@ -74,6 +76,15 @@ module.exports = (userOptions = {}) => {
 
   const configArr = [baseConfig];
 
+  if (isSSR) {
+    // Must transform before other jsx transformer
+    configArr.push({
+      plugins: [
+        require.resolve('babel-plugin-transform-jsx-to-html'),
+      ],
+    });
+  }
+
   // Enable jsx plus default.
   if (!disableJSXPlus) {
     configArr.push({
@@ -88,7 +99,7 @@ module.exports = (userOptions = {}) => {
     });
 
     if (logOnce) {
-      console.log(chalk.green('[JSX+] Stynax enabled.'));
+      console.log(chalk.green('JSX+ enabled, documentation: https://rax.js.org/docs/guide/jsxplus'));
       logOnce = false;
     }
   }
