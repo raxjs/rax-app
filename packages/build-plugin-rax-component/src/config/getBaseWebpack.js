@@ -28,6 +28,10 @@ module.exports = (context) => {
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, `commonjs ${request}`);
       }
+      // Built-in modules in QuickApp
+      if (request.indexOf('@system') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
       callback();
     },
   ]);
