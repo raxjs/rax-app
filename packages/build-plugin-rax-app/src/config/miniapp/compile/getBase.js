@@ -74,7 +74,26 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   });
 
   config.module.rule('jsx').uses.clear();
+  config.module.rule('jsx')
+    .test(/\.jsx?$/)
+    .use('platform')
+    .loader(require.resolve('rax-compile-config/src/platformLoader'))
+    .options({platform: target});
+
   config.module.rule('tsx').uses.clear();
+  config.module.rule('tsx')
+    .test(/\.(tsx?)$/)
+    .use('ts')
+    .loader(require.resolve('ts-loader'))
+    .options({
+      transpileOnly: true,
+    })
+    .end()
+    .use('platform')
+    .loader(require.resolve('rax-compile-config/src/platformLoader'))
+    .options({platform: target});
+
+
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
