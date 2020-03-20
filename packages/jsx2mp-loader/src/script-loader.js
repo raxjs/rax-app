@@ -3,7 +3,7 @@ const { join, dirname, relative, resolve, sep } = require('path');
 const { copySync, existsSync, mkdirpSync, writeJSONSync, readFileSync, readJSONSync } = require('fs-extra');
 const { getOptions } = require('loader-utils');
 const cached = require('./cached');
-const { removeExt, isFromTargetDirs, doubleBackslash, normalizeOutputFilePath, addRelativePathPrefix } = require('./utils/pathHelper');
+const { removeExt, doubleBackslash, normalizeOutputFilePath, addRelativePathPrefix } = require('./utils/pathHelper');
 const { isNpmModule, isJSONFile, isTypescriptFile } = require('./utils/judgeModule');
 const isMiniappComponent = require('./utils/isMiniappComponent');
 const output = require('./output');
@@ -28,7 +28,7 @@ module.exports = function scriptLoader(content) {
     return content;
   }
   const loaderOptions = getOptions(this);
-  const { disableCopyNpm, outputPath, mode, entryPath, platform, constantDir, importedComponent = '', isRelativeMiniappComponent = false } = loaderOptions;
+  const { disableCopyNpm, outputPath, mode, entryPath, platform, importedComponent = '', isRelativeMiniappComponent = false, aliasEntries } = loaderOptions;
   const rootContext = this.rootContext;
   const isAppJSon = this.resourcePath === join(rootContext, 'src', 'app.json');
 
@@ -90,7 +90,8 @@ module.exports = function scriptLoader(content) {
               resourcePath: this.resourcePath,
               outputPath,
               disableCopyNpm,
-              platform
+              platform,
+              aliasEntries
             }
           ]
         ],
