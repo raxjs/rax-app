@@ -45,8 +45,8 @@ const projectConfigJsonTmpl = require('./template/project.config.json');
 /**
  * Add file to compilation
  */
-function addFile(compilation, filename, content) {
-  compilation.assets[filename] = {
+function addFile(compilation, filename, content, target) {
+  compilation.assets[`${target}/${filename}`] = {
     source: () => content,
     size: () => Buffer.from(content).length
   };
@@ -153,7 +153,7 @@ function handlePageJS(
     .replace('/* REACH_BOTTOM_FUNCTION */', reachBottomFunction)
     .replace('/* PULL_DOWN_REFRESH_FUNCTION */', pullDownRefreshFunction);
 
-  addFile(compilation, `${target}/${pageRoute}.js`, pageJsContent);
+  addFile(compilation, `${pageRoute}.js`, pageJsContent, target);
 }
 
 function handlePageXML(
@@ -168,7 +168,7 @@ function handlePageXML(
     customComponentRoot ? 'generic:custom-component="custom-component"' : ''
   }> </element>`;
 
-  addFile(compilation, `${target}/${pageRoute}.${adapter[target].xml}`, pageXmlContent);
+  addFile(compilation, `${pageRoute}.${adapter[target].xml}`, pageXmlContent, target);
 }
 
 function handlePageCSS(
@@ -199,8 +199,9 @@ function handlePageCSS(
     pageCssContent = `page { background-color: ${pageBackgroundColor}; }\n${pageCssContent}`;
   addFile(
     compilation,
-    `${target}/${pageRoute}.${adapter[target].css}`,
-    adjustCss(pageCssContent)
+    `${pageRoute}.${adapter[target].css}`,
+    adjustCss(pageCssContent),
+    target
   );
 }
 
@@ -226,7 +227,7 @@ function handlePageJSON(
       `${pageRoute}.js`
     );
   }
-  addFile(compilation, `${target}/${pageRoute}.json`, JSON.stringify(pageConfig, null, 2));
+  addFile(compilation, `${pageRoute}.json`, JSON.stringify(pageConfig, null, 2), target);
 }
 
 function handleAppJS(compilation, appAssets, assetsSubpackageMap, target) {
@@ -244,7 +245,7 @@ function handleAppJS(compilation, appAssets, assetsSubpackageMap, target) {
       )
       .join(';')};const appConfig = fakeWindow.appOptions || {};`
   );
-  addFile(compilation, `${target}/app.js`, appJsContent);
+  addFile(compilation, 'app.js', appJsContent, target);
 }
 
 function handleAppCSS(
@@ -269,7 +270,7 @@ function handleAppCSS(
       .join('\n')}`;
   }
   appCssContent = adjustCss(appCssContent) + `\n${appExtraCssTmpl}`;
-  addFile(compilation, `${target}/app.${adapter[target].css}`, appCssContent);
+  addFile(compilation, `app.${adapter[target].css}`, appCssContent, target);
 }
 
 function handleProjectConfig(compilation, { projectConfig = {} }, target) {
@@ -281,7 +282,7 @@ function handleProjectConfig(compilation, { projectConfig = {} }, target) {
       null,
       '\t'
     );
-    addFile(compilation, `${target}/project.config.json`, projectConfigJsonContent);
+    addFile(compilation, 'project.config.json', projectConfigJsonContent, target);
   }
 }
 
@@ -299,10 +300,14 @@ function handleSiteMap(compilation, { sitemapConfig }, target) {
   }
 }
 
-function handleConfigJS(compilation, optimization, target) {
-  addFile(compilation, `${target}/config.js`, `module.exports = ${JSON.stringify({
-    optimization
-  })}`);
+function handleConfigJS(compilation, options = {}, target) {
+  const exportedConfig = {
+    optimization: options.optimization || {},
+    nativeCustomComponent: options.config ? options.config.nativeCustomComponent ? options.config.nativeCustomComponent : undefined : undefined
+  };
+  addFile(compilation, 'config.js', `module.exports = ${JSON.stringify(
+    exportedConfig
+  )}`, target);
 }
 
 function handleCustomComponent(
@@ -328,7 +333,7 @@ function handleCustomComponent(
     );
 
     // custom-component/index.js
-    addFile(compilation, 'custom-component/index.js', customComponentJsTmpl);
+    addFile(compilation, 'custom-component/index.js', customComponentJsTmpl, target);
 
     // custom-component/index.xml
     addFile(
@@ -345,11 +350,12 @@ function handleCustomComponent(
             .map(name => `bind${name}="on${name}"`)
             .join(' ')}><slot/></${key}>`;
         })
-        .join('\n')
+        .join('\n'),
+      target
     );
 
     // custom-component/index.css
-    addFile(compilation, `custom-component/index.${adapter[target].css}`, '');
+    addFile(compilation, `custom-component/index.${adapter[target].css}`, '', target);
 
     // custom-component/index.json
     addFile(
@@ -362,7 +368,8 @@ function handleCustomComponent(
         },
         null,
         '\t'
-      )
+      ),
+      target
     );
   }
 }
@@ -375,8 +382,8 @@ function installDependencies(
 ) {
   const sourcePath = join(process.cwd(), 'src');
   const customComponentRoot =
-    customComponentConfig.root &&
-    resolve(sourcePath, customComponentConfig.root);
+  customComponentConfig.root &&
+  resolve(sourcePath, customComponentConfig.root);
 
   const outputPath = resolve(stats.compilation.outputOptions.path);
 
@@ -495,9 +502,9 @@ class MiniAppRuntimePlugin {
           // Adjust css content
           if (ext === 'css') {
             compilation.assets[
-              `${filePath}.${adapter[target].css}`
-            ] = new RawSource(adjustCss(compilation.assets[filePath].source()));
-            delete compilation.assets[filePath];
+              `${target}/${filePath}.${adapter[target].css}`
+            ] = new RawSource(adjustCss(compilation.assets[`${target}/${filePath}`].source()));
+            delete compilation.assets[`${target}/${filePath}`];
           }
         });
 
@@ -609,7 +616,7 @@ class MiniAppRuntimePlugin {
       handleSiteMap(compilation, options, target);
 
       // Config js
-      handleConfigJS(compilation, options.optimization || {}, target);
+      handleConfigJS(compilation, options || {}, target);
 
       // Custom-component
       handleCustomComponent(
