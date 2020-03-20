@@ -79,8 +79,9 @@ export default {
     });
   },
 
-  convert(rule, log) {
+  convert(rule, query = {}) {
     let style = {};
+    const { log, theme } = query;
 
     if (rule.tagName === 'text') {
       return;
@@ -95,7 +96,7 @@ export default {
       let value = this.convertValue(camelCaseProperty, declaration.value);
       style[camelCaseProperty] = value;
 
-      if (typeof value === 'string' && value.search(VAR_REGEX) > -1) {
+      if (typeof value === 'string' && value.search(VAR_REGEX) > -1 && theme) {
         // var(--test-var)
         Object.assign(style, {
           [camelCaseProperty]: this.convertCSSVariableValue(value)
