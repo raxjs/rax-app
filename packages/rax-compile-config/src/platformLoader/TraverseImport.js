@@ -15,7 +15,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
     kraken: 'isKraken',
     node: 'isNode',
     miniapp: 'isMiniApp',
-    WeChatMiniprogram: 'isWeChatMiniprogram',
+    'wechat-miniprogram': 'isWeChatMiniProgram',
   };
 
   /**
@@ -171,6 +171,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
               ));
             } else {
               const newNodeInit = specObj.imported === platformMap[options.platform];
+              console.log("ImportDeclaration -> newNodeInit", newNodeInit)
               let newNode = variableDeclarationMethod(
                 specObj.imported,
                 newNodeInit,
