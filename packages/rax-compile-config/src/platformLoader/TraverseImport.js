@@ -171,7 +171,6 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
               ));
             } else {
               const newNodeInit = specObj.imported === platformMap[options.platform];
-              console.log("ImportDeclaration -> newNodeInit", newNodeInit)
               let newNode = variableDeclarationMethod(
                 specObj.imported,
                 newNodeInit,
