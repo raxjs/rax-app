@@ -27,10 +27,7 @@ module.exports = async function componentLoader(content) {
 
   const isFromConstantDir = cached(isFromTargetDirs(absoluteConstantDir));
 
-  let JSXCompilerPath = getHighestPriorityPackage('jsx-compiler', this.rootContext);
-  if (platform.type === 'quickapp') {
-    JSXCompilerPath = '@ali/jsx2qa-compiler';
-  }
+  const JSXCompilerPath = getHighestPriorityPackage('jsx-compiler', this.rootContext);
   const compiler = require(JSXCompilerPath);
 
   const compilerOptions = Object.assign({}, compiler.baseOptions, {

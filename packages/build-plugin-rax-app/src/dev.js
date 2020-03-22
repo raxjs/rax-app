@@ -43,7 +43,6 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     if (targets.includes(MINIAPP)) {
       console.log('Watching for changes...');
     }
-
     consoleClear(true);
 
     devCompletedArr.forEach((devInfo) => {

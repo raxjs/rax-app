@@ -172,6 +172,7 @@ module.exports = function scriptLoader(content) {
       const isComponentLibrary = pkg.miniappConfig && pkg.miniappConfig.subPackages && pkg.miniappConfig.subPackages[importedComponent];
 
       const dependencies = [];
+
       if (isSingleComponent || isComponentLibrary || isRelativeMiniappComponent) {
         const miniappComponentPath = isRelativeMiniappComponent ? relative(sourcePackagePath, this.resourcePath) : isSingleComponent ? pkg.miniappConfig[mainName] : pkg.miniappConfig.subPackages[importedComponent][mainName];
         const sourceNativeMiniappScriptFile = join(sourcePackagePath, miniappComponentPath);

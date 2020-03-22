@@ -6,9 +6,6 @@
   "keywords": [
     "rax"
   ],
-  "publishConfig": {
-    "registry": "http://registry.npm.alibaba-inc.com"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/raxjs/rax-scripts.git"
