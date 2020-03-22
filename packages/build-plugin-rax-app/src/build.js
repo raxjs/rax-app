@@ -2,11 +2,12 @@ const path = require('path');
 const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
+const checkQuickAppEnv = require('rax-quickapp-plugin');
 
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 const processRelativePublicPath = require('./config/processRelativePublicPath');
 
-const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
+const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, QUICKAPP } = require('./constants');
 
 module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
@@ -22,7 +23,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
       registerTask(target, getBase(context, target, options));
     }
 
-    if ([MINIAPP, WECHAT_MINIPROGRAM].includes(target)) {
+    if ([MINIAPP, WECHAT_MINIPROGRAM, QUICKAPP].includes(target)) {
       if (options[target] && options[target].buildType === 'runtime') {
         const getBase = require('./config/miniapp/runtime/getBase');
         registerTask(target, getBase(context, target, options));
@@ -83,6 +84,21 @@ function logBuildResult(targets = [], context = {}) {
     console.log('   ', chalk.underline.white(getMiniAppOutput(context, {
       target: WECHAT_MINIPROGRAM,
     })));
+    console.log();
+  }
+
+  // Check for quick app's environment
+  const quickAppDist = getMiniAppOutput(context, { target: QUICKAPP });
+  if (targets.includes(QUICKAPP)) {
+    checkQuickAppEnv({
+      workDirectory: process.cwd(),
+      distDirectory: quickAppDist,
+    });
+  }
+
+  if (targets.includes(QUICKAPP)) {
+    console.log(chalk.green('[Quick App] Use quick app developer tools to open the following folder:'));
+    console.log('   ', chalk.underline.white(quickAppDist));
     console.log();
   }
 }

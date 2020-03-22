@@ -29,7 +29,10 @@ module.exports = async function appLoader(content) {
 
   const sourcePath = join(this.rootContext, entryPath);
 
-  const JSXCompilerPath = getHighestPriorityPackage('jsx-compiler', this.rootContext);
+  let JSXCompilerPath = getHighestPriorityPackage('jsx-compiler', this.rootContext);
+  if (platform.type === 'quickapp') {
+    JSXCompilerPath = '@ali/jsx2qa-compiler';
+  }
   const compiler = require(JSXCompilerPath);
 
   const compilerOptions = Object.assign({}, compiler.baseOptions, {
@@ -68,11 +71,13 @@ module.exports = async function appLoader(content) {
   };
   const outputOption = {
     outputPath: {
-      code: join(outputPath, 'app.js'),
+      code: join(outputPath, platform.type === 'quickapp' ? 'app.ux' : 'app.js'),
       css: join(outputPath, 'app' + platform.extension.css),
     },
     mode,
-    isTypescriptFile: isTypescriptFile(this.resourcePath)
+    isTypescriptFile: isTypescriptFile(this.resourcePath),
+    type: 'app',
+    platform,
   };
 
   output(outputContent, rawContent, outputOption);

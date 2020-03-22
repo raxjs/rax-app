@@ -24,7 +24,11 @@ module.exports = (context, target, options = {}) => {
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
   const entryPath = './src/app.js';
-  const outputPath = getOutputPath(context, { target });
+  let outputPath = getOutputPath(context, { target });
+  // Quickapp's output should be wrapped in src
+  if (target === 'quickapp') {
+    outputPath += '/src';
+  }
   const config = getWebpackBase(context, {
     disableRegenerator: true
   });
@@ -96,6 +100,9 @@ module.exports = (context, target, options = {}) => {
         return callback(null, `commonjs2 ${request}`);
       }
       if (/^@weex-module\//.test(request)) {
+        return callback(null, `commonjs2 ${request}`);
+      }
+      if (/^@system/.test(request)) {
         return callback(null, `commonjs2 ${request}`);
       }
       callback();

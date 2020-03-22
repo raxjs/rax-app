@@ -26,7 +26,10 @@ module.exports = async function pageLoader(content) {
 
   const isFromConstantDir = cached(isFromTargetDirs(absoluteConstantDir));
 
-  const JSXCompilerPath = getHighestPriorityPackage('jsx-compiler', this.rootContext);
+  let JSXCompilerPath = getHighestPriorityPackage('jsx-compiler', this.rootContext);
+  if (platform.type === 'quickapp') {
+    JSXCompilerPath = '@ali/jsx2qa-compiler';
+  }
   const compiler = require(JSXCompilerPath);
 
   const compilerOptions = Object.assign({}, compiler.baseOptions, {
@@ -98,7 +101,9 @@ module.exports = async function pageLoader(content) {
     css: transformed.style || '',
     json: config,
     template: transformed.template,
-    assets: transformed.assets
+    assets: transformed.assets,
+    importComponents: transformed.importComponents,
+    iconfontMap: transformed.iconfontMap,
   };
   const outputOption = {
     outputPath: {
@@ -109,6 +114,7 @@ module.exports = async function pageLoader(content) {
       assets: outputPath
     },
     mode,
+    platform,
     isTypescriptFile: isTypescriptFile(this.resourcePath)
   };
 

@@ -18,7 +18,7 @@ module.exports = class MiniAppConfigPlugin {
       const config = transformAppConfig(outputPath, appConfig, target);
       safeWriteFile(join(outputPath, 'app.json'), config, true);
       if (type === 'complie') {
-        safeWriteFile(join(outputPath, 'app.config.js'), `module.exports = ${JSON.stringify(appConfig, null, 2)}`);
+        safeWriteFile(join(outputPath, target === 'quickapp' ? 'appConfig.js' : 'app.config.js'), `module.exports = ${JSON.stringify(appConfig, null, 2)}`);
       }
       // Transform page config
       config.pages.map((page, index) => {
