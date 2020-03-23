@@ -234,7 +234,15 @@ module.exports = function scriptLoader(content) {
  * For that alipay build folder can not contain `@`, escape to `_`.
  */
 function normalizeNpmFileName(filename) {
-  return filename.replace(/@/g, '_').replace(/node_modules/g, 'npm');
+  const repalcePathname = pathname => pathname.replace(/@/g, '_').replace(/node_modules/g, 'npm');
+
+  const cwd = process.cwd();
+
+  if (!filename.includes(cwd)) return repalcePathname(filename);
+
+  // Support for `@` in cwd path
+  const relativePath = relative(cwd, filename);
+  return join(cwd, repalcePathname(relativePath));
 }
 
 function getNearestNodeModulesPath(root, current) {
