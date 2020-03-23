@@ -15,6 +15,7 @@ const CopyPublicFilePlugin = require('../../../plugins/miniapp/CopyPublicFile');
 
 const platformConfig = require('./platformConfig');
 const targetPlatformMap = require('../targetPlatformMap');
+const { QUICKAPP } = require('../../../constants');
 
 const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
@@ -26,7 +27,7 @@ module.exports = (context, target, options = {}) => {
   const entryPath = './src/app.js';
   let outputPath = getOutputPath(context, { target });
   // Quickapp's output should be wrapped in src
-  if (target === 'quickapp') {
+  if (target === QUICKAPP) {
     outputPath += '/src';
   }
   const config = getWebpackBase(context, {
