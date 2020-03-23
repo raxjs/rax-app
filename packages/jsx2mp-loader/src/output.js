@@ -95,6 +95,14 @@ function output(content, raw, options) {
       // wrap with script for app.ux
       if (type === 'app') {
         code = `<script>\n${code}\n</script>\n`;
+        writeFileWithDirCheck(outputPath.code, code);
+        // check if update fns exists
+        if (global._appUpdateFns && global._appUpdateFns.length) {
+          global._appUpdateFns.map(fn => {
+            fn.call();
+          });
+          global._appUpdateFns = [];
+        }
       } else {
         // insert global iconfont in app.ux if iconfont detected in page/component
         if (iconfontMap && iconfontMap.length) {
@@ -103,15 +111,15 @@ function output(content, raw, options) {
           if (appContent.length) {
             updateAppUx(appContent, iconfontMap, appPath);
           } else {
-            // delay if app.ux not generated before other page/component
-            setTimeout(() => {
-              updateAppUx(appContent, iconfontMap, appPath);
-            }, 500);
+            // cache update fns in case app.ux is not ready yet
+            global._appUpdateFns = global._appUpdateFns || [];
+            global._appUpdateFns.push(updateAppUx.bind(null, appContent, iconfontMap, appPath));
           }
         }
       }
+    } else {
+      writeFileWithDirCheck(outputPath.code, code);
     }
-    writeFileWithDirCheck(outputPath.code, code);
   }
 
   if (json) {
@@ -192,22 +200,22 @@ function updateAppUx(appContent, iconfontMap, appPath) {
   if (insertIndex < 0) {
     appContent = `${appContent}\n<style>\n${iconfontMap.map((v) => {
       return `@font-face {
-        font-family: ${v.fontFamily};
-        src: url('${v.url}');
-      }
-      .${v.iconClass} {
-        font-family: ${v.fontFamily};
-      }`;
+  font-family: ${v.fontFamily};
+  src: url('${v.url}');
+}
+.${v.iconClass} {
+  font-family: ${v.fontFamily};
+}`;
     }).join('\n')}\n</style>`;
   } else {
     appContent = `${appContent.substr(0, insertIndex)}\n${iconfontMap.map((v) => {
       return `@font-face {
-        font-family: ${v.fontFamily};
-        src: url('${v.url}');
-      }
-      .${v.iconClass} {
-        font-family: ${v.fontFamily};
-      }`;
+  font-family: ${v.fontFamily};
+  src: url('${v.url}');
+}
+.${v.iconClass} {
+  font-family: ${v.fontFamily};
+}`;
     }).join('\n')}\n</style>`;
   }
   writeFileSync(appPath, appContent);
