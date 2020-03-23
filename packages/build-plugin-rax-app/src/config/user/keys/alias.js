@@ -10,9 +10,9 @@ module.exports = {
     //   "react": "rax"
     // }
     Object.keys(value).forEach((alias) => {
-      const maybePath = path.resolve(context.rootDir, value[alias]);
-      if (existsSync(maybePath)) {
-        config.resolve.alias.set(alias, maybePath);
+      const fullPath = path.resolve(context.rootDir, value[alias]);
+      if (existsSync(fullPath)) {
+        config.resolve.alias.set(alias, fullPath);
       } else {
         config.resolve.alias.set(alias, value[alias]);
       }
