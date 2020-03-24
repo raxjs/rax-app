@@ -20,7 +20,7 @@ module.exports = async function pageLoader(content) {
   }
 
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, mode, disableCopyNpm, constantDir, turnOffSourceMap, outputPath, aliasEntries } = loaderOptions;
+  const { platform, entryPath, mode, disableCopyNpm, constantDir, turnOffSourceMap, outputPath, aliasEntries, injectAppCssComponent } = loaderOptions;
   const rawContent = content;
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
@@ -97,6 +97,16 @@ module.exports = async function pageLoader(content) {
       }
     });
     config.usingComponents = usingComponents;
+  }
+
+  // Only works when developing miniapp plugin, to declare the use of __app_css component
+  if (injectAppCssComponent) {
+    const appCssComponentPath = resolve(outputPath, '__app_css', 'index');
+    const relativeAppCssComponentPath = relative(pageDistDir, appCssComponentPath);
+    config.usingComponents = {
+      '__app_css': relativeAppCssComponentPath,
+      ...config.usingComponents
+    }
   }
 
   const outputContent = {

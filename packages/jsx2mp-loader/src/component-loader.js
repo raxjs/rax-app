@@ -21,7 +21,7 @@ module.exports = async function componentLoader(content) {
   }
 
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap, aliasEntries } = loaderOptions;
+  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap, aliasEntries, injectAppCssComponent } = loaderOptions;
   const rawContent = content;
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
@@ -91,6 +91,16 @@ module.exports = async function componentLoader(content) {
 
   const distFileDir = dirname(distFileWithoutExt);
   if (!existsSync(distFileDir)) mkdirpSync(distFileDir);
+
+  // Only works when developing miniapp plugin, to declare the use of __app_css component
+  if (injectAppCssComponent) {
+    const appCssComponentPath = resolve(outputPath, '__app_css', 'index');
+    const relativeAppCssComponentPath = relative(distFileDir, appCssComponentPath);
+    config.usingComponents = {
+      '__app_css': relativeAppCssComponentPath,
+      ...config.usingComponents
+    }
+  }
 
   const outputContent = {
     code: transformed.code,
