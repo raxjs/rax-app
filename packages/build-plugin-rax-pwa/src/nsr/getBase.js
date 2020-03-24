@@ -29,6 +29,7 @@ function setEntry(config, context, entries) {
 
 module.exports = (context) => {
   const { userConfig, rootDir } = context;
+  const { inlineStyle = true } = userConfig;
 
   const babelConfig = getBabelConfig({
     styleSheet: true,
@@ -56,7 +57,7 @@ module.exports = (context) => {
     .filename('nsr/[name].js')
     .libraryTarget('umd');
 
-  if (!userConfig.inlineStyle) {
+  if (!inlineStyle) {
     config.plugins.delete('minicss');
     config.module.rules.delete('css');
     config.module.rule('css')
