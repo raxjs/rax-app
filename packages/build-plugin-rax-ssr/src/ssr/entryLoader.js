@@ -1,10 +1,6 @@
 const qs = require('qs');
 const fs = require('fs');
 const path = require('path');
-const babel = require('@babel/core');
-const { getBabelConfig } = require('rax-compile-config');
-
-const babelConfig = getBabelConfig();
 
 const isWin = process.platform === 'win32';
 
@@ -128,7 +124,5 @@ module.exports = function() {
     }
   `;
 
-  const { code } = babel.transformSync(source, babelConfig);
-
-  return code;
+  return source;
 };
