@@ -1,8 +1,8 @@
 const webpack = require('webpack');
+const Chain = require('webpack-chain');
 const { resolve } = require('path');
 const { existsSync } = require('fs-extra');
 
-const getWebpackBase = require('./getWebpackBase');
 const getPluginConfig = require('./getPluginConfig');
 const setEntry = require('./setEntry');
 const getOutputPath = require('./getOutputPath');
@@ -11,7 +11,6 @@ const ModifyOutputFileSystemPlugin = require('../../plugins/miniapp/ModifyOutput
 const CopyJsx2mpRuntimePlugin = require('../../plugins/miniapp/CopyJsx2mpRuntime');
 const CopyPublicFilePlugin = require('../../plugins/miniapp/CopyPublicFile');
 const GenerateAppCssPlugin = require('../../plugins/miniapp/GenerateAppCss');
-
 
 const platformConfig = require('./platformConfig');
 const targetPlatformMap = require('./targetPlatformMap');
@@ -23,13 +22,11 @@ const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
 module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const { platform = targetPlatformMap[target], mode = 'build', disableCopyNpm = false, turnOffSourceMap = false } = options[target] || {};
-  const { rootDir } = context;
+  const { rootDir, command } = context;
   const platformInfo = platformConfig[target];
   const entryPath = './src/index.js';
   const outputPath = getOutputPath(context, { target });
-  const config = getWebpackBase(context, {
-    disableRegenerator: true
-  });
+  const config = new Chain();
 
   const pluginConfig = getPluginConfig(rootDir, target);
 
@@ -46,14 +43,24 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     injectAppCssComponent: true,
     platform: platformInfo
   };
-
-  const entry = 'src/index.js';
-  setEntry(config, pluginConfig, { entry });
-
   const pageLoaderParams = {
     ...loaderParams,
     entryPath: entry,
   };
+
+
+  const entry = 'src/index.js';
+  setEntry(config, pluginConfig, { entry });
+
+  config.target('web');
+  config.context(rootDir);
+
+  config.plugin('noError')
+    .use(webpack.NoEmitOnErrorsPlugin);
+
+  if (command === 'start') {
+    config.mode('development');
+  }
 
   config
     .mode('production')
@@ -139,7 +146,8 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
 
 
   config.resolve.extensions
-    .add('.js').add('.jsx').add('.ts').add('.tsx').add('.json');
+    .merge(['.js', '.json', '.jsx', '.ts', '.tsx']);
+
 
   config.resolve.mainFields
     .add('main').add('module');
