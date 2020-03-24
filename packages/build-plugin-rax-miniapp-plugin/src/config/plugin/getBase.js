@@ -65,7 +65,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
 
   onGetWebpackConfig(target, (config) => {
     const aliasEntries = config.resolve.alias.entries();
-    loaderParams.aliasEntries = pageLoaderParams.aliasEntries  = aliasEntries;
+    loaderParams.aliasEntries = pageLoaderParams.aliasEntries = aliasEntries;
   });
 
   config.module.rule('jsx').uses.clear();

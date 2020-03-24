@@ -16,7 +16,6 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
   });
 
   onHook('after.start.compile', async(args) => {
-    devUrl = args.url;
     devCompletedArr.push(args);
     devCompileLog();
   });
