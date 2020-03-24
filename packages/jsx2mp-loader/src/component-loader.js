@@ -99,7 +99,7 @@ module.exports = async function componentLoader(content) {
     config.usingComponents = {
       '__app_css': relativeAppCssComponentPath,
       ...config.usingComponents
-    }
+    };
   }
 
   const outputContent = {

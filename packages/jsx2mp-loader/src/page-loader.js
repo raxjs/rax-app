@@ -106,7 +106,7 @@ module.exports = async function pageLoader(content) {
     config.usingComponents = {
       '__app_css': relativeAppCssComponentPath,
       ...config.usingComponents
-    }
+    };
   }
 
   const outputContent = {
