@@ -10,6 +10,7 @@ const getOutputPath = require('./getOutputPath');
 const ModifyOutputFileSystemPlugin = require('../../plugins/miniapp/ModifyOutputFileSystem');
 const CopyJsx2mpRuntimePlugin = require('../../plugins/miniapp/CopyJsx2mpRuntime');
 const CopyPublicFilePlugin = require('../../plugins/miniapp/CopyPublicFile');
+const GenerateAppCssPlugin = require('../../plugins/miniapp/GenerateAppCss');
 
 
 const platformConfig = require('./platformConfig');
@@ -42,6 +43,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     constantDir,
     disableCopyNpm,
     turnOffSourceMap,
+    injectAppCssComponent: true,
     platform: platformInfo
   };
 
@@ -67,12 +69,6 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   });
 
   config.module.rule('jsx').uses.clear();
-  config.module.rule('jsx')
-    .test(/\.jsx?$/)
-    .use('platform')
-    .loader(require.resolve('rax-compile-config/src/platformLoader'))
-    .options({platform: target});
-
   config.module.rule('tsx').uses.clear();
   config.module.rule('tsx')
     .test(/\.(tsx?)$/)
@@ -80,11 +76,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     .loader(require.resolve('ts-loader'))
     .options({
       transpileOnly: true,
-    })
-    .end()
-    .use('platform')
-    .loader(require.resolve('rax-compile-config/src/platformLoader'))
-    .options({platform: target});
+    });
 
 
   // Remove all app.json before it
@@ -93,6 +85,9 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   config.module.rule('withRoleJSX')
     .test(/\.t|jsx?$/)
     .enforce('post')
+    .exclude
+    .add(/node_modules/)
+    .end()
     .use('page')
     .loader(PageLoader)
     .options(pageLoaderParams)
@@ -100,6 +95,20 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     .use('component')
     .loader(ComponentLoader)
     .options(pageLoaderParams)
+    .end()
+    .use('platform')
+    .loader(require.resolve('rax-compile-config/src/platformLoader'))
+    .options({platform: target})
+    .end()
+    .use('script')
+    .loader(ScriptLoader)
+    .options(loaderParams)
+    .end();
+
+  config.module.rule('npm')
+    .test(/\.js$/)
+    .include
+    .add(/node_modules/)
     .end()
     .use('script')
     .loader(ScriptLoader)
@@ -157,7 +166,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   }]);
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
-
+  config.plugin('generateAppCss').use(GenerateAppCssPlugin, [{ outputPath, platformInfo }]);
   if (existsSync(publicFilePath)) {
     config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir }]);
   }

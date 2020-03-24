@@ -1,8 +1,5 @@
 const { dirname, join, sep } = require('path');
 
-const pageFlagLoader = require.resolve('jsx2mp-loader/src/pageFlagLoader');
-const componentFlagLoader = require.resolve('jsx2mp-loader/src/componentFlagLoader');
-
 /**
  * ./pages/foo -> based on src, return original
  * /pages/foo -> based on rootContext
@@ -22,12 +19,12 @@ function getEntry(entryIndexFilePath, pluginConfig) {
 
   if (Array.isArray(pages)) {
     pages.forEach(page => {
-      entry[`@${page}`] = `${pageFlagLoader}!${getDepPath(page, rootDir)}`;
+      entry[`@${page}`] = `${getDepPath(page, rootDir)}?role=page`;
     });
   }
-  if (Array.isArray(publicComponents)) {
-    publicComponents.forEach(publicComponent => {
-      entry[`@${publicComponent}`] = `${componentFlagLoader}!${getDepPath(publicComponent, rootDir)}`;
+  if (publicComponents) {
+    Object.keys(publicComponents).forEach(compName => {
+      entry[`@${compName}`] = `${getDepPath(publicComponents[compName], rootDir)}?role=component`;
     });
   }
   if (main) {
