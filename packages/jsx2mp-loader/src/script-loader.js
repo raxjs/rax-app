@@ -6,25 +6,16 @@ const cached = require('./cached');
 const { removeExt, doubleBackslash, normalizeOutputFilePath, addRelativePathPrefix } = require('./utils/pathHelper');
 const { isNpmModule, isJSONFile, isTypescriptFile } = require('./utils/judgeModule');
 const isMiniappComponent = require('./utils/isMiniappComponent');
+const parse = require('./utils/parseRequest');
 const output = require('./output');
 
 const ScriptLoader = __filename;
 
-const AppFlagLoader = require.resolve('./appFlagLoader');
-const PageFlagLoader = require.resolve('./pageFlagLoader.js');
-const ComponentFlagLoader = require.resolve('./componentFlagLoader');
-
 const MINIAPP_CONFIG_FIELD = 'miniappConfig';
 
 module.exports = function scriptLoader(content) {
-  const judgeFileRole = (flagLoader) => {
-    return this.loaders.some(({path}) => path === flagLoader);
-  };
-  const isAppFile = judgeFileRole(AppFlagLoader);
-  const isPageFile = judgeFileRole(PageFlagLoader);
-  const isComponentFile = judgeFileRole(ComponentFlagLoader);
-
-  if (isAppFile || isPageFile || isComponentFile) {
+  const query = parse(this.request);
+  if (query.role) {
     return content;
   }
   const loaderOptions = getOptions(this);
@@ -126,16 +117,16 @@ module.exports = function scriptLoader(content) {
               });
               const relativeComponentPath = normalizeNpmFileName(addRelativePathPrefix(relative(dirname(sourceNativeMiniappScriptFile), realComponentPath)));
               componentConfig.usingComponents[key] = normalizeOutputFilePath(removeExt(relativeComponentPath));
+              // Native miniapp component js file will loaded by script-loader
               dependencies.push({
                 name: realComponentPath,
-                loader: ScriptLoader, // Native miniapp component js file will loaded by script-loader
                 options: loaderOptions
               });
             } else if (componentPath.indexOf('/npm/') === -1) { // Exclude the path that has been modified by jsx-compiler
               const absComponentPath = resolve(dirname(sourceNativeMiniappScriptFile), componentPath);
+              // Native miniapp component js file will loaded by script-loader
               dependencies.push({
                 name: absComponentPath,
-                loader: ScriptLoader, // Native miniapp component js file will loaded by script-loader
                 options: Object.assign({ isRelativeMiniappComponent: true }, loaderOptions)
               });
             }
@@ -176,9 +167,9 @@ module.exports = function scriptLoader(content) {
       if (isSingleComponent || isComponentLibrary || isRelativeMiniappComponent) {
         const miniappComponentPath = isRelativeMiniappComponent ? relative(sourcePackagePath, removeExt(this.resourcePath)) : isSingleComponent ? pkg.miniappConfig[mainName] : pkg.miniappConfig.subPackages[importedComponent][mainName];
         const sourceNativeMiniappScriptFile = join(sourcePackagePath, miniappComponentPath);
+        // Native miniapp component js file will loaded by script-loader
         dependencies.push({
           name: sourceNativeMiniappScriptFile,
-          loader: ScriptLoader, // Native miniapp component js file will loaded by script-loader
           options: loaderOptions
         });
 

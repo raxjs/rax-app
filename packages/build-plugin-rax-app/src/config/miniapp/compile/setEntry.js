@@ -1,11 +1,5 @@
 const { dirname, join, sep } = require('path');
 
-const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
-const PageLoader = require.resolve('jsx2mp-loader/src/page-loader');
-
-const appFlagLoader = require.resolve('jsx2mp-loader/src/appFlagLoader');
-const pageFlagLoader = require.resolve('jsx2mp-loader/src/pageFlagLoader');
-
 /**
  * ./pages/foo -> based on src, return original
  * /pages/foo -> based on rootContext
@@ -23,10 +17,10 @@ function getEntry(entryAppFilePath, routes) {
   const entry = {};
 
 
-  entry.app = `${appFlagLoader}!./${entryAppFilePath}`;
+  entry.app = `./${entryAppFilePath}?role=app`;
   if (Array.isArray(routes)) {
     routes.forEach(({ source }) => {
-      entry[`page@${source}`] = `${pageFlagLoader}!${getDepPath(source, rootDir)}`;
+      entry[`page@${source}`] = `${getDepPath(source, rootDir)}?role=page`;
     });
   }
   return entry;
