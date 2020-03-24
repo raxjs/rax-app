@@ -3,13 +3,10 @@ function splitStr(str = '', separator = '') {
   if (separatorIndex === -1) {
     return [];
   }
-  return [
-		str.slice(0, separatorIndex),
-		str.slice(separatorIndex + separator.length)
-	];
+  return [ str.slice(0, separatorIndex), str.slice(separatorIndex + separator.length) ];
 }
 
-function parse (request = '') {
+function parse(request = '') {
   const lastExclamationMark = request.lastIndexOf('!');
   if (lastExclamationMark) {
     const ret = {};

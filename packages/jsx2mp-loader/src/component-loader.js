@@ -133,7 +133,7 @@ module.exports = async function componentLoader(content) {
     if (isCustomComponent(name, transformed.usingComponents)) {
       const componentPath = resolve(dirname(resourcePath), name);
       dependencies.push({
-        name: isFromConstantDir(componentPath) ? name : `${name}?role=component`,// Native miniapp component js file will loaded by script-loader
+        name: isFromConstantDir(componentPath) ? name : `${name}?role=component`, // Native miniapp component js file will loaded by script-loader
         options: loaderOptions
       });
     } else {
