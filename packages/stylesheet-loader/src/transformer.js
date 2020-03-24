@@ -38,9 +38,6 @@ export default {
   },
 
   convertProp(prop) {
-    // if (/^\-\-\w/.test(prop)) {
-    //   return prop;
-    // }
     let result = camelCase(prop);
 
     // -webkit/-uc/-o to Webkit/Uc/O
