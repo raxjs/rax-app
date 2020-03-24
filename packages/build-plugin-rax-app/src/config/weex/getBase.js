@@ -9,19 +9,6 @@ module.exports = (context) => {
 
   config.output.filename(`${WEEX}/[name].js`);
 
-  config.externals([
-    function(ctx, request, callback) {
-      if (request.indexOf('@weex-module') !== -1) {
-        return callback(null, `commonjs ${request}`);
-      }
-
-      if (request.indexOf('@system') !== -1) {
-        return callback(null, `commonjs ${request}`);
-      }
-      callback();
-    },
-  ]);
-
   config.plugin('weexFrame')
     .use(WeexFrameworkBanner);
 

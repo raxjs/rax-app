@@ -78,6 +78,19 @@ module.exports = (context, options = {}, target) => {
       .use(CopyWebpackPlugin, [[{ from: 'src/public', to: `${target}/public` }]]);
   }
 
+  config.externals([
+    function(ctx, request, callback) {
+      if (request.indexOf('@weex-module') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
+
+      if (request.indexOf('@system') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
+      callback();
+    },
+  ]);
+
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);
 

@@ -11,19 +11,6 @@ module.exports = (context, target, options = {}) => {
 
   config.output.filename(`${WEB}/[name].js`);
 
-  config.externals([
-    function(ctx, request, callback) {
-      if (request.indexOf('@weex-module') !== -1) {
-        return callback(null, 'undefined');
-      }
-
-      if (request.indexOf('@system') !== -1) {
-        return callback(null, `commonjs ${request}`);
-      }
-      callback();
-    },
-  ]);
-
   const entries = config.entryPoints.entries();
   const pages = Object.keys(entries).map(entryName => {
     return {
