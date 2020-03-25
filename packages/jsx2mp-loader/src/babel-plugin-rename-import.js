@@ -4,6 +4,7 @@ const chalk = require('chalk');
 
 const { isNpmModule, isWeexModule, isRaxModule, isJsx2mpRuntimeModule, isNodeNativeModule } = require('./utils/judgeModule');
 const { addRelativePathPrefix, normalizeOutputFilePath } = require('./utils/pathHelper');
+const getAliasCorrespondingValue = require('./utils/getAliasCorrespondingValue');
 
 const RUNTIME = 'jsx2mp-runtime';
 
@@ -19,7 +20,7 @@ const transformPathMap = {};
 
 module.exports = function visitor({ types: t }, options) {
   options = Object.assign({}, defaultOptions, options);
-  const { normalizeNpmFileName, distSourcePath, resourcePath, outputPath, disableCopyNpm, platform } = options;
+  const { normalizeNpmFileName, distSourcePath, resourcePath, outputPath, disableCopyNpm, platform, aliasEntries } = options;
   const source = (value, rootContext) => {
     // Example:
     // value => '@ali/universal-goldlog' or '@ali/xxx/foo/lib'
@@ -43,7 +44,13 @@ module.exports = function visitor({ types: t }, options) {
   return {
     visitor: {
       ImportDeclaration(path, state) {
-        const { value } = path.node.source;
+        let { value } = path.node.source;
+        // Handle alias
+        const aliasCorrespondingValue = getAliasCorrespondingValue(aliasEntries, value, resourcePath);
+        if (aliasCorrespondingValue) {
+          path.node.source = t.stringLiteral(aliasCorrespondingValue);
+          value = path.node.source.value;
+        }
 
         if (isNpmModule(value)) {
           if (isWeexModule(value)) {
@@ -89,8 +96,15 @@ module.exports = function visitor({ types: t }, options) {
           node.arguments.length === 1
         ) {
           if (t.isStringLiteral(node.arguments[0])) {
-            const moduleName = node.arguments[0].value;
-
+            let moduleName = node.arguments[0].value;
+            // Handle alias
+            const aliasCorrespondingValue = getAliasCorrespondingValue(aliasEntries, moduleName, resourcePath);
+            if (aliasCorrespondingValue) {
+              path.node.arguments = [
+                t.stringLiteral(aliasCorrespondingValue)
+              ];
+              moduleName = node.arguments[0].value;
+            }
             if (isNpmModule(moduleName)) {
               if (isWeexModule(moduleName)) {
                 path.replaceWith(t.nullLiteral());

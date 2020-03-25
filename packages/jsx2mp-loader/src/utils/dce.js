@@ -15,7 +15,21 @@ const parserOpts = {
   ], // support all plugins
 };
 
-function eliminateDeadCode(source, options = {}) {
+function removeUnusedImport(source) {
+  return transformSync(source, {
+    parserOpts,
+    plugins: [
+      [
+        require('babel-plugin-danger-remove-unused-import'),
+        {
+          ignore: 'rax'
+        }
+      ]
+    ]
+  }).code;
+}
+
+function removeDeadCode(source, options = {}) {
   const { platform = {} } = options;
   return transformSync(source, {
     parserOpts,
@@ -26,15 +40,13 @@ function eliminateDeadCode(source, options = {}) {
           optimizeRawSize: true,
           keepFnName: true
         }
-      ],
-      [
-        require('babel-plugin-danger-remove-unused-import'),
-        {
-          ignore: 'rax'
-        }
       ]
     ].filter(Boolean)
   }).code;
+}
+
+function eliminateDeadCode(source) {
+  return removeUnusedImport(removeDeadCode(source));
 }
 
 module.exports = eliminateDeadCode;
