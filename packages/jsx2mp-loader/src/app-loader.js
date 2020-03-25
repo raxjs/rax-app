@@ -20,10 +20,17 @@ function generateDependencies(dependencies) {
     .join('\n');
 }
 
+const AppFlagLoader = require.resolve('./appFlagLoader');
+
 module.exports = async function appLoader(content) {
+  const isAppFile = this.loaders.some(({path}) => path === AppFlagLoader);
+  // Only handle app role file
+  if (!isAppFile) {
+    return content;
+  }
   const loaderOptions = getOptions(this);
-  const { entryPath, outputPath, platform, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
-  const rawContent = readFileSync(this.resourcePath, 'utf-8');
+  const { entryPath, outputPath, platform, mode, disableCopyNpm, turnOffSourceMap, aliasEntries } = loaderOptions;
+  const rawContent = content;
 
   if (!existsSync(outputPath)) mkdirpSync(outputPath);
 
@@ -40,7 +47,8 @@ module.exports = async function appLoader(content) {
     type: 'app',
     sourceFileName: this.resourcePath,
     disableCopyNpm,
-    turnOffSourceMap
+    turnOffSourceMap,
+    aliasEntries
   });
   const rawContentAfterDCE = eliminateDeadCode(rawContent);
 

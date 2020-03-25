@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const { resolve } = require('path');
+const { resolve, dirname } = require('path');
 const { existsSync } = require('fs-extra');
 
 const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
@@ -16,10 +16,13 @@ const CopyPublicFilePlugin = require('../../../plugins/miniapp/CopyPublicFile');
 const platformConfig = require('./platformConfig');
 const targetPlatformMap = require('../targetPlatformMap');
 
+const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
+const PageLoader = require.resolve('jsx2mp-loader/src/page-loader');
+const ComponentLoader = require.resolve('jsx2mp-loader/src/component-loader');
 const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
-module.exports = (context, target, options = {}) => {
+module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const { platform = targetPlatformMap[target], mode = 'build', disableCopyNpm = false, turnOffSourceMap = false } = options[target] || {};
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
@@ -44,17 +47,75 @@ module.exports = (context, target, options = {}) => {
     platform: platformInfo
   };
 
-  setEntry(config, appConfig.routes, { loaderParams });
+  const appEntry = 'src/app.js';
+  setEntry(config, appConfig.routes, { appEntry });
+
+  const pageLoaderParams = {
+    ...loaderParams,
+    entryPath: appEntry,
+  };
+
+  const appLoaderParams = {
+    ...loaderParams,
+    entryPath: dirname(appEntry)
+  };
 
   config
     .mode('production')
     .target('node');
 
+  config.resolve.alias
+    .set('react', 'rax')
+    .set('react-dom', 'rax-dom');
+
+  onGetWebpackConfig(target, (config) => {
+    const aliasEntries = config.resolve.alias.entries();
+    loaderParams.aliasEntries = pageLoaderParams.aliasEntries = appLoaderParams.aliasEntries = aliasEntries;
+  });
+
+  config.module.rule('jsx').uses.clear();
   config.module.rule('jsx')
+    .test(/\.jsx?$/)
+    .use('platform')
+    .loader(require.resolve('rax-compile-config/src/platformLoader'))
+    .options({platform: target});
+
+  config.module.rule('tsx').uses.clear();
+  config.module.rule('tsx')
+    .test(/\.(tsx?)$/)
+    .use('ts')
+    .loader(require.resolve('ts-loader'))
+    .options({
+      transpileOnly: true,
+    })
+    .end()
+    .use('platform')
+    .loader(require.resolve('rax-compile-config/src/platformLoader'))
+    .options({platform: target});
+
+
+  // Remove all app.json before it
+  config.module.rule('appJSON').uses.clear();
+
+  config.module.rule('withRoleJSX')
     .test(/\.t|jsx?$/)
+    .enforce('post')
+    .use('app')
+    .loader(AppLoader)
+    .options(appLoaderParams)
+    .end()
+    .use('page')
+    .loader(PageLoader)
+    .options(pageLoaderParams)
+    .end()
+    .use('component')
+    .loader(ComponentLoader)
+    .options(pageLoaderParams)
+    .end()
     .use('script')
     .loader(ScriptLoader)
-    .options(loaderParams);
+    .options(loaderParams)
+    .end();
 
   config.module
     .rule('staticFile')
@@ -66,8 +127,6 @@ module.exports = (context, target, options = {}) => {
       outputPath
     });
 
-  // Remove all app.json before it
-  config.module.rule('appJSON').uses.clear();
 
   // Exclude app.json
   config.module

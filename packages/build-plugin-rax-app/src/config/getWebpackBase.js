@@ -63,7 +63,7 @@ module.exports = (context, options = {}, target) => {
     })
     .end()
     .use('platform')
-    .loader(require.resolve('rax-compile-config/src/platformLoader')); ;
+    .loader(require.resolve('rax-compile-config/src/platformLoader'));
 
   config.module.rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)

@@ -1,4 +1,4 @@
-const { readFileSync, existsSync, mkdirpSync } = require('fs-extra');
+const { existsSync, mkdirpSync } = require('fs-extra');
 const { relative, join, dirname, resolve } = require('path');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
@@ -9,13 +9,18 @@ const { isTypescriptFile } = require('./utils/judgeModule');
 const processCSS = require('./styleProcessor');
 const output = require('./output');
 
-const ComponentLoader = __filename;
+const ComponentFlagLoader = require.resolve('./componentFlagLoader');
 const ScriptLoader = require.resolve('./script-loader');
 
 module.exports = async function componentLoader(content) {
+  const isComponentFile = this.loaders.some(({ path }) => path === ComponentFlagLoader);
+  // Only handle component role file
+  if (!isComponentFile) {
+    return content;
+  }
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
-  const rawContent = readFileSync(this.resourcePath, 'utf-8');
+  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap, aliasEntries } = loaderOptions;
+  const rawContent = content;
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
   const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
@@ -38,7 +43,8 @@ module.exports = async function componentLoader(content) {
     platform,
     sourceFileName: this.resourcePath,
     disableCopyNpm,
-    turnOffSourceMap
+    turnOffSourceMap,
+    aliasEntries
   });
 
   const rawContentAfterDCE = eliminateDeadCode(rawContent);
@@ -126,7 +132,7 @@ module.exports = async function componentLoader(content) {
       const componentPath = resolve(dirname(resourcePath), name);
       dependencies.push({
         name,
-        loader: isFromConstantDir(componentPath) ? ScriptLoader : ComponentLoader, // Native miniapp component js file will loaded by script-loader
+        loader: isFromConstantDir(componentPath) ? null : ComponentFlagLoader, // Native miniapp component js file will loaded by script-loader
         options: loaderOptions
       });
     } else {
