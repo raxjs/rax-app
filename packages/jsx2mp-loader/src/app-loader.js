@@ -42,7 +42,9 @@ module.exports = async function appLoader(content) {
     disableCopyNpm,
     turnOffSourceMap
   });
-  const rawContentAfterDCE = eliminateDeadCode(rawContent);
+
+  const eliminateOptions = { platform };
+  const rawContentAfterDCE = eliminateDeadCode(rawContent, eliminateOptions);
 
   let transformed;
   try {

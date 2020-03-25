@@ -41,7 +41,8 @@ module.exports = async function componentLoader(content) {
     turnOffSourceMap
   });
 
-  const rawContentAfterDCE = eliminateDeadCode(rawContent);
+  const eliminateOptions = { platform };
+  const rawContentAfterDCE = eliminateDeadCode(rawContent, eliminateOptions);
 
   let transformed;
   try {

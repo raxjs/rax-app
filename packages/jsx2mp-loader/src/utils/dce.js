@@ -15,11 +15,12 @@ const parserOpts = {
   ], // support all plugins
 };
 
-function eliminateDeadCode(source) {
+function eliminateDeadCode(source, options = {}) {
+  const { platform = {} } = options;
   return transformSync(source, {
     parserOpts,
     plugins: [
-      [
+      platform.type !== 'wechat' && [
         require('babel-plugin-minify-dead-code-elimination'),
         {
           optimizeRawSize: true,
@@ -32,7 +33,7 @@ function eliminateDeadCode(source) {
           ignore: 'rax'
         }
       ]
-    ]
+    ].filter(Boolean)
   }).code;
 }
 

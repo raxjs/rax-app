@@ -40,7 +40,8 @@ module.exports = async function pageLoader(content) {
     turnOffSourceMap
   });
 
-  const rawContentAfterDCE = eliminateDeadCode(rawContent);
+  const eliminateOptions = { platform };
+  const rawContentAfterDCE = eliminateDeadCode(rawContent, eliminateOptions);
 
   let transformed;
   try {
