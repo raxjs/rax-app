@@ -1,5 +1,5 @@
-const { readFileSync, existsSync, mkdirpSync } = require('fs-extra');
-const { join, sep } = require('path');
+const { existsSync, mkdirpSync } = require('fs-extra');
+const { join } = require('path');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
 const { doubleBackslash, getHighestPriorityPackage } = require('./utils/pathHelper');
@@ -8,6 +8,7 @@ const defaultStyle = require('./defaultStyle');
 const processCSS = require('./styleProcessor');
 const output = require('./output');
 const { isTypescriptFile } = require('./utils/judgeModule');
+const parse = require('./utils/parseRequest');
 
 function createImportStatement(req) {
   return `import '${doubleBackslash(req)}';`;
@@ -20,14 +21,13 @@ function generateDependencies(dependencies) {
     .join('\n');
 }
 
-const AppFlagLoader = require.resolve('./appFlagLoader');
-
 module.exports = async function appLoader(content) {
-  const isAppFile = this.loaders.some(({path}) => path === AppFlagLoader);
+  const query = parse(this.request);
   // Only handle app role file
-  if (!isAppFile) {
+  if (query.role !== 'app') {
     return content;
   }
+
   const loaderOptions = getOptions(this);
   const { entryPath, outputPath, platform, mode, disableCopyNpm, turnOffSourceMap, aliasEntries } = loaderOptions;
   const rawContent = content;
