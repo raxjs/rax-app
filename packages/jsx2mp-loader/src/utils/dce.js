@@ -29,24 +29,36 @@ function removeUnusedImport(source) {
   }).code;
 }
 
-function removeDeadCode(source, options = {}) {
-  const { platform = {} } = options;
+function removeDeadCode(source) {
   return transformSync(source, {
     parserOpts,
     plugins: [
-      platform.type !== 'wechat' && [
+      [
         require('babel-plugin-minify-dead-code-elimination'),
         {
           optimizeRawSize: true,
           keepFnName: true
         }
       ]
-    ].filter(Boolean)
+    ]
   }).code;
 }
 
-function eliminateDeadCode(source) {
-  return removeUnusedImport(removeDeadCode(source));
+const codeProcessor = (processors = [], sourceCode) => processors
+  .filter(processor => typeof processor === 'function')
+  .reduce(
+    (prevCode, currProcessor) => currProcessor(prevCode),
+    sourceCode
+  );
+
+function eliminateDeadCode(source, options = {}) {
+  const { platform = {} } = options;
+  const processors = [
+    platform.type !== 'wechat' && removeDeadCode,
+    removeUnusedImport,
+  ];
+
+  return codeProcessor(processors, source);
 }
 
 module.exports = eliminateDeadCode;
