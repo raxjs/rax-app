@@ -17,10 +17,10 @@ function getEntry(entryAppFilePath, routes) {
   const entry = {};
 
 
-  entry.app = `./${entryAppFilePath}?role=app`;
+  entry.app = `./${entryAppFilePath}?role=app`;  // Mark it as app file
   if (Array.isArray(routes)) {
     routes.forEach(({ source }) => {
-      entry[`page@${source}`] = `${getDepPath(source, rootDir)}?role=page`;
+      entry[`page@${source}`] = `${getDepPath(source, rootDir)}?role=page`; // Mark it as page file
     });
   }
   return entry;

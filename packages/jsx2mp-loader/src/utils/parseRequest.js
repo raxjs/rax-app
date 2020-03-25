@@ -1,4 +1,4 @@
-function splitStr(str = '', separator = '') {
+function splitOnFirst(str = '', separator = '') {
   const separatorIndex = str.indexOf(separator);
   if (separatorIndex === -1) {
     return [];
@@ -11,10 +11,10 @@ function parse(request = '') {
   if (lastExclamationMark) {
     const ret = {};
     const originalRequest = request.substr(lastExclamationMark + 1);
-    const [, queryString] = splitStr(originalRequest, '?');
+    const [, queryString] = splitOnFirst(originalRequest, '?');
     if (queryString) {
       for (const param of queryString.split('&')) {
-        const [key, value] = splitStr(param, '=');
+        const [key, value] = splitOnFirst(param, '=');
         ret[key] = value;
       }
     }
