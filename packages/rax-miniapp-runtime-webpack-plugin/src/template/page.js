@@ -1,59 +1,21 @@
+/* eslint-disable new-cap */
 /* global APINamespace,TARGET, Page,init */
 /* eslint-disable module/no-implicit-dependencies */
 const render = require('miniapp-render');
 const config = require('/* CONFIG_PATH */');
 
 /* INIT_FUNCTION */
-
-/**
- * Deal with some special pages
- */
-function dealWithPage(evt, window, value) {
-  const type = evt.type;
-  let url = evt.url;
-
-  if (value === 'webview') {
-    // Complete url
-    url = render.$$adapter.tool.completeURL(url, window.location.origin);
-
-    const options = {
-      url: `/pages/webview/index?url=${encodeURIComponent(url)}`
-    };
-    if (type === 'jump') APINamespace.redirectTo(options);
-    else if (type === 'open') APINamespace.navigateTo(options);
-  } else if (value === 'error') {
-    console.error(`page not found: ${evt.url}`);
-  } else if (value !== 'none') {
-    const targeturl = `${
-      window.location.origin
-    }/redirect?url=${encodeURIComponent(url)}`;
-    const options = {
-      url: `/pages/${value}/index?type=${type}&targeturl=${encodeURIComponent(
-        targeturl
-      )}`
-    };
-    if (window.$$miniprogram.isTabBarPage(`/pages/${value}/index`))
-      APINamespace.switchTab(options);
-    else if (type === 'jump') APINamespace.redirectTo(options);
-    else if (type === 'open') APINamespace.navigateTo(options);
-  }
-}
-
-// eslint-disable-next-line new-cap
 Page({
   data: {
     pageId: '',
     bodyClass: 'h5-body miniprogram-root'
   },
   onLoad(query) {
-    const mpRes = render.createPage(this.route, config);
-    this.pageId = mpRes.pageId;
-    this.window = mpRes.window;
-    this.document = mpRes.document;
+    const pageInstance = render.createPage(this.route, config);
+    this.pageId = pageInstance.pageId;
+    this.window = pageInstance.window;
+    this.document = pageInstance.document;
     this.query = query;
-
-    if (typeof this.getTabBar === 'function')
-      this.window.getTabBar = this.getTabBar.bind(this);
 
     // Handle update of body
     this.document.documentElement.addEventListener('$$childNodesUpdate', () => {
@@ -108,7 +70,6 @@ Page({
     render.destroyPage(this.pageId);
 
     this.pageId = null;
-    this.window.getTabBar = null;
     this.window = null;
     this.document = null;
     this.app = null;
@@ -121,13 +82,6 @@ Page({
 
       if (shareOptions.path) {
         query.targeturl = encodeURIComponent(shareOptions.path);
-      } else {
-        // Pack path of current page
-        const location = this.window.location;
-
-        query.targeturl = encodeURIComponent(location.href);
-        query.search = encodeURIComponent(location.search);
-        query.hash = encodeURIComponent(location.hash);
       }
 
       query.type = 'share';

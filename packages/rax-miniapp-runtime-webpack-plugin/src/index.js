@@ -28,10 +28,6 @@ const pageJsTmpl = readFileSync(
   'utf8'
 );
 
-const appExtraCssTmpl = readFileSync(
-  resolve(__dirname, './template/app.extra.css'),
-  'utf8'
-);
 const appCssTmpl = readFileSync(
   resolve(__dirname, './template/app.css'),
   'utf8'
@@ -173,18 +169,13 @@ function handlePageXML(
 
 function handlePageCSS(
   compilation,
-  pageConfig,
   assets,
   assetPathPrefix,
   assetsSubpackageMap,
   pageRoute,
   target
 ) {
-  const pageBackgroundColor =
-    pageConfig &&
-    (pageConfig.pageBackgroundColor || pageConfig.backgroundColor); // Compatible with original backgroundColor
-
-  let pageCssContent = assets.css
+  const pageCssContent = assets.css
     .map(
       css =>
         `@import "${getAssetPath(
@@ -195,8 +186,7 @@ function handlePageCSS(
         )}";`
     )
     .join('\n');
-  if (pageBackgroundColor)
-    pageCssContent = `page { background-color: ${pageBackgroundColor}; }\n${pageCssContent}`;
+
   addFile(
     compilation,
     `${pageRoute}.${adapter[target].css}`,
@@ -248,29 +238,8 @@ function handleAppJS(compilation, appAssets, assetsSubpackageMap, target) {
   addFile(compilation, 'app.js', appJsContent, target);
 }
 
-function handleAppCSS(
-  compilation,
-  appAssets,
-  assetsSubpackageMap,
-  target
-) {
-  const cssTmpl = appCssTmpl;
-  let appCssContent = cssTmpl;
-  if (appAssets.css.length) {
-    appCssContent += `\n${appAssets.css
-      .map(
-        css =>
-          `@import "${getAssetPath(
-            '',
-            css,
-            assetsSubpackageMap,
-            `app.${adapter[target].css}`
-          )}";`
-      )
-      .join('\n')}`;
-  }
-  appCssContent = adjustCss(appCssContent) + `\n${appExtraCssTmpl}`;
-  addFile(compilation, `app.${adapter[target].css}`, appCssContent, target);
+function handleAppCSS(compilation, target) {
+  addFile(compilation, `app.${adapter[target].css}`, adjustCss(appCssTmpl), target);
 }
 
 function handleProjectConfig(compilation, { projectConfig = {} }, target) {
@@ -386,6 +355,7 @@ function installDependencies(
   resolve(sourcePath, customComponentConfig.root);
 
   const outputPath = resolve(stats.compilation.outputOptions.path);
+  const distNpmDir = resolve(outputPath, target, adapter[target].npmDirName);
 
   const build = () => {
     ['miniapp-element', 'miniapp-render'].forEach(name => {
@@ -396,12 +366,7 @@ function installDependencies(
         'dist',
         adapter[target].fileName
       );
-      const distNpmFileDir = resolve(
-        outputPath,
-        target,
-        adapter[target].npmDirName,
-        name
-      );
+      const distNpmFileDir = resolve(distNpmDir, name);
       copySync(sourceNpmFileDir, distNpmFileDir);
       // Handle custom-component path in alibaba miniapp
       if (
@@ -417,33 +382,18 @@ function installDependencies(
       }
     });
   };
-  console.log(
-    chalk.green(`Start building deps for ${adapter[target].name}...`)
-  );
 
-  build();
+
+  if (!existsSync(distNpmDir)) {
+    console.log(
+      chalk.green(`Start building deps for ${adapter[target].name}...`)
+    );
+    build();
+  }
+
   callback();
 }
 
-function handleWrapChunks(
-  compilation,
-  afterOptimizations,
-  pluginName
-) {
-  if (afterOptimizations) {
-    compilation.hooks.afterOptimizeChunkAssets.tap(pluginName, chunks => {
-      wrapChunks(compilation, chunks);
-    });
-  } else {
-    compilation.hooks.optimizeChunkAssets.tapAsync(
-      pluginName,
-      (chunks, callback) => {
-        wrapChunks(compilation, chunks);
-        callback();
-      }
-    );
-  }
-}
 
 class MiniAppRuntimePlugin {
   constructor(options) {
@@ -455,6 +405,7 @@ class MiniAppRuntimePlugin {
     const options = this.options;
     const target = this.target;
     const config = options.config || {};
+    let isFirstRender = true;
 
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
       const outputPath = join(compilation.outputOptions.path, target);
@@ -472,6 +423,10 @@ class MiniAppRuntimePlugin {
       const assetsMap = {}; // page - asset
       const assetsReverseMap = {}; // asset - page
       const assetsSubpackageMap = {}; // asset - subpackage
+      const changedFiles = Object.keys(compiler.watchFileSystem.watcher.mtimes)
+        .map(filePath => {
+          return filePath.replace(sourcePath, '');
+        });
 
       // Collect asset
       routes.forEach(({ entryName }) => {
@@ -480,32 +435,34 @@ class MiniAppRuntimePlugin {
         const extRegex = /\.(css|js|wxss|acss)(\?|$)/;
         const entryFiles = compilation.entrypoints.get(entryName).getFiles();
         entryFiles.forEach(filePath => {
-          filePath = relative(target, filePath);
           // Skip non css or js
           const extMatch = extRegex.exec(filePath);
           if (!extMatch) return;
+          const ext = ['wxss', 'acss', 'css'].includes(extMatch[1]) ? 'css' : extMatch[1];
 
-          // Skip recorded
-          if (filePathMap[filePath]) return;
-          filePathMap[filePath] = true;
-
-          // Record
-          let ext = extMatch[1];
-          ext = ext === 'wxss' || ext === 'css' || ext === 'acss' ? 'css' : ext;
-          assets[ext].push(filePath);
-
-          // Insert into assetsReverseMap
-          assetsReverseMap[filePath] = assetsReverseMap[filePath] || [];
-          if (assetsReverseMap[filePath].indexOf(entryName) === -1)
-            assetsReverseMap[filePath].push(entryName);
-
+          let relativeFilePath;
           // Adjust css content
           if (ext === 'css') {
+            relativeFilePath = filePath;
             compilation.assets[
-              `${target}/${filePath}.${adapter[target].css}`
-            ] = new RawSource(adjustCss(compilation.assets[`${target}/${filePath}`].source()));
-            delete compilation.assets[`${target}/${filePath}`];
+              `${target}/${relativeFilePath}.${adapter[target].css}`
+            ] = new RawSource(adjustCss(compilation.assets[relativeFilePath].source()));
+            delete compilation.assets[`${target}/${relativeFilePath}`];
+          } else {
+            relativeFilePath = relative(target, filePath);
           }
+
+          // Skip recorded
+          if (filePathMap[relativeFilePath]) return;
+          filePathMap[relativeFilePath] = true;
+
+          // Record
+          assets[ext].push(relativeFilePath);
+
+          // Insert into assetsReverseMap
+          assetsReverseMap[relativeFilePath] = assetsReverseMap[relativeFilePath] || [];
+          if (assetsReverseMap[relativeFilePath].indexOf(entryName) === -1)
+            assetsReverseMap[relativeFilePath].push(entryName);
         });
 
         assetsMap[entryName] = assets;
@@ -518,45 +475,50 @@ class MiniAppRuntimePlugin {
         const pageRoute = `${packageName ? `${packageName}/` : ''}${entryName}`;
         const assetPathPrefix = packageName ? '../' : '';
 
-        // Page js
-        handlePageJS(
-          compilation,
-          assets,
-          assetPathPrefix,
-          assetsSubpackageMap,
-          pageRoute,
-          pageConfig,
-          target
-        );
+        // xml/css/json file only need writeOnce
+        if (isFirstRender) {
+          // Page xml
+          handlePageXML(
+            compilation,
+            customComponentRoot,
+            pageRoute,
+            target
+          );
 
-        // Page xml
-        handlePageXML(
-          compilation,
-          customComponentRoot,
-          pageRoute,
-          target
-        );
+          // Page json
+          handlePageJSON(
+            compilation,
+            pageConfig,
+            customComponentRoot,
+            assetPathPrefix,
+            pageRoute,
+            target
+          );
 
-        // Page css
-        handlePageCSS(
-          compilation,
-          pageConfig,
-          assets,
-          assetPathPrefix,
-          assetsSubpackageMap,
-          pageRoute,
-          target
-        );
+          // Page css
+          handlePageCSS(
+            compilation,
+            assets,
+            assetPathPrefix,
+            assetsSubpackageMap,
+            pageRoute,
+            target
+          );
+        }
 
-        // Page json
-        handlePageJSON(
-          compilation,
-          pageConfig,
-          customComponentRoot,
-          assetPathPrefix,
-          pageRoute,
-          target
-        );
+        // js file only need write when first render or file changed
+        if (isFirstRender || changedFiles.includes(pageRoute)) {
+          // Page js
+          handlePageJS(
+            compilation,
+            assets,
+            assetPathPrefix,
+            assetsSubpackageMap,
+            pageRoute,
+            pageConfig,
+            target
+          );
+        }
 
         // Record page path
         if (!packageName) pages.push(pageRoute);
@@ -576,17 +538,13 @@ class MiniAppRuntimePlugin {
               if (includes(pages, requirePages)) {
                 assetsSubpackageMap[filePath] = packageName;
                 compilation.assets[`../${packageName}/common/${filePath}`] =
-                  compilation.assets[filePath];
+                compilation.assets[filePath];
                 delete compilation.assets[filePath];
               }
             });
           }
         });
       });
-
-      // Delete entry of app.js
-      // const appJsEntryIndex = routes.indexOf(appJsEntryName);
-      // if (appJsEntryIndex >= 0) entryNames.splice(appJsEntryIndex, 1);
 
       // Handle custom component
       Object.keys(customComponents).forEach(key => {
@@ -597,26 +555,23 @@ class MiniAppRuntimePlugin {
         }
       });
 
-      const appAssets = assetsMap[appJsEntryName] || { js: [], css: [] };
+      // These files only need write when first render
+      if (isFirstRender) {
+        const appAssets = assetsMap[appJsEntryName] || { js: [], css: [] };
+        // App js
+        handleAppJS(compilation, appAssets, assetsSubpackageMap, target);
+        // App css
+        handleAppCSS(compilation, target);
 
-      // App js
-      handleAppJS(compilation, appAssets, assetsSubpackageMap, target);
-      // App css
-      handleAppCSS(
-        compilation,
-        appAssets,
-        assetsSubpackageMap,
-        target
-      );
+        // Project.config.json
+        handleProjectConfig(compilation, options, target);
 
-      // Project.config.json
-      handleProjectConfig(compilation, options, target);
+        // Sitemap.json
+        handleSiteMap(compilation, options, target);
 
-      // Sitemap.json
-      handleSiteMap(compilation, options, target);
-
-      // Config js
-      handleConfigJS(compilation, options || {}, target);
+        // Config js
+        handleConfigJS(compilation, options || {}, target);
+      }
 
       // Custom-component
       handleCustomComponent(
@@ -631,15 +586,19 @@ class MiniAppRuntimePlugin {
     });
 
     compiler.hooks.compilation.tap(PluginName, compilation => {
-      handleWrapChunks(
-        compilation,
-        this.afterOptimizations,
-        PluginName
+      // Optimize chunk assets
+      compilation.hooks.optimizeChunkAssets.tapAsync(
+        PluginName,
+        (chunks, callback) => {
+          wrapChunks(compilation, chunks);
+          callback();
+        }
       );
     });
 
     compiler.hooks.done.tapAsync(PluginName, (stats, callback) => {
       // Install dependency automatically
+      isFirstRender = false;
       const customComponentConfig = config.nativeCustomComponent || {};
       installDependencies(
         stats,
