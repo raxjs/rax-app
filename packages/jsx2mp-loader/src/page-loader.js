@@ -21,7 +21,6 @@ module.exports = async function pageLoader(content) {
 
   const loaderOptions = getOptions(this);
   const { platform, entryPath, mode, disableCopyNpm, constantDir, turnOffSourceMap, outputPath, aliasEntries, injectAppCssComponent } = loaderOptions;
-  const rawContent = content;
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
   const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
@@ -48,7 +47,7 @@ module.exports = async function pageLoader(content) {
   });
 
   const eliminateOptions = { platform };
-  const rawContentAfterDCE = eliminateDeadCode(rawContent, eliminateOptions);
+  const rawContentAfterDCE = eliminateDeadCode(content, eliminateOptions);
 
   let transformed;
   try {
@@ -130,7 +129,7 @@ module.exports = async function pageLoader(content) {
     isTypescriptFile: isTypescriptFile(this.resourcePath)
   };
 
-  output(outputContent, rawContent, outputOption);
+  output(outputContent, content, outputOption);
 
   function isCustomComponent(name, usingComponents = {}) {
     const matchingPath = join(dirname(resourcePath), name);
