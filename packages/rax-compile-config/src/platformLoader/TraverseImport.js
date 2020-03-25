@@ -15,7 +15,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
     kraken: 'isKraken',
     node: 'isNode',
     miniapp: 'isMiniApp',
-    WeChatMiniprogram: 'isWeChatMiniprogram',
+    'wechat-miniprogram': 'isWeChatMiniProgram',
   };
 
   /**

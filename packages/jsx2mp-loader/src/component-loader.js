@@ -1,4 +1,4 @@
-const { readFileSync, existsSync, mkdirpSync } = require('fs-extra');
+const { existsSync, mkdirpSync } = require('fs-extra');
 const { relative, join, dirname, resolve } = require('path');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
@@ -6,16 +6,22 @@ const cached = require('./cached');
 const { removeExt, isFromTargetDirs, doubleBackslash, normalizeOutputFilePath, addRelativePathPrefix, getHighestPriorityPackage } = require('./utils/pathHelper');
 const eliminateDeadCode = require('./utils/dce');
 const { isTypescriptFile } = require('./utils/judgeModule');
+const parse = require('./utils/parseRequest');
+
 const processCSS = require('./styleProcessor');
 const output = require('./output');
 
-const ComponentLoader = __filename;
 const ScriptLoader = require.resolve('./script-loader');
 
 module.exports = async function componentLoader(content) {
+  const query = parse(this.request);
+  // Only handle component role file
+  if (query.role !== 'component') {
+    return content;
+  }
+
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
-  const rawContent = readFileSync(this.resourcePath, 'utf-8');
+  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap, aliasEntries, injectAppCssComponent } = loaderOptions;
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
   const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
@@ -38,10 +44,11 @@ module.exports = async function componentLoader(content) {
     platform,
     sourceFileName: this.resourcePath,
     disableCopyNpm,
-    turnOffSourceMap
+    turnOffSourceMap,
+    aliasEntries
   });
 
-  const rawContentAfterDCE = eliminateDeadCode(rawContent);
+  const rawContentAfterDCE = eliminateDeadCode(content);
 
   let transformed;
   try {
@@ -84,6 +91,16 @@ module.exports = async function componentLoader(content) {
   const distFileDir = dirname(distFileWithoutExt);
   if (!existsSync(distFileDir)) mkdirpSync(distFileDir);
 
+  // Only works when developing miniapp plugin, to declare the use of __app_css component
+  if (injectAppCssComponent) {
+    const appCssComponentPath = resolve(outputPath, '__app_css', 'index');
+    const relativeAppCssComponentPath = relative(distFileDir, appCssComponentPath);
+    config.usingComponents = {
+      '__app_css': relativeAppCssComponentPath,
+      ...config.usingComponents
+    };
+  }
+
   const outputContent = {
     code: transformed.code,
     map: transformed.map,
@@ -104,7 +121,7 @@ module.exports = async function componentLoader(content) {
     isTypescriptFile: isTypescriptFile(this.resourcePath)
   };
 
-  output(outputContent, rawContent, outputOption);
+  output(outputContent, content, outputOption);
 
   function isCustomComponent(name, usingComponents = {}) {
     const matchingPath = join(dirname(resourcePath), name);
@@ -125,8 +142,7 @@ module.exports = async function componentLoader(content) {
     if (isCustomComponent(name, transformed.usingComponents)) {
       const componentPath = resolve(dirname(resourcePath), name);
       dependencies.push({
-        name,
-        loader: isFromConstantDir(componentPath) ? ScriptLoader : ComponentLoader, // Native miniapp component js file will loaded by script-loader
+        name: isFromConstantDir(componentPath) ? name : `${name}?role=component`, // Native miniapp component js file will loaded by script-loader
         options: loaderOptions
       });
     } else {
