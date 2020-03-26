@@ -429,7 +429,11 @@ class MiniAppRuntimePlugin {
         });
 
       // Collect asset
-      routes.forEach(({ entryName }) => {
+      routes.filter(({ entryName }) => {
+        const packageName = subpackagesMap[entryName];
+        const pageRoute = `${packageName ? `${packageName}/` : ''}${entryName}`;
+        return isFirstRender || changedFiles.includes(pageRoute);
+      }).forEach(({ entryName }) => {
         const assets = { js: [], css: [] };
         const filePathMap = {};
         const extRegex = /\.(css|js|wxss|acss)(\?|$)/;
@@ -506,19 +510,16 @@ class MiniAppRuntimePlugin {
           );
         }
 
-        // js file only need write when first render or file changed
-        if (isFirstRender || changedFiles.includes(pageRoute)) {
-          // Page js
-          handlePageJS(
-            compilation,
-            assets,
-            assetPathPrefix,
-            assetsSubpackageMap,
-            pageRoute,
-            pageConfig,
-            target
-          );
-        }
+        // Page js
+        handlePageJS(
+          compilation,
+          assets,
+          assetPathPrefix,
+          assetsSubpackageMap,
+          pageRoute,
+          pageConfig,
+          target
+        );
 
         // Record page path
         if (!packageName) pages.push(pageRoute);
