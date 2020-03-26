@@ -25,7 +25,8 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const { rootDir, command } = context;
   const platformInfo = platformConfig[target];
   const entryPath = './src/index.js';
-  const outputPath = getOutputPath(context, { target });
+  const outputPath = command === 'build' ? getOutputPath(context, { target }) : resolve(rootDir, 'demo', target, 'plugin');
+
   const config = new Chain();
 
   const pluginConfig = getPluginConfig(rootDir, target);
