@@ -38,7 +38,9 @@ function logBuildResult(targets = [], context = {}) {
 
   if (targets.includes(MINIAPP)) {
     console.log(chalk.green('[Alibaba MiniApp] Bundle at:'));
-    console.log('   ', chalk.underline.white(getMiniAppOutput(context)));
+    console.log('   ', chalk.underline.white(getMiniAppOutput(context, {
+      target: MINIAPP,
+    })));
     console.log();
   }
 

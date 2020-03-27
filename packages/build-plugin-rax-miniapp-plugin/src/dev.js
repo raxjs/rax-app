@@ -1,4 +1,5 @@
 const chalk = require('chalk');
+const { resolve } = require('path');
 const consoleClear = require('console-clear');
 
 const { handleWebpackErr } = require('rax-compile-config');
@@ -6,7 +7,7 @@ const getMiniAppOutput = require('./config/plugin/getOutputPath');
 
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
-module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook }, options = {}) => {
+module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
   let devCompletedArr = [];
 
@@ -39,21 +40,18 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     devCompletedArr = [];
 
-    // hide log in mpa
-    const raxMpa = getValue('raxMpa');
-    if (raxMpa) return;
     console.log(chalk.green('Rax development server has been started:'));
     console.log();
 
     if (targets.includes(MINIAPP)) {
       console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMiniAppOutput(context)));
+      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: MINIAPP, demoClientFolder: true })));
       console.log();
     }
 
     if (targets.includes(WECHAT_MINIPROGRAM)) {
       console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: WECHAT_MINIPROGRAM })));
+      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: WECHAT_MINIPROGRAM, demoClientFolder: true })));
       console.log();
     }
   }
