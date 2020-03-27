@@ -37,7 +37,6 @@
     "ts-loader": "^5.3.3",
     "typescript": "^3.2.4",
     "webpack": "^4.27.1",
-    "webpack-bundle-analyzer": "^3.4.1",
     "webpack-chain": "^6.0.0"
   }
 }
