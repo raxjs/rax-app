@@ -29,7 +29,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
         registerTask(target, getBase(context, target, options));
       } else {
         const getBase = require('./config/miniapp/compile/getBase');
-        registerTask(target, getBase(context, target, options));
+        registerTask(target, getBase(context, target, options, onGetWebpackConfig));
       }
     }
   });
