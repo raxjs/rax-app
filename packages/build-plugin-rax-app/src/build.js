@@ -16,6 +16,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
     // Process relative publicPath.
     onGetWebpackConfig(target, (config) => {
       // Set MPA config
+      // Should setConfig in onGetWebpackConfig method. Need to get SSR params and all build targets.
       if (
         type === 'mpa'
         && (target === 'web' || target === 'weex')
