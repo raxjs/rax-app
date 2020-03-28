@@ -15,7 +15,21 @@ const parserOpts = {
   ], // support all plugins
 };
 
-function eliminateDeadCode(source) {
+function removeUnusedImport(source) {
+  return transformSync(source, {
+    parserOpts,
+    plugins: [
+      [
+        require('babel-plugin-danger-remove-unused-import'),
+        {
+          ignore: 'rax'
+        }
+      ]
+    ]
+  }).code;
+}
+
+function removeDeadCode(source) {
   return transformSync(source, {
     parserOpts,
     plugins: [
@@ -25,15 +39,26 @@ function eliminateDeadCode(source) {
           optimizeRawSize: true,
           keepFnName: true
         }
-      ],
-      [
-        require('babel-plugin-danger-remove-unused-import'),
-        {
-          ignore: 'rax'
-        }
       ]
     ]
   }).code;
+}
+
+const codeProcessor = (processors = [], sourceCode) => processors
+  .filter(processor => typeof processor === 'function')
+  .reduce(
+    (prevCode, currProcessor) => currProcessor(prevCode),
+    sourceCode
+  );
+
+function eliminateDeadCode(source, options = {}) {
+  const { platform = {} } = options;
+  const processors = [
+    platform.type !== 'wechat' && removeDeadCode,
+    removeUnusedImport,
+  ];
+
+  return codeProcessor(processors, source);
 }
 
 module.exports = eliminateDeadCode;

@@ -8,6 +8,8 @@ const build = require('./build');
 module.exports = (api, options = {}) => {
   setUserConfig(api, options);
 
+  api.setValue('targets', options.targets);
+
   if (!(options.targets && options.targets.length)) {
     console.error(chalk.red('rax-plugin-component need to set targets, e.g. ["rax-plugin-component", targets: ["web", "weex"]]'));
     console.log();
