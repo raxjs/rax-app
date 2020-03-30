@@ -11,7 +11,6 @@ module.exports = class JSX2MPRuntimePlugin {
     this.rootDir = rootDir;
     this.outputPath = outputPath;
     this.constantDirectories = constantDirectories;
-    console.log("JSX2MPRuntimePlugin -> constructor -> this.constantDirectories", this.constantDirectories)
   }
 
   apply(compiler) {
@@ -30,7 +29,7 @@ module.exports = class JSX2MPRuntimePlugin {
         if (this.mode === 'build') {
           copyPublicFile(this.constantDirectories, this.rootDir, this.outputPath);
         } else {
-          const constantDirectoryPaths =  this.constantDirectories.map(dirPath => resolve(this.rootDir, dirPath));
+          const constantDirectoryPaths = this.constantDirectories.map(dirPath => resolve(this.rootDir, dirPath));
           const watcher = chokidar.watch(constantDirectoryPaths);
           watcher.on('all', () => {
             copyPublicFile(this.constantDirectories, this.rootDir, this.outputPath);
