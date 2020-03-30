@@ -34,8 +34,8 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
 
   const appConfig = getAppConfig(rootDir, target);
 
-  const publicFilePath = resolve(rootDir, 'src/public');
-  const constantDirectories = publicFilePath ? ['src/public'].concat(constantDir) : constantDir;
+  const isPublicFileExist = existsSync(resolve(rootDir, 'src/public'));
+  const constantDirectories = isPublicFileExist ? ['src/public'].concat(constantDir) : constantDir;
 
   const loaderParams = {
     mode,
@@ -186,8 +186,8 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     }
   ]);
 
-  if (existsSync(publicFilePath)) {
-    config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir }]);
+  if (constantDirectories.length > 0) {
+    config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir, constantDirectories }]);
   }
 
   if (!disableCopyNpm) {

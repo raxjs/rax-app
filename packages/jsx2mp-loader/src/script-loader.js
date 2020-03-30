@@ -18,13 +18,14 @@ module.exports = function scriptLoader(content) {
   if (query.role) {
     return content;
   }
+
   const loaderOptions = getOptions(this);
   const { disableCopyNpm, outputPath, mode, entryPath, platform, importedComponent = '', isRelativeMiniappComponent = false, aliasEntries } = loaderOptions;
   const rootContext = this.rootContext;
   const isAppJSon = this.resourcePath === join(rootContext, 'src', 'app.json');
   const isJSON = !isAppJSon && isJSONFile(this.resourcePath);
 
-  const rawContent = readFileSync(this.resourcePath, 'utf-8');
+  const rawContent = isJSON ? content : readFileSync(this.resourcePath, 'utf-8');
   const nodeModulesPathList = getNearestNodeModulesPath(rootContext, this.resourcePath);
   const currentNodeModulePath = nodeModulesPathList[nodeModulesPathList.length - 1];
   const rootNodeModulePath = join(rootContext, 'node_modules');
