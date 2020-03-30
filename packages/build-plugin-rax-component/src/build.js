@@ -8,12 +8,13 @@ const { handleWebpackErr } = require('rax-compile-config');
 
 const getDistConfig = require('./config/getDistConfig');
 const getUMDConfig = require('./config/getUMDConfig');
+const getMiniappConfig = require('./config/miniapp/getBase');
 const buildLib = require('./buildLib');
 
-const { WEB, WEEX } = require('./constants');
+const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = (api, options = {}) => {
-  const { registerTask, modifyUserConfig, context, onHook } = api;
+  const { registerTask, modifyUserConfig, context, onHook, onGetWebpackConfig } = api;
   const { targets = [] } = options;
   const { rootDir, userConfig } = context;
   const { distDir, outputDir } = userConfig;
@@ -26,6 +27,12 @@ module.exports = (api, options = {}) => {
       modifyUserConfig('outputDir', 'build');
       registerTask(`component-build-${target}`, config);
       registerTask(`component-build-${target}-umd`, umdConfig);
+    }
+    if (target === MINIAPP || target === WECHAT_MINIPROGRAM) {
+      options[target] = options[target] || {};
+      addMiniappTargetParam(target, options[target]);
+      const config = getMiniappConfig(context, target, options, onGetWebpackConfig);
+      registerTask(`component-build-${target}`, config);
     }
   });
 
@@ -60,3 +67,16 @@ module.exports = (api, options = {}) => {
     console.log();
   });
 };
+
+/**
+ * Add miniapp target param to match jsx2mp-loader config
+ * */
+function addMiniappTargetParam(target, originalConfig = {}) {
+  switch (target) {
+    case WECHAT_MINIPROGRAM:
+      originalConfig.platform = 'wechat';
+      break;
+    default:
+      break;
+  }
+}
