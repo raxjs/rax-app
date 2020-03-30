@@ -34,8 +34,8 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
 
   const appConfig = getAppConfig(rootDir, target);
 
-  const isPublicFileExist = existsSync(resolve(rootDir, 'src/public'));
-  const constantDirectories = isPublicFileExist ? ['src/public'].concat(constantDir) : constantDir;
+  const isPublicFileExist = existsSync(resolve(rootDir, 'src/public')); // `public` directory is the default static resource directory
+  const constantDirectories = isPublicFileExist ? ['src/public'].concat(constantDir) : constantDir; // To make old `constantDir` param compatible
 
   const loaderParams = {
     mode,
