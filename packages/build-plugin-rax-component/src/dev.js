@@ -49,7 +49,7 @@ module.exports = (api, options = {}) => {
 
 
   function devCompileLog() {
-    // consoleClear(true);
+    consoleClear(true);
     let { err, stats } = devCompletedArr[0];
 
     devCompletedArr.forEach((devInfo) => {
