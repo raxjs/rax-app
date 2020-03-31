@@ -1,11 +1,11 @@
 {
   "name": "build-plugin-rax-multi-pages",
-  "version": "2.2.1",
+  "version": "2.2.0",
   "description": "rax app base plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
   "peerDependencies": {
-    "build-plugin-rax-app": "^0.1.0"
+    "build-plugin-rax-app": "^4.0.0"
   },
   "dependencies": {
     "chalk": "^2.4.2",
