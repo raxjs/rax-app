@@ -5,7 +5,7 @@
   "license": "BSD-3-Clause",
   "main": "src/index.js",
   "peerDependencies": {
-    "build-plugin-rax-app": "^4.0.0"
+    "build-plugin-rax-app": "^0.1.0"
   },
   "dependencies": {
     "chalk": "^2.4.2",
