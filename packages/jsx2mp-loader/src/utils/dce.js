@@ -54,7 +54,8 @@ const codeProcessor = (processors = [], sourceCode) => processors
 function eliminateDeadCode(source, options = {}) {
   const { platform = {} } = options;
   const processors = [
-    platform.type !== 'wechat' && removeDeadCode,
+    // FIXME: babel-plugin-minify-dead-code-elimination will eliminate variables which will cause compilation error
+    // platform.type !== 'wechat' && removeDeadCode,
     removeUnusedImport,
   ];
 
