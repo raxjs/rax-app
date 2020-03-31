@@ -15,7 +15,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
   targets.forEach((target, index) => {
     const [getBase, setDev] = getConfig(target, options);
-    registerTask(target, getBase(context, target, options));
+    registerTask(target, getBase(context, target, options, onGetWebpackConfig));
 
     onGetWebpackConfig(target, (config) => {
       if (setDev) {
