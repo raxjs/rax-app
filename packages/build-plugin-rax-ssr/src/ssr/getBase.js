@@ -1,7 +1,6 @@
 const path = require('path');
-const _ = require('lodash');
-const { getWebBase } = require('build-plugin-rax-app');
-const setUserConfig = require('../setUserConfig');
+const getWebpackBase = require('rax-webpack-config');
+const getBabelConfig = require('rax-babel-config');
 const getEntryName = require('./getEntryName');
 const EntryPlugin = require('./entryPlugin');
 
@@ -11,51 +10,20 @@ const EntryLoader = require.resolve('./entryLoader');
 module.exports = (context) => {
   const { userConfig, rootDir } = context;
 
-  const config = getWebBase(context);
-  setUserConfig(config, context);
+  const babelConfig = getBabelConfig({
+    styleSheet: true,
+    jsxToHtml: true,
+    isNode: true
+  });
 
-  config.entryPoints.clear();
-
-  ['jsx', 'tsx'].forEach(tag => {
-    config.module.rule(tag)
-      .use('babel')
-      .tap(options => {
-        const res = _.cloneDeep(options);
-        // transfor jsx to html for better ssr performance
-        res.plugins = [
-          require.resolve('babel-plugin-transform-jsx-to-html'),
-          ...options.plugins,
-        ];
-        res.presets = options.presets.map(v => {
-          if (Array.isArray(v) && v[0].indexOf('@babel/preset-env')) {
-            const args = {
-              ...v[1],
-              targets: {
-                node: '8',
-              },
-            };
-
-            return [v[0], args];
-          }
-
-          return v;
-        });
-
-        return res;
-      });
+  const config = getWebpackBase({
+    ...context,
+    babelConfig: babelConfig,
   });
 
   config.target('node');
 
-  ['jsx', 'tsx'].forEach(tag => {
-    config.module.rule(tag)
-      .use('platform')
-      .options({
-        platform: 'node',
-      });
-  });
-
-  const { plugins, inlineStyle } = userConfig;
+  const { plugins, inlineStyle = true } = userConfig;
   const isMultiPages = !!~plugins.indexOf('build-plugin-rax-multi-pages');
   const appJSON = require(path.resolve(rootDir, 'src/app.json'));
   const entries = appJSON.routes.map((route) => {
@@ -80,30 +48,14 @@ module.exports = (context) => {
     .filename('node/[name].js')
     .libraryTarget('commonjs2');
 
-  config.plugins.delete('document');
-  config.plugins.delete('PWAAppShell');
-
-  if (!userConfig.inlineStyle) {
-    config.plugins.delete('minicss');
-    config.module.rules.delete('css');
-    config.module.rule('css')
-      .test(/\.css?$/)
+  if (!inlineStyle) {
+    // there is no need to generate css file in node
+    config.module.rule('ignorecss')
+      .test(/\.(css|less|saas|scss)?$/)
       .use('ignorecss')
-      .loader(require.resolve('./ignoreLoader'))
+      .loader(require.resolve('null-loader'))
       .end();
   }
-
-  config.module.rules.delete('appJSON');
-
-  config.externals([
-    function(ctx, request, callback) {
-      // Prevent bundling weex moudles
-      if (request.indexOf('@weex-module') !== -1) {
-        return callback(null, 'undefined');
-      }
-      callback();
-    },
-  ]);
 
   return config;
 };

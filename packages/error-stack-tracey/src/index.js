@@ -17,7 +17,7 @@ async function parse(error, bundleContent) {
       errorFrame.columnNumber = originalSourcePosition.column;
       errorFrame.lineNumber = originalSourcePosition.line;
       errorFrame.fileName = originalSourcePosition.name;
-      errorFrame.source = `    at ${originalSourcePosition.functionName} (${parseWebpackPath(originalSourcePosition.source)}:${originalSourcePosition.lineNumber}:${originalSourcePosition.columnNumber})`;
+      errorFrame.source = parseWebpackPath(originalSourcePosition.source);
     }
 
     return errorFrame;
@@ -29,7 +29,9 @@ async function parse(error, bundleContent) {
 }
 
 function print(message, stackFrame) {
-  const stackMessage = stackFrame.map(frame => frame.source);
+  const stackMessage = stackFrame.map(frame => {
+    return `    at ${frame.functionName} (${frame.source}:${frame.lineNumber}:${frame.columnNumber})`;
+  });
 
   console.error(`Error: ${message}\n${stackMessage.join('\n')}`);
 }

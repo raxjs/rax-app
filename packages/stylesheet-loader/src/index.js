@@ -50,7 +50,7 @@ const parse = (parsedQuery, stylesheet) => {
 
     // normal rule
     if (rule.type === RULE) {
-      style = transformer.convert(rule, parsedQuery.log);
+      style = transformer.convert(rule, parsedQuery);
 
       rule.selectors.forEach((selector) => {
         let sanitizedSelector = transformer.sanitizeSelector(selector, transformDescendantCombinator, rule.position, parsedQuery.log);
