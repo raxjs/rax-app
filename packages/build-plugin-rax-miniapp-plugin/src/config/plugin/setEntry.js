@@ -1,4 +1,4 @@
-const { dirname, join, sep } = require('path');
+const { dirname, join, sep, extname } = require('path');
 
 /**
  * ./pages/foo -> based on src, return original
@@ -10,6 +10,15 @@ function getDepPath(source, rootDir) {
     return join(rootDir, source);
   }
   return ['.', rootDir, source].join(sep);
+}
+
+/**
+ * Remove file extension
+ * @param {string} filePath
+ */
+function removeExt(filePath) {
+  const lastDot = filePath.lastIndexOf('.');
+  return filePath.slice(0, lastDot);
 }
 
 function getEntry(entryIndexFilePath, pluginConfig) {
@@ -28,15 +37,15 @@ function getEntry(entryIndexFilePath, pluginConfig) {
     });
   }
   if (main) {
-    entry.main = getDepPath(main, rootDir);
+    entry.main = removeExt(getDepPath(main, rootDir));
   }
   return entry;
 }
 
 module.exports = (config, pluginConfig, options) => {
   config.entryPoints.clear();
-  const { entry } = options;
-  const entries = getEntry(entry, pluginConfig);
+  const { entryPath } = options;
+  const entries = getEntry(entryPath, pluginConfig);
   for (const [entryName, source] of Object.entries(entries)) {
     const entryConfig = config.entry(entryName);
     entryConfig.add(source);

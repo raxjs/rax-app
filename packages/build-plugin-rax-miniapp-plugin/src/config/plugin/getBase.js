@@ -24,7 +24,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const { platform = targetPlatformMap[target], mode = 'build', disableCopyNpm = false, turnOffSourceMap = false } = options[target] || {};
   const { rootDir, command } = context;
   const platformInfo = platformConfig[target];
-  const entryPath = './src/index.js';
+  const entryPath = './src/index';
   const outputPath = getOutputPath(context, { target });
 
   const config = new Chain();
@@ -33,7 +33,6 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
 
   const isPublicFileExist = existsSync(resolve(rootDir, 'src/public'));
   const constantDir = isPublicFileExist ? ['src/public'] : [];
-  const entry = 'src/index.js';
 
   const loaderParams = {
     mode,
@@ -47,11 +46,11 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   };
   const pageLoaderParams = {
     ...loaderParams,
-    entryPath: entry,
+    entryPath
   };
 
 
-  setEntry(config, pluginConfig, { entry });
+  setEntry(config, pluginConfig, { entryPath });
 
   config.target('web');
   config.context(rootDir);
