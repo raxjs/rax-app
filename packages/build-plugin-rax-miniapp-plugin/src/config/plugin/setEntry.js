@@ -26,9 +26,9 @@ function getEntry(entryIndexFilePath, pluginConfig) {
   const rootDir = dirname(entryIndexFilePath);
   const entry = {};
 
-  if (Array.isArray(pages)) {
-    pages.forEach(page => {
-      entry[`@${page}`] = `${getDepPath(page, rootDir)}?role=page`;
+  if (pages) {
+    Object.keys(pages).forEach(pageName => {
+      entry[`@${pageName}`] = `${getDepPath(pages[pageName], rootDir)}?role=page`;
     });
   }
   if (publicComponents) {

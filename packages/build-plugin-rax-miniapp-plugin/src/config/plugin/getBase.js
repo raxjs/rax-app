@@ -9,7 +9,8 @@ const getOutputPath = require('./getOutputPath');
 
 const ModifyOutputFileSystemPlugin = require('../../plugins/miniapp/ModifyOutputFileSystem');
 const CopyJsx2mpRuntimePlugin = require('../../plugins/miniapp/CopyJsx2mpRuntime');
-const CopyFilePlugin = require('../../plugins/miniapp/CopyFile');
+const CopyPublicFilePlugin = require('../../plugins/miniapp/CopyPublicFile');
+const ProcessPluginJsonPlugin = require('../../plugins/miniapp/ProcessPluginJson');
 const GenerateAppCssPlugin = require('../../plugins/miniapp/GenerateAppCss');
 
 const platformConfig = require('./platformConfig');
@@ -174,8 +175,12 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   }]);
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
+  config.plugin('processPluginJson').use(ProcessPluginJsonPlugin, [{ outputPath, rootDir, target }]);
   config.plugin('generateAppCss').use(GenerateAppCssPlugin, [{ outputPath, platformInfo }]);
-  config.plugin('copyFile').use(CopyFilePlugin, [{ mode, outputPath, rootDir, isPublicFileExist }]);
+
+  if (isPublicFileExist) {
+    config.plugin('copyFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir }]);
+  }
 
   if (!disableCopyNpm) {
     config.plugin('runtime').use(CopyJsx2mpRuntimePlugin, [{ platform, mode, outputPath, rootDir }]);
