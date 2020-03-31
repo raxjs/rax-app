@@ -8,7 +8,7 @@ const setWebDev = require('./web/setDev');
 module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, setValue }) => {
   process.env.RAX_SSR = 'true';
   const { command } = context;
-  const ssrConfig = getSSRBase(context);
+  const ssrConfig = getSSRBase(context, getValue);
   registerTask('ssr', ssrConfig);
 
   // Add ssr to the target list, so other plugins can get the right target info, eg. build-plugin-rax-compat-react
