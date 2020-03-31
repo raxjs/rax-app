@@ -40,7 +40,7 @@ module.exports = class ProcessPluginJsonPlugin {
           const pluginContent = transformPluginContent(pluginFilePath);
           writeJSON(distPluginFilePath, pluginContent, { spaces: 2 }, () => {
             callback();
-          })
+          });
         }
       }
     );
