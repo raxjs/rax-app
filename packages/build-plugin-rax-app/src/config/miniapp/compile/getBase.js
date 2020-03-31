@@ -23,7 +23,7 @@ const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
 module.exports = (context, target, options = {}, onGetWebpackConfig) => {
-  const { platform = targetPlatformMap[target], mode = 'build', disableCopyNpm = false, turnOffSourceMap = false } = options[target] || {};
+  const { platform = targetPlatformMap[target], mode = 'build', disableCopyNpm = false, turnOffSourceMap = false, constantDir = [] } = options[target] || {};
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
   const entryPath = './src/app.js';
@@ -34,14 +34,14 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
 
   const appConfig = getAppConfig(rootDir, target);
 
-  const publicFilePath = resolve(rootDir, 'src/public');
-  const constantDir = publicFilePath ? ['src/public'] : [];
+  const isPublicFileExist = existsSync(resolve(rootDir, 'src/public')); // `public` directory is the default static resource directory
+  const constantDirectories = isPublicFileExist ? ['src/public'].concat(constantDir) : constantDir; // To make old `constantDir` param compatible
 
   const loaderParams = {
     mode,
     entryPath,
     outputPath,
-    constantDir,
+    constantDir: constantDirectories,
     disableCopyNpm,
     turnOffSourceMap,
     platform: platformInfo
@@ -186,8 +186,8 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     }
   ]);
 
-  if (existsSync(publicFilePath)) {
-    config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir }]);
+  if (constantDirectories.length > 0) {
+    config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir, constantDirectories }]);
   }
 
   if (!disableCopyNpm) {

@@ -48,7 +48,8 @@ module.exports = async function componentLoader(content) {
     aliasEntries
   });
 
-  const rawContentAfterDCE = eliminateDeadCode(content);
+  const eliminateOptions = { platform };
+  const rawContentAfterDCE = eliminateDeadCode(content, eliminateOptions);
 
   let transformed;
   try {
