@@ -63,7 +63,7 @@ module.exports = (context, options = {}, target) => {
     })
     .end()
     .use('platform')
-    .loader(require.resolve('rax-compile-config/src/platformLoader')); ;
+    .loader(require.resolve('rax-compile-config/src/platformLoader'));
 
   config.module.rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
@@ -77,6 +77,20 @@ module.exports = (context, options = {}, target) => {
     config.plugin('copyWebpackPlugin')
       .use(CopyWebpackPlugin, [[{ from: 'src/public', to: `${target}/public` }]]);
   }
+
+  config.externals([
+    function(ctx, request, callback) {
+      if (request.indexOf('@weex-module') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
+
+      // compatible with @system for quickapp
+      if (request.indexOf('@system') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
+      callback();
+    },
+  ]);
 
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);

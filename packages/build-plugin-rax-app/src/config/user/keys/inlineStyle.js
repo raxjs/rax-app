@@ -60,7 +60,7 @@ function setCSSRule(configRule, context, value) {
   if (value) {
     if (isInlineStandard || isMiniAppStandard) {
       configInlineStyle(configRule);
-    } else if (isWebStandard) {
+    } else {
       // Only web need transfrom rpx to vw
       configInlineStyle(configRule)
         .end()

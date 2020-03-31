@@ -40,19 +40,18 @@ export default {
   convertProp(prop) {
     let result = camelCase(prop);
 
-    // Handle vendor prefixes
-    if (prop.indexOf('-webkit') === 0) {
-      result = result.replace('webkit', 'Webkit');
-    } else if (prop.indexOf('-moz') === 0) {
-      result = result.replace('moz', 'Moz');
+    // -webkit/-uc/-o to Webkit/Uc/O
+    if (/^\-\w/.test(prop)) {
+      result = result.replace(/^(\w)/, ($1) => {
+        return $1.substring(0, 1).toUpperCase();
+      });
     }
 
     return result;
   },
 
   convertValue(property, value) {
-    var result = value,
-      resultNumber;
+    let result = value;
 
     if (typeof value === 'string' && value.search(VAR_REGEX) > -1) {
       // var(--test-var)
@@ -77,8 +76,9 @@ export default {
     });
   },
 
-  convert(rule, log) {
+  convert(rule, query = {}) {
     let style = {};
+    const { log, theme } = query;
 
     if (rule.tagName === 'text') {
       return;
@@ -93,7 +93,7 @@ export default {
       let value = this.convertValue(camelCaseProperty, declaration.value);
       style[camelCaseProperty] = value;
 
-      if (typeof value === 'string' && value.search(VAR_REGEX) > -1) {
+      if (typeof value === 'string' && value.search(VAR_REGEX) > -1 && theme) {
         // var(--test-var)
         Object.assign(style, {
           [camelCaseProperty]: this.convertCSSVariableValue(value)
