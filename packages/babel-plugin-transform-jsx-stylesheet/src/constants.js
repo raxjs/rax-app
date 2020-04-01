@@ -1,11 +1,16 @@
-export const STYLE_SHEET_NAME = '_styleSheet';
+// Maybe modified.
+export let STYLE_SHEET_NAME = '_styleSheet';
 export const GET_STYLE_FUNC_NAME = '_getStyle';
 export const MERGE_STYLES_FUNC_NAME = '_mergeStyles';
 export const GET_CLS_NAME_FUNC_NAME = '_getClassName';
 export const NAME_SUFFIX = 'StyleSheet';
 export const cssSuffixs = ['.css', '.scss', '.sass', '.less', '.styl'];
 
-export const mergeStylesFunctionString = `function ${MERGE_STYLES_FUNC_NAME}() {
+export function setStyleSheetName(styleSheetName) {
+  STYLE_SHEET_NAME = styleSheetName;
+}
+
+export const mergeStylesFunctionString = () => `function ${MERGE_STYLES_FUNC_NAME}() {
   var newTarget = {};
 
   for (var index = 0; index < arguments.length; index++) {
@@ -19,7 +24,7 @@ export const mergeStylesFunctionString = `function ${MERGE_STYLES_FUNC_NAME}() {
   return newTarget;
 }`;
 
-export const getClassNameFunctionString = `function ${GET_CLS_NAME_FUNC_NAME}() {
+export const getClassNameFunctionString = () => `function ${GET_CLS_NAME_FUNC_NAME}() {
   var className = [];
   var args = arguments[0];
   var type = Object.prototype.toString.call(args).slice(8, -1).toLowerCase();
@@ -45,7 +50,7 @@ export const getClassNameFunctionString = `function ${GET_CLS_NAME_FUNC_NAME}() 
   return className.join(' ').trim();
 }`;
 
-export const getStyleFunctionString = `function ${GET_STYLE_FUNC_NAME}(classNameExpression) {
+export const getStyleFunctionString = () => `function ${GET_STYLE_FUNC_NAME}(classNameExpression) {
   var cache = ${STYLE_SHEET_NAME}.__cache || (${STYLE_SHEET_NAME}.__cache = {});
 
   var className = ${GET_CLS_NAME_FUNC_NAME}(classNameExpression);

@@ -56,7 +56,7 @@ module.exports = (context, options = {}, target) => {
     .loader(require.resolve('@reactml/loader'))
     .options({
       renderer: 'rax',
-      babelConfigOverride: babelConfig
+      inlineStyle: context.userConfig.inlineStyle,
     })
     .end();
 

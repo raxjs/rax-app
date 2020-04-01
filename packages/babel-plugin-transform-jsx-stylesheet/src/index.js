@@ -8,13 +8,19 @@ import {
   cssSuffixs,
   mergeStylesFunctionString,
   getClassNameFunctionString,
-  getStyleFunctionString
+  getStyleFunctionString,
+  setStyleSheetName
 } from './constants';
 
-export default function({ types: t, template }) {
-  const mergeStylesFunctionTemplate = template(mergeStylesFunctionString);
-  const getClassNameFunctionTemplate = template(getClassNameFunctionString);
-  const getStyleFunctionTemplete = template(getStyleFunctionString);
+export default function ({ types: t, template }, opts = {}) {
+  const { injectedStyleName } = opts;
+  if (typeof injectedStyleName === 'string') {
+    setStyleSheetName(injectedStyleName);
+  }
+
+  const mergeStylesFunctionTemplate = template(mergeStylesFunctionString());
+  const getClassNameFunctionTemplate = template(getClassNameFunctionString());
+  const getStyleFunctionTemplete = template(getStyleFunctionString());
 
   const getClassNameFunctionAst = getClassNameFunctionTemplate();
   const mergeStylesFunctionAst = mergeStylesFunctionTemplate();
@@ -91,10 +97,13 @@ export default function({ types: t, template }) {
         }
       },
       JSXOpeningElement({ container }, { file, opts }) {
-        const { retainClassName = false } = opts;
+        const {
+          retainClassName = false,
+          injectedStyleName
+        } = opts;
 
         const cssFileCount = file.get('cssFileCount') || 0;
-        if (cssFileCount < 1) {
+        if (cssFileCount < 1 && !injectedStyleName) {
           return;
         }
 
@@ -153,13 +162,13 @@ export default function({ types: t, template }) {
             // style={[styles.a, styles.b]} ArrayExpression
             if (expressionType === 'ArrayExpression') {
               expression.elements = arrayExpression.concat(expression.elements);
-            // style={styles.a} MemberExpression
-            // style={{ height: 100 }} ObjectExpression
-            // style={{ ...custom }} ObjectExpression
-            // style={custom} Identifier
-            // style={getStyle()} CallExpression
-            // style={this.props.useCustom ? custom : null} ConditionalExpression
-            // style={custom || other} LogicalExpression
+              // style={styles.a} MemberExpression
+              // style={{ height: 100 }} ObjectExpression
+              // style={{ ...custom }} ObjectExpression
+              // style={custom} Identifier
+              // style={getStyle()} CallExpression
+              // style={this.props.useCustom ? custom : null} ConditionalExpression
+              // style={custom || other} LogicalExpression
             } else {
               const mergeArrayExpression = arrayExpression.concat(expression);
               mergeArrayExpression.unshift(t.objectExpression([]));
