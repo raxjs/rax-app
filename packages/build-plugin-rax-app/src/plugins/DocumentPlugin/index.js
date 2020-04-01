@@ -31,7 +31,7 @@ module.exports = class DocumentPlugin {
     const { rootDir } = context;
 
     const mainConfig = compiler.options;
-    const basConfig = getBaseConfig(context, {
+    const baseConfig = getBaseConfig(context, {
       alias: mainConfig.alias,
       configWebpack: options.configWebpack
     });
@@ -89,10 +89,10 @@ module.exports = class DocumentPlugin {
         doctype: options.doctype
       };
 
-      basConfig.entry(tempFile).add(`${loaderForDocument}?${qs.stringify(query)}!${absoluteDocumentPath}`);
+      baseConfig.entry(tempFile).add(`${loaderForDocument}?${qs.stringify(query)}!${absoluteDocumentPath}`);
     });
 
-    const config = basConfig.toConfig();
+    const config = baseConfig.toConfig();
 
     let fileDependencies = [];
 
