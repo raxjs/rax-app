@@ -133,8 +133,6 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
       outputPath
     });
 
-
-  // Exclude app.json
   config.module
     .rule('json')
     .test(/\.json$/)

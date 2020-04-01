@@ -37,7 +37,7 @@ function logBuildResult(targets = [], context = {}) {
   console.log();
 
   if (targets.includes(MINIAPP)) {
-    console.log(chalk.green('[Alibaba MiniApp] Bundle at:'));
+    console.log(chalk.green('[Alibaba MiniApp] Plugin Bundle at:'));
     console.log('   ', chalk.underline.white(getMiniAppOutput(context, {
       target: MINIAPP,
     })));
@@ -45,7 +45,7 @@ function logBuildResult(targets = [], context = {}) {
   }
 
   if (targets.includes(WECHAT_MINIPROGRAM)) {
-    console.log(chalk.green('[WeChat MiniProgram] Bundle at:'));
+    console.log(chalk.green('[WeChat MiniProgram] Plugin Bundle at:'));
     console.log('   ', chalk.underline.white(getMiniAppOutput(context, {
       target: WECHAT_MINIPROGRAM,
     })));
