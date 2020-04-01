@@ -1,58 +1,60 @@
 const chalk = require('chalk');
-const consoleClear = require('console-clear');
-const { handleWebpackErr } = require('rax-compile-config');
+const { setConfig, setDevLog } = require('rax-multi-pages-settings');
 
-const getEntries = require('./getEntries');
-const setEntry = require('./setEntry');
-const setDevServer = require('./setDevServer');
 
 module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) => {
+  // Value appType("spa" or "mpa", default "spa") is a new feature to support MPA;
+  // See: https://github.com/raxjs/rax-scripts/issues/228
+  const appType = getValue('appType');
+
+  if (appType) {
+    console.log();
+    console.log(chalk.yellow('Warning! '));
+    console.log(chalk.yellow('Package "build-plugin-rax-multi-pages" has been deprecated.'));
+    console.log(chalk.yellow('Please use type: "mpa". example: '));
+    console.log(chalk.yellow(`
+// app.json
+{
+  "plugins": [
+    [
+      "build-plugin-rax-app",
+      {
+        "targets": ["web"],
+        "type": "mpa"
+      }
+    ]
+  ]
+}    
+
+See: https://rax.js.org/docs/guide/rax-plugin-app
+    `));
+
+    // Use new MPA feature.
+    if (appType === 'mpa') {
+      return;
+    }
+  } else {
+    onHook('after.start.compile', ({ url, err, stats }) => {
+      setDevLog({ url, err, stats });
+    });
+  }
+
+
+  // Compatibility with old build-plugin-rax-multi-page
   const { command } = context;
-  const entries = getEntries(context);
 
   const targets = getValue('targets');
   setValue('raxMpa', true);
 
   if (targets.includes('web')) {
     onGetWebpackConfig('web', (config) => {
-      if (command === 'start' && process.env.RAX_SSR !== 'true') {
-        setDevServer({
-          config,
-          context,
-          targets,
-          entries,
-        });
-      }
-
-      setEntry(config, context, entries, 'web');
-
-      config.plugin('document').tap(args => {
-        return [{
-          ...args[0],
-          pages: entries
-        }];
-      });
+      setConfig(config, context, targets, 'web');
     });
   }
 
   if (targets.includes('weex')) {
     onGetWebpackConfig('weex', config => {
-      setEntry(config, context, entries, 'weex');
+      setConfig(config, context, targets, 'weex');
     });
   }
-
-  onHook('after.start.compile', async({ url, err, stats }) => {
-    consoleClear(true);
-
-    if (!handleWebpackErr(err, stats)) {
-      return;
-    }
-
-    console.log(chalk.green('Rax development server has been started:'));
-    console.log();
-
-    console.log(chalk.green('Multi pages development server at:'));
-    console.log('   ', chalk.underline.white(url));
-    console.log();
-  });
 };
