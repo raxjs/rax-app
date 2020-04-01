@@ -7,11 +7,11 @@ const getPluginConfig = require('./getPluginConfig');
 const setEntry = require('./setEntry');
 const getOutputPath = require('./getOutputPath');
 
-const ModifyOutputFileSystemPlugin = require('../../plugins/miniapp/ModifyOutputFileSystem');
-const CopyJsx2mpRuntimePlugin = require('../../plugins/miniapp/CopyJsx2mpRuntime');
-const CopyPublicFilePlugin = require('../../plugins/miniapp/CopyPublicFile');
-const ProcessPluginJsonPlugin = require('../../plugins/miniapp/ProcessPluginJson');
-const GenerateAppCssPlugin = require('../../plugins/miniapp/GenerateAppCss');
+const ModifyOutputFileSystemPlugin = require('../plugins/miniapp/ModifyOutputFileSystem');
+const CopyJsx2mpRuntimePlugin = require('../plugins/miniapp/CopyJsx2mpRuntime');
+const CopyPublicFilePlugin = require('../plugins/miniapp/CopyPublicFile');
+const ProcessPluginJsonPlugin = require('../plugins/miniapp/ProcessPluginJson');
+const GenerateAppCssPlugin = require('../plugins/miniapp/GenerateAppCss');
 
 const platformConfig = require('./platformConfig');
 const targetPlatformMap = require('./targetPlatformMap');

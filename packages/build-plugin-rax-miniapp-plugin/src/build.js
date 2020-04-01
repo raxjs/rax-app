@@ -3,7 +3,7 @@ const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
 
-const getMiniAppOutput = require('./config/plugin/getOutputPath');
+const getMiniAppOutput = require('./config/getOutputPath');
 
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
@@ -11,7 +11,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
   const { targets = [] } = options;
 
   targets.forEach(async(target) => {
-    const getBase = require('./config/plugin/getBase');
+    const getBase = require('./config/getBase');
     registerTask(target, getBase(context, target, options, onGetWebpackConfig));
   });
 

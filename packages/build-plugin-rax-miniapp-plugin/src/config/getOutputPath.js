@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
-const { MINIAPP } = require('../../constants');
+const { MINIAPP } = require('../constants');
 
 module.exports = (context, { target = MINIAPP, demoClientFolder = false}) => {
   const { rootDir, userConfig, command } = context;

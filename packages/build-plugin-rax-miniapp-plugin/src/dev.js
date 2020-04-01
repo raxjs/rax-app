@@ -3,7 +3,7 @@ const { resolve } = require('path');
 const consoleClear = require('console-clear');
 
 const { handleWebpackErr } = require('rax-compile-config');
-const getMiniAppOutput = require('./config/plugin/getOutputPath');
+const getMiniAppOutput = require('./config/getOutputPath');
 
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
@@ -63,5 +63,5 @@ function getConfig(target, options = {}) {
   } else {
     options[target] = { mode: 'watch' };
   }
-  return require('./config/plugin/getBase');
+  return require('./config/getBase');
 }
