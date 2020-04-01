@@ -2,6 +2,7 @@ const path = require('path');
 const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
+const { setConfig } = require('rax-multi-pages-settings');
 
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 const processRelativePublicPath = require('./config/processRelativePublicPath');
@@ -9,11 +10,19 @@ const processRelativePublicPath = require('./config/processRelativePublicPath');
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
-  const { targets = [] } = options;
+  const { targets = [], type = 'spa' } = options;
 
   targets.forEach(async(target) => {
     // Process relative publicPath.
     onGetWebpackConfig(target, (config) => {
+      // Set MPA config
+      // Should setConfig in onGetWebpackConfig method. Need to get SSR params and all build targets.
+      if (
+        type === 'mpa'
+        && (target === 'web' || target === 'weex')
+      ) {
+        setConfig(config, context, targets, target);
+      }
       processRelativePublicPath(target, config);
     });
 
@@ -28,7 +37,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
         registerTask(target, getBase(context, target, options));
       } else {
         const getBase = require('./config/miniapp/compile/getBase');
-        registerTask(target, getBase(context, target, options));
+        registerTask(target, getBase(context, target, options, onGetWebpackConfig));
       }
     }
   });
