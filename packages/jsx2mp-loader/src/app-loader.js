@@ -51,8 +51,7 @@ module.exports = async function appLoader(content) {
     aliasEntries
   });
 
-  const eliminateOptions = { platform };
-  const rawContentAfterDCE = eliminateDeadCode(rawContent, eliminateOptions);
+  const rawContentAfterDCE = eliminateDeadCode(rawContent);
 
   let transformed;
   try {
