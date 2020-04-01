@@ -29,21 +29,6 @@ function removeUnusedImport(source) {
   }).code;
 }
 
-function removeDeadCode(source) {
-  return transformSync(source, {
-    parserOpts,
-    plugins: [
-      [
-        require('babel-plugin-minify-dead-code-elimination'),
-        {
-          optimizeRawSize: true,
-          keepFnName: true
-        }
-      ]
-    ]
-  }).code;
-}
-
 const codeProcessor = (processors = [], sourceCode) => processors
   .filter(processor => typeof processor === 'function')
   .reduce(
@@ -51,10 +36,8 @@ const codeProcessor = (processors = [], sourceCode) => processors
     sourceCode
   );
 
-function eliminateDeadCode(source, options = {}) {
-  const { platform = {} } = options;
+function eliminateDeadCode(source) {
   const processors = [
-    platform.type !== 'wechat' && removeDeadCode,
     removeUnusedImport,
   ];
 
