@@ -64,4 +64,8 @@ describe('normalizeColor', () => {
     expect(normalizeColor('hsl(70, 100%, 75%)')).toBe('rgb(234,255,128)');
     expect(normalizeColor('hsl(70, 0%, 75%)')).toBe('rgb(191,191,191)');
   });
+
+  it('should return current string when not legal color', () => {
+    expect(normalizeColor('var(--main-color)')).toBe('var(--main-color)');
+  });
 });
