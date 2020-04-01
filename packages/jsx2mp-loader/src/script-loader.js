@@ -3,32 +3,29 @@ const { join, dirname, relative, resolve, sep } = require('path');
 const { copySync, existsSync, mkdirpSync, writeJSONSync, readFileSync, readJSONSync } = require('fs-extra');
 const { getOptions } = require('loader-utils');
 const cached = require('./cached');
-const { removeExt, isFromTargetDirs, doubleBackslash, normalizeOutputFilePath, addRelativePathPrefix } = require('./utils/pathHelper');
+const { removeExt, doubleBackslash, normalizeOutputFilePath, addRelativePathPrefix } = require('./utils/pathHelper');
 const { isNpmModule, isJSONFile, isTypescriptFile } = require('./utils/judgeModule');
 const isMiniappComponent = require('./utils/isMiniappComponent');
+const parse = require('./utils/parseRequest');
 const output = require('./output');
 
-const AppLoader = require.resolve('./app-loader');
-const PageLoader = require.resolve('./page-loader');
-const ComponentLoader = require.resolve('./component-loader');
 const ScriptLoader = __filename;
 
 const MINIAPP_CONFIG_FIELD = 'miniappConfig';
 
 module.exports = function scriptLoader(content) {
+  const query = parse(this.request);
+  if (query.role) {
+    return content;
+  }
+
   const loaderOptions = getOptions(this);
-  const { disableCopyNpm, outputPath, mode, entryPath, platform, constantDir, importedComponent = '', isRelativeMiniappComponent = false } = loaderOptions;
+  const { disableCopyNpm, outputPath, mode, entryPath, platform, importedComponent = '', isRelativeMiniappComponent = false, aliasEntries } = loaderOptions;
   const rootContext = this.rootContext;
-  const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
-  const isFromConstantDir = cached(isFromTargetDirs(absoluteConstantDir));
   const isAppJSon = this.resourcePath === join(rootContext, 'src', 'app.json');
+  const isJSON = !isAppJSon && isJSONFile(this.resourcePath);
 
-  const loaderHandled = this.loaders.some(
-    ({ path }) => [AppLoader, PageLoader, ComponentLoader].indexOf(path) !== -1
-  );
-  if (loaderHandled && !isFromConstantDir(this.resourcePath)) return;
-
-  const rawContent = readFileSync(this.resourcePath, 'utf-8');
+  const rawContent = isJSON ? content : readFileSync(this.resourcePath, 'utf-8');
   const nodeModulesPathList = getNearestNodeModulesPath(rootContext, this.resourcePath);
   const currentNodeModulePath = nodeModulesPathList[nodeModulesPathList.length - 1];
   const rootNodeModulePath = join(rootContext, 'node_modules');
@@ -42,7 +39,7 @@ module.exports = function scriptLoader(content) {
     return relativeNpmPath.split(sep).slice(0, isScopedNpm ? 2 : 1).join(sep);
   });
 
-  const outputFile = (rawContent, { isFromNpm = true, isJSON = false}) => {
+  const outputFile = (rawContent, isFromNpm = true) => {
     let distSourcePath;
     if (isFromNpm) {
       const relativeNpmPath = relative(currentNodeModulePath, this.resourcePath);
@@ -61,38 +58,26 @@ module.exports = function scriptLoader(content) {
     let outputContent = {};
     let outputOption = {};
 
-    if (isJSON) {
-      outputContent = {
-        json: JSON.parse(rawContent)
-      };
-      outputOption = {
-        outputPath: {
-          json: distSourcePath
-        },
-        mode
-      };
-    } else {
-      outputContent = { code: rawContent };
-      outputOption = {
-        outputPath: {
-          code: removeExt(distSourcePath) + '.js'
-        },
-        mode,
-        externalPlugins: [
-          [
-            require('./babel-plugin-rename-import'),
-            { normalizeNpmFileName,
-              distSourcePath,
-              resourcePath: this.resourcePath,
-              outputPath,
-              disableCopyNpm,
-              platform
-            }
-          ]
-        ],
-        isTypescriptFile: isTypescriptFile(this.resourcePath)
-      };
-    }
+    outputContent = { code: rawContent };
+    outputOption = {
+      outputPath: {
+        code: removeExt(distSourcePath) + '.js'
+      },
+      mode,
+      externalPlugins: [
+        [
+          require('./babel-plugin-rename-import'),
+          { normalizeNpmFileName,
+            distSourcePath,
+            resourcePath: this.resourcePath,
+            outputPath,
+            disableCopyNpm,
+            platform
+          }
+        ]
+      ],
+      isTypescriptFile: isTypescriptFile(this.resourcePath)
+    };
 
     output(outputContent, null, outputOption);
   };
@@ -121,16 +106,16 @@ module.exports = function scriptLoader(content) {
               });
               const relativeComponentPath = normalizeNpmFileName(addRelativePathPrefix(relative(dirname(sourceNativeMiniappScriptFile), realComponentPath)));
               componentConfig.usingComponents[key] = normalizeOutputFilePath(removeExt(relativeComponentPath));
+              // Native miniapp component js file will loaded by script-loader
               dependencies.push({
                 name: realComponentPath,
-                loader: ScriptLoader, // Native miniapp component js file will loaded by script-loader
                 options: loaderOptions
               });
             } else if (componentPath.indexOf('/npm/') === -1) { // Exclude the path that has been modified by jsx-compiler
               const absComponentPath = resolve(dirname(sourceNativeMiniappScriptFile), componentPath);
+              // Native miniapp component js file will loaded by script-loader
               dependencies.push({
                 name: absComponentPath,
-                loader: ScriptLoader, // Native miniapp component js file will loaded by script-loader
                 options: Object.assign({ isRelativeMiniappComponent: true }, loaderOptions)
               });
             }
@@ -145,7 +130,7 @@ module.exports = function scriptLoader(content) {
 
   if (isFromNodeModule(this.resourcePath)) {
     if (disableCopyNpm) {
-      return content;
+      return isJSON ? '{}' : content;
     }
     const relativeNpmPath = relative(currentNodeModulePath, this.resourcePath);
     const npmFolderName = getNpmFolderName(relativeNpmPath);
@@ -169,11 +154,11 @@ module.exports = function scriptLoader(content) {
       const dependencies = [];
 
       if (isSingleComponent || isComponentLibrary || isRelativeMiniappComponent) {
-        const miniappComponentPath = isRelativeMiniappComponent ? relative(sourcePackagePath, this.resourcePath) : isSingleComponent ? pkg.miniappConfig[mainName] : pkg.miniappConfig.subPackages[importedComponent][mainName];
+        const miniappComponentPath = isRelativeMiniappComponent ? relative(sourcePackagePath, removeExt(this.resourcePath)) : isSingleComponent ? pkg.miniappConfig[mainName] : pkg.miniappConfig.subPackages[importedComponent][mainName];
         const sourceNativeMiniappScriptFile = join(sourcePackagePath, miniappComponentPath);
+        // Native miniapp component js file will loaded by script-loader
         dependencies.push({
           name: sourceNativeMiniappScriptFile,
-          loader: ScriptLoader, // Native miniapp component js file will loaded by script-loader
           options: loaderOptions
         });
 
@@ -203,7 +188,7 @@ module.exports = function scriptLoader(content) {
         const source = dirname(this.resourcePath);
         const target = dirname(normalizeNpmFileName(join(outputPath, 'npm', relative(rootNodeModulePath, this.resourcePath))));
         outputDir(source, target);
-        outputFile(rawContent, {});
+        outputFile(rawContent);
 
         const originalComponentConfigPath = removeExt(this.resourcePath) + '.json';
         const distComponentConfigPath = normalizeNpmFileName(join(outputPath, 'npm', relative(rootNodeModulePath, removeExt(this.resourcePath) + '.json')));
@@ -216,25 +201,28 @@ module.exports = function scriptLoader(content) {
         content
       ].join('\n');
     } else {
-      outputFile(rawContent, {
-        isJSON: isJSONFile(this.resourcePath)
-      });
+      outputFile(rawContent);
     }
   } else {
-    !isAppJSon && outputFile(rawContent, {
-      isFromNpm: false,
-      isJSON: isJSONFile(this.resourcePath)
-    });
+    !isAppJSon && outputFile(rawContent, false);
   }
 
-  return content;
+  return isJSON ? '{}' : content;
 };
 
 /**
  * For that alipay build folder can not contain `@`, escape to `_`.
  */
 function normalizeNpmFileName(filename) {
-  return filename.replace(/@/g, '_').replace(/node_modules/g, 'npm');
+  const repalcePathname = pathname => pathname.replace(/@/g, '_').replace(/node_modules/g, 'npm');
+
+  const cwd = process.cwd();
+
+  if (!filename.includes(cwd)) return repalcePathname(filename);
+
+  // Support for `@` in cwd path
+  const relativePath = relative(cwd, filename);
+  return join(cwd, repalcePathname(relativePath));
 }
 
 function getNearestNodeModulesPath(root, current) {
