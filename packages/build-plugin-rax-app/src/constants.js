@@ -5,4 +5,5 @@ module.exports = {
   KRAKEN: 'kraken',
   MINIAPP: 'miniapp',
   WECHAT_MINIPROGRAM: 'wechat-miniprogram',
+  QUICKAPP: 'quickapp',
 };

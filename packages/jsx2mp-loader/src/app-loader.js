@@ -77,11 +77,13 @@ module.exports = async function appLoader(content) {
   };
   const outputOption = {
     outputPath: {
-      code: join(outputPath, 'app.js'),
+      code: join(outputPath, platform.type === 'quickapp' ? 'app.ux' : 'app.js'),
       css: join(outputPath, 'app' + platform.extension.css),
     },
     mode,
-    isTypescriptFile: isTypescriptFile(this.resourcePath)
+    isTypescriptFile: isTypescriptFile(this.resourcePath),
+    type: 'app',
+    platform,
   };
 
   output(outputContent, rawContent, outputOption);
