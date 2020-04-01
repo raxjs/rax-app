@@ -9,15 +9,6 @@ module.exports = (context, target, options = {}) => {
 
   config.output.filename(`${WEB}/[name].js`);
 
-  config.externals([
-    function(ctx, request, callback) {
-      if (request.indexOf('@weex-module') !== -1) {
-        return callback(null, 'undefined');
-      }
-      callback();
-    },
-  ]);
-
   config.plugin('document')
     .use(DocumentPlugin, [{
       context,
