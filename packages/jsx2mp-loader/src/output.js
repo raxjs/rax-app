@@ -117,9 +117,8 @@ function output(content, raw, options) {
           }
         }
       }
-    } else {
-      writeFileWithDirCheck(outputPath.code, code);
     }
+    writeFileWithDirCheck(outputPath.code, code);
   }
 
   if (json) {

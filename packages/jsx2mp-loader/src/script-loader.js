@@ -18,12 +18,14 @@ module.exports = function scriptLoader(content) {
   if (query.role) {
     return content;
   }
+
   const loaderOptions = getOptions(this);
   const { disableCopyNpm, outputPath, mode, entryPath, platform, importedComponent = '', isRelativeMiniappComponent = false, aliasEntries } = loaderOptions;
   const rootContext = this.rootContext;
   const isAppJSon = this.resourcePath === join(rootContext, 'src', 'app.json');
+  const isJSON = !isAppJSon && isJSONFile(this.resourcePath);
 
-  const rawContent = readFileSync(this.resourcePath, 'utf-8');
+  const rawContent = isJSON ? content : readFileSync(this.resourcePath, 'utf-8');
   const nodeModulesPathList = getNearestNodeModulesPath(rootContext, this.resourcePath);
   const currentNodeModulePath = nodeModulesPathList[nodeModulesPathList.length - 1];
   const rootNodeModulePath = join(rootContext, 'node_modules');
@@ -37,7 +39,7 @@ module.exports = function scriptLoader(content) {
     return relativeNpmPath.split(sep).slice(0, isScopedNpm ? 2 : 1).join(sep);
   });
 
-  const outputFile = (rawContent, { isFromNpm = true, isJSON = false}) => {
+  const outputFile = (rawContent, isFromNpm = true) => {
     let distSourcePath;
     if (isFromNpm) {
       const relativeNpmPath = relative(currentNodeModulePath, this.resourcePath);
@@ -56,40 +58,27 @@ module.exports = function scriptLoader(content) {
     let outputContent = {};
     let outputOption = {};
 
-    if (isJSON) {
-      outputContent = {
-        json: JSON.parse(rawContent)
-      };
-      outputOption = {
-        outputPath: {
-          json: distSourcePath
-        },
-        mode
-      };
-    } else {
-      outputContent = { code: rawContent };
-      outputOption = {
-        outputPath: {
-          code: removeExt(distSourcePath) + '.js'
-        },
-        mode,
-        externalPlugins: [
-          [
-            require('./babel-plugin-rename-import'),
-            { normalizeNpmFileName,
-              distSourcePath,
-              resourcePath: this.resourcePath,
-              outputPath,
-              disableCopyNpm,
-              platform,
-              aliasEntries
-            }
-          ]
-        ],
-        platform,
-        isTypescriptFile: isTypescriptFile(this.resourcePath)
-      };
-    }
+    outputContent = { code: rawContent };
+    outputOption = {
+      outputPath: {
+        code: removeExt(distSourcePath) + '.js'
+      },
+      mode,
+      externalPlugins: [
+        [
+          require('./babel-plugin-rename-import'),
+          { normalizeNpmFileName,
+            distSourcePath,
+            resourcePath: this.resourcePath,
+            outputPath,
+            disableCopyNpm,
+            platform
+          }
+        ]
+      ],
+      platform,
+      isTypescriptFile: isTypescriptFile(this.resourcePath)
+    };
 
     output(outputContent, null, outputOption);
   };
@@ -146,7 +135,7 @@ module.exports = function scriptLoader(content) {
 
   if (isFromNodeModule(this.resourcePath)) {
     if (disableCopyNpm) {
-      return content;
+      return isJSON ? '{}' : content;
     }
     const relativeNpmPath = relative(currentNodeModulePath, this.resourcePath);
     const npmFolderName = getNpmFolderName(relativeNpmPath);
@@ -208,7 +197,7 @@ module.exports = function scriptLoader(content) {
         const source = dirname(this.resourcePath);
         const target = dirname(normalizeNpmFileName(join(outputPath, 'npm', relative(rootNodeModulePath, this.resourcePath))));
         outputDir(source, target);
-        outputFile(rawContent, {});
+        outputFile(rawContent);
 
         const originalComponentConfigPath = removeExt(this.resourcePath) + '.json';
         const distComponentConfigPath = normalizeNpmFileName(join(outputPath, 'npm', relative(rootNodeModulePath, removeExt(this.resourcePath) + '.json')));
@@ -221,18 +210,13 @@ module.exports = function scriptLoader(content) {
         content
       ].join('\n');
     } else {
-      outputFile(rawContent, {
-        isJSON: isJSONFile(this.resourcePath)
-      });
+      outputFile(rawContent);
     }
   } else {
-    !isAppJSon && outputFile(rawContent, {
-      isFromNpm: false,
-      isJSON: isJSONFile(this.resourcePath)
-    });
+    !isAppJSon && outputFile(rawContent, false);
   }
 
-  return content;
+  return isJSON ? '{}' : content;
 };
 
 /**
