@@ -1,9 +1,9 @@
-const { join, relative, dirname, resolve } = require('path');
+const { join, relative, dirname } = require('path');
 const enhancedResolve = require('enhanced-resolve');
 const chalk = require('chalk');
 
 const { isNpmModule, isWeexModule, isRaxModule, isJsx2mpRuntimeModule, isNodeNativeModule } = require('./utils/judgeModule');
-const { addRelativePathPrefix, normalizeOutputFilePath } = require('./utils/pathHelper');
+const { addRelativePathPrefix, normalizeOutputFilePath, removeExt } = require('./utils/pathHelper');
 const getAliasCorrespondingValue = require('./utils/getAliasCorrespondingValue');
 
 const RUNTIME = 'jsx2mp-runtime';
@@ -17,6 +17,10 @@ const defaultOptions = {
 };
 
 const transformPathMap = {};
+
+const resolveWithTS = enhancedResolve.create.sync({
+  extensions: ['.ts', '.js']
+});
 
 module.exports = function visitor({ types: t }, options) {
   options = Object.assign({}, defaultOptions, options);
@@ -36,9 +40,9 @@ module.exports = function visitor({ types: t }, options) {
 
   // In WeChat MiniProgram, `require` can't get index file if index is omitted
   const ensureIndexInPath = (value, resourcePath) => {
-    const target = require.resolve(resolve(dirname(resourcePath), value));
+    const target = resolveWithTS(dirname(resourcePath), value);
     const result = relative(dirname(resourcePath), target);
-    return addRelativePathPrefix(normalizeOutputFilePath(result));
+    return removeExt(addRelativePathPrefix(normalizeOutputFilePath(result)));
   };
 
   return {

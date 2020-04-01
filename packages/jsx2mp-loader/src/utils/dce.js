@@ -44,8 +44,21 @@ function removeDeadCode(source) {
   }).code;
 }
 
-function eliminateDeadCode(source) {
-  return removeUnusedImport(removeDeadCode(source));
+const codeProcessor = (processors = [], sourceCode) => processors
+  .filter(processor => typeof processor === 'function')
+  .reduce(
+    (prevCode, currProcessor) => currProcessor(prevCode),
+    sourceCode
+  );
+
+function eliminateDeadCode(source, options = {}) {
+  const { platform = {} } = options;
+  const processors = [
+    platform.type !== 'wechat' && removeDeadCode,
+    removeUnusedImport,
+  ];
+
+  return codeProcessor(processors, source);
 }
 
 module.exports = eliminateDeadCode;

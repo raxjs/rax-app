@@ -50,7 +50,9 @@ module.exports = async function appLoader(content) {
     turnOffSourceMap,
     aliasEntries
   });
-  const rawContentAfterDCE = eliminateDeadCode(rawContent);
+
+  const eliminateOptions = { platform };
+  const rawContentAfterDCE = eliminateDeadCode(rawContent, eliminateOptions);
 
   let transformed;
   try {
