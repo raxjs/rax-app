@@ -1,5 +1,5 @@
 {
-  "name": "rax-quickapp-plugin",
+  "name": "rax-quickapp-webpack-plugin",
   "version": "1.0.0",
   "description": "quickapp build plugin for rax app",
   "main": "src/index.js",

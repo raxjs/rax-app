@@ -4,7 +4,7 @@ const consoleClear = require('console-clear');
 const qrcode = require('qrcode-terminal');
 const { setConfig, setDevLog } = require('rax-multi-pages-settings');
 const { handleWebpackErr } = require('rax-compile-config');
-const checkQuickAppEnv = require('rax-quickapp-plugin');
+const checkQuickAppEnv = require('rax-quickapp-webpack-plugin');
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, QUICKAPP } = require('./constants');

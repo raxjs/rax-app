@@ -2,7 +2,7 @@ const path = require('path');
 const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
-const checkQuickAppEnv = require('rax-quickapp-plugin');
+const checkQuickAppEnv = require('rax-quickapp-webpack-plugin');
 const { setConfig } = require('rax-multi-pages-settings');
 
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
