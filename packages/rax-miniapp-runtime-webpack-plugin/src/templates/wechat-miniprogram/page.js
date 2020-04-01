@@ -1,8 +1,22 @@
 /* eslint-disable new-cap */
-/* global APINamespace,TARGET, Page,init */
+/* global Page, init */
 /* eslint-disable module/no-implicit-dependencies */
 const render = require('miniapp-render');
 const config = require('/* CONFIG_PATH */');
+
+const events = {};
+
+[
+  'onReachBottom',
+  'onTabItemTap',
+  'onResize'
+].forEach(eventName => {
+  events[eventName] = function(event) {
+    if (this.window) {
+      this.window.$$trigger(eventName, { event });
+    }
+  };
+});
 
 /* INIT_FUNCTION */
 Page({
@@ -31,17 +45,11 @@ Page({
 
     // Hadle selectorQuery
     this.window.$$createSelectorQuery = () =>
-      APINamespace.createSelectorQuery().in(this);
+      wx.createSelectorQuery().in(this);
 
     // Handle intersectionObserver
     this.window.$$createIntersectionObserver = options => {
-      if (TARGET === 'miniapp') {
-        /* eslint-disable  no-undef */
-        my.createIntersectionObserver(options);
-      } else {
-        /* eslint-disable  no-undef */
-        wx.createIntersectionObserver(this, options);
-      }
+      wx.createIntersectionObserver(this, options);
     };
 
     init(this.window, this.document);
@@ -50,20 +58,20 @@ Page({
     });
     this.app = this.window.createApp();
     this.window.$$trigger('load');
-    this.window.$$trigger('pageLoad', { event: query });
+    this.window.$$trigger('pageload', { event: query });
   },
   onShow() {
-    this.window.$$trigger('pageShow');
+    this.window.$$trigger('pageshow');
   },
   onReady() {
-    this.window.$$trigger('pageReady');
+    this.window.$$trigger('pageready');
   },
   onHide() {
-    this.window.$$trigger('pageHide');
+    this.window.$$trigger('pagehide');
   },
   onUnload() {
     this.window.$$trigger('beforeunload');
-    this.window.$$trigger('pageUnload');
+    this.window.$$trigger('pageunload');
     if (this.app && this.app.$destroy) this.app.$destroy();
     this.document.body.$$recycle(); // Recycle DOM node
 
@@ -93,8 +101,7 @@ Page({
 
       return shareOptions;
     }
-  }
-  /* PAGE_SCROLL_FUNCTION */
-  /* REACH_BOTTOM_FUNCTION */
+  },
+  ...events,
   /* PULL_DOWN_REFRESH_FUNCTION */
 });

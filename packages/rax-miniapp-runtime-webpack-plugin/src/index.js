@@ -3,7 +3,6 @@ const {
   readFileSync,
   readJsonSync,
   writeJsonSync,
-  ensureDirSync,
   copySync,
   copy,
   existsSync
@@ -20,23 +19,19 @@ const adapter = require('./adapter');
 
 const PluginName = 'MiniAppRuntimePlugin';
 const appJsTmpl = readFileSync(
-  resolve(__dirname, './template/app.js'),
-  'utf8'
-);
-const pageJsTmpl = readFileSync(
-  resolve(__dirname, './template/page.js'),
+  resolve(__dirname, 'templates', 'app.js'),
   'utf8'
 );
 
 const appCssTmpl = readFileSync(
-  resolve(__dirname, './template/app.css'),
+  resolve(__dirname, 'templates', 'app.css'),
   'utf8'
 );
 const customComponentJsTmpl = readFileSync(
-  resolve(__dirname, './template/custom-component.js'),
+  resolve(__dirname, 'templates', 'custom-component.js'),
   'utf8'
 );
-const projectConfigJsonTmpl = require('./template/project.config.json');
+const projectConfigJsonTmpl = require('./templates/project.config.json');
 
 /**
  * Add file to compilation
@@ -56,16 +51,12 @@ function wrapChunks(compilation, chunks) {
     chunk.files.forEach(fileName => {
       if (ModuleFilenameHelpers.matchObject({ test: /\.js$/ }, fileName)) {
         // Page js
-        let customHeaderContent = 'var HTMLElement = window["HTMLElement"];';
-        const headerContent = `module.exports = function(window, document) {const App = function(options) {window.appOptions = options};${customHeaderContent};`;
+        const headerContent = 'module.exports = function(window, document) {const App = function(options) {window.appOptions = options};var HTMLElement = window["HTMLElement"];';
 
-        customHeaderContent = customHeaderContent
-          ? `${customHeaderContent};`
-          : '';
         const footerContent = '}';
 
         compilation.assets[fileName] = new ConcatSource(
-          headerContent + customHeaderContent,
+          headerContent,
           compilation.assets[fileName],
           footerContent
         );
@@ -93,6 +84,20 @@ function getAssetPath(
   )}`.replace(/\\/g, '/'); // Avoid path error in Windows
 }
 
+function getPageTmpl(target) {
+  if (target === MINIAPP) {
+    return readFileSync(
+      resolve(__dirname, 'templates', 'ali-miniapp', 'page.js'),
+      'utf8'
+    );
+  } else if (target === WECHAT_MINIPROGRAM) {
+    return readFileSync(
+      resolve(__dirname, 'templates', 'wechat-miniprogram', 'page.js'),
+      'utf8'
+    );
+  }
+}
+
 function handlePageJS(
   compilation,
   assets,
@@ -102,12 +107,9 @@ function handlePageJS(
   pageConfig,
   target
 ) {
-  const addPageScroll = pageConfig && pageConfig.windowScroll;
-  const reachBottom = pageConfig && pageConfig.reachBottom;
-  const pullDownRefresh = pageConfig && pageConfig.pullDownRefresh;
-  let pageJsContent = pageJsTmpl
-    .replace(/APINamespace/g, adapter[target].APINamespace)
-    .replace(/TARGET/g, `'${target}'`)
+  console.log('pageConfig', pageConfig);
+  const pullDownRefresh = pageConfig && (pageConfig.pullDownRefresh || pageConfig.pullRefresh);
+  let pageJsContent = getPageTmpl(target)
     .replace(
       '/* CONFIG_PATH */',
       `${getAssetPath(
@@ -131,22 +133,20 @@ function handlePageJS(
         )
         .join(';')}}`
     );
-  const pageScrollFunction = addPageScroll
-    ? () =>
-      'onPageScroll({ scrollTop }) {if (this.window) {this.window.document.documentElement.scrollTop = scrollTop || 0;this.window.$$trigger("scroll");}},'
-    : '';
-  const reachBottomFunction = reachBottom
-    ? () =>
-      'onReachBottom() {if (this.window) {this.window.$$trigger("reachbottom");}},'
-    : '';
   const pullDownRefreshFunction = pullDownRefresh
-    ? () =>
-      'onPullDownRefresh() {if (this.window) {this.window.$$trigger("pulldownrefresh");}},'
+    ? () => {
+      if (target === MINIAPP) {
+        return `
+        onPullDownRefresh() {if (this.window) {this.window.$$trigger("onPullDownRefresh");}},
+        onPullIntercept() {if (this.window) {this.window.$$trigger("onPullIntercept");}},
+        `;
+      } else {
+        return 'onPullDownRefresh() {if (this.window) {this.window.$$trigger("onPullDownRefresh");}},';
+      }
+    }
     : '';
 
   pageJsContent = pageJsContent
-    .replace('/* PAGE_SCROLL_FUNCTION */', pageScrollFunction)
-    .replace('/* REACH_BOTTOM_FUNCTION */', reachBottomFunction)
     .replace('/* PULL_DOWN_REFRESH_FUNCTION */', pullDownRefreshFunction);
 
   addFile(compilation, `${pageRoute}.js`, pageJsContent, target);
@@ -220,20 +220,15 @@ function handlePageJSON(
   addFile(compilation, `${pageRoute}.json`, JSON.stringify(pageConfig, null, 2), target);
 }
 
-function handleAppJS(compilation, appAssets, assetsSubpackageMap, target) {
+function handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target) {
   const appJsContent = appJsTmpl.replace(
     '/* INIT_FUNCTION */',
-    `const fakeWindow = {};const fakeDocument = {};${appAssets.js
-      .map(
-        js =>
-          `require('${getAssetPath(
-            '',
-            js,
-            assetsSubpackageMap,
-            'app.js'
-          )}')(fakeWindow, fakeDocument)`
-      )
-      .join(';')};const appConfig = fakeWindow.appOptions || {};`
+    `function init(window) {require('${getAssetPath(
+      '',
+      appJSAsset,
+      assetsSubpackageMap,
+      'app.js'
+    )}')(window)}`
   );
   addFile(compilation, 'app.js', appJsContent, target);
 }
@@ -410,7 +405,6 @@ class MiniAppRuntimePlugin {
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
       const outputPath = join(compilation.outputOptions.path, target);
       const sourcePath = join(options.rootDir, 'src');
-      const appJsEntryName = 'default';
       const routes = options.routes || {};
       const subpackagesConfig = config.subpackages || {};
       const customComponentConfig = config.nativeCustomComponent || {};
@@ -556,11 +550,15 @@ class MiniAppRuntimePlugin {
         }
       });
 
+      // Collect app.js
+      if (isFirstRender || changedFiles.includes('/app.js' || '/app.ts')) {
+        const appJSAsset = relative(target, compilation.entrypoints.get('app').getFiles()[0]);
+        // App js
+        handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target);
+      }
+
       // These files only need write when first render
       if (isFirstRender) {
-        const appAssets = assetsMap[appJsEntryName] || { js: [], css: [] };
-        // App js
-        handleAppJS(compilation, appAssets, assetsSubpackageMap, target);
         // App css
         handleAppCSS(compilation, target);
 
