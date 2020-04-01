@@ -27,11 +27,13 @@ describe('transformer', () => {
     const boxOrientWebkit = transformer.convertProp('-webkit-box-orient');
     const boxOrientMoz = transformer.convertProp('-moz-box-orient');
     const boxOrientO = transformer.convertProp('-o-box-orient');
+    const boxOrientUC = transformer.convertProp('-uc-box-orient');
 
     expect(flexDirection).toEqual('flexDirection');
     expect(boxOrientWebkit).toEqual('WebkitBoxOrient');
     expect(boxOrientMoz).toEqual('MozBoxOrient');
-    expect(boxOrientO).toEqual('oBoxOrient');
+    expect(boxOrientO).toEqual('OBoxOrient');
+    expect(boxOrientUC).toEqual('UcBoxOrient');
   });
 
   it('should remove px of value', () => {
@@ -47,6 +49,7 @@ describe('transformer', () => {
       .container {
         width: 750;
         height: 800;
+        color: var(--main-color);
       }
       .header_content {
         width: 750;
