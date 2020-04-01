@@ -98,7 +98,7 @@ module.exports = (context, options = {}, target) => {
   }
 
   config.externals([
-    function (ctx, request, callback) {
+    function(ctx, request, callback) {
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, `commonjs ${request}`);
       }

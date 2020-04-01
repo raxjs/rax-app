@@ -12,7 +12,7 @@ import {
   setStyleSheetName
 } from './constants';
 
-export default function ({ types: t, template }, opts = {}) {
+export default function({ types: t, template }, opts = {}) {
   const { injectedStyleName } = opts;
   if (typeof injectedStyleName === 'string') {
     setStyleSheetName(injectedStyleName);

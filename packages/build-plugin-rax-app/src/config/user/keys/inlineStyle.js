@@ -1,6 +1,7 @@
 const { resolve } = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { WEB, WEEX, NODE, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../../../constants');
+
 const configPath = resolve(__dirname, '../..');
 
 const webStandardList = [
