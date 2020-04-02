@@ -112,7 +112,7 @@ function setCSSRule(configRule, context, value) {
       // Do not generate CSS file, it will be built by web complier
       configRule
         .use('ignorecss')
-        .loader(require.resolve('../../../loaders/ignoreLoader'))
+        .loader(require.resolve('null-loader'))
         .end();
     }
   }
