@@ -32,7 +32,7 @@ module.exports = class DocumentPlugin {
 
     const mainConfig = compiler.options;
     const baseConfig = getBaseConfig(context, {
-      alias: mainConfig.alias,
+      alias: mainConfig.resolve ? mainConfig.resolve.alias : {},
       configWebpack: options.configWebpack
     });
 
