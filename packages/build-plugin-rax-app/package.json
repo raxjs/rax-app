@@ -50,7 +50,7 @@
     "qrcode-terminal": "^0.12.0",
     "rax-compile-config": "^0.2.0",
     "rax-miniapp-config-webpack-plugin": "1.0.1-0",
-    "rax-miniapp-runtime-webpack-plugin": "0.1.7-1",
+    "rax-miniapp-runtime-webpack-plugin": "0.1.7-2",
     "rax-multi-pages-settings": "^0.1.0",
     "rax-server-renderer": "^1.0.0",
     "stylesheet-loader": "^0.6.5",

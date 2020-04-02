@@ -68,12 +68,16 @@ Page({
   },
   onShow() {
     this.window.$$trigger('pageshow');
+    // compatible with original name
+    this.window.$$trigger('onShow');
   },
   onReady() {
     this.window.$$trigger('pageready');
   },
   onHide() {
     this.window.$$trigger('pagehide');
+    // compatible with original name
+    this.window.$$trigger('onHide');
   },
   onUnload() {
     this.window.$$trigger('beforeunload');
