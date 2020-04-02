@@ -1,10 +1,10 @@
 import path from 'path';
 import camelcase from 'camelcase';
 import {
-  STYLE_SHEET_NAME,
   GET_STYLE_FUNC_NAME,
   MERGE_STYLES_FUNC_NAME,
   NAME_SUFFIX,
+  styleSheetName,
   cssSuffixs,
   mergeStylesFunctionString,
   getClassNameFunctionString,
@@ -45,7 +45,7 @@ export default function({ types: t, template }, opts = {}) {
     }
 
     return str === '' ? [] : str.split(/\s+/).map((className) => {
-      return template(`${STYLE_SHEET_NAME}["${className}"]`)().expression;
+      return template(`${styleSheetName}["${className}"]`)().expression;
     });
   }
 
@@ -77,10 +77,10 @@ export default function({ types: t, template }, opts = {}) {
           if (cssParamIdentifiers) {
             // only one css file
             if (cssParamIdentifiers.length === 1) {
-              callExpression = t.variableDeclaration('var', [t.variableDeclarator(t.identifier(STYLE_SHEET_NAME), cssParamIdentifiers[0])]);
+              callExpression = t.variableDeclaration('var', [t.variableDeclarator(t.identifier(styleSheetName), cssParamIdentifiers[0])]);
             } else if (cssParamIdentifiers.length > 1) {
               const objectAssignExpression = t.callExpression(t.identifier(MERGE_STYLES_FUNC_NAME), cssParamIdentifiers);
-              callExpression = t.variableDeclaration('var', [t.variableDeclarator(t.identifier(STYLE_SHEET_NAME), objectAssignExpression)]);
+              callExpression = t.variableDeclaration('var', [t.variableDeclarator(t.identifier(styleSheetName), objectAssignExpression)]);
             }
 
             node.body.splice(lastImportIndex + 1, 0, callExpression);
@@ -99,11 +99,11 @@ export default function({ types: t, template }, opts = {}) {
       JSXOpeningElement({ container }, { file, opts }) {
         const {
           retainClassName = false,
-          injectedStyleName
+          convertImport = true, // default to true
         } = opts;
 
         const cssFileCount = file.get('cssFileCount') || 0;
-        if (cssFileCount < 1 && !injectedStyleName) {
+        if (cssFileCount < 1 && convertImport !== false) {
           return;
         }
 
@@ -192,7 +192,11 @@ export default function({ types: t, template }, opts = {}) {
           }
         }
       },
-      ImportDeclaration({ node }, { file }) {
+      ImportDeclaration({ node }, { file, opts }) {
+        // Convert style import is disabled.
+        const { convertImport = true } = opts;
+        if (!convertImport) return;
+
         const sourceValue = node.source.value;
         const extname = path.extname(sourceValue);
         const cssIndex = cssSuffixs.indexOf(extname);

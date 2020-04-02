@@ -1,13 +1,13 @@
 // Maybe modified.
-export let STYLE_SHEET_NAME = '_styleSheet';
+export let styleSheetName = '_styleSheet';
 export const GET_STYLE_FUNC_NAME = '_getStyle';
 export const MERGE_STYLES_FUNC_NAME = '_mergeStyles';
 export const GET_CLS_NAME_FUNC_NAME = '_getClassName';
 export const NAME_SUFFIX = 'StyleSheet';
 export const cssSuffixs = ['.css', '.scss', '.sass', '.less', '.styl'];
 
-export function setStyleSheetName(styleSheetName) {
-  STYLE_SHEET_NAME = styleSheetName;
+export function setStyleSheetName(name) {
+  styleSheetName = name;
 }
 
 export const mergeStylesFunctionString = () => `function ${MERGE_STYLES_FUNC_NAME}() {
@@ -51,7 +51,7 @@ export const getClassNameFunctionString = () => `function ${GET_CLS_NAME_FUNC_NA
 }`;
 
 export const getStyleFunctionString = () => `function ${GET_STYLE_FUNC_NAME}(classNameExpression) {
-  var cache = ${STYLE_SHEET_NAME}.__cache || (${STYLE_SHEET_NAME}.__cache = {});
+  var cache = ${styleSheetName}.__cache || (${styleSheetName}.__cache = {});
 
   var className = ${GET_CLS_NAME_FUNC_NAME}(classNameExpression);
 
@@ -62,13 +62,13 @@ export const getStyleFunctionString = () => `function ${GET_STYLE_FUNC_NAME}(cla
     style = {};
 
     if (classNameArr.length === 1) {
-      style = ${STYLE_SHEET_NAME}[classNameArr[0].trim()];
+      style = ${styleSheetName}[classNameArr[0].trim()];
     } else {
       classNameArr.forEach(function (cls) {
-        var value = ${STYLE_SHEET_NAME}[cls.trim()];
+        var value = ${styleSheetName}[cls.trim()];
 
         if (typeof value === 'object') {
-          style = Object.assign(style, ${STYLE_SHEET_NAME}[cls.trim()]);
+          style = Object.assign(style, ${styleSheetName}[cls.trim()]);
         }
       });
     }
