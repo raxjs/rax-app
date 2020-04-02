@@ -6,11 +6,11 @@
     [
       "build-plugin-rax-app",
       {
-        "targets": ["<%- projectTargets.join('", "') %>"]
+        "targets": ["<%- projectTargets.join('", "') %>"]<%_ if (appType === 'mpa') { -%>,
+        "type": "mpa"<%_ } %>
       }
     ]<%_ if (useSSR) { -%>,
-    "build-plugin-rax-ssr"<%_ } -%><%_ if (appType === 'mpa') { -%>,
-    "build-plugin-rax-multi-pages"<%_ } %><%_ if (useFaaS) { -%>,
+    "build-plugin-rax-ssr"<%_ } -%><%_ if (useFaaS) { -%>,
     [
       "build-plugin-rax-faas",
       {
