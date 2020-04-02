@@ -9,7 +9,8 @@ const events = {};
 [
   'onReachBottom',
   'onTabItemTap',
-  'onResize'
+  'onResize',
+  'onPageScroll'
 ].forEach(eventName => {
   events[eventName] = function(event) {
     if (this.window) {

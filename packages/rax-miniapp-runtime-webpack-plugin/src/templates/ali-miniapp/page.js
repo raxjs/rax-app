@@ -103,6 +103,13 @@ Page({
       return shareInfo.content;
     }
   },
+  onPageScroll(options) {
+    if (this.window) {
+      this.window.$$trigger('onPageScroll', {
+        event: options
+      });
+    }
+  },
   /* PULL_DOWN_REFRESH_FUNCTION */
   events,
 });
