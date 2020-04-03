@@ -114,9 +114,14 @@ module.exports = (context, options = {}, target) => {
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);
 
+  const copyWebpackPluginPatterns = [{ from: 'src/public', to: `${target}/public` }];
+
   if (command === 'start') {
     config.mode('development');
     config.devtool('inline-module-source-map');
+    // MiniApp usually use `./public/xxx.png` as file src.
+    // Dev Server start with '/'. if you want to use './public/xxx.png', should copy public to the root.
+    copyWebpackPluginPatterns.push({ from: 'src/public', to: 'public' });
   } else if (command === 'build') {
     config.mode('production');
 
@@ -133,6 +138,11 @@ module.exports = (context, options = {}, target) => {
       .end()
       .minimizer('optimizeCSS')
       .use(OptimizeCSSAssetsPlugin);
+  }
+
+  if (target && fs.existsSync(path.resolve(rootDir, 'src/public'))) {
+    config.plugin('copyWebpackPlugin')
+      .use(CopyWebpackPlugin, [copyWebpackPluginPatterns]);
   }
 
   return config;

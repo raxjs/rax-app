@@ -24,7 +24,7 @@ module.exports = (config, context, index) => {
       }
     });
 
-    app.get(/^\/?((?!\.(js|html|css|json)).)*$/, function(req, res) {
+    app.get(/^\/?(?!\.(js|html|css|json))$/, function(req, res) {
       if (fallbackHTMLContent !== undefined) {
         res.send(fallbackHTMLContent);
       } else {
