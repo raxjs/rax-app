@@ -221,6 +221,11 @@ let xhex = RegExp(shex, 'i'),
 
 export default function normalizeColor(value) {
   if (value == null) return null;
+
+  // color: var(--color);
+  if (value.indexOf('var(--') === 0) {
+    return value;
+  }
   value = (value + '').replace(/\s+/, '');
 
   let match;

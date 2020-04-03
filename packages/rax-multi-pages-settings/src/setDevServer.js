@@ -1,14 +1,18 @@
 const path = require('path');
 const fs = require('fs');
 const ejs = require('ejs');
+const getEntries = require('./getEntries');
 
 const MAIN_TEMPLATE = path.join(__dirname, './template/main.jsx.ejs');
 
 module.exports = ({
   config,
-  targets,
-  entries,
+  context,
+  targets
 }) => {
+  if (process.env.RAX_SSR === 'true') return;
+  const entries = getEntries(context);
+
   config.devServer.set('before', (app, devServer) => {
     const compiler = devServer.compiler.compilers[0];
     const templateContent = fs.readFileSync(MAIN_TEMPLATE, 'utf-8');
