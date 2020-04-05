@@ -1,7 +1,7 @@
 {
-  "name": "build-plugin-rax-pwa",
-  "version": "1.0.0",
-  "description": "Rax PWA plugins",
+  "name": "build-plugin-rax-pha",
+  "version": "0.0.1",
+  "description": "Rax PHA plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
   "dependencies": {

@@ -13,7 +13,7 @@ const { RawSource } = require('webpack-sources');
 const { readJsonSync } = require('fs-extra');
 const { transformAppConfig, getPageManifestByPath } = require('../manifestHelpers');
 
-const PLUGIN_NAME = 'PWA_SaveToDesktopPlugin';
+const PLUGIN_NAME = 'PHA_SaveToDesktopPlugin';
 
 const defaultManifest = {
   start_url: '.',

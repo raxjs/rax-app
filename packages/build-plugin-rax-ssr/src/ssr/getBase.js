@@ -7,7 +7,7 @@ const EntryPlugin = require('./entryPlugin');
 const EntryLoader = require.resolve('./entryLoader');
 
 // Can‘t clone webpack chain object, so generate a new chain and reset config
-module.exports = (context) => {
+module.exports = (context, getValue) => {
   const { userConfig, rootDir } = context;
 
   const babelConfig = getBabelConfig({
@@ -24,7 +24,8 @@ module.exports = (context) => {
   config.target('node');
 
   const { plugins, inlineStyle = true } = userConfig;
-  const isMultiPages = !!~plugins.indexOf('build-plugin-rax-multi-pages');
+  // build-plugin-rax-multi-pages is deprecated, but still need to be compatible.
+  const isMultiPages = getValue('appType') === 'mpa' || !!~plugins.indexOf('build-plugin-rax-multi-pages');
   const appJSON = require(path.resolve(rootDir, 'src/app.json'));
   const entries = appJSON.routes.map((route) => {
     return {
