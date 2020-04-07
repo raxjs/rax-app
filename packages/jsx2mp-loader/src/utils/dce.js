@@ -29,23 +29,19 @@ function removeUnusedImport(source) {
   }).code;
 }
 
-function removeDeadCode(source) {
-  return transformSync(source, {
-    parserOpts,
-    plugins: [
-      [
-        require('babel-plugin-minify-dead-code-elimination'),
-        {
-          optimizeRawSize: true,
-          keepFnName: true
-        }
-      ]
-    ]
-  }).code;
-}
+const codeProcessor = (processors = [], sourceCode) => processors
+  .filter(processor => typeof processor === 'function')
+  .reduce(
+    (prevCode, currProcessor) => currProcessor(prevCode),
+    sourceCode
+  );
 
 function eliminateDeadCode(source) {
-  return removeUnusedImport(removeDeadCode(source));
+  const processors = [
+    removeUnusedImport,
+  ];
+
+  return codeProcessor(processors, source);
 }
 
 module.exports = eliminateDeadCode;
