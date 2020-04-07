@@ -21,7 +21,7 @@ async function baseProcess(command, options) {
         entry,
         ...pluginParam
       }
-    ])
+    ]);
   } else {
     log.error('Not supported type, please check your type param');
     return;
@@ -60,4 +60,4 @@ async function buildMiniApp(options) {
 module.exports = {
   start: devMiniApp,
   build: buildMiniApp
-}
+};
