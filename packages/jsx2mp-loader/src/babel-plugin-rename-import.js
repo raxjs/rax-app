@@ -2,7 +2,8 @@ const { join, relative, dirname } = require('path');
 const enhancedResolve = require('enhanced-resolve');
 const chalk = require('chalk');
 
-const { isNpmModule, isWeexModule, isRaxModule, isJsx2mpRuntimeModule, isNodeNativeModule } = require('./utils/judgeModule');
+const { QUICKAPP } = require('./constants');
+const { isNpmModule, isWeexModule, isQuickAppModule, isRaxModule, isJsx2mpRuntimeModule, isNodeNativeModule } = require('./utils/judgeModule');
 const { addRelativePathPrefix, normalizeOutputFilePath, removeExt } = require('./utils/pathHelper');
 const getAliasCorrespondingValue = require('./utils/getAliasCorrespondingValue');
 
@@ -61,6 +62,14 @@ module.exports = function visitor({ types: t }, options) {
             path.remove();
             return;
           }
+          if (isQuickAppModule(value)) {
+            if (platform.type === QUICKAPP) {
+              path.skip();
+            } else {
+              path.remove();
+            }
+            return;
+          }
           if (isNodeNativeModule(value)) {
             path.skip();
             return;
@@ -112,6 +121,14 @@ module.exports = function visitor({ types: t }, options) {
             if (isNpmModule(moduleName)) {
               if (isWeexModule(moduleName)) {
                 path.replaceWith(t.nullLiteral());
+                return;
+              }
+              if (isQuickAppModule(moduleName)) {
+                if (platform.type === QUICKAPP) {
+                  path.skip();
+                } else {
+                  path.replaceWith(t.nullLiteral());
+                }
                 return;
               }
               if (isNodeNativeModule(moduleName)) {

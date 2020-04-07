@@ -170,6 +170,10 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
       if (/^@weex-module\//.test(request)) {
         return callback(null, `commonjs2 ${request}`);
       }
+      // Built-in modules in QuickApp
+      if (/^@system\./.test(request)) {
+        return callback(null, `commonjs2 ${request}`);
+      }
       if (/^@system/.test(request)) {
         return callback(null, `commonjs2 ${request}`);
       }
