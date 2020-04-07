@@ -174,9 +174,6 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
       if (/^@system\./.test(request)) {
         return callback(null, `commonjs2 ${request}`);
       }
-      if (/^@system/.test(request)) {
-        return callback(null, `commonjs2 ${request}`);
-      }
       callback();
     },
   ]);
