@@ -88,23 +88,14 @@ Page({
     this.app = null;
     this.query = null;
   },
-  onShareAppMessage(data) {
-    if (this.window.onShareAppMessage) {
-      const shareOptions = this.window.onShareAppMessage(data);
-      const query = Object.assign({}, this.query || {});
-
-      if (shareOptions.path) {
-        query.targeturl = encodeURIComponent(shareOptions.path);
-      }
-
-      query.type = 'share';
-      const queryString = Object.keys(query)
-        .map(key => `${key}=${query[key] || ''}`)
-        .join('&');
-      const currentPagePath = `${this.route}?${queryString}`;
-      shareOptions.path = currentPagePath;
-
-      return shareOptions;
+  onShareAppMessage(options) {
+    if (this.window) {
+      const shareInfo = {};
+      // share app message only can be listened once
+      this.window.$$trigger('onShareAppMessage', {
+        event: { options, shareInfo }
+      });
+      return shareInfo.content;
     }
   },
   ...events,
