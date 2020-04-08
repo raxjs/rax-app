@@ -135,7 +135,7 @@ module.exports = class DocumentPlugin {
     });
 
     // Render into index.html
-    compiler.hooks.emit.tapAsync(PLUGIN_NAME, async (compilation, callback) => {
+    compiler.hooks.emit.tapAsync(PLUGIN_NAME, async(compilation, callback) => {
       const entries = Object.keys(pages);
 
       for (var i = 0, l = entries.length; i < l; i++) {
@@ -156,7 +156,7 @@ module.exports = class DocumentPlugin {
           const errorStack = await parse(error, documentContent);
           print(error.message, errorStack);
 
-          pageSource = "Document render error, please check the log.";
+          pageSource = 'Document render error, please check the log.';
         }
 
         // insert html file
