@@ -166,12 +166,10 @@ module.exports = class DocumentPlugin {
             if (frame.fromSourceMap) {
               return `at ${frame.functionName} (${frame.source}:${frame.lineNumber}:${frame.columnNumber})`;
             }
-        
             // the origin source info already has position info
             return frame.source;
           });
-        
-          pageSource =  `Error: ${error.message}<br>&nbsp;&nbsp;${stackMessage.join('<br>&nbsp;&nbsp;')}`;
+          pageSource = `Error: ${error.message}<br>&nbsp;&nbsp;${stackMessage.join('<br>&nbsp;&nbsp;')}`;
         }
 
         // insert html file
