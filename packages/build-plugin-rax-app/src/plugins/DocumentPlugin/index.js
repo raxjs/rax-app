@@ -4,6 +4,8 @@ const fs = require('fs-extra');
 const webpack = require('webpack');
 const { RawSource } = require('webpack-sources');
 const { handleWebpackErr } = require('rax-compile-config');
+const { parse, print } = require('error-stack-tracey');
+
 const getBaseConfig = require('./config');
 
 const PLUGIN_NAME = 'DocumentPlugin';
@@ -133,8 +135,11 @@ module.exports = class DocumentPlugin {
     });
 
     // Render into index.html
-    compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
-      Object.keys(pages).forEach(entryName => {
+    compiler.hooks.emit.tapAsync(PLUGIN_NAME, async (compilation, callback) => {
+      const entries = Object.keys(pages);
+
+      for (var i = 0, l = entries.length; i < l; i++) {
+        const entryName = entries[i];
         const { tempFile, fileName } = pages[entryName];
 
         const files = compilation.entrypoints.get(entryName).getFiles();
@@ -142,14 +147,23 @@ module.exports = class DocumentPlugin {
 
         const documentContent = compilation.assets[`${tempFile}.js`].source();
 
-        const Document = loadDocument(documentContent);
-        const pageSource = Document.renderToHTML(assets);
+        let pageSource;
+
+        try {
+          const Document = loadDocument(documentContent);
+          pageSource = Document.renderToHTML(assets);
+        } catch (error) {
+          const errorStack = await parse(error, documentContent);
+          print(error.message, errorStack);
+
+          pageSource = "Document render error, please check the log.";
+        }
 
         // insert html file
         compilation.assets[fileName] = new RawSource(pageSource);
 
         delete compilation.assets[`${tempFile}.js`];
-      });
+      }
 
       callback();
     });
