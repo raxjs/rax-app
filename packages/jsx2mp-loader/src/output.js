@@ -3,6 +3,7 @@ const { extname, dirname, join, relative } = require('path');
 const { transformSync } = require('@babel/core');
 const { minify, minifyJS, minifyCSS, minifyXML } = require('./utils/minifyCode');
 const addSourceMap = require('./utils/addSourceMap');
+const { QUICKAPP } = require('./constants');
 
 function transformCode(rawContent, mode, externalPlugins = [], externalPreset = []) {
   const presets = [].concat(externalPreset);
@@ -55,7 +56,7 @@ function transformCode(rawContent, mode, externalPlugins = [], externalPreset = 
 function output(content, raw, options) {
   const { mode, outputPath, externalPlugins = [], isTypescriptFile, platform, type } = options;
   let { code, config, json, css, map, template, assets, importComponents = [], iconfontMap } = content;
-  const isQuickApp = platform.type === 'quickapp';
+  const isQuickApp = platform.type === QUICKAPP;
 
   if (isTypescriptFile) {
     externalPlugins.unshift(require('@babel/plugin-transform-typescript'));

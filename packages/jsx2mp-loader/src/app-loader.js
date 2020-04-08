@@ -5,6 +5,7 @@ const chalk = require('chalk');
 const { doubleBackslash, getHighestPriorityPackage } = require('./utils/pathHelper');
 const eliminateDeadCode = require('./utils/dce');
 const defaultStyle = require('./defaultStyle');
+const { QUICKAPP } = require('./constants');
 const processCSS = require('./styleProcessor');
 const output = require('./output');
 const { isTypescriptFile } = require('./utils/judgeModule');
@@ -77,7 +78,7 @@ module.exports = async function appLoader(content) {
   };
   const outputOption = {
     outputPath: {
-      code: join(outputPath, platform.type === 'quickapp' ? 'app.ux' : 'app.js'),
+      code: join(outputPath, platform.type === QUICKAPP ? 'app.ux' : 'app.js'),
       css: join(outputPath, 'app' + platform.extension.css),
     },
     mode,

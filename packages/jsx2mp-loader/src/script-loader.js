@@ -8,6 +8,7 @@ const { isNpmModule, isJSONFile, isTypescriptFile } = require('./utils/judgeModu
 const isMiniappComponent = require('./utils/isMiniappComponent');
 const parse = require('./utils/parseRequest');
 const output = require('./output');
+const { QUICKAPP } = require('./constants');
 
 const ScriptLoader = __filename;
 
@@ -95,7 +96,7 @@ module.exports = function scriptLoader(content) {
 
   const checkUsingComponents = (dependencies, originalComponentConfigPath, distComponentConfigPath, sourceNativeMiniappScriptFile, npmName) => {
     // quickapp component doesn't maintain config file
-    if (platform.type === 'quickapp') {
+    if (platform.type === QUICKAPP) {
       return;
     }
     if (existsSync(originalComponentConfigPath)) {
@@ -163,7 +164,7 @@ module.exports = function scriptLoader(content) {
         const sourceNativeMiniappScriptFile = join(sourcePackagePath, miniappComponentPath);
 
         // Exclude quickapp native component for resolving issue
-        if (platform.type !== 'quickapp') {
+        if (platform.type !== QUICKAPP) {
           // Native miniapp component js file will loaded by script-loader
           dependencies.push({
             name: sourceNativeMiniappScriptFile,
