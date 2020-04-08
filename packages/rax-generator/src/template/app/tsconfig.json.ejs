@@ -10,14 +10,15 @@
     "sourceMap": true,
     "alwaysStrict": true,
     "baseUrl": ".",
+    "typeRoots": ["node_modules/@types"],
     "paths": {
       "rax": [
-        "node_modules/@rax-types/rax"
+        "node_modules/@types/rax"
       ]<%_ if (useReact) { -%>,
       "react": [
-        "node_modules/@rax-types/rax"
-      ],
-      <%_ } -%>
+        "node_modules/@types/rax"
+      ]<%_ } -%>
+    
     }
   },
   "include": [
