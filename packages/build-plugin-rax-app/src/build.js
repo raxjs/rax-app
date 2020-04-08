@@ -103,9 +103,6 @@ function logBuildResult(targets = [], context = {}) {
       workDirectory: process.cwd(),
       distDirectory: quickAppDist,
     });
-  }
-
-  if (targets.includes(QUICKAPP)) {
     console.log(chalk.green('[Quick App] Use quick app developer tools to open the following folder:'));
     console.log('   ', chalk.underline.white(quickAppDist));
     console.log();
