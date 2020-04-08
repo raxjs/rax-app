@@ -121,16 +121,13 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
       console.log();
     }
 
-    // Check for quick app's environment
-    const quickAppDist = getMiniAppOutput(context, { target: QUICKAPP });
     if (targets.includes(QUICKAPP)) {
+      // Check for quick app's environment
+      const quickAppDist = getMiniAppOutput(context, { target: QUICKAPP });
       checkQuickAppEnv({
         workDirectory: process.cwd(),
         distDirectory: quickAppDist,
       });
-    }
-
-    if (targets.includes(QUICKAPP)) {
       console.log(chalk.green('[Quick App] Use quick app developer tools to open the following folder:'));
       console.log('   ', chalk.underline.white(quickAppDist));
       console.log();
