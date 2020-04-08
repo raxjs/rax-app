@@ -53,9 +53,7 @@ function transformAppConfig(appConfig, isRoot = true) {
 
 // get every page manifest
 function getPageManifestByPath(options) {
-  const { nsr, context, path = '/', decamelizeAppConfig = {} } = options;
-  const { userConfig } = context;
-  const publicPath = userConfig.publicPath || '/';
+  const { nsr, path = '/', decamelizeAppConfig = {}, publicPath } = options;
   let manifestData = {};
   const { pages = [] } = decamelizeAppConfig;
   const page = pages.find((item) => {
@@ -73,7 +71,7 @@ function getPageManifestByPath(options) {
 
   // inject nsr_script
   if (nsr) {
-    manifestData.nsr_script = `${publicPath}nsr${path === '/' ? '' : path}/index.js`;
+    manifestData.nsr_script = `${publicPath}web${path === '/' ? '' : path}/index.nsr.js`;
   }
   // if current page is not frame page
   // delete tabbar/tabHeader/pages

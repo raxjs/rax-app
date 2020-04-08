@@ -10,6 +10,7 @@ module.exports = (option) => {
   if (!appConfigWriteToHTML && !nsr) {
     return;
   }
+  const publicPath = config.output.get('publicPath') || '/';
 
   const { rootDir } = context;
   const appConfig = fs.readJsonSync(path.resolve(rootDir, 'src/app.json'));
@@ -22,6 +23,7 @@ module.exports = (option) => {
       const pageManifestData = getPageManifestByPath({
         ...option,
         path,
+        publicPath,
         decamelizeAppConfig
       });
 

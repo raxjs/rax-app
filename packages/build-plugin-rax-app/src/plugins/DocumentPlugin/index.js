@@ -73,6 +73,7 @@ module.exports = class DocumentPlugin {
     const appConfig = fs.readJsonSync(path.join(rootDir, 'src/app.json'));
     const shellPath = appConfig.shell && appConfig.shell.source;
     const absoluteShellPath = shellPath ? getAbsoluteFilePath(rootDir, path.join('src', shellPath)) : null;
+    const manifestString = JSON.stringify(options.manifests);
 
     // Add ssr loader for each entry
     Object.keys(pages).map((entryName) => {
@@ -87,7 +88,7 @@ module.exports = class DocumentPlugin {
         absolutePagePath,
         pagePath,
         doctype: options.doctype,
-        manifests: options.manifests
+        manifests: manifestString
       };
 
       baseConfig.entry(tempFile).add(`${loaderForDocument}?${qs.stringify(query)}!${absoluteDocumentPath}`);

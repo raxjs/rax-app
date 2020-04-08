@@ -66,7 +66,7 @@ module.exports = function() {
           __pagePath: '${pagePath}',
           __styles: assets.styles,
           __scripts: assets.scripts,
-          __manifests: ${JSON.stringify(manifests)}
+          __manifests: ${manifests}
         };
       };
 

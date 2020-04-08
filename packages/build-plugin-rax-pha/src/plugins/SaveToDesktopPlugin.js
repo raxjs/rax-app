@@ -32,20 +32,21 @@ module.exports = class SaveToDesktopPlugin {
       return;
     }
 
-    const { rootDir, userConfig } = context;
+    const { rootDir } = context;
     const appConfig = readJsonSync(path.resolve(rootDir, 'src/app.json'));
     const decamelizeAppConfig = transformAppConfig(appConfig);
+    const publicPath = compiler.options.output.publicPath || '/';
 
     const manifest = getPageManifestByPath({
       ...this.options,
-      decamelizeAppConfig
+      decamelizeAppConfig,
+      publicPath
     });
 
     if (!manifest) {
       // Exit if no manifest config
       return;
     }
-    const publicPath = userConfig.publicPath || '/';
     let tags = `<link rel="manifest" href="${publicPath}web/manifest.json" />`;
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {

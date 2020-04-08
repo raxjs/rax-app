@@ -54,7 +54,7 @@ module.exports = (context) => {
   setEntry(config, context, entries);
 
   config.output
-    .filename('nsr/[name].js')
+    .filename('web/[name].nsr.js')
     .libraryTarget('umd');
 
   if (!inlineStyle) {
