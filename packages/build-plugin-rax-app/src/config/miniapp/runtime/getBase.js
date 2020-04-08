@@ -17,6 +17,12 @@ module.exports = (context, target, options) => {
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
+  config.module
+    .rule('json')
+    .test(/\.json$/)
+    .use('json-loader')
+    .loader(require.resolve('json-loader'));
+
   config.output
     .filename(`${target}/common/[name].js`)
     .library('createApp')

@@ -11,8 +11,17 @@ module.exports = class MiniAppConfigPlugin {
     this.options = passedOptions;
   }
   apply(compiler) {
+    // Currently there is no watch app.json capacity, so use first render flag handle repeatly write config
+    let isFirstRender = true;
     let { outputPath, appConfig, target, type, getAppConfig } = this.options;
-    compiler.hooks.beforeCompile.tapAsync(PluginName, transformConfig);
+    compiler.hooks.beforeCompile.tapAsync(PluginName, (compilation, callback) => {
+      if (isFirstRender) {
+        transformConfig(compilation, callback);
+        isFirstRender = false;
+      } else {
+        callback();
+      }
+    });
 
     function transformConfig(compilation, callback) {
       const config = transformAppConfig(outputPath, appConfig, target);
