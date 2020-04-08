@@ -1,6 +1,6 @@
 {
   "name": "rax-miniapp-config-webpack-plugin",
-  "version": "1.0.1-0",
+  "version": "1.0.1",
   "description": "miniapp config webpack plugin",
   "main": "src/index.js",
   "scripts": {
