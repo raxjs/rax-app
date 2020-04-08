@@ -138,6 +138,8 @@ module.exports = class DocumentPlugin {
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, async(compilation, callback) => {
       const entries = Object.keys(pages);
 
+      let hasPrintError = false;
+
       for (var i = 0, l = entries.length; i < l; i++) {
         const entryName = entries[i];
         const { tempFile, fileName } = pages[entryName];
@@ -154,9 +156,22 @@ module.exports = class DocumentPlugin {
           pageSource = Document.renderToHTML(assets);
         } catch (error) {
           const errorStack = await parse(error, documentContent);
-          print(error.message, errorStack);
+          // Prevent print duplicate error info
+          if (!hasPrintError) {
+            print(error.message, errorStack);
+            hasPrintError = true;
+          }
 
-          pageSource = 'Document render error, please check the log.';
+          const stackMessage = errorStack.map(frame => {
+            if (frame.fromSourceMap) {
+              return `at ${frame.functionName} (${frame.source}:${frame.lineNumber}:${frame.columnNumber})`;
+            }
+        
+            // the origin source info already has position info
+            return frame.source;
+          });
+        
+          pageSource =  `Error: ${error.message}<br>&nbsp;&nbsp;${stackMessage.join('<br>&nbsp;&nbsp;')}`;
         }
 
         // insert html file
