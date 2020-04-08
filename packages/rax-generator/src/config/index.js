@@ -16,6 +16,10 @@ const promptQuestion = [
         name: 'API (Build universal API library)',
         value: 'api',
       },
+      {
+        name: 'Plugin (Build plugin for miniapp)',
+        value: 'plugin'
+      }
     ],
     default: 'app',
   },
@@ -91,28 +95,33 @@ const promptQuestion = [
       return 'Choose at least one of target.';
     },
     message: 'Choose targets your project want to run?',
-    choices: [
-      {
-        name: 'Web',
-        value: 'web',
-      },
-      {
-        name: 'Weex',
-        value: 'weex',
-      },
-      {
-        name: 'Alibaba MiniApp',
-        value: 'miniapp',
-      },
-      {
-        name: 'WeChat MiniProgram',
-        value: 'wechat-miniprogram',
-      },
-      {
-        name: 'Kraken (Flutter)',
-        value: 'kraken',
-      },
-    ],
+    choices: function(answers) {
+      let targets =
+      [
+        {
+          name: 'Alibaba MiniApp',
+          value: 'miniapp',
+        },
+        {
+          name: 'WeChat MiniProgram',
+          value: 'wechat-miniprogram',
+        }
+      ];
+      if (answers.projectType !== 'plugin') {
+        targets = [{
+          name: 'Web',
+          value: 'web',
+        },
+        {
+          name: 'Weex',
+          value: 'weex',
+        }].concat(targets).concat([{
+          name: 'Kraken (Flutter)',
+          value: 'kraken',
+        }]);
+      }
+      return targets;
+    },
     default: ['web'],
   },
   {
