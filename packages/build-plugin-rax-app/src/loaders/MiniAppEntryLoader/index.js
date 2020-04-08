@@ -17,7 +17,8 @@ module.exports = function() {
     const history = createMiniAppHistory(${JSON.stringify(routes)});
     const comProps = {
       history,
-      location: history.location
+      location: history.location,
+      ...window.__pageProps
     };
 
     window.addEventListener('pageLoad', (query) => {

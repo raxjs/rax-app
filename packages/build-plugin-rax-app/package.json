@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-app",
-  "version": "4.3.3",
+  "version": "4.4.2",
   "description": "rax app base plugins",
   "main": "src/index.js",
   "scripts": {
@@ -52,8 +52,8 @@
     "qs": "^6.9.1",
     "rax-babel-config": "^0.0.1",
     "rax-compile-config": "^0.2.0",
-    "rax-miniapp-config-webpack-plugin": "^1.0.0",
-    "rax-miniapp-runtime-webpack-plugin": "^0.1.0",
+    "rax-miniapp-config-webpack-plugin": "1.0.1",
+    "rax-miniapp-runtime-webpack-plugin": "0.1.7",
     "rax-multi-pages-settings": "^0.1.0",
     "rax-server-renderer": "^1.0.0",
     "rax-webpack-config": "^0.0.1",
