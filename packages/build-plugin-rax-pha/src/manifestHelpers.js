@@ -53,7 +53,7 @@ function transformAppConfig(appConfig, isRoot = true) {
 
 // get every page manifest
 function getPageManifestByPath(options) {
-  const { nsr, path = '/', decamelizeAppConfig = {}, publicPath } = options;
+  const { nsr, path = '/', decamelizeAppConfig = {}, publicPath = '/' } = options;
   let manifestData = {};
   const { pages = [] } = decamelizeAppConfig;
   const page = pages.find((item) => {
