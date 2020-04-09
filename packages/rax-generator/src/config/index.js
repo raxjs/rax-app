@@ -63,7 +63,7 @@ const promptQuestion = [
   {
     type: 'list',
     name: 'appType',
-    message: 'What\'s your application type? (Only valid in target: web/weex/kraken)',
+    message: 'What\'s your application type? (Only valid in target: Web/Weex/Kraken)',
     when(answers) {
       return answers.projectType === 'app' && (answers.projectTargets.includes('web') || answers.projectTargets.includes('weex') || answers.projectTargets.includes('kraken'));
     },
@@ -139,7 +139,7 @@ const promptQuestion = [
     message: 'Do you want to enable these features?',
     choices: [
       {
-        name: 'Server-side rendering (SSR) (Only valid in target: web)',
+        name: 'Server-side rendering (SSR) (Only valid in target: Web)',
         value: 'ssr',
         disabled: (answers) => {
           // Lite app is not support SSR
@@ -150,7 +150,7 @@ const promptQuestion = [
         },
       },
       {
-        name: 'Aliyun Function Compute (FaaS) (Only valid in target: web)',
+        name: 'Aliyun Function Compute (FaaS) (Only valid in target: Web)',
         value: 'faas',
         disabled: (answers) => {
           // Only web supports SSR
