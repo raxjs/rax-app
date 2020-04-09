@@ -24,6 +24,7 @@ module.exports = function() {
     absolutePagePath,
     pagePath,
     doctype,
+    manifests
   } = query;
 
   const formatedShellPath = absoluteShellPath ? formatPath(absoluteShellPath) : null;
@@ -64,7 +65,8 @@ module.exports = function() {
           __initialHtml: initialHtml,
           __pagePath: '${pagePath}',
           __styles: assets.styles,
-          __scripts: assets.scripts
+          __scripts: assets.scripts,
+          __manifests: ${manifests}
         };
       };
 
