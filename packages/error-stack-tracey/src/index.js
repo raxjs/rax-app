@@ -18,6 +18,7 @@ async function parse(error, bundleContent) {
       errorFrame.lineNumber = originalSourcePosition.line;
       errorFrame.fileName = originalSourcePosition.name;
       errorFrame.source = parseWebpackPath(originalSourcePosition.source);
+      errorFrame.fromSourceMap = true;
     }
 
     return errorFrame;
@@ -30,7 +31,12 @@ async function parse(error, bundleContent) {
 
 function print(message, stackFrame) {
   const stackMessage = stackFrame.map(frame => {
-    return `    at ${frame.functionName} (${frame.source}:${frame.lineNumber}:${frame.columnNumber})`;
+    if (frame.fromSourceMap) {
+      return `    at ${frame.functionName} (${frame.source}:${frame.lineNumber}:${frame.columnNumber})`;
+    }
+
+    // the origin source info already has position info
+    return frame.source;
   });
 
   console.error(`Error: ${message}\n${stackMessage.join('\n')}`);
