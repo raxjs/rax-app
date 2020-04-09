@@ -1,10 +1,21 @@
 const path = require('path');
 const { readdirSync } = require('fs');
+const setManifestToDocument = require('./setManifestToDocument');
+
+const getNSRBase = require('./nsr/getBase');
 
 const pluginDir = path.join(__dirname, './plugins');
 const pluginList = readdirSync(pluginDir);
-module.exports = ({ onGetWebpackConfig, context }, option) => {
+module.exports = ({ onGetWebpackConfig, context, registerTask }, option) => {
+  const { nsr } = option;
   const { command } = context;
+
+  // register nsr plugin
+  if (nsr) {
+    const nsrConfig = getNSRBase(context);
+    registerTask('nsr', nsrConfig);
+  }
+
   onGetWebpackConfig('web', (config) => {
     pluginList.forEach((plugin) => {
       if (/\.js$/.test(plugin)) {
@@ -15,6 +26,12 @@ module.exports = ({ onGetWebpackConfig, context }, option) => {
             command,
           }]);
       }
+    });
+
+    setManifestToDocument({
+      ...option,
+      context,
+      config
     });
   });
 };
