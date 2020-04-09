@@ -102,15 +102,27 @@ module.exports = (api, options = {}) => {
     }
 
     if (targets.includes(MINIAPP)) {
-      console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
-      const outputPath = options[MINIAPP].distDir || `demo/${MINIAPP}`;
+      let outputPath = '';
+      if (options[MINIAPP].distDir) {
+        outputPath = options[MINIAPP].distDir;
+        console.log(chalk.green('[Alibaba MiniApp] Component lib at: '));
+      } else {
+        outputPath = `demo/${MINIAPP}`;
+        console.log(chalk.green('[Alibaba Miniapp] Use ali miniapp developer tools to open the following folder:'));
+      }
       console.log('   ', chalk.underline.white(path.resolve(rootDir, outputPath)));
       console.log();
     }
 
     if (targets.includes(WECHAT_MINIPROGRAM)) {
-      console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
-      const outputPath = options[WECHAT_MINIPROGRAM].distDir || `demo/${WECHAT_MINIPROGRAM}`;
+      let outputPath = '';
+      if (options[WECHAT_MINIPROGRAM].distDir) {
+        outputPath = options[WECHAT_MINIPROGRAM].distDir;
+        console.log(chalk.green('[WeChat MiniProgram] Component lib at: '));
+      } else {
+        outputPath = `demo/${WECHAT_MINIPROGRAM}`;
+        console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
+      }
       console.log('   ', chalk.underline.white(path.resolve(rootDir, outputPath)));
       console.log();
     }

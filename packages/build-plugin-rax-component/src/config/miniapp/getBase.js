@@ -21,7 +21,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const { platform = targetPlatformMap[target], mode = 'build', entryPath = './src/index', distDir = '', disableCopyNpm = false, turnOffSourceMap = false, constantDir = [] } = options[target] || {};
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
-  const outputPath = distDir || getOutputPath(context, { target });
+  const outputPath = getOutputPath(context, { target, distDir });
   const config = getWebpackBase(context, {
     disableRegenerator: true
   });

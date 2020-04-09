@@ -73,13 +73,13 @@ module.exports = (api, options = {}) => {
       console.log();
     }
     if (targets.includes(MINIAPP)) {
-      console.log(chalk.green('Alibaba MiniApp Component lib at:'));
+      console.log(chalk.green('[Alibaba MiniApp] Component lib at:'));
       const distDir = options[MINIAPP].distDir || `${outputDir}/${MINIAPP}`;
       console.log('   ', chalk.underline.white(path.resolve(rootDir, distDir)));
       console.log();
     }
     if (targets.includes(WECHAT_MINIPROGRAM)) {
-      console.log(chalk.green('WeChat MiniProgram Component lib at:'));
+      console.log(chalk.green('[WeChat MiniProgram] Component lib at:'));
       const distDir = options[WECHAT_MINIPROGRAM].distDir || `${outputDir}/${WECHAT_MINIPROGRAM}`;
       console.log('   ', chalk.underline.white(path.resolve(rootDir, distDir)));
       console.log();
