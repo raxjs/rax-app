@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const { resolve, dirname } = require('path');
+const { resolve, dirname, join } = require('path');
 const { existsSync } = require('fs-extra');
 
 const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
@@ -15,6 +15,7 @@ const CopyPublicFilePlugin = require('../../../plugins/miniapp/CopyPublicFile');
 
 const platformConfig = require('./platformConfig');
 const targetPlatformMap = require('../targetPlatformMap');
+const { QUICKAPP } = require('../../../constants');
 
 const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
 const PageLoader = require.resolve('jsx2mp-loader/src/page-loader');
@@ -27,7 +28,11 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
   const entryPath = './src/app.js';
-  const outputPath = getOutputPath(context, { target });
+  let outputPath = getOutputPath(context, { target });
+  // Quickapp's output should be wrapped in src
+  if (target === QUICKAPP) {
+    outputPath = join(outputPath, 'src');
+  }
   const config = getWebpackBase(context, {
     disableRegenerator: true
   });
@@ -163,6 +168,10 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
         return callback(null, `commonjs2 ${request}`);
       }
       if (/^@weex-module\//.test(request)) {
+        return callback(null, `commonjs2 ${request}`);
+      }
+      // Built-in modules in QuickApp
+      if (/^@system\./.test(request)) {
         return callback(null, `commonjs2 ${request}`);
       }
       callback();
