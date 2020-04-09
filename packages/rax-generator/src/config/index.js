@@ -67,26 +67,26 @@ const promptQuestion = [
     when(answers) {
       return answers.projectType === 'app' && (answers.projectTargets.includes('web') || answers.projectTargets.includes('weex') || answers.projectTargets.includes('kraken'));
     },
-    choices: function(answers) {
-      const appTypeList = [
-        {
-          name: 'Single-page application (SPA)',
-          value: 'spa',
+    choices: [
+      {
+        name: 'Single-page application (SPA)',
+        value: 'spa',
+      },
+      {
+        name: 'Multi-page application (MPA)',
+        value: 'mpa',
+      },
+      {
+        name: 'Create lite application (The simplest project setup)',
+        value: 'lite',
+        disabled: (answers) => {
+          // lite application doesn't support Alibaba MiniApp or WeChat-MiniProgram
+          return (
+            answers.projectTargets.includes('miniapp') || answers.projectTargets.includes('wechat-miniprogram')
+          );
         },
-        {
-          name: 'Multi-page application (MPA)',
-          value: 'mpa',
-        },
-        {
-          name: 'Create lite application (The simplest project setup)',
-          value: 'lite',
-        },
-      ];
-      if (answers.projectTargets.includes('miniapp') || answers.projectTargets.includes('wechat-miniprogram')) {
-        appTypeList.pop(); // lite application doesn't support Alibaba MiniApp or WeChat-MiniProgram
-      }
-      return appTypeList;
-    },
+      },
+    ],
     default: 'spa',
   },
   {
