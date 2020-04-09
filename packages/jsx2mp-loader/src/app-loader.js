@@ -1,13 +1,15 @@
-const { readFileSync, existsSync, mkdirpSync } = require('fs-extra');
-const { join, sep } = require('path');
+const { existsSync, mkdirpSync } = require('fs-extra');
+const { join } = require('path');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
 const { doubleBackslash, getHighestPriorityPackage } = require('./utils/pathHelper');
 const eliminateDeadCode = require('./utils/dce');
 const defaultStyle = require('./defaultStyle');
+const { QUICKAPP } = require('./constants');
 const processCSS = require('./styleProcessor');
 const output = require('./output');
 const { isTypescriptFile } = require('./utils/judgeModule');
+const parse = require('./utils/parseRequest');
 
 function createImportStatement(req) {
   return `import '${doubleBackslash(req)}';`;
@@ -21,9 +23,15 @@ function generateDependencies(dependencies) {
 }
 
 module.exports = async function appLoader(content) {
+  const query = parse(this.request);
+  // Only handle app role file
+  if (query.role !== 'app') {
+    return content;
+  }
+
   const loaderOptions = getOptions(this);
-  const { entryPath, outputPath, platform, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
-  const rawContent = readFileSync(this.resourcePath, 'utf-8');
+  const { entryPath, outputPath, platform, mode, disableCopyNpm, turnOffSourceMap, aliasEntries } = loaderOptions;
+  const rawContent = content;
 
   if (!existsSync(outputPath)) mkdirpSync(outputPath);
 
@@ -40,8 +48,10 @@ module.exports = async function appLoader(content) {
     type: 'app',
     sourceFileName: this.resourcePath,
     disableCopyNpm,
-    turnOffSourceMap
+    turnOffSourceMap,
+    aliasEntries
   });
+
   const rawContentAfterDCE = eliminateDeadCode(rawContent);
 
   let transformed;
@@ -68,11 +78,13 @@ module.exports = async function appLoader(content) {
   };
   const outputOption = {
     outputPath: {
-      code: join(outputPath, 'app.js'),
+      code: join(outputPath, platform.type === QUICKAPP ? 'app.ux' : 'app.js'),
       css: join(outputPath, 'app' + platform.extension.css),
     },
     mode,
-    isTypescriptFile: isTypescriptFile(this.resourcePath)
+    isTypescriptFile: isTypescriptFile(this.resourcePath),
+    type: 'app',
+    platform,
   };
 
   output(outputContent, rawContent, outputOption);

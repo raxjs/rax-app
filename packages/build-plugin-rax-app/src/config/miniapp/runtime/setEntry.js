@@ -21,5 +21,8 @@ module.exports = (config, context, routes) => {
     const pageEntry = getDepPath(rootDir, source);
     entryConfig.add(`${EntryLoader}?${JSON.stringify({ routes })}!${pageEntry}`);
   });
+
+  // Add app entry
+  config.entry('app').add(getDepPath(rootDir, 'app'));
 };
 

@@ -15,17 +15,10 @@ const parserOpts = {
   ], // support all plugins
 };
 
-function eliminateDeadCode(source) {
+function removeUnusedImport(source) {
   return transformSync(source, {
     parserOpts,
     plugins: [
-      [
-        require('babel-plugin-minify-dead-code-elimination'),
-        {
-          optimizeRawSize: true,
-          keepFnName: true
-        }
-      ],
       [
         require('babel-plugin-danger-remove-unused-import'),
         {
@@ -34,6 +27,21 @@ function eliminateDeadCode(source) {
       ]
     ]
   }).code;
+}
+
+const codeProcessor = (processors = [], sourceCode) => processors
+  .filter(processor => typeof processor === 'function')
+  .reduce(
+    (prevCode, currProcessor) => currProcessor(prevCode),
+    sourceCode
+  );
+
+function eliminateDeadCode(source) {
+  const processors = [
+    removeUnusedImport,
+  ];
+
+  return codeProcessor(processors, source);
 }
 
 module.exports = eliminateDeadCode;

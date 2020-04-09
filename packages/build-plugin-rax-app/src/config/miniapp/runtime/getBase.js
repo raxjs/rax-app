@@ -17,6 +17,12 @@ module.exports = (context, target, options) => {
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
+  config.module
+    .rule('json')
+    .test(/\.json$/)
+    .use('json-loader')
+    .loader(require.resolve('json-loader'));
+
   config.output
     .filename(`${target}/common/[name].js`)
     .library('createApp')
@@ -27,15 +33,6 @@ module.exports = (context, target, options) => {
     .use('fixRegeneratorRuntime')
     .loader(require.resolve('../../../loaders/FixRegeneratorRuntimeLoader'));
 
-
-  config.externals([
-    function(ctx, request, callback) {
-      if (request.indexOf('@weex-module') !== -1) {
-        return callback(null, 'undefined');
-      }
-      callback();
-    },
-  ]);
   config.plugin('MiniAppConfigPlugin').use(MiniAppConfigPlugin, [
     {
       type: 'runtime',

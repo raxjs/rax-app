@@ -36,8 +36,8 @@ module.exports = class SaveToDesktopPlugin {
       // Exit if no manifest config
       return;
     }
-    const { rootDir, userConfig } = context;
-    const publicPath = userConfig.publicPath || '/';
+    const { rootDir } = context;
+    const publicPath = compiler.options.output.publicPath || '/';
     let tags = `<link rel="manifest" href="${publicPath}web/manifest.json" />`;
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {

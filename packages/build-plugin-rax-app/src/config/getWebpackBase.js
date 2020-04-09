@@ -63,7 +63,7 @@ module.exports = (context, options = {}, target) => {
     })
     .end()
     .use('platform')
-    .loader(require.resolve('rax-compile-config/src/platformLoader')); ;
+    .loader(require.resolve('rax-compile-config/src/platformLoader'));
 
   config.module.rule('assets')
     .test(/\.(svg|png|webp|jpe?g|gif)$/i)
@@ -78,12 +78,31 @@ module.exports = (context, options = {}, target) => {
       .use(CopyWebpackPlugin, [[{ from: 'src/public', to: `${target}/public` }]]);
   }
 
+  config.externals([
+    function(ctx, request, callback) {
+      if (request.indexOf('@weex-module') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
+
+      // compatible with @system for quickapp
+      if (request.indexOf('@system') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
+      callback();
+    },
+  ]);
+
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);
+
+  const copyWebpackPluginPatterns = [{ from: 'src/public', to: `${target}/public` }];
 
   if (command === 'start') {
     config.mode('development');
     config.devtool('inline-module-source-map');
+    // MiniApp usually use `./public/xxx.png` as file src.
+    // Dev Server start with '/'. if you want to use './public/xxx.png', should copy public to the root.
+    copyWebpackPluginPatterns.push({ from: 'src/public', to: 'public' });
   } else if (command === 'build') {
     config.mode('production');
 
@@ -100,6 +119,11 @@ module.exports = (context, options = {}, target) => {
       .end()
       .minimizer('optimizeCSS')
       .use(OptimizeCSSAssetsPlugin);
+  }
+
+  if (target && fs.existsSync(path.resolve(rootDir, 'src/public'))) {
+    config.plugin('copyWebpackPlugin')
+      .use(CopyWebpackPlugin, [copyWebpackPluginPatterns]);
   }
 
   return config;
