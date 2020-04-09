@@ -1,4 +1,4 @@
-const { MINIAPP, WECHAT_MINIPROGRAM, QUICKAPP } = require('./constants');
+const { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('./constants');
 
 const configKeyMap = {
   [MINIAPP]: {
@@ -19,6 +19,23 @@ const configKeyMap = {
     }
   },
   [WECHAT_MINIPROGRAM]: {
+    window: {
+      title: 'navigationBarTitleText',
+      pullRefresh: 'enablePullDownRefresh',
+      titleBarColor: 'navigationBarBackgroundColor'
+    },
+    tabBar: {
+      textColor: 'color',
+      items: 'list'
+    },
+    items: {
+      name: 'text',
+      icon: 'iconPath',
+      activeIcon: 'selectedIconPath',
+      path: 'pagePath'
+    }
+  },
+  [BYTEDANCE_MICROAPP]: {
     window: {
       title: 'navigationBarTitleText',
       pullRefresh: 'enablePullDownRefresh',

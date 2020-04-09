@@ -3,6 +3,7 @@ const { resolve, dirname, join } = require('path');
 const { existsSync } = require('fs-extra');
 
 const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
+const CopyLoginPlugin = require('rax-copy-login-webpack-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
@@ -185,10 +186,20 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   }]);
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
+  if (appConfig.config && appConfig.config.needLogin) {
+    config.plugin('copyLogin').use(CopyLoginPlugin, [
+      {
+        appConfig,
+        outputPath,
+        platform
+      }
+    ]);
+  }
   config.plugin('miniAppConfig').use(MiniAppConfigPlugin, [
     {
       type: 'complie',
       appConfig,
+      entryPath,
       getAppConfig,
       outputPath,
       target

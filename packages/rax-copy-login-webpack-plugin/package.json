@@ -1,0 +1,14 @@
+{
+  "name": "rax-copy-login-webpack-plugin",
+  "version": "1.0.0",
+  "description": "copy login file for rax app",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rax Team",
+  "dependencies": {
+    "fs-extra": "^7.0.1"
+  },
+  "license": "ISC"
+}
