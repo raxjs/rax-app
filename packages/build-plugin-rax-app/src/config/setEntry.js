@@ -2,7 +2,7 @@ const path = require('path');
 
 const { hmrClient } = require('rax-compile-config');
 
-const { WECHAT_MINIPROGRAM, MINIAPP } = require('../constants');
+const { WECHAT_MINIPROGRAM, MINIAPP, QUICKAPP } = require('../constants');
 
 
 module.exports = (config, context, target) => {
@@ -26,7 +26,7 @@ module.exports = (config, context, target) => {
       });
   });
 
-  if (isDev && ![WECHAT_MINIPROGRAM, MINIAPP].includes(target)) {
+  if (isDev && ![WECHAT_MINIPROGRAM, MINIAPP, QUICKAPP].includes(target)) {
     entryConfig.add(hmrClient);
   }
   entryConfig.add(appEntry);
