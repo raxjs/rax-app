@@ -15,7 +15,7 @@ jest.mock('loader-utils', () => {
 
 const mockStyleHeaderString = `let __globalObject = typeof window === 'object' ? window : typeof global === 'object' ? global : {};
   if (typeof __globalObject === "object") {
-    __globalObject.__RootCSSVariable = __globalObject.__RootCSSVariable || {};__globalObject.__RootCSSVariable["colorName"] = "rgb(0,0,255)";}
+    __globalObject.__RootCSSVariable = __globalObject.__RootCSSVariable || {};__globalObject.__RootCSSVariable["colorName"] = "hsl(240, 100%, 50%)";}
   function __getValue(name){
     return (typeof __globalObject.__RootCSSVariable === "object")
       ? window.__RootCSSVariable[name]
