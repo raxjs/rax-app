@@ -24,7 +24,7 @@ module.exports = function() {
     absolutePagePath,
     pagePath,
     doctype,
-    manifests = []
+    manifests
   } = query;
 
   const formatedShellPath = absoluteShellPath ? formatPath(absoluteShellPath) : null;
