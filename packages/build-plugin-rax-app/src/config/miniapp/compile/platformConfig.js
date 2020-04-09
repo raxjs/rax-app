@@ -1,4 +1,4 @@
-const { MINIAPP, WECHAT_MINIPROGRAM } = require('../../../constants');
+const { MINIAPP, WECHAT_MINIPROGRAM, QUICKAPP } = require('../../../constants');
 
 
 module.exports = {
@@ -16,6 +16,14 @@ module.exports = {
     extension: {
       xml: '.wxml',
       css: '.wxss',
+    }
+  },
+  [QUICKAPP]: {
+    type: 'quickapp',
+    name: 'QuickApp',
+    extension: {
+      xml: '.ux',
+      css: '.css',
     }
   },
   // Wait for implementation
