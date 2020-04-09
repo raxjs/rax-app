@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const { resolve, dirname } = require('path');
+const { resolve } = require('path');
 const { existsSync } = require('fs-extra');
 
 const getWebpackBase = require('../getBaseWebpack');
@@ -18,10 +18,10 @@ const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
 module.exports = (context, target, options = {}, onGetWebpackConfig) => {
-  const { platform = targetPlatformMap[target], mode = 'build', entryPath = './src/index', disableCopyNpm = false, turnOffSourceMap = false, constantDir = [] } = options[target] || {};
+  const { platform = targetPlatformMap[target], mode = 'build', entryPath = './src/index', distDir = '', disableCopyNpm = false, turnOffSourceMap = false, constantDir = [] } = options[target] || {};
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
-  const outputPath = getOutputPath(context, { target });
+  const outputPath = distDir || getOutputPath(context, { target });
   const config = getWebpackBase(context, {
     disableRegenerator: true
   });
@@ -42,7 +42,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   config.entryPoints.clear();
   config
     .entry('component')
-    .add(`${entryPath}?role=component`);
+    .add(`./${entryPath}?role=component`);
 
   config
     .mode('production')

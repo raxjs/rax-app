@@ -103,13 +103,15 @@ module.exports = (api, options = {}) => {
 
     if (targets.includes(MINIAPP)) {
       console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(path.resolve(rootDir, `demo/${MINIAPP}`)));
+      const outputPath = options[MINIAPP].distDir || `demo/${MINIAPP}`;
+      console.log('   ', chalk.underline.white(path.resolve(rootDir, outputPath)));
       console.log();
     }
 
     if (targets.includes(WECHAT_MINIPROGRAM)) {
       console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(path.resolve(rootDir, 'demo/wechat-miniprogram')));
+      const outputPath = options[WECHAT_MINIPROGRAM].distDir || `demo/${WECHAT_MINIPROGRAM}`;
+      console.log('   ', chalk.underline.white(path.resolve(rootDir, outputPath)));
       console.log();
     }
   }
