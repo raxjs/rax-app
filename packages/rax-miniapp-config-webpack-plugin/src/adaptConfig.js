@@ -1,4 +1,4 @@
-const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
+const { MINIAPP, WECHAT_MINIPROGRAM, QUICKAPP } = require('./constants');
 
 const configKeyMap = {
   [MINIAPP]: {
@@ -33,6 +33,12 @@ const configKeyMap = {
       icon: 'iconPath',
       activeIcon: 'selectedIconPath',
       path: 'pagePath'
+    }
+  },
+  [QUICKAPP]: {
+    window: {
+      title: 'titleBarText',
+      titleBarColor: 'titleBarTextColor'
     }
   }
 };

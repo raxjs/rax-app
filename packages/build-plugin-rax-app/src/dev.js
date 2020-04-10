@@ -2,14 +2,15 @@ const ip = require('ip');
 const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const qrcode = require('qrcode-terminal');
-
+const { setConfig, setDevLog } = require('rax-multi-pages-settings');
 const { handleWebpackErr } = require('rax-compile-config');
+const checkQuickAppEnv = require('rax-quickapp-webpack-plugin');
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 
-const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
+const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, QUICKAPP } = require('./constants');
 
 module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook }, options = {}) => {
-  const { targets = [] } = options;
+  const { targets = [], type = 'spa' } = options;
   let devUrl = '';
   let devCompletedArr = [];
 
@@ -17,11 +18,19 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     const [getBase, setDev] = getConfig(target, options);
     registerTask(target, getBase(context, target, options, onGetWebpackConfig));
 
-    if (setDev) {
-      onGetWebpackConfig(target, (config) => {
+    onGetWebpackConfig(target, (config) => {
+      if (setDev) {
         setDev(config, context, index);
-      });
-    }
+      }
+      // Set MPA config
+      // Should setConfig in onGetWebpackConfig method. Need to get SSR params and all build targets.
+      if (
+        type === 'mpa'
+        && (target === 'web' || target === 'weex')
+      ) {
+        setConfig(config, context, targets, target);
+      }
+    });
   });
 
   onHook('after.start.compile', async(args) => {
@@ -53,34 +62,42 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     devCompletedArr = [];
 
-    // hide log in mpa
-    const raxMpa = getValue('raxMpa');
-    if (raxMpa) return;
     console.log(chalk.green('Rax development server has been started:'));
     console.log();
 
-    if (targets.includes(WEB)) {
-      console.log(chalk.green('[Web] Development server at:'));
-      console.log('   ', chalk.underline.white(devUrl));
-      console.log();
-    }
-
-    if (targets.includes(WEEX)) {
-      // Use Weex App to scan ip address (mobile phone can't visit localhost).
-      const weexUrl = `${devUrl}weex/index.js?wh_weex=true`.replace(/^http:\/\/localhost/gi, function(match) {
-        // Called when matched
-        try {
-          return `http://${ip.address()}`;
-        } catch (error) {
-          console.log(chalk.yellow(`Get local IP address failed: ${error.toString()}`));
-          return match;
+    // Set Web and Weex log
+    if (targets.includes(WEB) || targets.includes(WEEX)) {
+      if (
+        type === 'mpa' ||
+        // Compatibility old version build-plugin-rax-multi-pages
+        getValue('raxMpa')
+      ) {
+        setDevLog({ url: devUrl, err, stats });
+      } else {
+        if (targets.includes(WEB)) {
+          console.log(chalk.green('[Web] Development server at:'));
+          console.log('   ', chalk.underline.white(devUrl));
+          console.log();
         }
-      });
-      console.log(chalk.green('[Weex] Development server at:'));
-      console.log('   ', chalk.underline.white(weexUrl));
-      console.log();
-      qrcode.generate(weexUrl, { small: true });
-      console.log();
+
+        if (targets.includes(WEEX)) {
+          // Use Weex App to scan ip address (mobile phone can't visit localhost).
+          const weexUrl = `${devUrl}weex/index.js?wh_weex=true`.replace(/^http:\/\/localhost/gi, function(match) {
+            // Called when matched
+            try {
+              return `http://${ip.address()}`;
+            } catch (error) {
+              console.log(chalk.yellow(`Get local IP address failed: ${error.toString()}`));
+              return match;
+            }
+          });
+          console.log(chalk.green('[Weex] Development server at:'));
+          console.log('   ', chalk.underline.white(weexUrl));
+          console.log();
+          qrcode.generate(weexUrl, { small: true });
+          console.log();
+        }
+      }
     }
 
     if (targets.includes(KRAKEN)) {
@@ -103,11 +120,23 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
       console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: WECHAT_MINIPROGRAM })));
       console.log();
     }
+
+    if (targets.includes(QUICKAPP)) {
+      // Check for quick app's environment
+      const quickAppDist = getMiniAppOutput(context, { target: QUICKAPP });
+      checkQuickAppEnv({
+        workDirectory: process.cwd(),
+        distDirectory: quickAppDist,
+      });
+      console.log(chalk.green('[Quick App] Use quick app developer tools to open the following folder:'));
+      console.log('   ', chalk.underline.white(quickAppDist));
+      console.log();
+    }
   }
 };
 
 function getConfig(target, options = {}) {
-  if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > -1) {
+  if ([MINIAPP, WECHAT_MINIPROGRAM, QUICKAPP].indexOf(target) > -1) {
     if (options[target] && options[target].buildType === 'runtime') {
       return [require('./config/miniapp/runtime/getBase')];
     } else {

@@ -1,8 +1,9 @@
-const { writeJSONSync, writeFileSync, existsSync, mkdirpSync } = require('fs-extra');
-const { extname, dirname, join } = require('path');
+const { writeJSONSync, writeFileSync, readFileSync, existsSync, mkdirpSync } = require('fs-extra');
+const { extname, dirname, join, relative } = require('path');
 const { transformSync } = require('@babel/core');
 const { minify, minifyJS, minifyCSS, minifyXML } = require('./utils/minifyCode');
 const addSourceMap = require('./utils/addSourceMap');
+const { QUICKAPP } = require('./constants');
 
 function transformCode(rawContent, mode, externalPlugins = [], externalPreset = []) {
   const presets = [].concat(externalPreset);
@@ -53,8 +54,9 @@ function transformCode(rawContent, mode, externalPlugins = [], externalPreset = 
  * @param {object} options
  */
 function output(content, raw, options) {
-  const { mode, outputPath, externalPlugins = [], isTypescriptFile } = options;
-  let { code, config, json, css, map, template, assets } = content;
+  const { mode, outputPath, externalPlugins = [], isTypescriptFile, platform, type } = options;
+  let { code, config, json, css, map, template, assets, importComponents = [], iconfontMap } = content;
+  const isQuickApp = platform.type === QUICKAPP;
 
   if (isTypescriptFile) {
     externalPlugins.unshift(require('@babel/plugin-transform-typescript'));
@@ -90,6 +92,33 @@ function output(content, raw, options) {
 
   // Write file
   if (code) {
+    if (isQuickApp) {
+      // wrap with script for app.ux
+      if (type === 'app') {
+        code = `<script>\n${code}\n</script>\n`;
+        writeFileWithDirCheck(outputPath.code, code);
+        // check if update fns exists
+        if (global._appUpdateFns && global._appUpdateFns.length) {
+          global._appUpdateFns.map(fn => {
+            fn.call();
+          });
+          global._appUpdateFns = [];
+        }
+      } else {
+        // insert global iconfont in app.ux if iconfont detected in page/component
+        if (iconfontMap && iconfontMap.length) {
+          const appPath = join(outputPath.assets, 'app.ux');
+          let appContent = readFileSync(appPath, 'utf8');
+          if (appContent.length) {
+            updateAppUx(appContent, iconfontMap, appPath);
+          } else {
+            // cache update fns in case app.ux is not ready yet
+            global._appUpdateFns = global._appUpdateFns || [];
+            global._appUpdateFns.push(updateAppUx.bind(null, appContent, iconfontMap, appPath));
+          }
+        }
+      }
+    }
     writeFileWithDirCheck(outputPath.code, code);
   }
 
@@ -97,9 +126,46 @@ function output(content, raw, options) {
     writeFileWithDirCheck(outputPath.json, json, 'json');
   }
   if (template) {
+    if (isQuickApp) {
+      if (importComponents && importComponents.length) {
+        template += importComponents.join('\n') + '\n';
+      }
+      template += `${template}\n`;
+      if (code) {
+        template += `<script>\n${code}\n</script>\n`;
+      }
+      if (css && outputPath.css) {
+        template += `<style src="./${relative(dirname(outputPath.template), outputPath.css)}"></style>\n`;
+      } else {
+        template += `<style>
+    .__rax-view {
+      border: 0 solid black;
+      display:flex;
+      flex-direction:column;
+      align-content:flex-start;
+      flex-shrink:0;
+    }
+    </style>\n`;
+      }
+    }
     writeFileWithDirCheck(outputPath.template, template);
   }
   if (css) {
+    if (isQuickApp) {
+      // add common style in css files
+      if (!css.includes('.__rax-view')) {
+        css = `
+  .__rax-view {
+    border: 0 solid black;
+    display:flex;
+    flex-direction:column;
+    align-content:flex-start;
+    flex-shrink:0;
+  }
+  ${css}`;
+      }
+      css = css.replace(/rpx/g, 'px');
+    }
     writeFileWithDirCheck(outputPath.css, css);
   }
   if (config) {
@@ -111,6 +177,9 @@ function output(content, raw, options) {
     Object.keys(assets).forEach((asset) => {
       const ext = extname(asset);
       let content = assets[asset];
+      if (isQuickApp) {
+        content = content.replace(/rpx/g, 'px');
+      }
       if (mode === 'build') {
         content = minify(content, ext);
       }
@@ -118,6 +187,38 @@ function output(content, raw, options) {
       writeFileWithDirCheck(assetsOutputPath, content);
     });
   }
+}
+
+/**
+ * Insert iconfont configure in app.ux
+ * @param {string} appContent Content of compiled app.ux
+ * @param {object} iconfontMap Compiled iconfont's map
+ * @param {string} appPath Path for app.ux
+ */
+function updateAppUx(appContent, iconfontMap, appPath) {
+  const insertIndex = appContent.indexOf('</style>');
+  if (insertIndex < 0) {
+    appContent = `${appContent}\n<style>\n${iconfontMap.map((v) => {
+      return `@font-face {
+  font-family: ${v.fontFamily};
+  src: url('${v.url}');
+}
+.${v.iconClass} {
+  font-family: ${v.fontFamily};
+}`;
+    }).join('\n')}\n</style>`;
+  } else {
+    appContent = `${appContent.substr(0, insertIndex)}\n${iconfontMap.map((v) => {
+      return `@font-face {
+  font-family: ${v.fontFamily};
+  src: url('${v.url}');
+}
+.${v.iconClass} {
+  font-family: ${v.fontFamily};
+}`;
+    }).join('\n')}\n</style>`;
+  }
+  writeFileSync(appPath, appContent);
 }
 
 
