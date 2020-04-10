@@ -19,6 +19,7 @@ async function baseProcess(command, options) {
     usedPlugin.push([
       'build-plugin-rax-component', {
         entry,
+        omitLib: true, // In build-plugin-rax-component, when targets only contain miniapp/wechat-miniprogram, it needs to generate lib/index.js just for the main entry in package.json, here we don't need the lib so omit that.
         ...pluginParam
       }
     ]);
