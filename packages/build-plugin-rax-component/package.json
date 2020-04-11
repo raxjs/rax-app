@@ -30,6 +30,7 @@
     "ip": "^1.1.5",
     "json-loader": "^0.5.7",
     "jsx2mp-loader": "^0.4.0",
+    "jsx2mp-runtime": "^0.4.7",
     "klaw-sync": "^6.0.0",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
