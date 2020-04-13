@@ -1,14 +1,12 @@
 const path = require('path');
 const glob = require('glob');
 const fs = require('fs-extra');
-const hljs = require('highlight.js/lib/highlight');
-const htmlDecode = require('js-htmlencode').htmlDecode;
 const parseMd = require('../utils/parseMarkdown');
+const Prism = require('prismjs');
 
-hljs.registerLanguage(
-  'javascript',
-  require('highlight.js/lib/languages/javascript'),
-);
+const loadLanguages = require('prismjs/components/');
+
+loadLanguages(['jsx']);
 
 module.exports = function(rootDir) {
   const demos = [];
@@ -16,7 +14,7 @@ module.exports = function(rootDir) {
   glob.sync(path.resolve(rootDir, 'demo/*.{js,jsx,md}')).forEach(filePath => {
     const name = filePath.substring(
       filePath.lastIndexOf('/') + 1,
-      Math.max(filePath.indexOf('.js'), filePath.indexOf('.md')),
+      Math.max(filePath.indexOf('.js'), filePath.indexOf('.md'))
     );
     const demo = {
       name,
@@ -24,7 +22,7 @@ module.exports = function(rootDir) {
       title: name,
       order: 0,
       js: '',
-      desc: '',
+      desc: ''
     };
 
     if (/\.md$/.test(filePath)) {
@@ -40,7 +38,7 @@ module.exports = function(rootDir) {
 
     demos.push({
       ...demo,
-      code: htmlDecode(hljs.highlight('javascript', demo.js).value),
+      code: Prism.highlight(demo.js, Prism.languages.jsx, 'javascript')
     });
   });
 
