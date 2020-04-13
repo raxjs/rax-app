@@ -24,6 +24,7 @@ module.exports = {
       root: process.cwd(),
       projectName: '',
       projectType: 'app',
+      appType: 'spa',
       languageType: 'js',
     };
 
