@@ -5,6 +5,7 @@ const chalk = require('chalk');
 const path = require('path');
 const { handleWebpackErr } = require('rax-compile-config');
 const getDemos = require('./config/getDemos');
+const miniappPlatformConfig = require('./config/miniapp/platformConfig');
 
 const watchLib = require('./watchLib');
 
@@ -101,31 +102,20 @@ module.exports = (api, options = {}) => {
       });
     }
 
-    if (targets.includes(MINIAPP)) {
-      let outputPath = '';
-      if (options[MINIAPP].distDir) {
-        outputPath = options[MINIAPP].distDir;
-        console.log(chalk.green('[Alibaba MiniApp] Component lib at: '));
-      } else {
-        outputPath = `demo/${MINIAPP}`;
-        console.log(chalk.green('[Alibaba Miniapp] Use ali miniapp developer tools to open the following folder:'));
+    Object.entries(miniappPlatformConfig).forEach(([platform, config]) => {
+      if (targets.includes(platform)) {
+        let outputPath = '';
+        if (options[platform].distDir) {
+          outputPath = options[platform].distDir;
+          console.log(chalk.green(`[${config.name}] Component lib at: `));
+        } else {
+          outputPath = `demo/${platform}`;
+          console.log(chalk.green(`[${config.name}] Use ali miniapp developer tools to open the following folder:`));
+        }
+        console.log('   ', chalk.underline.white(path.resolve(rootDir, outputPath)));
+        console.log();
       }
-      console.log('   ', chalk.underline.white(path.resolve(rootDir, outputPath)));
-      console.log();
-    }
-
-    if (targets.includes(WECHAT_MINIPROGRAM)) {
-      let outputPath = '';
-      if (options[WECHAT_MINIPROGRAM].distDir) {
-        outputPath = options[WECHAT_MINIPROGRAM].distDir;
-        console.log(chalk.green('[WeChat MiniProgram] Component lib at: '));
-      } else {
-        outputPath = `demo/${WECHAT_MINIPROGRAM}`;
-        console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
-      }
-      console.log('   ', chalk.underline.white(path.resolve(rootDir, outputPath)));
-      console.log();
-    }
+    });
   }
 };
 

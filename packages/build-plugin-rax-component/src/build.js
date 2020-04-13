@@ -9,6 +9,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 const getDistConfig = require('./config/getDistConfig');
 const getUMDConfig = require('./config/getUMDConfig');
 const getMiniappConfig = require('./config/miniapp/getBase');
+const miniappPlatformConfig = require('./config/miniapp/platformConfig');
 const buildLib = require('./buildLib');
 
 const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
@@ -72,18 +73,14 @@ module.exports = (api, options = {}) => {
       console.log('   ', chalk.underline.white(path.resolve(rootDir, distDir)));
       console.log();
     }
-    if (targets.includes(MINIAPP)) {
-      console.log(chalk.green('[Alibaba MiniApp] Component lib at:'));
-      const distDir = options[MINIAPP].distDir || `${outputDir}/${MINIAPP}`;
-      console.log('   ', chalk.underline.white(path.resolve(rootDir, distDir)));
-      console.log();
-    }
-    if (targets.includes(WECHAT_MINIPROGRAM)) {
-      console.log(chalk.green('[WeChat MiniProgram] Component lib at:'));
-      const distDir = options[WECHAT_MINIPROGRAM].distDir || `${outputDir}/${WECHAT_MINIPROGRAM}`;
-      console.log('   ', chalk.underline.white(path.resolve(rootDir, distDir)));
-      console.log();
-    }
+    Object.entries(miniappPlatformConfig).forEach(([platform, config]) => {
+      if (targets.includes(platform)) {
+        console.log(chalk.green(`[${config.name}] Component lib at:`));
+        const distDir = options[platform].distDir || `${outputDir}/${platform}`;
+        console.log('   ', chalk.underline.white(path.resolve(rootDir, distDir)));
+        console.log();
+      }
+    });
   });
 };
 
