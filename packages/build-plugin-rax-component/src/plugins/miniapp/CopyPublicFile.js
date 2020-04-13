@@ -5,7 +5,7 @@ const chokidar = require('chokidar');
 /**
  * Copy public directories to dist
  */
-module.exports = class JSX2MPRuntimePlugin {
+module.exports = class CopyPublicFilePlugin {
   constructor({ mode = 'build', rootDir = '', outputPath = '', constantDirectories = [] }) {
     this.mode = mode;
     this.rootDir = rootDir;
