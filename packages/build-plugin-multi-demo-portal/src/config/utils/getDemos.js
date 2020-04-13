@@ -4,10 +4,6 @@ const fs = require('fs-extra');
 const parseMd = require('../utils/parseMarkdown');
 const Prism = require('prismjs');
 
-const loadLanguages = require('prismjs/components/');
-
-loadLanguages(['jsx']);
-
 module.exports = function(rootDir) {
   const demos = [];
   // read demos
@@ -38,7 +34,7 @@ module.exports = function(rootDir) {
 
     demos.push({
       ...demo,
-      code: Prism.highlight(demo.js, Prism.languages.jsx, 'javascript')
+      code: Prism.highlight(demo.js, Prism.languages.javascript, 'javascript')
     });
   });
 
