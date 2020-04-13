@@ -38,7 +38,6 @@
       taobaoOpened:false,
     },
     pagestart(data) {
-      console.log('pagestart:'+ data.url);
       device.getInfo({
         success: (ret)=> {
           if (ret.platformVersionCode < 1020) {
