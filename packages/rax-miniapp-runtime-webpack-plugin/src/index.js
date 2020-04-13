@@ -1,4 +1,4 @@
-const { resolve, relative, join, dirname } = require('path');
+const { resolve, relative, join, dirname, extname } = require('path');
 const {
   readFileSync,
   readJsonSync,
@@ -220,6 +220,7 @@ function handlePageJSON(
 }
 
 function handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target) {
+  console.log('appJSAsset', appJSAsset);
   const appJsContent = appJsTmpl.replace(
     '/* INIT_FUNCTION */',
     `function init(window) {require('${getAssetPath(
@@ -233,7 +234,15 @@ function handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target) {
 }
 
 function handleAppCSS(compilation, target) {
-  addFile(compilation, `app.${adapter[target].css}`, adjustCss(appCssTmpl), target);
+  let appCssContent = adjustCss(appCssTmpl);
+  // If inlineStyle if set to false, css file will be extracted to app.css
+  const extractedAppCSSFilePath = `${target}/app.css`;
+  if (compilation.assets[extractedAppCSSFilePath]) {
+    compilation.assets[`${extractedAppCSSFilePath}.${adapter[target].css}`] = new RawSource(adjustCss(compilation.assets[extractedAppCSSFilePath].source()));
+    delete compilation.assets[extractedAppCSSFilePath];
+    appCssContent = `@import "./app.css";\n${appCssContent}`;
+  }
+  addFile(compilation, `app.${adapter[target].css}`, appCssContent, target);
 }
 
 function handleProjectConfig(compilation, { projectConfig = {} }, target) {
@@ -442,12 +451,11 @@ class MiniAppRuntimePlugin {
           if (ext === 'css') {
             relativeFilePath = filePath;
             compilation.assets[
-              `${target}/${relativeFilePath}.${adapter[target].css}`
+              `${relativeFilePath}.${adapter[target].css}`
             ] = new RawSource(adjustCss(compilation.assets[relativeFilePath].source()));
-            delete compilation.assets[`${target}/${relativeFilePath}`];
-          } else {
-            relativeFilePath = relative(target, filePath);
+            delete compilation.assets[`${relativeFilePath}`];
           }
+          relativeFilePath = relative(target, filePath);
 
           // Skip recorded
           if (filePathMap[relativeFilePath]) return;
@@ -551,7 +559,8 @@ class MiniAppRuntimePlugin {
 
       // Collect app.js
       if (isFirstRender || changedFiles.includes('/app.js' || '/app.ts')) {
-        const appJSAsset = relative(target, compilation.entrypoints.get('app').getFiles()[0]);
+        const commonAppJSFilePath = compilation.entrypoints.get('app').getFiles().filter(filePath => extname(filePath) === '.js')[0];
+        const appJSAsset = relative(target, commonAppJSFilePath);
         // App js
         handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target);
       }
