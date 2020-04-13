@@ -107,7 +107,6 @@ function handlePageJS(
   pageConfig,
   target
 ) {
-  console.log('pageConfig', pageConfig);
   const pullDownRefresh = pageConfig && (pageConfig.pullDownRefresh || pageConfig.pullRefresh);
   let pageJsContent = getPageTmpl(target)
     .replace(
