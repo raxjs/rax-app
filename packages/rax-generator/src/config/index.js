@@ -24,70 +24,6 @@ const promptQuestion = [
     default: 'app',
   },
   {
-    type: 'input',
-    name: 'projectAuthor',
-    message: 'What\'s author\'s name?',
-    default: 'rax',
-  },
-  {
-    type: 'list',
-    name: 'appType',
-    message: 'What\'s your application type?',
-    when(answers) {
-      return answers.projectType === 'app';
-    },
-    choices: [
-      {
-        name: 'Single-page application (SPA)',
-        value: 'spa',
-      },
-      {
-        name: 'Multi-page application (MPA)',
-        value: 'mpa',
-      },
-      {
-        name: 'Create lite application (The simplest project setup)',
-        value: 'lite',
-      },
-    ],
-    default: 'spa',
-  },
-  {
-    type: 'list',
-    name: 'languageType',
-    message: 'What type of language do you want to use?',
-    choices: [
-      {
-        name: 'JavaScript',
-        value: 'js',
-      },
-      {
-        name: 'TypeScript',
-        value: 'ts',
-      },
-    ],
-    default: 'js',
-  },
-  {
-    type: 'list',
-    name: 'componentType',
-    message: 'What\'s your component type?',
-    when(answers) {
-      return answers.projectType === 'component';
-    },
-    choices: [
-      {
-        name: 'Create base component (A simple component which can support miniapp)',
-        value: 'base',
-      },
-      {
-        name: 'Create UI component (A UI component which contains multi-theme solution)',
-        value: 'ui',
-      },
-    ],
-    default: 'base',
-  },
-  {
     type: 'checkbox',
     name: 'projectTargets',
     validate(targets) {
@@ -115,14 +51,85 @@ const promptQuestion = [
         {
           name: 'Weex',
           value: 'weex',
-        }].concat(targets).concat([{
+        },
+        {
           name: 'Kraken (Flutter)',
           value: 'kraken',
-        }]);
+        }].concat(targets);
       }
       return targets;
     },
     default: ['web'],
+  },
+  {
+    type: 'list',
+    name: 'appType',
+    message: 'What\'s your application type? (Only valid in target: Web/Weex/Kraken)',
+    when(answers) {
+      return answers.projectType === 'app' && (answers.projectTargets.includes('web') || answers.projectTargets.includes('weex') || answers.projectTargets.includes('kraken'));
+    },
+    choices: [
+      {
+        name: 'Single-page application (SPA)',
+        value: 'spa',
+      },
+      {
+        name: 'Multi-page application (MPA)',
+        value: 'mpa',
+      },
+      {
+        name: 'Create lite application (The simplest project setup)',
+        value: 'lite',
+        disabled: (answers) => {
+          // lite application doesn't support Alibaba MiniApp or WeChat-MiniProgram
+          return (
+            answers.projectTargets.includes('miniapp') || answers.projectTargets.includes('wechat-miniprogram')
+          );
+        },
+      },
+    ],
+    default: 'spa',
+  },
+  {
+    type: 'list',
+    name: 'componentType',
+    message: 'What\'s your component type?',
+    when(answers) {
+      return answers.projectType === 'component';
+    },
+    choices: [
+      {
+        name: 'Create base component (A simple component which can support miniapp)',
+        value: 'base',
+      },
+      {
+        name: 'Create UI component (A UI component which contains multi-theme solution)',
+        value: 'ui',
+      },
+    ],
+    default: 'base',
+  },
+  {
+    type: 'input',
+    name: 'projectAuthor',
+    message: 'What\'s author\'s name?',
+    default: 'rax',
+  },
+  {
+    type: 'list',
+    name: 'languageType',
+    message: 'What type of language do you want to use?',
+    choices: [
+      {
+        name: 'JavaScript',
+        value: 'js',
+      },
+      {
+        name: 'TypeScript',
+        value: 'ts',
+      },
+    ],
+    default: 'js',
   },
   {
     type: 'checkbox',
@@ -133,7 +140,7 @@ const promptQuestion = [
     message: 'Do you want to enable these features?',
     choices: [
       {
-        name: 'Server-side rendering (SSR)',
+        name: 'Server-side rendering (SSR) (Only valid in target: Web)',
         value: 'ssr',
         disabled: (answers) => {
           // Lite app is not support SSR
@@ -144,8 +151,14 @@ const promptQuestion = [
         },
       },
       {
-        name: 'Aliyun Function Compute (FaaS)',
+        name: 'Aliyun Function Compute (FaaS) (Only valid in target: Web)',
         value: 'faas',
+        disabled: (answers) => {
+          // Only web supports SSR
+          return (
+            !answers.projectTargets.includes('web')
+          );
+        },
       },
       {
         name: 'Compatibility with React',
