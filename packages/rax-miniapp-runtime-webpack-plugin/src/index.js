@@ -220,7 +220,6 @@ function handlePageJSON(
 }
 
 function handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target) {
-  console.log('appJSAsset', appJSAsset);
   const appJsContent = appJsTmpl.replace(
     '/* INIT_FUNCTION */',
     `function init(window) {require('${getAssetPath(
