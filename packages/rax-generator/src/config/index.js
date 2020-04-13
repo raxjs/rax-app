@@ -51,10 +51,11 @@ const promptQuestion = [
         {
           name: 'Weex',
           value: 'weex',
-        }].concat(targets).concat([{
+        },
+        {
           name: 'Kraken (Flutter)',
           value: 'kraken',
-        }]);
+        }].concat(targets);
       }
       return targets;
     },
