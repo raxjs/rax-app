@@ -2,18 +2,9 @@ const remarkAbstract = require('remark');
 const colors = require('chalk');
 const fs = require('fs-extra');
 const marked = require('marked');
-const hljs = require('highlight.js/lib/highlight');
-const htmlDecode = require('js-htmlencode').htmlDecode;
+const Prism = require('prismjs');
 
 const remark = remarkAbstract();
-
-hljs.registerLanguage(
-  'javascript',
-  require('highlight.js/lib/languages/javascript'),
-);
-hljs.registerLanguage('css', require('highlight.js/lib/languages/css'));
-hljs.registerLanguage('html', require('highlight.js/lib/languages/xml'));
-hljs.registerLanguage('bash', require('highlight.js/lib/languages/bash'));
 
 /**
  * Parse demo markdown
@@ -26,12 +17,12 @@ module.exports = (name, filePath) => {
     meta: {
       name,
       order: 0,
-      title: name,
+      title: name
     },
     js: null,
     css: null,
     html: null,
-    body: null,
+    body: null
   };
 
   let content = fs.readFileSync(filePath).toString();
@@ -70,7 +61,7 @@ module.exports = (name, filePath) => {
 
   // title
   const titleNode = AST.children.find(
-    child => child.type === 'heading' && child.depth === 1,
+    child => child.type === 'heading' && child.depth === 1
   );
   if (titleNode && titleNode.children && titleNode.children[0]) {
     result.meta.title = titleNode.children[0].value;
@@ -80,21 +71,21 @@ module.exports = (name, filePath) => {
   const body = AST.children;
 
   const jsNode = body.find(
-    child => child.type === 'code' && ['js', 'jsx'].indexOf(child.lang) > -1,
+    child => child.type === 'code' && ['js', 'jsx'].indexOf(child.lang) > -1
   );
   if (jsNode) {
     result.js = jsNode.value;
   }
 
   const cssNode = body.find(
-    child => child.type === 'code' && child.lang === 'css',
+    child => child.type === 'code' && child.lang === 'css'
   );
   if (cssNode) {
     result.css = cssNode.value;
   }
 
   const htmlNode = body.find(
-    child => child.type === 'code' && child.lang === 'html',
+    child => child.type === 'code' && child.lang === 'html'
   );
 
   if (htmlNode) {
@@ -108,8 +99,10 @@ module.exports = (name, filePath) => {
     ) {
       return '\n';
     } else if (child.type === 'code') {
-      return `<pre><code>${htmlDecode(
-        hljs.highlight(child.lang || 'bash', child.value).value,
+      return `<pre class="language-jsx code-box"><code>${Prism.highlight(
+        child.value,
+        Prism.languages.javascript,
+        'javascript'
       )}</code></pre>`;
     } else if (!(child.type === 'heading' && child.depth === 1)) {
       return marked(remark.stringify(child));

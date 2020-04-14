@@ -4,6 +4,7 @@ node_js:
   - "8"
   - "12"
 script:
+  - npm install eslint -g
   - npm run lint
   - npm run setup
   - npm run test
