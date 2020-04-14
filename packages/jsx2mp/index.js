@@ -6,7 +6,7 @@ const { DEFAULT_TYPE, DEFAULT_TARGETS, DEFAULT_ENTRY, DEFAULT_RUNTIME_VERSION, D
 async function baseProcess(command, options) {
   const { type, targets, entry, distDir, constantDir, runtimeVersion, disableCopyNpm = false, turnOffSourceMap = false } = options;
   const usedPlugin = [];
-  const pluginParam = { targets, distDir, constantDir, disableCopyNpm, turnOffSourceMap };
+  const pluginParam = { entryPath: entry, targets, distDir, constantDir, disableCopyNpm, turnOffSourceMap };
 
   if (runtimeVersion !== DEFAULT_RUNTIME_VERSION) {
     console.warn(`You are currently not using default version(${DEFAULT_RUNTIME_VERSION}) of jsx2mp-runtime, please make sure that all of the dependencies of jsx2mp-runtime in your project are consistent.`);
@@ -18,7 +18,6 @@ async function baseProcess(command, options) {
   } else if (type === 'component') {
     usedPlugin.push([
       'build-plugin-rax-component', {
-        entry,
         omitLib: true, // In build-plugin-rax-component, when targets only contain miniapp/wechat-miniprogram, it needs to generate lib/index.js just for the main entry in package.json, here we don't need the lib so omit that.
         ...pluginParam
       }
