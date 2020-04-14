@@ -48,7 +48,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
     if (!handleWebpackErr(err, stats)) {
       return;
     }
-    logBuildResult(targets, context);
+    logBuildResult(targets, context, options);
   });
 };
 
@@ -56,8 +56,9 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
  * Log build result
  * @param {array} targets
  * @param {object} context
+ * @param {object} options
  */
-function logBuildResult(targets = [], context = {}) {
+function logBuildResult(targets = [], context = {}, options = {}) {
   const { rootDir, userConfig = {} } = context;
   const { outputDir } = userConfig;
 

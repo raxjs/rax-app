@@ -55,12 +55,12 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
 
   const pageLoaderParams = {
     ...loaderParams,
-    entryPath: appEntry,
+    entryPath
   };
 
   const appLoaderParams = {
     ...loaderParams,
-    entryPath: dirname(appEntry)
+    entryPath: dirname(entryPath)
   };
 
   config
