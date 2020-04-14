@@ -5,20 +5,11 @@ import normalizeColor from './normalizeColor';
 import particular from './particular';
 import Validation from './Validation';
 import { pushErrorMessage } from './promptMessage';
+import colorProperties from './colorProperties';
 import chalk from 'chalk';
 
 const QUOTES_REG = /[\\'|\\"]/g;
 const VAR_REGEX = /^var\(\-\-(.*)\)$/g;
-
-const COLOR_PROPERTIES = {
-  color: true,
-  backgroundColor: true,
-  borderColor: true,
-  borderBottomColor: true,
-  borderTopColor: true,
-  borderRightColor: true,
-  borderLeftColor: true
-};
 
 export default {
   sanitizeSelector(selector, transformDescendantCombinator = false, position = { start: { line: 0, column: 0 } }, log = false) {
@@ -63,7 +54,7 @@ export default {
       result = Number(result);
     }
 
-    if (COLOR_PROPERTIES[property]) {
+    if (colorProperties[property]) {
       result = normalizeColor(value);
     }
 

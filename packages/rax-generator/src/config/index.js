@@ -16,21 +16,57 @@ const promptQuestion = [
         name: 'API (Build universal API library)',
         value: 'api',
       },
+      {
+        name: 'Plugin (Build plugin for miniapp)',
+        value: 'plugin'
+      }
     ],
     default: 'app',
   },
   {
-    type: 'input',
-    name: 'projectAuthor',
-    message: 'What\'s author\'s name?',
-    default: 'rax',
+    type: 'checkbox',
+    name: 'projectTargets',
+    validate(targets) {
+      if (targets && targets.length > 0) return true;
+      return 'Choose at least one of target.';
+    },
+    message: 'Choose targets your project want to run?',
+    choices: function(answers) {
+      let targets =
+      [
+        {
+          name: 'Alibaba MiniApp',
+          value: 'miniapp',
+        },
+        {
+          name: 'WeChat MiniProgram',
+          value: 'wechat-miniprogram',
+        }
+      ];
+      if (answers.projectType !== 'plugin') {
+        targets = [{
+          name: 'Web',
+          value: 'web',
+        },
+        {
+          name: 'Weex',
+          value: 'weex',
+        },
+        {
+          name: 'Kraken (Flutter)',
+          value: 'kraken',
+        }].concat(targets);
+      }
+      return targets;
+    },
+    default: ['web'],
   },
   {
     type: 'list',
     name: 'appType',
-    message: 'What\'s your application type?',
+    message: 'What\'s your application type? (Only valid in target: Web/Weex/Kraken)',
     when(answers) {
-      return answers.projectType === 'app';
+      return answers.projectType === 'app' && (answers.projectTargets.includes('web') || answers.projectTargets.includes('weex') || answers.projectTargets.includes('kraken'));
     },
     choices: [
       {
@@ -44,25 +80,15 @@ const promptQuestion = [
       {
         name: 'Create lite application (The simplest project setup)',
         value: 'lite',
+        disabled: (answers) => {
+          // lite application doesn't support Alibaba MiniApp or WeChat-MiniProgram
+          return (
+            answers.projectTargets.includes('miniapp') || answers.projectTargets.includes('wechat-miniprogram')
+          );
+        },
       },
     ],
     default: 'spa',
-  },
-  {
-    type: 'list',
-    name: 'languageType',
-    message: 'What type of language do you want to use?',
-    choices: [
-      {
-        name: 'JavaScript',
-        value: 'js',
-      },
-      {
-        name: 'TypeScript',
-        value: 'ts',
-      },
-    ],
-    default: 'js',
   },
   {
     type: 'list',
@@ -84,36 +110,26 @@ const promptQuestion = [
     default: 'base',
   },
   {
-    type: 'checkbox',
-    name: 'projectTargets',
-    validate(targets) {
-      if (targets && targets.length > 0) return true;
-      return 'Choose at least one of target.';
-    },
-    message: 'Choose targets your project want to run?',
+    type: 'input',
+    name: 'projectAuthor',
+    message: 'What\'s author\'s name?',
+    default: 'rax',
+  },
+  {
+    type: 'list',
+    name: 'languageType',
+    message: 'What type of language do you want to use?',
     choices: [
       {
-        name: 'Web',
-        value: 'web',
+        name: 'JavaScript',
+        value: 'js',
       },
       {
-        name: 'Weex',
-        value: 'weex',
-      },
-      {
-        name: 'Alibaba MiniApp',
-        value: 'miniapp',
-      },
-      {
-        name: 'WeChat MiniProgram',
-        value: 'wechat-miniprogram',
-      },
-      {
-        name: 'Kraken (Flutter)',
-        value: 'kraken',
+        name: 'TypeScript',
+        value: 'ts',
       },
     ],
-    default: ['web'],
+    default: 'js',
   },
   {
     type: 'checkbox',
@@ -124,7 +140,7 @@ const promptQuestion = [
     message: 'Do you want to enable these features?',
     choices: [
       {
-        name: 'Server-side rendering (SSR)',
+        name: 'Server-side rendering (SSR) (Only valid in target: Web)',
         value: 'ssr',
         disabled: (answers) => {
           // Lite app is not support SSR
@@ -135,8 +151,14 @@ const promptQuestion = [
         },
       },
       {
-        name: 'Aliyun Function Compute (FaaS)',
+        name: 'Aliyun Function Compute (FaaS) (Only valid in target: Web)',
         value: 'faas',
+        disabled: (answers) => {
+          // Only web supports SSR
+          return (
+            !answers.projectTargets.includes('web')
+          );
+        },
       },
       {
         name: 'Compatibility with React',

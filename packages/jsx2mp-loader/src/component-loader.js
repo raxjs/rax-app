@@ -107,7 +107,9 @@ module.exports = async function componentLoader(content) {
     css: transformed.style || '',
     json: config,
     template: transformed.template,
-    assets: transformed.assets
+    assets: transformed.assets,
+    importComponents: transformed.importComponents,
+    iconfontMap: transformed.iconfontMap,
   };
   const outputOption = {
     outputPath: {
@@ -118,6 +120,7 @@ module.exports = async function componentLoader(content) {
       assets: outputPath
     },
     mode,
+    platform,
     isTypescriptFile: isTypescriptFile(this.resourcePath)
   };
 
