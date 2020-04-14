@@ -14,7 +14,7 @@ module.exports = (api, options = {}) => {
   if (!raxComponentPlugin) {
     console.error(
       chalk.red(
-        '[build-plugin-rax-ui-portal] need build-plugin-rax-component to be set in build.json',
+        '[build-plugin-multi-demo-portal] need build-plugin-rax-component to be set in build.json',
       ),
     );
     process.exit(1);

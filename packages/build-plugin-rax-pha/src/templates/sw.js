@@ -4,7 +4,7 @@ module.exports = `/**
 * required with your website.
 *
 * This file is auto generated, Please do not edit it directly,
-* make changes to your build-plugin-rax-pwa config and rebuild your
+* make changes to your build-plugin-rax-pha config and rebuild your
 * project.
 *
 */
@@ -17,7 +17,7 @@ const IGNORE_PATTERN_LIST = <%= JSON.stringify(ignorePatternList) %>;
 
 // chche following assets, match thougth regExp
 const SAVED_CACHE_PATTERN_LIST = <%= JSON.stringify(savedCachePatternList) %>;
-const CACHE_ID = 'RAX_PWA_SW_CACHE_<%= cacheId %>';
+const CACHE_ID = 'RAX_PHA_SW_CACHE_<%= cacheId %>';
 
 // combo url pattern
 const COMBO_PATTERN = '<%= comboPattern %>';
