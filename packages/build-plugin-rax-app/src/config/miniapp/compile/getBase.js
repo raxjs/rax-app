@@ -26,6 +26,7 @@ const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
 module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const { platform = targetPlatformMap[target], mode = 'build', disableCopyNpm = false, turnOffSourceMap = false, constantDir = [] } = options[target] || {};
+  const { miniapp = {} } = options;
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
   const entryPath = './src/app.js';
@@ -186,7 +187,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   }]);
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
-  if (appConfig.config && appConfig.config.needLogin) {
+  if (miniapp && miniapp.needLogin) {
     config.plugin('copyLogin').use(CopyLoginPlugin, [
       {
         appConfig,
@@ -199,7 +200,6 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     {
       type: 'complie',
       appConfig,
-      entryPath,
       getAppConfig,
       outputPath,
       target
