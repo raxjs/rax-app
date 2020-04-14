@@ -1,11 +1,11 @@
-const fs = require('fs-extra');
-const path = require('path');
+const { ensureDirSync } = require('fs-extra');
+const { resolve } = require('path');
 const { MINIAPP } = require('../../constants');
 
-module.exports = (context, options = {}) => {
+module.exports = (context, { target = MINIAPP, distDir = ''}) => {
   const { rootDir, userConfig } = context;
   const { outputDir } = userConfig;
-  const output = path.resolve(rootDir, outputDir);
-  fs.ensureDirSync(output);
-  return path.resolve(output, options.target || MINIAPP);
+  const outputPath = distDir ? resolve(rootDir, distDir) : resolve(rootDir, outputDir, target);
+  ensureDirSync(outputPath);
+  return outputPath;
 };

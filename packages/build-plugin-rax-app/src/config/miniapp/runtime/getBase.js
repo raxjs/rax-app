@@ -7,7 +7,8 @@ const { MINIAPP } = require('../../../constants');
 const getMiniAppOutput = require('../getOutputPath');
 
 module.exports = (context, target, options) => {
-  const outputPath = getMiniAppOutput(context, { target });
+  const { distDir = '' } = options[target] || {};
+  const outputPath = getMiniAppOutput(context, { target, distDir });
 
   const config = getWebpackBase(context, {
     disableRegenerator: true
