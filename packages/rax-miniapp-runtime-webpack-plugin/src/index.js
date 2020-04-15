@@ -1,9 +1,8 @@
-const { resolve, relative, join, dirname } = require('path');
+const { resolve, relative, join, dirname, extname } = require('path');
 const {
   readFileSync,
   readJsonSync,
   writeJsonSync,
-  ensureDirSync,
   copySync,
   copy,
   existsSync
@@ -20,27 +19,19 @@ const adapter = require('./adapter');
 
 const PluginName = 'MiniAppRuntimePlugin';
 const appJsTmpl = readFileSync(
-  resolve(__dirname, './template/app.js'),
-  'utf8'
-);
-const pageJsTmpl = readFileSync(
-  resolve(__dirname, './template/page.js'),
+  resolve(__dirname, 'templates', 'app.js'),
   'utf8'
 );
 
-const appExtraCssTmpl = readFileSync(
-  resolve(__dirname, './template/app.extra.css'),
-  'utf8'
-);
 const appCssTmpl = readFileSync(
-  resolve(__dirname, './template/app.css'),
+  resolve(__dirname, 'templates', 'app.css'),
   'utf8'
 );
 const customComponentJsTmpl = readFileSync(
-  resolve(__dirname, './template/custom-component.js'),
+  resolve(__dirname, 'templates', 'custom-component.js'),
   'utf8'
 );
-const projectConfigJsonTmpl = require('./template/project.config.json');
+const projectConfigJsonTmpl = require('./templates/project.config.json');
 
 /**
  * Add file to compilation
@@ -60,16 +51,12 @@ function wrapChunks(compilation, chunks) {
     chunk.files.forEach(fileName => {
       if (ModuleFilenameHelpers.matchObject({ test: /\.js$/ }, fileName)) {
         // Page js
-        let customHeaderContent = 'var HTMLElement = window["HTMLElement"];';
-        const headerContent = `module.exports = function(window, document) {const App = function(options) {window.appOptions = options};${customHeaderContent};`;
+        const headerContent = 'module.exports = function(window, document) {const App = function(options) {window.appOptions = options};var HTMLElement = window["HTMLElement"];';
 
-        customHeaderContent = customHeaderContent
-          ? `${customHeaderContent};`
-          : '';
         const footerContent = '}';
 
         compilation.assets[fileName] = new ConcatSource(
-          headerContent + customHeaderContent,
+          headerContent,
           compilation.assets[fileName],
           footerContent
         );
@@ -97,6 +84,20 @@ function getAssetPath(
   )}`.replace(/\\/g, '/'); // Avoid path error in Windows
 }
 
+function getPageTmpl(target) {
+  if (target === MINIAPP) {
+    return readFileSync(
+      resolve(__dirname, 'templates', 'ali-miniapp', 'page.js'),
+      'utf8'
+    );
+  } else if (target === WECHAT_MINIPROGRAM) {
+    return readFileSync(
+      resolve(__dirname, 'templates', 'wechat-miniprogram', 'page.js'),
+      'utf8'
+    );
+  }
+}
+
 function handlePageJS(
   compilation,
   assets,
@@ -106,12 +107,8 @@ function handlePageJS(
   pageConfig,
   target
 ) {
-  const addPageScroll = pageConfig && pageConfig.windowScroll;
-  const reachBottom = pageConfig && pageConfig.reachBottom;
-  const pullDownRefresh = pageConfig && pageConfig.pullDownRefresh;
-  let pageJsContent = pageJsTmpl
-    .replace(/APINamespace/g, adapter[target].APINamespace)
-    .replace(/TARGET/g, `'${target}'`)
+  const pullDownRefresh = pageConfig && (pageConfig.pullDownRefresh || pageConfig.pullRefresh);
+  let pageJsContent = getPageTmpl(target)
     .replace(
       '/* CONFIG_PATH */',
       `${getAssetPath(
@@ -135,22 +132,20 @@ function handlePageJS(
         )
         .join(';')}}`
     );
-  const pageScrollFunction = addPageScroll
-    ? () =>
-      'onPageScroll({ scrollTop }) {if (this.window) {this.window.document.documentElement.scrollTop = scrollTop || 0;this.window.$$trigger("scroll");}},'
-    : '';
-  const reachBottomFunction = reachBottom
-    ? () =>
-      'onReachBottom() {if (this.window) {this.window.$$trigger("reachbottom");}},'
-    : '';
   const pullDownRefreshFunction = pullDownRefresh
-    ? () =>
-      'onPullDownRefresh() {if (this.window) {this.window.$$trigger("pulldownrefresh");}},'
+    ? () => {
+      if (target === MINIAPP) {
+        return `
+        onPullDownRefresh() {if (this.window) {this.window.$$trigger("onPullDownRefresh");}},
+        onPullIntercept() {if (this.window) {this.window.$$trigger("onPullIntercept");}},
+        `;
+      } else {
+        return 'onPullDownRefresh() {if (this.window) {this.window.$$trigger("onPullDownRefresh");}},';
+      }
+    }
     : '';
 
   pageJsContent = pageJsContent
-    .replace('/* PAGE_SCROLL_FUNCTION */', pageScrollFunction)
-    .replace('/* REACH_BOTTOM_FUNCTION */', reachBottomFunction)
     .replace('/* PULL_DOWN_REFRESH_FUNCTION */', pullDownRefreshFunction);
 
   addFile(compilation, `${pageRoute}.js`, pageJsContent, target);
@@ -173,18 +168,13 @@ function handlePageXML(
 
 function handlePageCSS(
   compilation,
-  pageConfig,
   assets,
   assetPathPrefix,
   assetsSubpackageMap,
   pageRoute,
   target
 ) {
-  const pageBackgroundColor =
-    pageConfig &&
-    (pageConfig.pageBackgroundColor || pageConfig.backgroundColor); // Compatible with original backgroundColor
-
-  let pageCssContent = assets.css
+  const pageCssContent = assets.css
     .map(
       css =>
         `@import "${getAssetPath(
@@ -195,8 +185,7 @@ function handlePageCSS(
         )}";`
     )
     .join('\n');
-  if (pageBackgroundColor)
-    pageCssContent = `page { background-color: ${pageBackgroundColor}; }\n${pageCssContent}`;
+
   addFile(
     compilation,
     `${pageRoute}.${adapter[target].css}`,
@@ -230,46 +219,28 @@ function handlePageJSON(
   addFile(compilation, `${pageRoute}.json`, JSON.stringify(pageConfig, null, 2), target);
 }
 
-function handleAppJS(compilation, appAssets, assetsSubpackageMap, target) {
+function handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target) {
   const appJsContent = appJsTmpl.replace(
     '/* INIT_FUNCTION */',
-    `const fakeWindow = {};const fakeDocument = {};${appAssets.js
-      .map(
-        js =>
-          `require('${getAssetPath(
-            '',
-            js,
-            assetsSubpackageMap,
-            'app.js'
-          )}')(fakeWindow, fakeDocument)`
-      )
-      .join(';')};const appConfig = fakeWindow.appOptions || {};`
+    `function init(window) {require('${getAssetPath(
+      '',
+      appJSAsset,
+      assetsSubpackageMap,
+      'app.js'
+    )}')(window)}`
   );
   addFile(compilation, 'app.js', appJsContent, target);
 }
 
-function handleAppCSS(
-  compilation,
-  appAssets,
-  assetsSubpackageMap,
-  target
-) {
-  const cssTmpl = appCssTmpl;
-  let appCssContent = cssTmpl;
-  if (appAssets.css.length) {
-    appCssContent += `\n${appAssets.css
-      .map(
-        css =>
-          `@import "${getAssetPath(
-            '',
-            css,
-            assetsSubpackageMap,
-            `app.${adapter[target].css}`
-          )}";`
-      )
-      .join('\n')}`;
+function handleAppCSS(compilation, target) {
+  let appCssContent = adjustCss(appCssTmpl);
+  // If inlineStyle if set to false, css file will be extracted to app.css
+  const extractedAppCSSFilePath = `${target}/app.css`;
+  if (compilation.assets[extractedAppCSSFilePath]) {
+    compilation.assets[`${extractedAppCSSFilePath}.${adapter[target].css}`] = new RawSource(adjustCss(compilation.assets[extractedAppCSSFilePath].source()));
+    delete compilation.assets[extractedAppCSSFilePath];
+    appCssContent = `@import "./app.css";\n${appCssContent}`;
   }
-  appCssContent = adjustCss(appCssContent) + `\n${appExtraCssTmpl}`;
   addFile(compilation, `app.${adapter[target].css}`, appCssContent, target);
 }
 
@@ -386,6 +357,7 @@ function installDependencies(
   resolve(sourcePath, customComponentConfig.root);
 
   const outputPath = resolve(stats.compilation.outputOptions.path);
+  const distNpmDir = resolve(outputPath, target, adapter[target].npmDirName);
 
   const build = () => {
     ['miniapp-element', 'miniapp-render'].forEach(name => {
@@ -396,12 +368,7 @@ function installDependencies(
         'dist',
         adapter[target].fileName
       );
-      const distNpmFileDir = resolve(
-        outputPath,
-        target,
-        adapter[target].npmDirName,
-        name
-      );
+      const distNpmFileDir = resolve(distNpmDir, name);
       copySync(sourceNpmFileDir, distNpmFileDir);
       // Handle custom-component path in alibaba miniapp
       if (
@@ -417,33 +384,18 @@ function installDependencies(
       }
     });
   };
-  console.log(
-    chalk.green(`Start building deps for ${adapter[target].name}...`)
-  );
 
-  build();
+
+  if (!existsSync(distNpmDir)) {
+    console.log(
+      chalk.green(`Start building deps for ${adapter[target].name}...`)
+    );
+    build();
+  }
+
   callback();
 }
 
-function handleWrapChunks(
-  compilation,
-  afterOptimizations,
-  pluginName
-) {
-  if (afterOptimizations) {
-    compilation.hooks.afterOptimizeChunkAssets.tap(pluginName, chunks => {
-      wrapChunks(compilation, chunks);
-    });
-  } else {
-    compilation.hooks.optimizeChunkAssets.tapAsync(
-      pluginName,
-      (chunks, callback) => {
-        wrapChunks(compilation, chunks);
-        callback();
-      }
-    );
-  }
-}
 
 class MiniAppRuntimePlugin {
   constructor(options) {
@@ -455,11 +407,11 @@ class MiniAppRuntimePlugin {
     const options = this.options;
     const target = this.target;
     const config = options.config || {};
+    let isFirstRender = true;
 
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
       const outputPath = join(compilation.outputOptions.path, target);
       const sourcePath = join(options.rootDir, 'src');
-      const appJsEntryName = 'default';
       const routes = options.routes || {};
       const subpackagesConfig = config.subpackages || {};
       const customComponentConfig = config.nativeCustomComponent || {};
@@ -472,40 +424,49 @@ class MiniAppRuntimePlugin {
       const assetsMap = {}; // page - asset
       const assetsReverseMap = {}; // asset - page
       const assetsSubpackageMap = {}; // asset - subpackage
+      const changedFiles = Object.keys(compiler.watchFileSystem.watcher.mtimes)
+        .map(filePath => {
+          return filePath.replace(sourcePath, '');
+        });
 
       // Collect asset
-      routes.forEach(({ entryName }) => {
+      routes.filter(({ entryName }) => {
+        const packageName = subpackagesMap[entryName];
+        const pageRoute = `${packageName ? `${packageName}/` : ''}${entryName}`;
+        return isFirstRender || changedFiles.includes(pageRoute);
+      }).forEach(({ entryName }) => {
         const assets = { js: [], css: [] };
         const filePathMap = {};
         const extRegex = /\.(css|js|wxss|acss)(\?|$)/;
         const entryFiles = compilation.entrypoints.get(entryName).getFiles();
         entryFiles.forEach(filePath => {
-          filePath = relative(target, filePath);
           // Skip non css or js
           const extMatch = extRegex.exec(filePath);
           if (!extMatch) return;
+          const ext = ['wxss', 'acss', 'css'].includes(extMatch[1]) ? 'css' : extMatch[1];
 
-          // Skip recorded
-          if (filePathMap[filePath]) return;
-          filePathMap[filePath] = true;
-
-          // Record
-          let ext = extMatch[1];
-          ext = ext === 'wxss' || ext === 'css' || ext === 'acss' ? 'css' : ext;
-          assets[ext].push(filePath);
-
-          // Insert into assetsReverseMap
-          assetsReverseMap[filePath] = assetsReverseMap[filePath] || [];
-          if (assetsReverseMap[filePath].indexOf(entryName) === -1)
-            assetsReverseMap[filePath].push(entryName);
-
+          let relativeFilePath;
           // Adjust css content
           if (ext === 'css') {
+            relativeFilePath = filePath;
             compilation.assets[
-              `${target}/${filePath}.${adapter[target].css}`
-            ] = new RawSource(adjustCss(compilation.assets[`${target}/${filePath}`].source()));
-            delete compilation.assets[`${target}/${filePath}`];
+              `${relativeFilePath}.${adapter[target].css}`
+            ] = new RawSource(adjustCss(compilation.assets[relativeFilePath].source()));
+            delete compilation.assets[`${relativeFilePath}`];
           }
+          relativeFilePath = relative(target, filePath);
+
+          // Skip recorded
+          if (filePathMap[relativeFilePath]) return;
+          filePathMap[relativeFilePath] = true;
+
+          // Record
+          assets[ext].push(relativeFilePath);
+
+          // Insert into assetsReverseMap
+          assetsReverseMap[relativeFilePath] = assetsReverseMap[relativeFilePath] || [];
+          if (assetsReverseMap[relativeFilePath].indexOf(entryName) === -1)
+            assetsReverseMap[relativeFilePath].push(entryName);
         });
 
         assetsMap[entryName] = assets;
@@ -518,6 +479,37 @@ class MiniAppRuntimePlugin {
         const pageRoute = `${packageName ? `${packageName}/` : ''}${entryName}`;
         const assetPathPrefix = packageName ? '../' : '';
 
+        // xml/css/json file only need writeOnce
+        if (isFirstRender) {
+          // Page xml
+          handlePageXML(
+            compilation,
+            customComponentRoot,
+            pageRoute,
+            target
+          );
+
+          // Page json
+          handlePageJSON(
+            compilation,
+            pageConfig,
+            customComponentRoot,
+            assetPathPrefix,
+            pageRoute,
+            target
+          );
+
+          // Page css
+          handlePageCSS(
+            compilation,
+            assets,
+            assetPathPrefix,
+            assetsSubpackageMap,
+            pageRoute,
+            target
+          );
+        }
+
         // Page js
         handlePageJS(
           compilation,
@@ -526,35 +518,6 @@ class MiniAppRuntimePlugin {
           assetsSubpackageMap,
           pageRoute,
           pageConfig,
-          target
-        );
-
-        // Page xml
-        handlePageXML(
-          compilation,
-          customComponentRoot,
-          pageRoute,
-          target
-        );
-
-        // Page css
-        handlePageCSS(
-          compilation,
-          pageConfig,
-          assets,
-          assetPathPrefix,
-          assetsSubpackageMap,
-          pageRoute,
-          target
-        );
-
-        // Page json
-        handlePageJSON(
-          compilation,
-          pageConfig,
-          customComponentRoot,
-          assetPathPrefix,
-          pageRoute,
           target
         );
 
@@ -576,17 +539,13 @@ class MiniAppRuntimePlugin {
               if (includes(pages, requirePages)) {
                 assetsSubpackageMap[filePath] = packageName;
                 compilation.assets[`../${packageName}/common/${filePath}`] =
-                  compilation.assets[filePath];
+                compilation.assets[filePath];
                 delete compilation.assets[filePath];
               }
             });
           }
         });
       });
-
-      // Delete entry of app.js
-      // const appJsEntryIndex = routes.indexOf(appJsEntryName);
-      // if (appJsEntryIndex >= 0) entryNames.splice(appJsEntryIndex, 1);
 
       // Handle custom component
       Object.keys(customComponents).forEach(key => {
@@ -597,26 +556,28 @@ class MiniAppRuntimePlugin {
         }
       });
 
-      const appAssets = assetsMap[appJsEntryName] || { js: [], css: [] };
+      // Collect app.js
+      if (isFirstRender || changedFiles.includes('/app.js' || '/app.ts')) {
+        const commonAppJSFilePath = compilation.entrypoints.get('app').getFiles().filter(filePath => extname(filePath) === '.js')[0];
+        const appJSAsset = relative(target, commonAppJSFilePath);
+        // App js
+        handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target);
+      }
 
-      // App js
-      handleAppJS(compilation, appAssets, assetsSubpackageMap, target);
-      // App css
-      handleAppCSS(
-        compilation,
-        appAssets,
-        assetsSubpackageMap,
-        target
-      );
+      // These files only need write when first render
+      if (isFirstRender) {
+        // App css
+        handleAppCSS(compilation, target);
 
-      // Project.config.json
-      handleProjectConfig(compilation, options, target);
+        // Project.config.json
+        handleProjectConfig(compilation, options, target);
 
-      // Sitemap.json
-      handleSiteMap(compilation, options, target);
+        // Sitemap.json
+        handleSiteMap(compilation, options, target);
 
-      // Config js
-      handleConfigJS(compilation, options || {}, target);
+        // Config js
+        handleConfigJS(compilation, options || {}, target);
+      }
 
       // Custom-component
       handleCustomComponent(
@@ -631,15 +592,19 @@ class MiniAppRuntimePlugin {
     });
 
     compiler.hooks.compilation.tap(PluginName, compilation => {
-      handleWrapChunks(
-        compilation,
-        this.afterOptimizations,
-        PluginName
+      // Optimize chunk assets
+      compilation.hooks.optimizeChunkAssets.tapAsync(
+        PluginName,
+        (chunks, callback) => {
+          wrapChunks(compilation, chunks);
+          callback();
+        }
       );
     });
 
     compiler.hooks.done.tapAsync(PluginName, (stats, callback) => {
       // Install dependency automatically
+      isFirstRender = false;
       const customComponentConfig = config.nativeCustomComponent || {};
       installDependencies(
         stats,

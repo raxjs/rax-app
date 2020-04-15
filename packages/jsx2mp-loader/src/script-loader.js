@@ -8,6 +8,7 @@ const { isNpmModule, isJSONFile, isTypescriptFile } = require('./utils/judgeModu
 const isMiniappComponent = require('./utils/isMiniappComponent');
 const parse = require('./utils/parseRequest');
 const output = require('./output');
+const { QUICKAPP } = require('./constants');
 
 const ScriptLoader = __filename;
 
@@ -76,6 +77,7 @@ module.exports = function scriptLoader(content) {
           }
         ]
       ],
+      platform,
       isTypescriptFile: isTypescriptFile(this.resourcePath)
     };
 
@@ -93,6 +95,10 @@ module.exports = function scriptLoader(content) {
   };
 
   const checkUsingComponents = (dependencies, originalComponentConfigPath, distComponentConfigPath, sourceNativeMiniappScriptFile, npmName) => {
+    // quickapp component doesn't maintain config file
+    if (platform.type === QUICKAPP) {
+      return;
+    }
     if (existsSync(originalComponentConfigPath)) {
       const componentConfig = readJSONSync(originalComponentConfigPath);
       if (componentConfig.usingComponents) {
@@ -156,11 +162,15 @@ module.exports = function scriptLoader(content) {
       if (isSingleComponent || isComponentLibrary || isRelativeMiniappComponent) {
         const miniappComponentPath = isRelativeMiniappComponent ? relative(sourcePackagePath, removeExt(this.resourcePath)) : isSingleComponent ? pkg.miniappConfig[mainName] : pkg.miniappConfig.subPackages[importedComponent][mainName];
         const sourceNativeMiniappScriptFile = join(sourcePackagePath, miniappComponentPath);
-        // Native miniapp component js file will loaded by script-loader
-        dependencies.push({
-          name: sourceNativeMiniappScriptFile,
-          options: loaderOptions
-        });
+
+        // Exclude quickapp native component for resolving issue
+        if (platform.type !== QUICKAPP) {
+          // Native miniapp component js file will loaded by script-loader
+          dependencies.push({
+            name: sourceNativeMiniappScriptFile,
+            options: loaderOptions
+          });
+        }
 
         // Handle subComponents
         if (isComponentLibrary && pkg.miniappConfig.subPackages[importedComponent].subComponents) {

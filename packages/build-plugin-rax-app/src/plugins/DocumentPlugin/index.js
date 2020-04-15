@@ -4,6 +4,8 @@ const fs = require('fs-extra');
 const webpack = require('webpack');
 const { RawSource } = require('webpack-sources');
 const { handleWebpackErr } = require('rax-compile-config');
+const { parse, print } = require('error-stack-tracey');
+
 const getBaseConfig = require('./config');
 
 const PLUGIN_NAME = 'DocumentPlugin';
@@ -73,6 +75,7 @@ module.exports = class DocumentPlugin {
     const appConfig = fs.readJsonSync(path.join(rootDir, 'src/app.json'));
     const shellPath = appConfig.shell && appConfig.shell.source;
     const absoluteShellPath = shellPath ? getAbsoluteFilePath(rootDir, path.join('src', shellPath)) : null;
+    const manifestString = options.manifests ? JSON.stringify(options.manifests) : null;
 
     // Add ssr loader for each entry
     Object.keys(pages).map((entryName) => {
@@ -86,8 +89,12 @@ module.exports = class DocumentPlugin {
         absoluteShellPath,
         absolutePagePath,
         pagePath,
-        doctype: options.doctype
+        doctype: options.doctype,
       };
+
+      if (manifestString) {
+        query.manifests = manifestString;
+      }
 
       baseConfig.entry(tempFile).add(`${loaderForDocument}?${qs.stringify(query)}!${absoluteDocumentPath}`);
     });
@@ -133,8 +140,13 @@ module.exports = class DocumentPlugin {
     });
 
     // Render into index.html
-    compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
-      Object.keys(pages).forEach(entryName => {
+    compiler.hooks.emit.tapAsync(PLUGIN_NAME, async(compilation, callback) => {
+      const entries = Object.keys(pages);
+
+      let hasPrintError = false;
+
+      for (var i = 0, l = entries.length; i < l; i++) {
+        const entryName = entries[i];
         const { tempFile, fileName } = pages[entryName];
 
         const files = compilation.entrypoints.get(entryName).getFiles();
@@ -142,14 +154,34 @@ module.exports = class DocumentPlugin {
 
         const documentContent = compilation.assets[`${tempFile}.js`].source();
 
-        const Document = loadDocument(documentContent);
-        const pageSource = Document.renderToHTML(assets);
+        let pageSource;
+
+        try {
+          const Document = loadDocument(documentContent);
+          pageSource = Document.renderToHTML(assets);
+        } catch (error) {
+          const errorStack = await parse(error, documentContent);
+          // Prevent print duplicate error info
+          if (!hasPrintError) {
+            print(error.message, errorStack);
+            hasPrintError = true;
+          }
+
+          const stackMessage = errorStack.map(frame => {
+            if (frame.fromSourceMap) {
+              return `at ${frame.functionName} (${frame.source}:${frame.lineNumber}:${frame.columnNumber})`;
+            }
+            // the origin source info already has position info
+            return frame.source;
+          });
+          pageSource = `Error: ${error.message}<br>&nbsp;&nbsp;${stackMessage.join('<br>&nbsp;&nbsp;')}`;
+        }
 
         // insert html file
         compilation.assets[fileName] = new RawSource(pageSource);
 
         delete compilation.assets[`${tempFile}.js`];
-      });
+      }
 
       callback();
     });
