@@ -4,8 +4,10 @@ module.exports = {
     disableHostCheck: true,
     clientLogLevel: 'error',
     hot: true,
-    quiet: true,
     overlay: false,
+    // Close dev server started message prior.
+    quiet: false,
+    noInfo: true, 
   },
   validation: 'object',
   configWebpack: (config, value, context) => {
