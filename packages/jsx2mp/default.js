@@ -1,7 +1,7 @@
 const { MINIAPP } = require('./constants');
 
 exports.DEFAULT_TYPE = 'project';
-exports.DEFAULT_TARGETS = [ MINIAPP ];
+exports.DEFAULT_TARGET = MINIAPP;
 
 exports.DEFAULT_ENTRY = 'src/app';
 exports.DEFAULT_DIST = 'dist';
