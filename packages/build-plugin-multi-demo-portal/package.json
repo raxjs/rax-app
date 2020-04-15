@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-multi-demo-portal",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "multi demo portal page for rax component developmente",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
@@ -19,7 +19,6 @@
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
     "handlebars": "^4.5.3",
-    "highlight.js": "^9.17.1",
     "html-webpack-plugin": "^3.2.0",
     "image-source-loader": "^0.6.5",
     "ip": "^1.1.5",
@@ -33,6 +32,7 @@
     "postcss-loader": "^3.0.0",
     "postcss-plugin-rpx2vw": "^0.0.1",
     "postcss-preset-env": "^6.6.0",
+    "prismjs": "^1.20.0",
     "rax-compile-config": "^0.2.0",
     "remark": "^11.0.2",
     "style-loader": "^1.0.0",
