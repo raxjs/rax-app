@@ -3,15 +3,14 @@ const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
-const { MINIAPP } = require('../../../constants');
 const getMiniAppOutput = require('../getOutputPath');
 
 module.exports = (context, target, options) => {
   const outputPath = getMiniAppOutput(context, { target });
 
   const config = getWebpackBase(context, {
-    disableRegenerator: true
-  }, MINIAPP);
+    disableRegenerator: false
+  }, target);
   const appConfig = getAppConfig(context.rootDir, target);
   setEntry(config, context, appConfig.routes);
   // Remove all app.json before it
