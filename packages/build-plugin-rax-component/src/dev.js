@@ -5,14 +5,14 @@ const chalk = require('chalk');
 const path = require('path');
 const { handleWebpackErr } = require('rax-compile-config');
 const getDemos = require('./config/getDemos');
+const miniappPlatformConfig = require('./config/miniapp/platformConfig');
 
 const watchLib = require('./watchLib');
-const startJSX2MpDev = require('./config/miniapp/dev');
 
 const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM, NODE } = require('./constants');
 
 module.exports = (api, options = {}) => {
-  const { registerTask, context, onHook } = api;
+  const { registerTask, context, onHook, onGetWebpackConfig } = api;
   const { rootDir, userConfig } = context;
   const { devWatchLib } = userConfig;
   const { targets = [] } = options;
@@ -21,49 +21,20 @@ module.exports = (api, options = {}) => {
   let devCompletedArr = [];
   const demos = getDemos(rootDir);
 
-  const asyncTask = [];
-  // Use build-scripts webpack
-  const buildScriptsDevTargets = [];
-  // Use jsx2mp-cli webpack
-  const jsx2mpDevTargets = [];
   // set dev config
   targets.forEach((target) => {
     if ([WEB, WEEX, NODE].indexOf(target) > -1) {
       const getDev = require(`./config/${target}/getDev`);
       const config = getDev(context, options);
-      buildScriptsDevTargets.push(target);
       registerTask(`component-demo-${target}`, config);
     } else if ([MINIAPP, WECHAT_MINIPROGRAM].indexOf(target) > -1) {
       options[target] = options[target] || {};
-      addMpPlatform(target, options[target]);
-      jsx2mpDevTargets.push(target);
+      addMiniappTargetParam(target, options[target]);
+      const getDev = require('./config/miniapp/getBase');
+      const config = getDev(context, target, options, onGetWebpackConfig);
+      registerTask(`component-demo-${target}`, config);
     }
   });
-
-  // Collect jsx2mp dev task
-  jsx2mpDevTargets.forEach(target => {
-    if (buildScriptsDevTargets.length) {
-      onHook('after.start.devServer', () => {
-        startJSX2MpDev(context, options[target], (args) => {
-          devCompletedArr.push(args);
-        });
-      });
-    } else {
-      asyncTask.push(new Promise(resolve => {
-        startJSX2MpDev(context, options[target], (args) => {
-          devCompletedArr.push(args);
-          resolve();
-        });
-      }));
-    }
-  });
-
-  if (asyncTask.length) {
-    // Run jsx2mp dev
-    Promise.all(asyncTask).then(() => {
-      devCompileLog();
-    });
-  }
 
   if (devWatchLib) {
     onHook('after.start.devServer', () => {
@@ -74,10 +45,7 @@ module.exports = (api, options = {}) => {
   onHook('after.start.compile', async(args) => {
     devUrl = args.url;
     devCompletedArr.push(args);
-    // run miniapp build while targets have web or weex, for log control
-    if (devCompletedArr.length === jsx2mpDevTargets.length + 1) {
-      devCompileLog();
-    }
+    devCompileLog();
   });
 
 
@@ -134,24 +102,27 @@ module.exports = (api, options = {}) => {
       });
     }
 
-    if (targets.includes(MINIAPP)) {
-      console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(path.resolve(rootDir, `demo/${MINIAPP}`)));
-      console.log();
-    }
-
-    if (targets.includes(WECHAT_MINIPROGRAM)) {
-      console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(path.resolve(rootDir, 'demo/wechat-miniprogram')));
-      console.log();
-    }
+    Object.entries(miniappPlatformConfig).forEach(([platform, config]) => {
+      if (targets.includes(platform)) {
+        let outputPath = '';
+        if (options[platform].distDir) {
+          outputPath = options[platform].distDir;
+          console.log(chalk.green(`[${config.name}] Component lib at: `));
+        } else {
+          outputPath = `demo/${platform}`;
+          console.log(chalk.green(`[${config.name}] Use ali miniapp developer tools to open the following folder:`));
+        }
+        console.log('   ', chalk.underline.white(path.resolve(rootDir, outputPath)));
+        console.log();
+      }
+    });
   }
 };
 
 /**
- * Add mp platform
+ * Add miniapp target param to match jsx2mp-loader config
  * */
-function addMpPlatform(target, originalConfig = {}) {
+function addMiniappTargetParam(target, originalConfig = {}) {
   switch (target) {
     case WECHAT_MINIPROGRAM:
       originalConfig.platform = 'wechat';
@@ -159,4 +130,5 @@ function addMpPlatform(target, originalConfig = {}) {
     default:
       break;
   }
+  originalConfig.mode = 'watch';
 }
