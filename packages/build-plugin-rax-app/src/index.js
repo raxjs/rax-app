@@ -32,8 +32,9 @@ function enterCheck(api, options) {
   let hasError = false;
 
   const firstPluginName = Array.isArray(plugins[0]) ? plugins[0][0] : plugins[0];
+  const invokedByJsx2mp = plugins.length === 0; // When build-plugin-rax-app is invoked by JSX2MP, plugins is always an empty array
 
-  if (firstPluginName !== 'build-plugin-rax-app') {
+  if (firstPluginName !== 'build-plugin-rax-app' && !invokedByJsx2mp) {
     errMsg = 'build-plugin-rax-app must be the first plugin, please check the order of plugins';
     hasError = true;
   }
