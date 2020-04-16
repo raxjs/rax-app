@@ -7,7 +7,7 @@ module.exports = {
     overlay: false,
     // Close dev server started message prior.
     quiet: false,
-    noInfo: true, 
+    noInfo: true,
   },
   validation: 'object',
   configWebpack: (config, value, context) => {
