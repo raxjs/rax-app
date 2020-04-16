@@ -1,9 +1,8 @@
 const transformAppConfig = require('./transformAppConfig');
-const { join, resolve } = require('path');
-const { ensureDirSync, pathExistsSync, readFileSync } = require('fs-extra');
+const { join } = require('path');
+const { ensureDirSync } = require('fs-extra');
 const safeWriteFile = require('./safeWriteFile');
 const adaptConfig = require('./adaptConfig');
-const { BYTEDANCE_MICROAPP } = require('./constants');
 
 const PluginName = 'MiniAppConfigPlugin';
 
