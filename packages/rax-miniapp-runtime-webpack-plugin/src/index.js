@@ -5,7 +5,9 @@ const {
   writeJsonSync,
   copySync,
   copy,
-  existsSync
+  existsSync,
+  moveSync,
+  removeSync
 } = require('fs-extra');
 const ConcatSource = require('webpack-sources').ConcatSource;
 const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
@@ -349,8 +351,8 @@ function handleCustomComponent(
 
 function installDependencies(
   stats,
-  target,
   customComponentConfig = {},
+  { target, isFirstRender, command },
   callback
 ) {
   const sourcePath = join(process.cwd(), 'src');
@@ -372,6 +374,13 @@ function installDependencies(
       );
       const distNpmFileDir = resolve(distNpmDir, name);
       copySync(sourceNpmFileDir, distNpmFileDir);
+      if (command === 'build') {
+        // index.min.js overwrite index.js
+        moveSync(resolve(distNpmFileDir, 'index.min.js'), resolve(distNpmFileDir, 'index.js'), { overwrite: true })
+      } else {
+        // Remove index.min.js
+        removeSync(resolve(distNpmFileDir, 'index.min.js'));
+      }
       // Handle custom-component path in alibaba miniapp
       if (
         target === MINIAPP &&
@@ -388,7 +397,7 @@ function installDependencies(
   };
 
 
-  if (!existsSync(distNpmDir)) {
+  if (isFirstRender) {
     console.log(
       chalk.green(`Start building deps for ${adapter[target].name}...`)
     );
@@ -607,14 +616,14 @@ class MiniAppRuntimePlugin {
 
     compiler.hooks.done.tapAsync(PluginName, (stats, callback) => {
       // Install dependency automatically
-      isFirstRender = false;
       const customComponentConfig = config.nativeCustomComponent || {};
       installDependencies(
         stats,
-        target,
         customComponentConfig,
+        { target, isFirstRender, command },
         callback
       );
+      isFirstRender = false;
     });
   }
 }
