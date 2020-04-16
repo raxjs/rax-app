@@ -1,15 +1,15 @@
 const { start, build } = require('@alib/build-scripts');
 const log = require('@alib/build-scripts/lib/utils/log');
 
-const { DEFAULT_TYPE, DEFAULT_TARGET, DEFAULT_ENTRY, DEFAULT_RUNTIME_VERSION, DEFAULT_CONSTANT_DIR } = require('./default');
+const { DEFAULT_TYPE, DEFAULT_TARGET, DEFAULT_ENTRY, DEFAULT_RUNTIME_VERSION, DEFAULT_CONSTANT_DIR, DEFAULT_BUILD_TYPE } = require('./default');
 
 async function baseProcess(command, options) {
-  const { type, target, entry, distDir, constantDir, runtimeVersion, disableCopyNpm = false, turnOffSourceMap = false } = options;
+  const { type, buildType, target, entry, distDir, constantDir, runtimeVersion, disableCopyNpm = false, turnOffSourceMap = false } = options;
   const usedPlugin = [];
   const pluginParam = {
     targets: [target],
     [target]: {
-      entryPath: entry, distDir, constantDir, disableCopyNpm, turnOffSourceMap
+      entryPath: entry, distDir: buildType === 'compile' ? distDir : '', constantDir, disableCopyNpm, turnOffSourceMap, buildType
     }
   };
 
@@ -48,6 +48,7 @@ async function baseProcess(command, options) {
 function ensureOptions(options) {
   return Object.assign({
     type: DEFAULT_TYPE,
+    buildType: DEFAULT_BUILD_TYPE,
     target: DEFAULT_TARGET,
     entry: DEFAULT_ENTRY,
     constantDir: DEFAULT_CONSTANT_DIR,

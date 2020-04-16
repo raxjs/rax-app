@@ -9,3 +9,4 @@ exports.DEFAULT_DIST = 'dist';
 exports.DEFAULT_CONSTANT_DIR = [];
 exports.DEFAULT_RUNTIME_VERSION = '0.4';
 
+exports.DEFAULT_BUILD_TYPE = 'compile';
