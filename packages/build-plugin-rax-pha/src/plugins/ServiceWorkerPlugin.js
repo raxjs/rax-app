@@ -5,7 +5,7 @@ const SWBSTemplate = require('../templates/swbs');
 
 const isArray = Array.isArray;
 
-const PLUGIN_NAME = 'PWA_ServiceWorkerPlugin';
+const PLUGIN_NAME = 'PHA_ServiceWorkerPlugin';
 const HTML_PATH = 'web/index.html';
 const SWBS_FILE_PATH = 'web/swbs.js';
 const SW_FILE_PATH = 'web/sw.js';

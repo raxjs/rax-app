@@ -128,9 +128,8 @@ function output(content, raw, options) {
   if (template) {
     if (isQuickApp) {
       if (importComponents && importComponents.length) {
-        template += importComponents.join('\n') + '\n';
+        template = `${importComponents.join('\n')}\n${template}\n`;
       }
-      template += `${template}\n`;
       if (code) {
         template += `<script>\n${code}\n</script>\n`;
       }
