@@ -18,7 +18,6 @@ function getDepPath(rootDir, entryPath, com) {
 };
 
 module.exports = (config, rootDir, entryPath = './src/app', routes) => {
-
   config.entryPoints.clear();
 
   routes.forEach(({ entryName, source }) => {
