@@ -111,7 +111,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     if (targets.includes(MINIAPP)) {
       console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMiniAppOutput(context)));
+      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: MINIAPP })));
       console.log();
     }
 

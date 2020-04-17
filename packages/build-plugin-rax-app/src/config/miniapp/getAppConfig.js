@@ -1,17 +1,18 @@
-const { join, resolve } = require('path');
+const { join, resolve, dirname } = require('path');
 const { readJSONSync } = require('fs-extra');
 const { getRouteName } = require('rax-compile-config');
 
 const {
   moduleResolve,
   normalizeOutputFilePath,
-  getRelativePath
+  getRelativePath,
+  removeExt
 } = require('./pathHelper');
 
-module.exports = (rootDir, target) => {
-  const entryPath = join(rootDir, 'src');
+module.exports = (rootDir, entryPath = './src/app', target) => {
+  const srcPath = join(rootDir, dirname(entryPath));
 
-  const appConfig = readJSONSync(resolve(rootDir, 'src', 'app.json'));
+  const appConfig = readJSONSync(resolve(rootDir, `${removeExt(entryPath)}.json`));
   appConfig.pages = [];
   const routes = [];
   const pagesMap = {};
@@ -22,7 +23,7 @@ module.exports = (rootDir, target) => {
 
   function addPage(route) {
     const page = normalizeOutputFilePath(
-      moduleResolve(entryPath, getRelativePath(route.source))
+      moduleResolve(srcPath, getRelativePath(route.source))
     );
     appConfig.pages.push(page);
     routes.push(route);
