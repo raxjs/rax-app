@@ -35,17 +35,14 @@ function getAliasCorrespondingValue(aliasEntries = {}, value = '', resourcePath 
     let replacedValue;
     switch (aliasType) {
       case ALIAS_TYPE.MODULE:
-        // e.g. react -> rax
         replacedValue = aliasEntries[value];
         break;
       case ALIAS_TYPE.PATH:
-        // e.g. @logo -> ../components/Logo (alias: @logo -> src/components/Logo)
         replacedValue = relative(dirname(resourcePath), aliasEntries[value]);
         break;
       case ALIAS_TYPE.COMPLEX_PATH:
-        // e.g. @components/Logo -> ../components/logo (alias: @components -> src/components)
         const realAbsolutePath = join(aliasEntries[correspondingAlias], value.replace(correspondingAlias, ''));
-        replacedValue = relative(dirname(resourcePath), realAbsolutePath);
+        replacedValue = './' + relative(dirname(resourcePath), realAbsolutePath);
         break;
     }
     return replacedValue;
