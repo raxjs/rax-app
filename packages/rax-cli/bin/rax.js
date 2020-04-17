@@ -17,7 +17,7 @@ const pkg = require('../package.json');
 let projectName = '';
 
 // notify package update
-updateNotifier({pkg}).notify();
+updateNotifier({ pkg }).notify();
 
 // Check node version
 if (!semver.satisfies(process.version, '>=8')) {
@@ -129,20 +129,31 @@ function askProjectInformaction() {
   rootDir = path.resolve(projectName);
 
   if (fs.existsSync(rootDir)) {
-    prompts.unshift({
-      type: 'input',
-      name: 'projectName',
-      message: `The directory ${projectName} already exists, either try using a new directory name.`,
-      validate: (newName) => {
-        if (newName === projectName) {
-          return 'Same as the original name, please change another name.';
-        } else if (!newName) {
-          return 'Please enter a name that cannot be empty.';
+    Array.prototype.unshift.apply(prompts, [
+      {
+        type: 'confirm',
+        name: 'overwriteExistsDirectory',
+        message: `The directory ${projectName} already exists, are you sure you want to overwrite?`,
+        default: false
+      },
+      {
+        type: 'input',
+        name: 'projectName',
+        message: 'Please input a new directory name.',
+        when(answers) {
+          return !answers.overwriteExistsDirectory;
+        },
+        validate: (newName) => {
+          if (newName === projectName) {
+            return 'Same as the original name, please change another name.';
+          } else if (!newName) {
+            return 'Please enter a name that cannot be empty.';
+          }
+          projectName = newName;
+          return true;
         }
-        projectName = newName;
-        return true;
       }
-    });
+    ]);
   }
 
   return inquirer.prompt(prompts);
@@ -193,7 +204,7 @@ function createProject(name, verbose, template, userAnswers) {
 
 function shouldUseYarn() {
   try {
-    execSync('yarn --version', {stdio: 'ignore'});
+    execSync('yarn --version', { stdio: 'ignore' });
     return true;
   } catch (e) {
     return false;
@@ -216,7 +227,7 @@ function install(directory, verbose) {
   }
 
   return new Promise(function(resolve) {
-    const proc = spawn(pkgManager, args, {stdio: 'inherit', cwd: directory});
+    const proc = spawn(pkgManager, args, { stdio: 'inherit', cwd: directory });
 
     proc.on('close', function(code) {
       if (code !== 0) {
