@@ -4,6 +4,7 @@ const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
+const webpack = require('webpack');
 
 module.exports = (context, target, options) => {
   const outputPath = getMiniAppOutput(context, { target });
@@ -31,6 +32,21 @@ module.exports = (context, target, options) => {
   config.module.rule('jsx')
     .use('fixRegeneratorRuntime')
     .loader(require.resolve('../../../loaders/FixRegeneratorRuntimeLoader'));
+
+  // Split common chunks
+  config.optimization.splitChunks({
+    cacheGroups: {
+      commons: {
+        name: 'vendor',
+        chunks: 'all',
+        minChunks: 2
+      }
+    }
+  });
+  // 2MB
+  config.performance.maxEntrypointSize(2097152);
+  // 1.5MB
+  config.performance.maxAssetSize(1572864);
 
   config.plugin('MiniAppConfigPlugin').use(MiniAppConfigPlugin, [
     {
