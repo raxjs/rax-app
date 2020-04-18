@@ -4,7 +4,6 @@ const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
-const webpack = require('webpack');
 
 module.exports = (context, target, options) => {
   const outputPath = getMiniAppOutput(context, { target });
