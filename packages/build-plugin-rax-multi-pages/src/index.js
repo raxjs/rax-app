@@ -13,7 +13,7 @@ module.exports = ({ context, onGetWebpackConfig, getValue, setValue, onHook }) =
     console.log(chalk.yellow('Package "build-plugin-rax-multi-pages" has been deprecated.'));
     console.log(chalk.yellow('Please use type: "mpa". example: '));
     console.log(chalk.yellow(`
-// app.json
+// build.json
 {
   "plugins": [
     [
