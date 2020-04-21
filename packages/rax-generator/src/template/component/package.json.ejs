@@ -24,6 +24,9 @@
     "npm": ">=3.0.0"
   },
   "peerDependencies": {
+    <%_ if (projectTargets.includes('miniapp') || projectTargets.includes('wechat-miniprogram')) { -%>
+    "jsx2mp-runtime": "^0.4.8",
+    <%_ } -%>
     "rax": "^1.1.0"
   },
 <%_ if(componentType === 'ui') { -%>
