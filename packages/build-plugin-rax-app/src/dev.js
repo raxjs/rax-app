@@ -7,7 +7,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 const checkQuickAppEnv = require('rax-quickapp-webpack-plugin');
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 
-const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, QUICKAPP } = require('./constants');
+const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('./constants');
 
 module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook }, options = {}) => {
   const { targets = [], type = 'spa' } = options;
@@ -121,6 +121,12 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
       console.log();
     }
 
+    if (targets.includes(BYTEDANCE_MICROAPP)) {
+      console.log(chalk.green('[ByteDance MicroApp] Use bytedance microapp developer tools to open the following folder:'));
+      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: BYTEDANCE_MICROAPP })));
+      console.log();
+    }
+
     if (targets.includes(QUICKAPP)) {
       // Check for quick app's environment
       const quickAppDist = getMiniAppOutput(context, { target: QUICKAPP });
@@ -136,7 +142,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 };
 
 function getConfig(target, options = {}) {
-  if ([MINIAPP, WECHAT_MINIPROGRAM, QUICKAPP].indexOf(target) > -1) {
+  if ([MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP].indexOf(target) > -1) {
     if (options[target] && options[target].buildType === 'runtime') {
       return [require('./config/miniapp/runtime/getBase')];
     } else {
