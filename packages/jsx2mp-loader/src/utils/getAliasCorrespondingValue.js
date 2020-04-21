@@ -45,7 +45,7 @@ function getAliasCorrespondingValue(aliasEntries = {}, value = '', resourcePath 
       case ALIAS_TYPE.COMPLEX_PATH:
         // e.g. @components/Logo -> ../components/logo (alias: @components -> src/components)
         const realAbsolutePath = join(aliasEntries[correspondingAlias], value.replace(correspondingAlias, ''));
-        replacedValue = './' + relative(dirname(resourcePath), realAbsolutePath);
+        replacedValue = './' + relative(dirname(resourcePath), realAbsolutePath); // Add relative path in case the path is recognized as npm package
         break;
     }
     return replacedValue;
