@@ -99,7 +99,7 @@ module.exports = (context, options = {}, target) => {
 
   if (command === 'start') {
     config.mode('development');
-    config.devtool('inline-module-source-map');
+    config.devtool('inline-cheap-module-source-map');
     // MiniApp usually use `./public/xxx.png` as file src.
     // Dev Server start with '/'. if you want to use './public/xxx.png', should copy public to the root.
     copyWebpackPluginPatterns.push({ from: 'src/public', to: 'public' });
