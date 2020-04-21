@@ -73,7 +73,8 @@ module.exports = function scriptLoader(content) {
             resourcePath: this.resourcePath,
             outputPath,
             disableCopyNpm,
-            platform
+            platform,
+            aliasEntries
           }
         ]
       ],
