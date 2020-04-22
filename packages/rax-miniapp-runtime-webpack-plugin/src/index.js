@@ -219,15 +219,20 @@ function handlePageJSON(
   addFile(compilation, `${pageRoute}.json`, JSON.stringify(pageConfig, null, 2), target);
 }
 
-function handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target) {
+function handleAppJS(compilation, commonAppJSFilePaths, assetsSubpackageMap, target) {
   const appJsContent = appJsTmpl.replace(
     '/* INIT_FUNCTION */',
-    `function init(window) {require('${getAssetPath(
-      '',
-      appJSAsset,
-      assetsSubpackageMap,
-      'app.js'
-    )}')(window)}`
+    `function init(window) {${commonAppJSFilePaths
+      .map(
+        filePath =>
+          `require('${getAssetPath(
+            '',
+            relative(target, filePath),
+            assetsSubpackageMap,
+            'app.js'
+          )}')(window)`
+      )
+      .join(';')}}`
   );
   addFile(compilation, 'app.js', appJsContent, target);
 }
@@ -558,10 +563,9 @@ class MiniAppRuntimePlugin {
 
       // Collect app.js
       if (isFirstRender || changedFiles.includes('/app.js' || '/app.ts')) {
-        const commonAppJSFilePath = compilation.entrypoints.get('app').getFiles().filter(filePath => extname(filePath) === '.js')[0];
-        const appJSAsset = relative(target, commonAppJSFilePath);
+        const commonAppJSFilePaths = compilation.entrypoints.get('app').getFiles();
         // App js
-        handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target);
+        handleAppJS(compilation, commonAppJSFilePaths, assetsSubpackageMap, target);
       }
 
       // These files only need write when first render
