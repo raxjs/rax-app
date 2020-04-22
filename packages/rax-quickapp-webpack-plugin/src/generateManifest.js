@@ -38,14 +38,6 @@ module.exports = (options) => {
     // merge config in app.json
     Object.assign(quickappJSON, appConfig.config);
 
-    // if login config found, add login route
-    if (appConfig.config && appConfig.config.needLogin) {
-      fs.copySync(path.join(__dirname, 'assets/Login'), path.join(distDirectory, '/src/Login'));
-      quickappJSON.router.pages.Login = {
-        'component': 'index',
-      };
-    }
-
     fs.writeFileSync(path.join(distDirectory, '/src/manifest.json'), JSON.stringify(quickappJSON, null, 2));
   }
 };
