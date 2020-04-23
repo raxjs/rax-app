@@ -128,20 +128,33 @@ function askProjectInformaction() {
   let rootDir = process.cwd();
   rootDir = path.resolve(projectName);
 
+  let containConflictFile = false;
+  const conflictFiles = ['src', 'build.json', 'package.json'];
+
   if (fs.existsSync(rootDir)) {
+    const files = fs.readdirSync(rootDir);
+    for (let i = 0, l = files.length; i < l; i++) {
+      if (conflictFiles.findIndex(conflictFile => conflictFile === files[i]) > -1) {
+        containConflictFile = true;
+        break;
+      }
+    }
+  }
+
+  if (containConflictFile) {
     Array.prototype.unshift.apply(prompts, [
       {
         type: 'confirm',
-        name: 'overwriteExistsDirectory',
-        message: `The directory ${projectName} already exists, are you sure you want to overwrite?`,
-        default: false
+        name: 'shouldInputNewProjectName',
+        message: `The directory ${projectName} contains files that could conflict:\n\n${conflictFiles.join('\n')}\n\nEither try using a new directory name, or still use the directory ${projectName}.`,
+        default: true
       },
       {
         type: 'input',
         name: 'projectName',
         message: 'Please input a new directory name.',
         when(answers) {
-          return !answers.overwriteExistsDirectory;
+          return answers.shouldInputNewProjectName;
         },
         validate: (newName) => {
           if (newName === projectName) {
