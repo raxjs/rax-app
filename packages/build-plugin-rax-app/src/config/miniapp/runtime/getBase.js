@@ -54,7 +54,7 @@ module.exports = (context, target, options) => {
       outputPath,
       target,
       getAppConfig,
-      nativeConfig: options[target].nativeConfig,
+      nativeConfig: options[target] && options[target].nativeConfig,
     }
   ]);
   config.plugin('MiniAppRuntimePlugin').use(MiniAppRuntimePlugin, [
