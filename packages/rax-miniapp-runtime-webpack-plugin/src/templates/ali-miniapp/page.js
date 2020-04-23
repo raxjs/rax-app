@@ -66,7 +66,7 @@ Page({
   },
   onShow() {
     if (this.window) {
-      // Update
+      // Update pageId
       this.window.__pageId = this.pageId;
       this.window.$$trigger('pageshow');
       // compatible with original name
@@ -74,12 +74,16 @@ Page({
     }
   },
   onReady() {
-    this.window.$$trigger('pageready');
+    if (this.window) {
+      this.window.$$trigger('pageready');
+    }
   },
   onHide() {
-    this.window.$$trigger('pagehide');
-    // compatible with original name
-    this.window.$$trigger('onHide');
+    if (this.window) {
+      this.window.$$trigger('pagehide');
+      // compatible with original name
+      this.window.$$trigger('onHide');
+    }
   },
   onUnload() {
     this.window.$$trigger('beforeunload');

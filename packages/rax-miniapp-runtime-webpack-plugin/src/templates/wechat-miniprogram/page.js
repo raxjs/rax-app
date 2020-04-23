@@ -59,17 +59,25 @@ Page({
     this.window.$$trigger('pageload', { event: query });
   },
   onShow() {
-    this.window.$$trigger('pageshow');
-    // compatible with original name
-    this.window.$$trigger('onShow');
+    if (this.window) {
+      // Update pageId
+      this.window.__pageId = this.pageId;
+      this.window.$$trigger('pageshow');
+      // compatible with original name
+      this.window.$$trigger('onShow');
+    }
   },
   onReady() {
-    this.window.$$trigger('pageready');
+    if (this.window) {
+      this.window.$$trigger('pageready');
+    }
   },
   onHide() {
-    this.window.$$trigger('pagehide');
-    // compatible with original name
-    this.window.$$trigger('onHide');
+    if (this.window) {
+      this.window.$$trigger('pagehide');
+      // compatible with original name
+      this.window.$$trigger('onHide');
+    }
   },
   onUnload() {
     this.window.$$trigger('beforeunload');
