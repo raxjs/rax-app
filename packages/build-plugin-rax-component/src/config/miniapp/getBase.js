@@ -18,7 +18,7 @@ const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
 module.exports = (context, target, options = {}, onGetWebpackConfig) => {
-  const { platform = targetPlatformMap[target], mode = 'build', entryPath = './src/index', distDir = '', disableCopyNpm = false, turnOffSourceMap = false, constantDir = [] } = options[target] || {};
+  const { platform = targetPlatformMap[target], mode = 'build', entryPath = './src/index', distDir = '', disableCopyNpm = mode === 'build', turnOffSourceMap = false, constantDir = [] } = options[target] || {};
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
   const outputPath = getOutputPath(context, { target, distDir });
