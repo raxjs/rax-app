@@ -16,10 +16,6 @@ module.exports = function() {
       ...window.__pageProps
     };
 
-    window.addEventListener('pageLoad', (query) => {
-      window.history.location.__updatePageOption(query);
-    });
-
     function Entry() {
       return createElement(Component, comProps);
     }
