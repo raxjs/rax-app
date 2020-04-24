@@ -23,7 +23,15 @@ module.exports = (context, options = {}, target) => {
   setBabelAlias(config);
 
   config.resolve.extensions
-    .merge(['.js', '.json', '.jsx', '.html', '.ts', '.tsx']);
+    .merge([
+      '.js',
+      '.json',
+      '.jsx',
+      '.ts',
+      '.tsx',
+      '.html',
+      '.rml',
+    ]);
 
   config.resolve.alias
     .set('@core/app', 'universal-app-runtime')
@@ -41,14 +49,16 @@ module.exports = (context, options = {}, target) => {
     .use('loader')
     .loader(require.resolve('../loaders/AppConfigLoader'));
 
-  config.module.rule('jsx')
-    .test(/\.(js|mjs|jsx)$/)
-    .use('babel')
-    .loader(require.resolve('babel-loader'))
-    .options(babelConfig)
-    .end()
-    .use('platform')
-    .loader(require.resolve('rax-compile-config/src/platformLoader'));
+  // ReactML support
+  config.module.rule('rml')
+    .test(/\.rml$/i)
+    .use('rml')
+    .loader(require.resolve('@reactml/loader'))
+    .options({
+      renderer: 'rax',
+      inlineStyle: context.userConfig.inlineStyle,
+    })
+    .end();
 
   config.module.rule('tsx')
     .test(/\.(ts|tsx)?$/)
@@ -61,6 +71,15 @@ module.exports = (context, options = {}, target) => {
     .options({
       transpileOnly: true,
     })
+    .end()
+    .use('platform')
+    .loader(require.resolve('rax-compile-config/src/platformLoader'));
+
+  config.module.rule('jsx')
+    .test(/\.(js|mjs|jsx)$/)
+    .use('babel')
+    .loader(require.resolve('babel-loader'))
+    .options(babelConfig)
     .end()
     .use('platform')
     .loader(require.resolve('rax-compile-config/src/platformLoader'));
