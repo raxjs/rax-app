@@ -191,7 +191,8 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
       appConfig,
       getAppConfig,
       outputPath,
-      target
+      target,
+      nativeConfig: options[target] && options[target].nativeConfig
     }
   ]);
 
