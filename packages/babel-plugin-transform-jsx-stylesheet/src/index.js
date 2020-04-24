@@ -1,20 +1,26 @@
 import path from 'path';
 import camelcase from 'camelcase';
 import {
-  STYLE_SHEET_NAME,
   GET_STYLE_FUNC_NAME,
   MERGE_STYLES_FUNC_NAME,
   NAME_SUFFIX,
+  styleSheetName,
   cssSuffixs,
   mergeStylesFunctionString,
   getClassNameFunctionString,
-  getStyleFunctionString
+  getStyleFunctionString,
+  setStyleSheetName
 } from './constants';
 
-export default function({ types: t, template }) {
-  const mergeStylesFunctionTemplate = template(mergeStylesFunctionString);
-  const getClassNameFunctionTemplate = template(getClassNameFunctionString);
-  const getStyleFunctionTemplete = template(getStyleFunctionString);
+export default function({ types: t, template }, opts = {}) {
+  const { injectedStyleName } = opts;
+  if (typeof injectedStyleName === 'string') {
+    setStyleSheetName(injectedStyleName);
+  }
+
+  const mergeStylesFunctionTemplate = template(mergeStylesFunctionString());
+  const getClassNameFunctionTemplate = template(getClassNameFunctionString());
+  const getStyleFunctionTemplete = template(getStyleFunctionString());
 
   const getClassNameFunctionAst = getClassNameFunctionTemplate();
   const mergeStylesFunctionAst = mergeStylesFunctionTemplate();
@@ -39,7 +45,7 @@ export default function({ types: t, template }) {
     }
 
     return str === '' ? [] : str.split(/\s+/).map((className) => {
-      return template(`${STYLE_SHEET_NAME}["${className}"]`)().expression;
+      return template(`${styleSheetName}["${className}"]`)().expression;
     });
   }
 
@@ -71,10 +77,10 @@ export default function({ types: t, template }) {
           if (cssParamIdentifiers) {
             // only one css file
             if (cssParamIdentifiers.length === 1) {
-              callExpression = t.variableDeclaration('var', [t.variableDeclarator(t.identifier(STYLE_SHEET_NAME), cssParamIdentifiers[0])]);
+              callExpression = t.variableDeclaration('var', [t.variableDeclarator(t.identifier(styleSheetName), cssParamIdentifiers[0])]);
             } else if (cssParamIdentifiers.length > 1) {
               const objectAssignExpression = t.callExpression(t.identifier(MERGE_STYLES_FUNC_NAME), cssParamIdentifiers);
-              callExpression = t.variableDeclaration('var', [t.variableDeclarator(t.identifier(STYLE_SHEET_NAME), objectAssignExpression)]);
+              callExpression = t.variableDeclaration('var', [t.variableDeclarator(t.identifier(styleSheetName), objectAssignExpression)]);
             }
 
             node.body.splice(lastImportIndex + 1, 0, callExpression);
@@ -91,10 +97,13 @@ export default function({ types: t, template }) {
         }
       },
       JSXOpeningElement({ container }, { file, opts }) {
-        const { retainClassName = false } = opts;
+        const {
+          retainClassName = false,
+          convertImport = true, // default to true
+        } = opts;
 
         const cssFileCount = file.get('cssFileCount') || 0;
-        if (cssFileCount < 1) {
+        if (cssFileCount < 1 && convertImport !== false) {
           return;
         }
 
@@ -153,13 +162,13 @@ export default function({ types: t, template }) {
             // style={[styles.a, styles.b]} ArrayExpression
             if (expressionType === 'ArrayExpression') {
               expression.elements = arrayExpression.concat(expression.elements);
-            // style={styles.a} MemberExpression
-            // style={{ height: 100 }} ObjectExpression
-            // style={{ ...custom }} ObjectExpression
-            // style={custom} Identifier
-            // style={getStyle()} CallExpression
-            // style={this.props.useCustom ? custom : null} ConditionalExpression
-            // style={custom || other} LogicalExpression
+              // style={styles.a} MemberExpression
+              // style={{ height: 100 }} ObjectExpression
+              // style={{ ...custom }} ObjectExpression
+              // style={custom} Identifier
+              // style={getStyle()} CallExpression
+              // style={this.props.useCustom ? custom : null} ConditionalExpression
+              // style={custom || other} LogicalExpression
             } else {
               const mergeArrayExpression = arrayExpression.concat(expression);
               mergeArrayExpression.unshift(t.objectExpression([]));
@@ -183,7 +192,11 @@ export default function({ types: t, template }) {
           }
         }
       },
-      ImportDeclaration({ node }, { file }) {
+      ImportDeclaration({ node }, { file, opts }) {
+        // Convert style import is disabled.
+        const { convertImport = true } = opts;
+        if (!convertImport) return;
+
         const sourceValue = node.source.value;
         const extname = path.extname(sourceValue);
         const cssIndex = cssSuffixs.indexOf(extname);
