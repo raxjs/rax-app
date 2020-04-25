@@ -1,4 +1,4 @@
-const { resolve, relative, join, dirname, extname } = require('path');
+const { resolve, relative, join, dirname } = require('path');
 const {
   readFileSync,
   readJsonSync,
@@ -36,7 +36,7 @@ const customComponentJsTmpl = readFileSync(
 
 function isCSSFile(filePath) {
   const extMatch = extRegex.exec(filePath);
-  return ['wxss', 'acss', 'css'].includes(extMatch[1]);
+  return extMatch && ['wxss', 'acss', 'css'].includes(extMatch[1]);
 }
 
 /**
