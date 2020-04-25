@@ -347,6 +347,7 @@ function installDependencies(
   stats,
   target,
   customComponentConfig = {},
+  isFirstRender,
   callback
 ) {
   const sourcePath = join(process.cwd(), 'src');
@@ -384,7 +385,7 @@ function installDependencies(
   };
 
 
-  if (!existsSync(distNpmDir)) {
+  if (isFirstRender) {
     console.log(
       chalk.green(`Start building deps for ${adapter[target].name}...`)
     );
@@ -601,14 +602,15 @@ class MiniAppRuntimePlugin {
 
     compiler.hooks.done.tapAsync(PluginName, (stats, callback) => {
       // Install dependency automatically
-      isFirstRender = false;
       const customComponentConfig = config.nativeCustomComponent || {};
       installDependencies(
         stats,
         target,
         customComponentConfig,
+        isFirstRender,
         callback
       );
+      isFirstRender = false;
     });
   }
 }
