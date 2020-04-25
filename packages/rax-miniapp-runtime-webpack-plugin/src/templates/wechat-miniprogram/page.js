@@ -33,6 +33,8 @@ Page({
     this.document = document;
     this.query = query;
 
+    // Update location page options
+    this.window.history.location.__updatePageOption(query);
     // Set __pageId to global window object
     this.window.__pageId = this.pageId;
     // Remove rax inited flag
