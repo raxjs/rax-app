@@ -46,6 +46,9 @@ module.exports = (api, options = {}) => {
     devUrl = args.url;
     devCompletedArr.push(args);
     devCompileLog();
+    if (options[target].afterCompiled) {
+      options[target].afterCompiled(args);
+    }
   });
 
 

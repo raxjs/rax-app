@@ -37,6 +37,9 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     devUrl = args.url;
     devCompletedArr.push(args);
     devCompileLog();
+    if (options[target].afterCompiled) {
+      options[target].afterCompiled(args);
+    }
   });
 
   function devCompileLog() {

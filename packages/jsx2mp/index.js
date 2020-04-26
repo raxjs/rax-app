@@ -4,12 +4,14 @@ const log = require('@alib/build-scripts/lib/utils/log');
 const { DEFAULT_TYPE, DEFAULT_TARGET, DEFAULT_ENTRY, DEFAULT_RUNTIME_VERSION, DEFAULT_CONSTANT_DIR, DEFAULT_BUILD_TYPE } = require('./default');
 
 async function baseProcess(command, options) {
-  const { type, buildType, target, entry, distDir, constantDir, runtimeVersion, disableCopyNpm = false, turnOffSourceMap = false } = options;
+  const { type, buildType, target, entry, distDir, constantDir, runtimeVersion, disableCopyNpm = false, turnOffSourceMap = false, afterCompiled } = options;
   const usedPlugin = [];
   const pluginParam = {
     targets: [target],
     [target]: {
-      entryPath: entry, distDir: buildType === 'compile' ? distDir : '', constantDir, disableCopyNpm, turnOffSourceMap, buildType
+      entryPath: entry,
+      distDir: buildType === 'compile' ? distDir : '',
+      constantDir, disableCopyNpm, turnOffSourceMap, buildType, afterCompiled
     }
   };
 
