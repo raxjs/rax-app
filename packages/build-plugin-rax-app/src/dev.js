@@ -38,10 +38,8 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     devCompletedArr.push(args);
     devCompileLog();
     targets.forEach(target => {
-      if (options[target] && options[target].afterCompiled) {
-        options[target].afterCompiled(args);
-      }
-    });
+      // Passed from jsx2mp
+      options[target] && options[target].afterCompiled && options[target].afterCompiled(args);
   });
 
   function devCompileLog() {
