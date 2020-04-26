@@ -22,7 +22,7 @@ await build(options);
 | type           | N        | string   | project | Build type,  'project' or 'component'                        |
 | target         | N        | stirng   | miniapp | Build target, 'miniapp' or 'wechat-miniprogram'              |
 | entry          | N        | string   | src/app | Entry file path                                              |
-| distDir        | N        | string   | /       | ile output directory, if not set, files will be output by build-plugin-rax-app/component's strategy |
+| distDir        | N        | string   | /       | File output directory, if not set, files will be output by build-plugin-rax-app/component's strategy |
 | constantDir    | N        | array    | /       | Static file directories                                      |
 | disableCopyNpm | N        | boolean  | false   | Disable copy npm modules                                     |
 | configWebpack  | N        | function | /       | Used for add webpack config, get the argument `config` which is the webpack-chain config instance |
