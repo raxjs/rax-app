@@ -408,6 +408,18 @@ class MiniAppRuntimePlugin {
     const config = options.config || {};
     let isFirstRender = true;
 
+    // Execute when compilation created
+    compiler.hooks.compilation.tap(PluginName, compilation => {
+      // Optimize chunk assets
+      compilation.hooks.optimizeChunkAssets.tapAsync(
+        PluginName,
+        (chunks, callback) => {
+          wrapChunks(compilation, chunks);
+          callback();
+        }
+      );
+    });
+
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
       const outputPath = join(compilation.outputOptions.path, target);
       const sourcePath = join(options.rootDir, 'src');
@@ -587,17 +599,6 @@ class MiniAppRuntimePlugin {
       );
 
       callback();
-    });
-
-    compiler.hooks.compilation.tap(PluginName, compilation => {
-      // Optimize chunk assets
-      compilation.hooks.optimizeChunkAssets.tapAsync(
-        PluginName,
-        (chunks, callback) => {
-          wrapChunks(compilation, chunks);
-          callback();
-        }
-      );
     });
 
     compiler.hooks.done.tapAsync(PluginName, (stats, callback) => {

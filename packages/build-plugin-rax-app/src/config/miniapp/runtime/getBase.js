@@ -5,6 +5,8 @@ const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 
+const MiniAppRenderAnalysisLoader = require.resolve('rax-miniapp-render-analysis-webpack-loader');
+
 module.exports = (context, target, options) => {
   const outputPath = getMiniAppOutput(context, { target });
 
@@ -13,6 +15,11 @@ module.exports = (context, target, options) => {
   }, target);
   const appConfig = getAppConfig(context.rootDir, target);
   setEntry(config, context, appConfig.routes);
+
+  // Using Components
+  const usingComponents = [];
+  // Native lifecycle map
+  const nativeLifeCycleMap = {};
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
@@ -30,7 +37,16 @@ module.exports = (context, target, options) => {
 
   config.module.rule('jsx')
     .use('fixRegeneratorRuntime')
-    .loader(require.resolve('../../../loaders/FixRegeneratorRuntimeLoader'));
+    .loader(require.resolve('../../../loaders/FixRegeneratorRuntimeLoader'))
+    .end()
+    .use('renderAnalysis').
+    loader(MiniAppRenderAnalysisLoader)
+    .options({
+      mode: 'runtime',
+      usingComponents,
+      routes: appConfig.routes,
+      nativeLifeCycleMap
+    });
 
   // Split common chunks
   config.optimization.splitChunks({
@@ -62,7 +78,9 @@ module.exports = (context, target, options) => {
       ...appConfig,
       target,
       config: options[target],
-      rootDir: context.rootDir
+      rootDir: context.rootDir,
+      usingComponents,
+      nativeLifeCycleMap
     }
   ]);
 
