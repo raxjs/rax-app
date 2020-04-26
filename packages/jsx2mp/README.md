@@ -27,3 +27,9 @@ await build(options);
 | disableCopyNpm   | N        | boolean | false   | Disable copy npm modules                                     |
 | turnOffSourceMap | N        | boolean | false   | Turn off source map. Only valid in dev mode                  |
 
+Options below are only valid in `start`: 
+
+| param         | required | type    | default | explanation                                                  |
+| ------------- | -------- | ------- | ------- | ------------------------------------------------------------ |
+| afterCompiled | N        | funtion | /       | Executed after compiling finished every time, get the following argument: <br />{<br/> url: string // serverUrl，<br/> stats: WebpackAssets<br/>} |
+
