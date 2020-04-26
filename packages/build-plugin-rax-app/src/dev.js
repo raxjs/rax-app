@@ -40,6 +40,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
     targets.forEach(target => {
       // Passed from jsx2mp
       options[target] && options[target].afterCompiled && options[target].afterCompiled(args);
+    });
   });
 
   function devCompileLog() {
