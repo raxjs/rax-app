@@ -7,18 +7,7 @@ const config = require('/* CONFIG_PATH */');
 const { createPage, destroyPage, $$adapter } = render;
 const events = {};
 
-[
-  'onReachBottom',
-  'onTabItemTap',
-  'onResize',
-  'onPageScroll'
-].forEach(eventName => {
-  events[eventName] = function(event) {
-    if (this.window) {
-      this.window.$$trigger(eventName, { event });
-    }
-  };
-});
+/* DEFINE_NATIVE_LIFE_CYCLE */
 
 /* INIT_FUNCTION */
 Page({
@@ -69,11 +58,6 @@ Page({
       this.window.$$trigger('onShow');
     }
   },
-  onReady() {
-    if (this.window) {
-      this.window.$$trigger('pageready');
-    }
-  },
   onHide() {
     if (this.window) {
       this.window.$$trigger('pagehide');
@@ -95,16 +79,5 @@ Page({
     this.app = null;
     this.query = null;
   },
-  onShareAppMessage(options) {
-    if (this.window) {
-      const shareInfo = {};
-      // share app message only can be listened once
-      this.window.$$trigger('onShareAppMessage', {
-        event: { options, shareInfo }
-      });
-      return shareInfo.content;
-    }
-  },
-  ...events,
-  /* PULL_DOWN_REFRESH_FUNCTION */
+  ...events, /* DEFINE_EVENT_IN_CONFIG */
 });

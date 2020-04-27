@@ -11,7 +11,7 @@ function analyzeNativeLifeCycle(ast, code, options) {
       })) {
         if (t.isArrayExpression(path.node.arguments[1])) {
           path.node.arguments[1].elements.forEach(element => {
-            options.nativeLifeCycleMap[options.resourcePath][element.value] = true;
+            options.nativeLifeCycleMap[options.filePath][element.value] = true;
           });
         } else {
           throw new CodeError(code, path.node, path.node.loc,
@@ -24,7 +24,7 @@ function analyzeNativeLifeCycle(ast, code, options) {
 
 module.exports = {
   parse(parsed, code, options) {
-    if (options.nativeLifeCycleMap[options.resourcePath]) {
+    if (options.nativeLifeCycleMap[options.filePath]) {
       analyzeNativeLifeCycle(parsed.ast, code, options);
     }
   },

@@ -1,17 +1,21 @@
 const loaderUtils = require('loader-utils');
-const { join, extname } = require('path');
+const { join } = require('path');
 const runtimePlugins = require('./plugins/runtime-mode');
 const { generate } = require('./codegen');
 const { parse } = require('./parser');
+const getFilePath = require('./utils/getFilePath');
 
 module.exports = function(content) {
   const { mode, routes, usingComponents, nativeLifeCycleMap } = loaderUtils.getOptions(this);
   let plugins = [];
-  if (!/\/node_modules\//.test(this.resourcePath)) {
+  const filePath = getFilePath(this.resourcePath);
+  if (nativeLifeCycleMap[filePath]) {
+    return content;
+  }
+  if (!/\/node_modules\//.test(filePath)) {
     routes.forEach(({ source }) => {
-      const ext = extname(this.resourcePath);
-      if (join(this.rootContext, 'src', source) === this.resourcePath.replace(ext, '')) {
-        nativeLifeCycleMap[this.resourcePath] = {};
+      if (join(this.rootContext, 'src', source) === filePath) {
+        nativeLifeCycleMap[filePath] = {};
       }
     });
   }
@@ -22,7 +26,7 @@ module.exports = function(content) {
     plugins,
     routes,
     nativeLifeCycleMap,
-    resourcePath: this.resourcePath
+    filePath
   });
   const generated = generate(parsed, {
     plugins,
