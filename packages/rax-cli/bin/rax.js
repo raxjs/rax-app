@@ -125,8 +125,6 @@ async function init(name, verbose, template) {
 
 function askProjectInformaction() {
   const rootDir = path.resolve(projectName);
-  const prompts = generator.config.promptQuestion;
-
   const conflictFiles = ['src', 'build.json', 'package.json'];
 
   /**
@@ -138,34 +136,36 @@ function askProjectInformaction() {
     return conflictFiles.some(filename => fs.existsSync(path.join(targetDir, filename)));
   };
 
+  let prompts = generator.config.promptQuestion;
   if (containConflictFile(rootDir)) {
-    prompts.unshift({
-      type: 'input',
-      name: 'projectName',
-      message: 'Please input a new directory name.',
-      when(answers) {
-        return answers.shouldInputNewProjectName;
+    prompts = [
+      {
+        type: 'confirm',
+        name: 'shouldInputNewProjectName',
+        message: `The directory ${projectName} contains files that could conflict:\n\n${conflictFiles.join('\n')}\n\nEither try using a new directory name, or still use the directory ${projectName}.`,
+        default: true
       },
-      validate: (newName) => {
-        const newRootDir = path.resolve(newName);
-        if (newName === projectName) {
-          return 'Same as the original name, please change another name.';
-        } else if (containConflictFile(newRootDir)) {
-          return 'This directory also contains files that could conflict, please change another name.';
-        } else if (!newName) {
-          return 'Please enter a name that cannot be empty.';
+      {
+        type: 'input',
+        name: 'projectName',
+        message: 'Please input a new directory name.',
+        when(answers) {
+          return answers.shouldInputNewProjectName;
+        },
+        validate: (newName) => {
+          const newRootDir = path.resolve(newName);
+          if (newName === projectName) {
+            return 'Same as the original name, please change another name.';
+          } else if (containConflictFile(newRootDir)) {
+            return 'This directory also contains files that could conflict, please change another name.';
+          } else if (!newName) {
+            return 'Please enter a name that cannot be empty.';
+          }
+          projectName = newName;
+          return true;
         }
-        projectName = newName;
-        return true;
       }
-    });
-
-    prompts.unshift({
-      type: 'confirm',
-      name: 'shouldInputNewProjectName',
-      message: `The directory ${projectName} contains files that could conflict:\n\n${conflictFiles.join('\n')}\n\nEither try using a new directory name, or still use the directory ${projectName}.`,
-      default: true
-    });
+    ].concat(prompts);
   }
 
   return inquirer.prompt(prompts);
