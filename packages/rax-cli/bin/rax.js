@@ -124,24 +124,20 @@ async function init(name, verbose, template) {
 }
 
 function askProjectInformaction() {
+  const rootDir = path.resolve(projectName);
   const prompts = generator.config.promptQuestion;
-  let rootDir = process.cwd();
-  rootDir = path.resolve(projectName);
 
-  let containConflictFile = false;
   const conflictFiles = ['src', 'build.json', 'package.json'];
+  /**
+   * Check whether contains conflict files
+   * @param  {String} targetDir
+   * @return {Boolean}
+   */
+  const containConflictFile = (targetDir) => {
+    return conflictFiles.some(filename => fs.existsSync(path.join(targetDir, filename)));
+  };
 
-  if (fs.existsSync(rootDir)) {
-    const files = fs.readdirSync(rootDir);
-    for (let i = 0, l = files.length; i < l; i++) {
-      if (conflictFiles.findIndex(conflictFile => conflictFile === files[i]) > -1) {
-        containConflictFile = true;
-        break;
-      }
-    }
-  }
-
-  if (containConflictFile) {
+  if (containConflictFile(rootDir)) {
     Array.prototype.unshift.apply(prompts, [
       {
         type: 'confirm',
@@ -157,8 +153,11 @@ function askProjectInformaction() {
           return answers.shouldInputNewProjectName;
         },
         validate: (newName) => {
+          const newRootDir = path.resolve(newName);
           if (newName === projectName) {
             return 'Same as the original name, please change another name.';
+          } else if (containConflictFile(newRootDir)) {
+            return 'This directory also contains files that could conflict, please change another name.';
           } else if (!newName) {
             return 'Please enter a name that cannot be empty.';
           }
