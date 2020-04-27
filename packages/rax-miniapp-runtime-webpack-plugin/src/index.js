@@ -11,6 +11,7 @@ const ConcatSource = require('webpack-sources').ConcatSource;
 const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 const { RawSource } = require('webpack-sources');
 const chalk = require('chalk');
+const ejs = require('ejs');
 const adjustCss = require('./tool/adjust-css');
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 const adapter = require('./adapter');
@@ -21,12 +22,12 @@ const extRegex = /\.(css|js|wxss|acss)(\?|$)/;
 const vendorCSSFileName = 'vendor.css';
 
 const appJsTmpl = readFileSync(
-  resolve(__dirname, 'templates', 'app.js'),
+  resolve(__dirname, 'templates', 'app.js.ejs'),
   'utf8'
 );
 
 const appCssTmpl = readFileSync(
-  resolve(__dirname, 'templates', 'app.css'),
+  resolve(__dirname, 'templates', 'app.css.ejs'),
   'utf8'
 );
 const customComponentJsTmpl = readFileSync(
@@ -97,8 +98,6 @@ function getPageTmpl(target) {
     );
   }
 }
-
-function generateLifeCycle(cycleName, target) {}
 
 function handlePageJS(
   compilation,
@@ -254,9 +253,8 @@ function handlePageJSON(
 }
 
 function handleAppJS(compilation, commonAppJSFilePaths, target) {
-  const appJsContent = appJsTmpl.replace(
-    '/* INIT_FUNCTION */',
-    `function init(window) {${commonAppJSFilePaths
+  const appJsContent = ejs.render(appJsTmpl, {
+    init: `function init(window) {${commonAppJSFilePaths
       .map(
         filePath =>
           `require('${getAssetPath(
@@ -264,20 +262,25 @@ function handleAppJS(compilation, commonAppJSFilePaths, target) {
             'app.js'
           )}')(window)`
       )
-      .join(';')}}`
-  );
+      .join(';')}}`,
+    isMiniApp: target === MINIAPP
+  });
   addFile(compilation, 'app.js', appJsContent, target);
 }
 
 function handleAppCSS(compilation, target) {
-  let appCssContent = adjustCss(appCssTmpl);
+  let needVendorCSS = false;
   // If inlineStyle is set to false, css file will be extracted to app.css
   const extractedAppCSSFilePath = `${target}/${vendorCSSFileName}`;
   if (compilation.assets[extractedAppCSSFilePath]) {
     compilation.assets[`${extractedAppCSSFilePath}.${adapter[target].css}`] = new RawSource(adjustCss(compilation.assets[extractedAppCSSFilePath].source()));
     delete compilation.assets[extractedAppCSSFilePath];
-    appCssContent = `@import "./${vendorCSSFileName}";\n${appCssContent}`;
+    needVendorCSS = true;
   }
+  const appCssContent = adjustCss(ejs.render(appCssTmpl, {
+    importVendorCSSFile: `@import "./${vendorCSSFileName}"`,
+    needVendorCSS
+  }));
   addFile(compilation, `app.${adapter[target].css}`, appCssContent, target);
 }
 
