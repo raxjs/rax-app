@@ -275,8 +275,8 @@ function handleSiteMap(compilation, { sitemapConfig }, { target, command }) {
 function handleConfigJS(compilation, options = {}, { target, command }) {
   const exportedConfig = {
     optimization: options.optimization || {},
-    nativeCustomComponent: options.config ? options.config.nativeCustomComponent ? options.config.nativeCustomComponent : undefined : undefined,
-    debug: options.config ? options.config.debug : false
+    nativeCustomComponent: options.config && options.config.nativeCustomComponent,
+    debug: options.config && options.config.debug
   };
   addFile(compilation, 'config.js', `module.exports = ${JSON.stringify(
     exportedConfig
