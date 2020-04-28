@@ -45,7 +45,7 @@ function isCSSFile(filePath) {
 /**
  * Add file to compilation
  */
-function addFile(compilation, filename, content, { command = 'build', target }) {
+function addFile(compilation, { filename, content, command = 'build', target }) {
   compilation.assets[`${target}/${filename}`] = {
     source: () => command === 'build' ? minify(content, extname(filename)) : content,
     size: () => Buffer.from(content).length
@@ -157,7 +157,7 @@ function handlePageJS(
   pageJsContent = pageJsContent
     .replace('/* PULL_DOWN_REFRESH_FUNCTION */', pullDownRefreshFunction);
 
-  addFile(compilation, `${pageRoute}.js`, pageJsContent, { target, command });
+  addFile(compilation, { filename: `${pageRoute}.js`, content: pageJsContent, target, command });
 }
 
 function handlePageXML(
@@ -172,7 +172,7 @@ function handlePageXML(
     customComponentRoot ? 'generic:custom-component="custom-component"' : ''
   }> </element>`;
 
-  addFile(compilation, `${pageRoute}.${adapter[target].xml}`, pageXmlContent, { target, command });
+  addFile(compilation, { filename: `${pageRoute}.${adapter[target].xml}`, content: pageXmlContent, target, command });
 }
 
 function handlePageCSS(
@@ -195,12 +195,7 @@ function handlePageCSS(
     )
     .join('\n');
 
-  addFile(
-    compilation,
-    `${pageRoute}.${adapter[target].css}`,
-    adjustCss(pageCssContent),
-    { target, command }
-  );
+  addFile(compilation, { filename: `${pageRoute}.${adapter[target].css}`, content: adjustCss(pageCssContent), target, command});
 }
 
 function handlePageJSON(
@@ -225,7 +220,7 @@ function handlePageJSON(
       `${pageRoute}.js`
     );
   }
-  addFile(compilation, `${pageRoute}.json`, JSON.stringify(pageConfig, null, 2), { target, command });
+  addFile(compilation, { filename: `${pageRoute}.json`, content: JSON.stringify(pageConfig, null, 2), target, command });
 }
 
 function handleAppJS(compilation, commonAppJSFilePaths, assetsSubpackageMap, { target, command }) {
@@ -243,7 +238,7 @@ function handleAppJS(compilation, commonAppJSFilePaths, assetsSubpackageMap, { t
       )
       .join(';')}}`
   );
-  addFile(compilation, 'app.js', appJsContent, { target, command });
+  addFile(compilation, { filename: 'app.js', content: appJsContent, target, command });
 }
 
 function handleAppCSS(compilation, { target, command }) {
@@ -255,7 +250,7 @@ function handleAppCSS(compilation, { target, command }) {
     delete compilation.assets[extractedAppCSSFilePath];
     appCssContent = `@import "./${vendorCSSFileName}";\n${appCssContent}`;
   }
-  addFile(compilation, `app.${adapter[target].css}`, appCssContent, { target, command });
+  addFile(compilation, { filename: `app.${adapter[target].css}`, content: appCssContent, target, command });
 }
 
 function handleSiteMap(compilation, { sitemapConfig }, { target, command }) {
@@ -267,7 +262,7 @@ function handleSiteMap(compilation, { sitemapConfig }, { target, command }) {
         null,
         '\t'
       );
-      addFile(compilation, 'sitemap.json', sitemapConfigJsonContent, { command, target });
+      addFile(compilation, { filename: 'sitemap.json', content: sitemapConfigJsonContent, command, target });
     }
   }
 }
@@ -278,9 +273,11 @@ function handleConfigJS(compilation, options = {}, { target, command }) {
     nativeCustomComponent: options.config && options.config.nativeCustomComponent,
     debug: options.config && options.config.debug
   };
-  addFile(compilation, 'config.js', `module.exports = ${JSON.stringify(
+  addFile(compilation, {
+    filename: 'config.js',
+    content: `module.exports = ${JSON.stringify(
     exportedConfig
-  )}`, { command, target });
+  )}`, command, target });
 }
 
 function handleCustomComponent(
@@ -306,13 +303,12 @@ function handleCustomComponent(
     );
 
     // custom-component/index.js
-    addFile(compilation, 'custom-component/index.js', customComponentJsTmpl, { target, command });
+    addFile(compilation, { filename: 'custom-component/index.js', content: customComponentJsTmpl, target, command });
 
     // custom-component/index.xml
-    addFile(
-      compilation,
-      `custom-component/index.${adapter[target].xml}`,
-      names
+    addFile(compilation, {
+      filename: `custom-component/index.${adapter[target].xml}`,
+      content: names
         .map((key, index) => {
           const { props = [], events = [] } = customComponents[key];
           return `<${key} ${adapter[target].directive.prefix}:${
@@ -324,17 +320,19 @@ function handleCustomComponent(
             .join(' ')}><slot/></${key}>`;
         })
         .join('\n'),
-      { target, command }
-    );
+      target,
+      command
+    });
 
     // custom-component/index.css
-    addFile(compilation, `custom-component/index.${adapter[target].css}`, '', { target, command });
+    addFile(compilation, { filename: `custom-component/index.${adapter[target].css}`, content: '', target, command });
 
     // custom-component/index.json
     addFile(
       compilation,
-      'custom-component/index.json',
-      JSON.stringify(
+      {
+      filename: 'custom-component/index.json',
+      content: JSON.stringify(
         {
           component: true,
           usingComponents: realUsingComponents
@@ -342,7 +340,7 @@ function handleCustomComponent(
         null,
         '\t'
       ),
-      { target, command }
+      target, command }
     );
   }
 }
