@@ -276,8 +276,8 @@ function handleConfigJS(compilation, options = {}, { target, command }) {
   addFile(compilation, {
     filename: 'config.js',
     content: `module.exports = ${JSON.stringify(
-    exportedConfig
-  )}`, command, target });
+      exportedConfig
+    )}`, command, target });
 }
 
 function handleCustomComponent(
@@ -331,16 +331,16 @@ function handleCustomComponent(
     addFile(
       compilation,
       {
-      filename: 'custom-component/index.json',
-      content: JSON.stringify(
-        {
-          component: true,
-          usingComponents: realUsingComponents
-        },
-        null,
-        '\t'
-      ),
-      target, command }
+        filename: 'custom-component/index.json',
+        content: JSON.stringify(
+          {
+            component: true,
+            usingComponents: realUsingComponents
+          },
+          null,
+          '\t'
+        ),
+        target, command }
     );
   }
 }
