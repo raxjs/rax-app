@@ -7,15 +7,16 @@ const {
   copy,
   existsSync
 } = require('fs-extra');
-const ConcatSource = require('webpack-sources').ConcatSource;
-const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 const { RawSource } = require('webpack-sources');
 const chalk = require('chalk');
 const ejs = require('ejs');
-const adjustCss = require('./tool/adjust-css');
+const adjustCSS = require('./utils/adjustCSS');
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 const adapter = require('./adapter');
 const lifeCycleMap = require('./nativeLifeCycle');
+const addFileToCompilation = require('./utils/addFileToCompilation');
+const isCSSFile = require('./utils/isCSSFile');
+const wrapChunks = require('./utils/wrapChunks');
 
 const PluginName = 'MiniAppRuntimePlugin';
 const extRegex = /\.(css|js|wxss|acss)(\?|$)/;
@@ -34,43 +35,6 @@ const customComponentJsTmpl = readFileSync(
   resolve(__dirname, 'templates', 'custom-component.js'),
   'utf8'
 );
-
-function isCSSFile(filePath) {
-  const extMatch = extRegex.exec(filePath);
-  return extMatch && ['wxss', 'acss', 'css'].includes(extMatch[1]);
-}
-
-/**
- * Add file to compilation
- */
-function addFile(compilation, filename, content, target) {
-  compilation.assets[`${target}/${filename}`] = {
-    source: () => content,
-    size: () => Buffer.from(content).length
-  };
-}
-
-/**
- * Add content to chunks head and tail
- */
-function wrapChunks(compilation, chunks) {
-  chunks.forEach(chunk => {
-    chunk.files.forEach(fileName => {
-      if (ModuleFilenameHelpers.matchObject({ test: /\.js$/ }, fileName)) {
-        // Page js
-        const headerContent = 'module.exports = function(window, document) {const App = function(options) {window.appOptions = options};var HTMLElement = window["HTMLElement"];';
-
-        const footerContent = '}';
-
-        compilation.assets[fileName] = new ConcatSource(
-          headerContent,
-          compilation.assets[fileName],
-          footerContent
-        );
-      }
-    });
-  });
-}
 
 /**
  * Get dependency file path
@@ -188,7 +152,7 @@ function handlePageJS(
       }, '')
     );
 
-  addFile(compilation, `${pageRoute}.js`, pageJsContent, target);
+  addFileToCompilation(compilation, `${pageRoute}.js`, pageJsContent, target);
 }
 
 function handlePageXML(
@@ -203,7 +167,7 @@ function handlePageXML(
     customComponentRoot ? 'generic:custom-component="custom-component"' : ''
   }> </element>`;
 
-  addFile(compilation, `${pageRoute}.${adapter[target].xml}`, pageXmlContent, target);
+  addFileToCompilation(compilation, `${pageRoute}.${adapter[target].xml}`, pageXmlContent, target);
 }
 
 function handlePageCSS(
@@ -222,10 +186,10 @@ function handlePageCSS(
     )
     .join('\n');
 
-  addFile(
+  addFileToCompilation(
     compilation,
     `${pageRoute}.${adapter[target].css}`,
-    adjustCss(pageCssContent),
+    adjustCSS(pageCssContent),
     target
   );
 }
@@ -249,7 +213,7 @@ function handlePageJSON(
       `${pageRoute}.js`
     );
   }
-  addFile(compilation, `${pageRoute}.json`, JSON.stringify(pageConfig, null, 2), target);
+  addFileToCompilation(compilation, `${pageRoute}.json`, JSON.stringify(pageConfig, null, 2), target);
 }
 
 function handleAppJS(compilation, commonAppJSFilePaths, target) {
@@ -265,7 +229,7 @@ function handleAppJS(compilation, commonAppJSFilePaths, target) {
       .join(';')}}`,
     isMiniApp: target === MINIAPP
   });
-  addFile(compilation, 'app.js', appJsContent, target);
+  addFileToCompilation(compilation, 'app.js', appJsContent, target);
 }
 
 function handleAppCSS(compilation, target) {
@@ -273,15 +237,15 @@ function handleAppCSS(compilation, target) {
   // If inlineStyle is set to false, css file will be extracted to app.css
   const extractedAppCSSFilePath = `${target}/${vendorCSSFileName}`;
   if (compilation.assets[extractedAppCSSFilePath]) {
-    compilation.assets[`${extractedAppCSSFilePath}.${adapter[target].css}`] = new RawSource(adjustCss(compilation.assets[extractedAppCSSFilePath].source()));
+    compilation.assets[`${extractedAppCSSFilePath}.${adapter[target].css}`] = new RawSource(adjustCSS(compilation.assets[extractedAppCSSFilePath].source()));
     delete compilation.assets[extractedAppCSSFilePath];
     needVendorCSS = true;
   }
-  const appCssContent = adjustCss(ejs.render(appCssTmpl, {
+  const appCssContent = adjustCSS(ejs.render(appCssTmpl, {
     importVendorCSSFile: `@import "./${vendorCSSFileName}"`,
     needVendorCSS
   }));
-  addFile(compilation, `app.${adapter[target].css}`, appCssContent, target);
+  addFileToCompilation(compilation, `app.${adapter[target].css}`, appCssContent, target);
 }
 
 function handleSiteMap(compilation, { sitemapConfig }, target) {
@@ -293,7 +257,7 @@ function handleSiteMap(compilation, { sitemapConfig }, target) {
         null,
         '\t'
       );
-      addFile(compilation, 'sitemap.json', sitemapConfigJsonContent);
+      addFileToCompilation(compilation, 'sitemap.json', sitemapConfigJsonContent);
     }
   }
 }
@@ -303,7 +267,7 @@ function handleConfigJS(compilation, options = {}, target) {
     optimization: options.optimization || {},
     nativeCustomComponent: options.config ? options.config.nativeCustomComponent ? options.config.nativeCustomComponent : undefined : undefined
   };
-  addFile(compilation, 'config.js', `module.exports = ${JSON.stringify(
+  addFileToCompilation(compilation, 'config.js', `module.exports = ${JSON.stringify(
     exportedConfig
   )}`, target);
 }
@@ -331,10 +295,10 @@ function handleCustomComponent(
     );
 
     // custom-component/index.js
-    addFile(compilation, 'custom-component/index.js', customComponentJsTmpl, target);
+    addFileToCompilation(compilation, 'custom-component/index.js', customComponentJsTmpl, target);
 
     // custom-component/index.xml
-    addFile(
+    addFileToCompilation(
       compilation,
       `custom-component/index.${adapter[target].xml}`,
       names
@@ -353,10 +317,10 @@ function handleCustomComponent(
     );
 
     // custom-component/index.css
-    addFile(compilation, `custom-component/index.${adapter[target].css}`, '', target);
+    addFileToCompilation(compilation, `custom-component/index.${adapter[target].css}`, '', target);
 
     // custom-component/index.json
-    addFile(
+    addFileToCompilation(
       compilation,
       'custom-component/index.json',
       JSON.stringify(
@@ -487,7 +451,7 @@ class MiniAppRuntimePlugin {
             if (relativeFilePath !== `${target}/${vendorCSSFileName}`) {
               compilation.assets[
                 `${relativeFilePath}.${adapter[target].css}`
-              ] = new RawSource(adjustCss(compilation.assets[relativeFilePath].source()));
+              ] = new RawSource(adjustCSS(compilation.assets[relativeFilePath].source()));
               delete compilation.assets[`${relativeFilePath}`];
             }
           }

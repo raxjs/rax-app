@@ -1,5 +1,5 @@
 const postcss = require('postcss');
-const tagList = require('./tag-list');
+const tagList = require('../webTagList');
 
 const replaceRegexp = new RegExp(
   `(\\W|\\b)(${['html', ...tagList].join('|')})(\\W|\\b)`,
