@@ -8,12 +8,13 @@ const getMiniAppOutput = require('../getOutputPath');
 const MiniAppRenderAnalysisLoader = require.resolve('rax-miniapp-render-analysis-webpack-loader');
 
 module.exports = (context, target, options) => {
+  const { rootDir, command } = context;
   const outputPath = getMiniAppOutput(context, { target });
 
   const config = getWebpackBase(context, {
     disableRegenerator: false
   }, target);
-  const appConfig = getAppConfig(context.rootDir, target);
+  const appConfig = getAppConfig(rootDir, target);
   setEntry(config, context, appConfig.routes);
 
   // Using Components
@@ -78,9 +79,10 @@ module.exports = (context, target, options) => {
       ...appConfig,
       target,
       config: options[target],
-      rootDir: context.rootDir,
       usingComponents,
-      nativeLifeCycleMap
+      nativeLifeCycleMap,
+      rootDir,
+      command
     }
   ]);
 
