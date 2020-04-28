@@ -245,7 +245,7 @@ function handleAppJS(compilation, commonAppJSFilePaths, assetsSubpackageMap, tar
 
 function handleAppCSS(compilation, target) {
   let appCssContent = adjustCss(appCssTmpl);
-  // If inlineStyle is set to false, css file will be extracted to app.css
+  // If inlineStyle is set to false, css file will be extracted to vendor.css
   const extractedAppCSSFilePath = `${target}/${vendorCSSFileName}`;
   if (compilation.assets[extractedAppCSSFilePath]) {
     compilation.assets[`${extractedAppCSSFilePath}.${adapter[target].css}`] = new RawSource(adjustCss(compilation.assets[extractedAppCSSFilePath].source()));
