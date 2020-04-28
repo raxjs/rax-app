@@ -1,4 +1,4 @@
-const { resolve, relative, join, dirname, extname } = require('path');
+const { resolve, relative, join, dirname } = require('path');
 const {
   readFileSync,
   readJsonSync,
@@ -12,12 +12,14 @@ const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 const { RawSource } = require('webpack-sources');
 const chalk = require('chalk');
 const adjustCss = require('./tool/adjust-css');
-const deepMerge = require('./tool/deep-merge');
 const includes = require('./tool/includes');
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 const adapter = require('./adapter');
 
 const PluginName = 'MiniAppRuntimePlugin';
+const extRegex = /\.(css|js|wxss|acss)(\?|$)/;
+const vendorCSSFileName = 'vendor.css';
+
 const appJsTmpl = readFileSync(
   resolve(__dirname, 'templates', 'app.js'),
   'utf8'
@@ -31,7 +33,11 @@ const customComponentJsTmpl = readFileSync(
   resolve(__dirname, 'templates', 'custom-component.js'),
   'utf8'
 );
-const projectConfigJsonTmpl = require('./templates/project.config.json');
+
+function isCSSFile(filePath) {
+  const extMatch = extRegex.exec(filePath);
+  return extMatch && ['wxss', 'acss', 'css'].includes(extMatch[1]);
+}
 
 /**
  * Add file to compilation
@@ -219,42 +225,34 @@ function handlePageJSON(
   addFile(compilation, `${pageRoute}.json`, JSON.stringify(pageConfig, null, 2), target);
 }
 
-function handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target) {
+function handleAppJS(compilation, commonAppJSFilePaths, assetsSubpackageMap, target) {
   const appJsContent = appJsTmpl.replace(
     '/* INIT_FUNCTION */',
-    `function init(window) {require('${getAssetPath(
-      '',
-      appJSAsset,
-      assetsSubpackageMap,
-      'app.js'
-    )}')(window)}`
+    `function init(window) {${commonAppJSFilePaths
+      .map(
+        filePath =>
+          `require('${getAssetPath(
+            '',
+            relative(target, filePath),
+            assetsSubpackageMap,
+            'app.js'
+          )}')(window)`
+      )
+      .join(';')}}`
   );
   addFile(compilation, 'app.js', appJsContent, target);
 }
 
 function handleAppCSS(compilation, target) {
   let appCssContent = adjustCss(appCssTmpl);
-  // If inlineStyle if set to false, css file will be extracted to app.css
-  const extractedAppCSSFilePath = `${target}/app.css`;
+  // If inlineStyle is set to false, css file will be extracted to vendor.css
+  const extractedAppCSSFilePath = `${target}/${vendorCSSFileName}`;
   if (compilation.assets[extractedAppCSSFilePath]) {
     compilation.assets[`${extractedAppCSSFilePath}.${adapter[target].css}`] = new RawSource(adjustCss(compilation.assets[extractedAppCSSFilePath].source()));
     delete compilation.assets[extractedAppCSSFilePath];
-    appCssContent = `@import "./app.css";\n${appCssContent}`;
+    appCssContent = `@import "./${vendorCSSFileName}";\n${appCssContent}`;
   }
   addFile(compilation, `app.${adapter[target].css}`, appCssContent, target);
-}
-
-function handleProjectConfig(compilation, { projectConfig = {} }, target) {
-  if (target === WECHAT_MINIPROGRAM) {
-    const userProjectConfigJson = projectConfig;
-    const projectConfigJson = JSON.parse(JSON.stringify(projectConfigJsonTmpl));
-    const projectConfigJsonContent = JSON.stringify(
-      deepMerge(projectConfigJson, userProjectConfigJson),
-      null,
-      '\t'
-    );
-    addFile(compilation, 'project.config.json', projectConfigJsonContent, target);
-  }
 }
 
 function handleSiteMap(compilation, { sitemapConfig }, target) {
@@ -349,6 +347,7 @@ function installDependencies(
   stats,
   target,
   customComponentConfig = {},
+  isFirstRender,
   callback
 ) {
   const sourcePath = join(process.cwd(), 'src');
@@ -386,7 +385,7 @@ function installDependencies(
   };
 
 
-  if (!existsSync(distNpmDir)) {
+  if (isFirstRender) {
     console.log(
       chalk.green(`Start building deps for ${adapter[target].name}...`)
     );
@@ -437,22 +436,24 @@ class MiniAppRuntimePlugin {
       }).forEach(({ entryName }) => {
         const assets = { js: [], css: [] };
         const filePathMap = {};
-        const extRegex = /\.(css|js|wxss|acss)(\?|$)/;
         const entryFiles = compilation.entrypoints.get(entryName).getFiles();
         entryFiles.forEach(filePath => {
           // Skip non css or js
           const extMatch = extRegex.exec(filePath);
           if (!extMatch) return;
-          const ext = ['wxss', 'acss', 'css'].includes(extMatch[1]) ? 'css' : extMatch[1];
+
+          const ext = isCSSFile(filePath) ? 'css' : extMatch[1];
 
           let relativeFilePath;
           // Adjust css content
           if (ext === 'css') {
             relativeFilePath = filePath;
-            compilation.assets[
-              `${relativeFilePath}.${adapter[target].css}`
-            ] = new RawSource(adjustCss(compilation.assets[relativeFilePath].source()));
-            delete compilation.assets[`${relativeFilePath}`];
+            if (relativeFilePath !== `${target}/${vendorCSSFileName}`) {
+              compilation.assets[
+                `${relativeFilePath}.${adapter[target].css}`
+              ] = new RawSource(adjustCss(compilation.assets[relativeFilePath].source()));
+              delete compilation.assets[`${relativeFilePath}`];
+            }
           }
           relativeFilePath = relative(target, filePath);
 
@@ -558,20 +559,17 @@ class MiniAppRuntimePlugin {
 
       // Collect app.js
       if (isFirstRender || changedFiles.includes('/app.js' || '/app.ts')) {
-        const commonAppJSFilePath = compilation.entrypoints.get('app').getFiles().filter(filePath => extname(filePath) === '.js')[0];
-        const appJSAsset = relative(target, commonAppJSFilePath);
+        const commonAppJSFilePaths = compilation.entrypoints.get('app').getFiles().filter(filePath => !isCSSFile(filePath));
         // App js
-        handleAppJS(compilation, appJSAsset, assetsSubpackageMap, target);
+        handleAppJS(compilation, commonAppJSFilePaths, assetsSubpackageMap, target);
+      }
+
+      if (isFirstRender || changedFiles.some(filePath => isCSSFile(filePath))) {
+        handleAppCSS(compilation, target);
       }
 
       // These files only need write when first render
       if (isFirstRender) {
-        // App css
-        handleAppCSS(compilation, target);
-
-        // Project.config.json
-        handleProjectConfig(compilation, options, target);
-
         // Sitemap.json
         handleSiteMap(compilation, options, target);
 
@@ -604,14 +602,15 @@ class MiniAppRuntimePlugin {
 
     compiler.hooks.done.tapAsync(PluginName, (stats, callback) => {
       // Install dependency automatically
-      isFirstRender = false;
       const customComponentConfig = config.nativeCustomComponent || {};
       installDependencies(
         stats,
         target,
         customComponentConfig,
+        isFirstRender,
         callback
       );
+      isFirstRender = false;
     });
   }
 }

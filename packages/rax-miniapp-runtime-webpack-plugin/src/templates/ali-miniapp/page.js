@@ -4,6 +4,7 @@
 const render = require('miniapp-render');
 const config = require('/* CONFIG_PATH */');
 
+const { createPage, destroyPage, $$adapter } = render;
 const events = {};
 
 [
@@ -29,34 +30,33 @@ const events = {};
 Page({
   data: {
     pageId: '',
-    bodyClass: 'h5-body miniprogram-root'
+    bodyClass: 'miniprogram-root'
   },
   onLoad(query) {
-    const pageInstance = render.createPage(this.route, config);
-    this.pageId = pageInstance.pageId;
-    this.window = pageInstance.window;
-    this.document = pageInstance.document;
+    this.pageId = `p-${$$adapter.tool.getId()}-/${this.route}`;
+    const { window, document } = createPage(this.pageId, config);
+    this.window = window;
+    this.document = document;
     this.query = query;
+
+    // Update location page options
+    this.window.history.location.__updatePageOption(query);
+    // Set __pageId to global window object
+    this.window.__pageId = this.pageId;
+    // Remove rax inited flag
+    this.window.__RAX_INITIALISED__ = false;
 
     // Handle update of body
     this.document.documentElement.addEventListener('$$childNodesUpdate', () => {
       const domNode = this.document.body;
       const data = {
-        bodyClass: `${domNode.className || ''} h5-body miniprogram-root`
+        bodyClass: `${domNode.className || ''} miniprogram-root`
       };
 
       if (data.bodyClass !== this.data.bodyClass) {
         this.setData(data);
       }
     });
-
-    // Hadle selectorQuery
-    this.window.$$createSelectorQuery = () => my.createSelectorQuery().in(this);
-
-    // Handle intersectionObserver
-    this.window.$$createIntersectionObserver = options => {
-      my.createIntersectionObserver(options);
-    };
 
     init(this.window, this.document);
     this.setData({
@@ -67,17 +67,25 @@ Page({
     this.window.$$trigger('pageload', { event: query });
   },
   onShow() {
-    this.window.$$trigger('pageshow');
-    // compatible with original name
-    this.window.$$trigger('onShow');
+    if (this.window) {
+      // Update pageId
+      this.window.__pageId = this.pageId;
+      this.window.$$trigger('pageshow');
+      // compatible with original name
+      this.window.$$trigger('onShow');
+    }
   },
   onReady() {
-    this.window.$$trigger('pageready');
+    if (this.window) {
+      this.window.$$trigger('pageready');
+    }
   },
   onHide() {
-    this.window.$$trigger('pagehide');
-    // compatible with original name
-    this.window.$$trigger('onHide');
+    if (this.window) {
+      this.window.$$trigger('pagehide');
+      // compatible with original name
+      this.window.$$trigger('onHide');
+    }
   },
   onUnload() {
     this.window.$$trigger('beforeunload');
@@ -85,7 +93,7 @@ Page({
     if (this.app && this.app.$destroy) this.app.$destroy();
     this.document.body.$$recycle(); // Recycle DOM node
 
-    render.destroyPage(this.pageId);
+    destroyPage(this.pageId);
 
     this.pageId = null;
     this.window = null;
