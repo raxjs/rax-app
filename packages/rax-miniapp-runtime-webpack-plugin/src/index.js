@@ -1,4 +1,4 @@
-const { resolve, relative, join, dirname } = require('path');
+const { resolve, relative, join, dirname, extname } = require('path');
 const {
   readFileSync,
   readJsonSync,
@@ -374,7 +374,7 @@ function installDependencies(
       copySync(sourceNpmFileDir, distNpmFileDir);
       if (command === 'build') {
         // index.min.js overwrite index.js
-        moveSync(resolve(distNpmFileDir, 'index.min.js'), resolve(distNpmFileDir, 'index.js'), { overwrite: true })
+        moveSync(resolve(distNpmFileDir, 'index.min.js'), resolve(distNpmFileDir, 'index.js'), { overwrite: true });
       } else {
         // Remove index.min.js
         removeSync(resolve(distNpmFileDir, 'index.min.js'));
