@@ -17,7 +17,7 @@ const pkg = require('../package.json');
 let projectName = '';
 
 // notify package update
-updateNotifier({pkg}).notify();
+updateNotifier({ pkg }).notify();
 
 // Check node version
 if (!semver.satisfies(process.version, '>=8')) {
@@ -124,25 +124,48 @@ async function init(name, verbose, template) {
 }
 
 function askProjectInformaction() {
-  const prompts = generator.config.promptQuestion;
-  let rootDir = process.cwd();
-  rootDir = path.resolve(projectName);
+  const rootDir = path.resolve(projectName);
+  const conflictFiles = ['src', 'build.json', 'package.json'];
 
-  if (fs.existsSync(rootDir)) {
-    prompts.unshift({
-      type: 'input',
-      name: 'projectName',
-      message: `The directory ${projectName} already exists, either try using a new directory name.`,
-      validate: (newName) => {
-        if (newName === projectName) {
-          return 'Same as the original name, please change another name.';
-        } else if (!newName) {
-          return 'Please enter a name that cannot be empty.';
+  /**
+   * Check whether contains conflict files
+   * @param  {String} targetDir
+   * @return {Boolean}
+   */
+  const containConflictFile = (targetDir) => {
+    return conflictFiles.some(filename => fs.existsSync(path.join(targetDir, filename)));
+  };
+
+  let prompts = generator.config.promptQuestion;
+  if (containConflictFile(rootDir)) {
+    prompts = [
+      {
+        type: 'confirm',
+        name: 'shouldInputNewProjectName',
+        message: `The directory ${projectName} contains files that could conflict:\n\n${conflictFiles.join('\n')}\n\nEither try using a new directory name, or still use the directory ${projectName}.`,
+        default: true
+      },
+      {
+        type: 'input',
+        name: 'projectName',
+        message: 'Please input a new directory name.',
+        when(answers) {
+          return answers.shouldInputNewProjectName;
+        },
+        validate: (newName) => {
+          const newRootDir = path.resolve(newName);
+          if (newName === projectName) {
+            return 'Same as the original name, please change another name.';
+          } else if (containConflictFile(newRootDir)) {
+            return 'This directory also contains files that could conflict, please change another name.';
+          } else if (!newName) {
+            return 'Please enter a name that cannot be empty.';
+          }
+          projectName = newName;
+          return true;
         }
-        projectName = newName;
-        return true;
       }
-    });
+    ].concat(prompts);
   }
 
   return inquirer.prompt(prompts);
@@ -193,7 +216,7 @@ function createProject(name, verbose, template, userAnswers) {
 
 function shouldUseYarn() {
   try {
-    execSync('yarn --version', {stdio: 'ignore'});
+    execSync('yarn --version', { stdio: 'ignore' });
     return true;
   } catch (e) {
     return false;
@@ -216,7 +239,7 @@ function install(directory, verbose) {
   }
 
   return new Promise(function(resolve) {
-    const proc = spawn(pkgManager, args, {stdio: 'inherit', cwd: directory});
+    const proc = spawn(pkgManager, args, { stdio: 'inherit', cwd: directory });
 
     proc.on('close', function(code) {
       if (code !== 0) {
