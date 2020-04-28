@@ -1,4 +1,4 @@
-const { join, relative, dirname } = require('path');
+const { join, relative, dirname, extname } = require('path');
 const enhancedResolve = require('enhanced-resolve');
 const chalk = require('chalk');
 
@@ -36,7 +36,12 @@ module.exports = function visitor({ types: t }, options) {
 
     const rootNodeModulePath = join(rootContext, 'node_modules');
     const filePath = relative(dirname(distSourcePath), join(outputPath, 'npm', relative(rootNodeModulePath, target)));
-    return t.stringLiteral(normalizeNpmFileName(addRelativePathPrefix(normalizeOutputFilePath(filePath))));
+    let modifiedValue = normalizeNpmFileName(addRelativePathPrefix(normalizeOutputFilePath(filePath)));
+    // json file will be transformed to js file
+    if (extname(value) === '.json') {
+      modifiedValue = removeExt(modifiedValue);
+    }
+    return t.stringLiteral(modifiedValue);
   };
 
   // In WeChat MiniProgram, `require` can't get index file if index is omitted

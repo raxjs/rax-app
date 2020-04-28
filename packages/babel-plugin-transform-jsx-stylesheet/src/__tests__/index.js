@@ -75,9 +75,9 @@ import appStyleSheet from './app.css';
 
 var _styleSheet = appStyleSheet;
 
-${getClassNameFunctionString}
+${getClassNameFunctionString()}
 
-${getStyleFunctionString}
+${getStyleFunctionString()}
 
 class App extends Component {
   render() {
@@ -275,7 +275,7 @@ import './app1.css';
 import './app2.css';
 
 render(<div className="header1 header2" />);
-`)).toBe(`${mergeStylesFunctionString}
+`)).toBe(`${mergeStylesFunctionString()}
 
 import { createElement, render } from 'rax';
 import app1StyleSheet from './app1.css';

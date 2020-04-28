@@ -3,6 +3,7 @@ const { join } = require('path');
 const { ensureDirSync } = require('fs-extra');
 const safeWriteFile = require('./safeWriteFile');
 const adaptConfig = require('./adaptConfig');
+const transformNativeConfig = require('./transformNativeConfig');
 
 const PluginName = 'MiniAppConfigPlugin';
 
@@ -13,7 +14,7 @@ module.exports = class MiniAppConfigPlugin {
   apply(compiler) {
     // Currently there is no watch app.json capacity, so use first render flag handle repeatly write config
     let isFirstRender = true;
-    let { outputPath, appConfig, target, type, getAppConfig } = this.options;
+    let { outputPath, appConfig, target, type, getAppConfig, nativeConfig } = this.options;
     compiler.hooks.beforeCompile.tapAsync(PluginName, (compilation, callback) => {
       if (isFirstRender) {
         transformConfig(compilation, callback);
@@ -37,6 +38,9 @@ module.exports = class MiniAppConfigPlugin {
           safeWriteFile(join(outputPath, page + '.json'), adaptConfig(route.window, 'window', target), true);
         }
       });
+
+      // Transform native config
+      transformNativeConfig(outputPath, nativeConfig, target);
       callback();
     }
   }
