@@ -16,7 +16,7 @@ const chalk = require('chalk');
 const adjustCss = require('./tool/adjust-css');
 const deepMerge = require('./tool/deep-merge');
 const includes = require('./tool/includes');
-const { minify } = require('./tool/minify-ccode');
+const { minify } = require('./tool/minify-code');
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 const adapter = require('./adapter');
 
