@@ -6,12 +6,13 @@ const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 
 module.exports = (context, target, options) => {
+  const { rootDir, command } = context;
   const outputPath = getMiniAppOutput(context, { target });
 
   const config = getWebpackBase(context, {
     disableRegenerator: false
   }, target);
-  const appConfig = getAppConfig(context.rootDir, target);
+  const appConfig = getAppConfig(rootDir, target);
   setEntry(config, context, appConfig.routes);
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
@@ -32,13 +33,29 @@ module.exports = (context, target, options) => {
     .use('fixRegeneratorRuntime')
     .loader(require.resolve('../../../loaders/FixRegeneratorRuntimeLoader'));
 
+  // Split common chunks
+  config.optimization.splitChunks({
+    cacheGroups: {
+      commons: {
+        name: 'vendor',
+        chunks: 'all',
+        minChunks: 2
+      }
+    }
+  });
+  // 2MB
+  config.performance.maxEntrypointSize(2097152);
+  // 1.5MB
+  config.performance.maxAssetSize(1572864);
+
   config.plugin('MiniAppConfigPlugin').use(MiniAppConfigPlugin, [
     {
       type: 'runtime',
       appConfig,
       outputPath,
       target,
-      getAppConfig
+      getAppConfig,
+      nativeConfig: options[target] && options[target].nativeConfig,
     }
   ]);
   config.plugin('MiniAppRuntimePlugin').use(MiniAppRuntimePlugin, [
@@ -46,7 +63,8 @@ module.exports = (context, target, options) => {
       ...appConfig,
       target,
       config: options[target],
-      rootDir: context.rootDir
+      rootDir,
+      command
     }
   ]);
 
