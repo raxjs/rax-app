@@ -61,7 +61,7 @@ function isFromTargetDirs(targetDirs) {
  * @param {string} newExtension eg. .ts .js
  * @returns {string}
  */
-function replaceExtension(filePath, newExtension) {
+function replaceExt(filePath, newExtension) {
   const lastDot = filePath.lastIndexOf('.');
   return filePath.slice(0, lastDot) + newExtension;
 }
@@ -106,10 +106,18 @@ function getHighestPriorityPackage(packageName, rootDir) {
   return require.resolve(packagePath);
 }
 
+function ensureExt(path, extension = '.js') {
+  if (!extname(path)) {
+    return path + extension;
+  }
+  return path;
+}
+
 module.exports = {
   removeExt,
   isFromTargetDirs,
-  replaceExtension,
+  replaceExt,
+  ensureExt,
   doubleBackslash,
   normalizeOutputFilePath,
   addRelativePathPrefix,
