@@ -1,5 +1,8 @@
+const { resolve } = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { WEB, WEEX, NODE, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../../../constants');
+
+const configPath = resolve(__dirname, '../..');
 
 const webStandardList = [
   WEB,
@@ -42,6 +45,7 @@ module.exports = {
       config.plugin('minicss')
         .use(MiniCssExtractPlugin, [{
           filename: `${publicPath.startsWith('.') ? '' : `${taskName}/`}[name].css`,
+          ignoreOrder: true
         }]);
     }
   },
@@ -67,39 +71,28 @@ function setCSSRule(configRule, context, value) {
         .use('postcss')
         .loader(require.resolve('postcss-loader'))
         .options({
-          ident: 'postcss',
-          plugins: () => [
-            require('postcss-plugin-rpx2vw')(),
-          ],
+          config: {
+            path: configPath,
+            ctx: {
+              type: 'inline'
+            },
+          },
         });
     }
   } else {
     if (isWebStandard || isMiniAppStandard) {
-      // extract css file in web while inlineStyle is disabled
       const postcssConfig = {
-        ident: 'postcss',
-        plugins: () => {
-          const plugins = [
-            require('postcss-preset-env')({
-              autoprefixer: {
-                flexbox: 'no-2009',
-              },
-              stage: 3,
-            })
-          ];
-          if (isWebStandard) {
-            plugins.push(require('postcss-plugin-rpx2vw')());
-          }
-          return plugins;
+        config: {
+          path: configPath,
+          ctx: {
+            type: isWebStandard ? 'web' : 'miniapp'
+          },
         },
       };
-
       configRule
         .use('minicss')
         .loader(MiniCssExtractPlugin.loader)
         .end()
-        .oneOf('raw')
-        .resourceQuery(resourceQuery ? new RegExp(resourceQuery) : /\?raw$/)
         .use('css')
         .loader(require.resolve('css-loader'))
         .end()
@@ -107,17 +100,9 @@ function setCSSRule(configRule, context, value) {
         .loader(require.resolve('postcss-loader'))
         .options(postcssConfig)
         .end()
-        .end()
-        .oneOf('normal')
         .use('css')
         .loader(require.resolve('css-loader'))
-        // reference: https://github.com/webpack-contrib/css-loader/tree/v2.1.1#localidentname
-        .options(
-          modules ? {
-            importLoaders: 2,
-            modules: true,
-            localIdentName: '[name]__[local]--[hash:base64:5]',
-          } : {})
+        .options({ modules })
         .end()
         .use('postcss')
         .loader(require.resolve('postcss-loader'))

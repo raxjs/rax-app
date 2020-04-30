@@ -8,7 +8,7 @@ const { setConfig } = require('rax-multi-pages-settings');
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 const processRelativePublicPath = require('./config/processRelativePublicPath');
 
-const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, QUICKAPP } = require('./constants');
+const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('./constants');
 
 module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
   const { targets = [], type = 'spa' } = options;
@@ -32,7 +32,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
       registerTask(target, getBase(context, target, options));
     }
 
-    if ([MINIAPP, WECHAT_MINIPROGRAM, QUICKAPP].includes(target)) {
+    if ([MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP].includes(target)) {
       if (options[target] && options[target].buildType === 'runtime') {
         const getBase = require('./config/miniapp/runtime/getBase');
         registerTask(target, getBase(context, target, options));
@@ -97,6 +97,14 @@ function logBuildResult(targets = [], context = {}, options = {}) {
     console.log('   ', chalk.underline.white(getMiniAppOutput(context, {
       target: WECHAT_MINIPROGRAM,
       distDir: options[WECHAT_MINIPROGRAM] && options[WECHAT_MINIPROGRAM].distDir
+    })));
+    console.log();
+  }
+
+  if (targets.includes(BYTEDANCE_MICROAPP)) {
+    console.log(chalk.green('[ByteDance MicroApp] Bundle at:'));
+    console.log('   ', chalk.underline.white(getMiniAppOutput(context, {
+      target: BYTEDANCE_MICROAPP,
     })));
     console.log();
   }
