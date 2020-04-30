@@ -6,14 +6,15 @@ const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 
 module.exports = (context, target, options) => {
+  const { rootDir, command } = context;
   const { distDir = '', entryPath = './src/app' } = options[target] || {};
   const outputPath = getMiniAppOutput(context, { target, distDir });
 
   const config = getWebpackBase(context, {
     disableRegenerator: false
   }, target);
-  const appConfig = getAppConfig(context.rootDir, entryPath, target);
-  setEntry(config, context.rootDir, entryPath, appConfig.routes);
+  const appConfig = getAppConfig(rootDir, entryPath, target);
+  setEntry(config, rootDir, entryPath, appConfig.routes);
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
