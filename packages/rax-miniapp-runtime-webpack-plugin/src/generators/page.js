@@ -1,5 +1,6 @@
 const { resolve } = require('path');
 const { readFileSync } = require('fs-extra');
+const ejs = require('ejs');
 const lifeCycleMap = require('../nativeLifeCycle');
 const { MINIAPP, WECHAT_MINIPROGRAM } = require('../constants');
 const adapter = require('../adapter');
@@ -14,10 +15,10 @@ function getPageTmpl(target, rootDir) {
       rootDir,
       'templates',
       'wechat-miniprogram',
-      'page.js'
+      'page.js.ejs'
     );
   } else {
-    pageTmplPath = resolve(rootDir, 'templates', 'ali-miniapp', 'page.js');
+    pageTmplPath = resolve(rootDir, 'templates', 'ali-miniapp', 'page.js.ejs');
   }
   return readFileSync(resolve(pageTmplPath), 'utf8');
 }
@@ -48,45 +49,34 @@ function generatePageJS(
       configProps.push(lifeCycleMap.onPullIntercept);
     }
   }
-  const pageJsContent = getPageTmpl(target, rootDir)
-    .replace(
-      '/* CONFIG_PATH */',
-      `${getAssetPath('config.js', `${pageRoute}.js`)}`
-    )
-    .replace(
-      '/* INIT_FUNCTION */',
-      `function init(window, document) {${assets.js
-        .map(
-          (js) =>
-            `require('${getAssetPath(
-              js,
-              `${pageRoute}.js`
-            )}')(window, document)`
-        )
-        .join(';')}}`
-    )
-    .replace(
-      '/* DEFINE_NATIVE_LIFE_CYCLE */',
-      `[${events.reduce((prev, current, index) => {
-        const currentCycle = "'" + current + "'";
-        if (index === 0) {
-          return currentCycle;
-        }
-        return prev + ',' + currentCycle;
-      }, '')}].forEach(eventName => {
+  const pageJsContent = ejs.render(getPageTmpl(target, rootDir), {
+    config_path: `${getAssetPath('config.js', `${pageRoute}.js`)}`,
+    init: `function init(window, document) {${assets.js
+      .map(
+        (js) =>
+          `require('${getAssetPath(
+            js,
+            `${pageRoute}.js`
+          )}')(window, document)`
+      )
+      .join(';')}}`,
+    define_native_lifecycle: `[${events.reduce((prev, current, index) => {
+      const currentCycle = "'" + current + "'";
+      if (index === 0) {
+        return currentCycle;
+      }
+      return prev + ',' + currentCycle;
+    }, '')}].forEach(eventName => {
         events[eventName] = function(event) {
           if (this.window) {
             this.window.$$$trigger(eventName, { event });
           }
         };
-      });`
-    )
-    .replace(
-      '/* DEFINE_EVENT_IN_CONFIG */',
-      configProps.reduce((prev, current) => {
-        let currentCycle;
-        if (current.name === 'onShareAppMessage') {
-          currentCycle = `${current.name}(options) {
+      });`,
+    define_lifecycle_in_config: configProps.reduce((prev, current) => {
+      let currentCycle;
+      if (current.name === 'onShareAppMessage') {
+        currentCycle = `${current.name}(options) {
     if (this.window) {
       const shareInfo = {};
       this.window.$$$trigger('onShareAppMessage', {
@@ -95,18 +85,18 @@ function generatePageJS(
       return shareInfo.content;
     }
   },`;
-        } else {
-          currentCycle = `${current.name}(options) {
+      } else {
+        currentCycle = `${current.name}(options) {
     if (this.window) {
       return this.window.$$$trigger('${current.name}', {
         event: options
       })
     }
   },`;
-        }
-        return prev + '\n\t' + currentCycle;
-      }, '')
-    );
+      }
+      return prev + '\n\t' + currentCycle;
+    }, '')
+  });
 
   addFileToCompilation(compilation, {
     filename: `${pageRoute}.js`,

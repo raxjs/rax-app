@@ -1,7 +1,6 @@
 const { resolve, join } = require('path');
 const {
   copySync,
-  moveSync,
   removeSync,
   readJsonSync,
   writeJsonSync,
@@ -34,17 +33,8 @@ module.exports = function(
       );
       const distNpmFileDir = resolve(distNpmDir, name);
       copySync(sourceNpmFileDir, distNpmFileDir);
-      if (command === 'build') {
-        // index.min.js overwrite index.js
-        moveSync(
-          resolve(distNpmFileDir, 'index.min.js'),
-          resolve(distNpmFileDir, 'index.js'),
-          { overwrite: true }
-        );
-      } else {
-        // Remove index.min.js
-        removeSync(resolve(distNpmFileDir, 'index.min.js'));
-      }
+      // Remove index.min.js
+      removeSync(resolve(distNpmFileDir, 'index.min.js'));
       // Handle custom-component path in alibaba miniapp
       if (
         target === MINIAPP &&

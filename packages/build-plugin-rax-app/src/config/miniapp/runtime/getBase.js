@@ -5,7 +5,7 @@ const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 
-const MiniAppRenderAnalysisLoader = require.resolve('rax-miniapp-render-analysis-webpack-loader');
+const MiniAppPreComplieLoader = require.resolve('../../../loaders/MiniAppPreComplieLoader');
 
 module.exports = (context, target, options) => {
   const { rootDir, command } = context;
@@ -21,6 +21,8 @@ module.exports = (context, target, options) => {
   const usingComponents = [];
   // Native lifecycle map
   const nativeLifeCycleMap = {};
+  // Collect handled pages
+  const handledPages = [];
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
@@ -37,16 +39,13 @@ module.exports = (context, target, options) => {
     .libraryTarget('window');
 
   config.module.rule('jsx')
-    .use('fixRegeneratorRuntime')
-    .loader(require.resolve('../../../loaders/FixRegeneratorRuntimeLoader'))
-    .end()
-    .use('renderAnalysis').
-    loader(MiniAppRenderAnalysisLoader)
+    .use('miniapp-pre-complie-loader')
+    .loader(MiniAppPreComplieLoader)
     .options({
-      mode: 'runtime',
       usingComponents,
       routes: appConfig.routes,
-      nativeLifeCycleMap
+      nativeLifeCycleMap,
+      handledPages
     });
 
   // Split common chunks

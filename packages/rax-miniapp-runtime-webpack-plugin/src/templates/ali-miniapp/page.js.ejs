@@ -1,15 +1,12 @@
-/* eslint-disable new-cap */
-/* global Page, init */
-/* eslint-disable module/no-implicit-dependencies */
 const render = require('miniapp-render');
-const config = require('/* CONFIG_PATH */');
+const config = require('<%- config_path %>');
 
 const { createPage, destroyPage, $$adapter } = render;
 const events = {};
 
-/* DEFINE_NATIVE_LIFE_CYCLE */
+<%- define_native_lifecycle %>
 
-/* INIT_FUNCTION */
+<%- init %>
 Page({
   data: {
     pageId: '',
@@ -79,5 +76,5 @@ Page({
     this.app = null;
     this.query = null;
   },
-  events, /* DEFINE_EVENT_IN_CONFIG */
+  events, <%- define_lifecycle_in_config  %>
 });

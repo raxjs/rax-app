@@ -38,11 +38,18 @@ function generateAppJS(
 }
 
 function generateAppCSS(compilation, { target, command, rootDir }) {
-  const appCssTmpl = readFileSync(
-    resolve(rootDir, 'templates', 'app.css.ejs'),
+  // Add default css file to compilation
+  const defaultCSSTmpl = adjustCSS(readFileSync(
+    resolve(rootDir, 'templates', 'default.css.ejs'),
     'utf8'
-  );
-  let needVendorCSS = false;
+  ));
+  addFileToCompilation(compilation, {
+    filename: `default.${adapter[target].css}`,
+    content: defaultCSSTmpl,
+    target,
+    command,
+  });
+  let appCssContent = '@import "./default";';
   // If inlineStyle is set to false, css file will be extracted to vendor.css
   const extractedAppCSSFilePath = `${target}/${VENDOR_CSS_FILE_NAME}`;
   if (compilation.assets[extractedAppCSSFilePath]) {
@@ -52,14 +59,11 @@ function generateAppCSS(compilation, { target, command, rootDir }) {
       adjustCSS(compilation.assets[extractedAppCSSFilePath].source())
     );
     delete compilation.assets[extractedAppCSSFilePath];
-    needVendorCSS = true;
+    appCssContent += `\n@import "./${VENDOR_CSS_FILE_NAME}";`;
   }
-  const appCssContent = adjustCSS(
-    ejs.render(appCssTmpl, {
-      importVendorCSSFile: `@import "./${VENDOR_CSS_FILE_NAME}"`,
-      needVendorCSS,
-    })
-  );
+
+  delete compilation.assets[`${target}/app.css`];
+
   addFileToCompilation(compilation, {
     filename: `app.${adapter[target].css}`,
     content: appCssContent,

@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-app",
-  "version": "4.6.2",
+  "version": "4.6.5",
   "description": "rax app base plugins",
   "main": "src/index.js",
   "scripts": {
@@ -17,7 +17,9 @@
     "rax": "^1.0.0"
   },
   "dependencies": {
+    "@babel/code-frame": "^7.8.3",
     "@babel/core": "7.2.0",
+    "@babel/generator": "^7.9.6",
     "@reactml/loader": "^0.1.2",
     "autoprefixer": "^9.4.3",
     "babel-loader": "8.0.4",

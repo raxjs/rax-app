@@ -1,4 +1,4 @@
-const { resolve, relative, join, dirname } = require('path');
+const { resolve, relative, join } = require('path');
 const { readJsonSync, existsSync } = require('fs-extra');
 const { RawSource } = require('webpack-sources');
 const adjustCSS = require('./utils/adjustCSS');

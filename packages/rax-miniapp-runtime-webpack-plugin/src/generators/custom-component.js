@@ -12,7 +12,7 @@ module.exports = function(
   { target, command, rootDir }
 ) {
   const customComponentJsTmpl = readFileSync(
-    resolve(rootDir, 'templates', 'custom-component.js'),
+    resolve(rootDir, 'templates', 'custom-component.js.ejs'),
     'utf8'
   );
   if (customComponentRoot) {
@@ -46,10 +46,10 @@ module.exports = function(
           const { props = [], events = [] } = customComponents[key];
           return `<${key} ${adapter[target].directive.prefix}:${
             index === 0 ? 'if' : 'elif'
-          }="{{name === '${key}'}}" id="{{id}}" class="{{class}}" style="{{style}}" ${props
+          }="{{name === '${key}'}}" id="{{id}}" class="{{className}}" style="{{style}}" ${props
             .map((name) => `${name}="{{${name}}}"`)
             .join(' ')} ${events
-            .map((name) => `bind${name}="on${name}"`)
+            .map((name) => `${adapter[target].directive.event}${name}="on${name}"`)
             .join(' ')}><slot/></${key}>`;
         })
         .join('\n'),
