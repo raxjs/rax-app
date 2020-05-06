@@ -45,6 +45,7 @@ module.exports = {
       config.plugin('minicss')
         .use(MiniCssExtractPlugin, [{
           filename: `${publicPath.startsWith('.') ? '' : `${taskName}/`}[name].css`,
+          ignoreOrder: true
         }]);
     }
   },

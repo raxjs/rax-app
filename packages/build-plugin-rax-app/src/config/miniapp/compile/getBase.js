@@ -69,6 +69,8 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     .mode('production')
     .target('node');
 
+  config.resolve.alias.clear();
+
   config.resolve.alias
     .set('react', 'rax')
     .set('react-dom', 'rax-dom');
@@ -191,7 +193,8 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
       appConfig,
       getAppConfig,
       outputPath,
-      target
+      target,
+      nativeConfig: options[target] && options[target].nativeConfig
     }
   ]);
 
