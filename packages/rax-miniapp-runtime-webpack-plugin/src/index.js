@@ -63,9 +63,12 @@ class MiniAppRuntimePlugin {
         return filePath.replace(sourcePath, '');
       });
 
+      console.log('changedFiles', changedFiles);
+
       // Collect asset
       routes
         .filter(({ entryName }) => {
+          console.log('entryName', entryName);
           return isFirstRender || changedFiles.includes(entryName);
         })
         .forEach(({ entryName }) => {
@@ -120,7 +123,7 @@ class MiniAppRuntimePlugin {
           const route = routes.find(({ source }) => source === entryName);
           const needPullRefresh = route.window && route.window.pullRefresh;
 
-          // xml/css/json file only need writeOnce
+          // xml/json file only need writeOnce
           if (isFirstRender) {
             // Page xml
             generatePageXML(compilation, customComponentRoot, entryName, {
@@ -137,14 +140,16 @@ class MiniAppRuntimePlugin {
               entryName,
               { target, command, rootDir }
             );
-
-            // Page css
-            generatePageCSS(compilation, assets, entryName, {
-              target,
-              command,
-              rootDir,
-            });
           }
+
+
+          // Page css
+          generatePageCSS(compilation, assets, entryName, {
+            target,
+            command,
+            rootDir,
+          });
+
           // Page js
           generatePageJS(
             compilation,

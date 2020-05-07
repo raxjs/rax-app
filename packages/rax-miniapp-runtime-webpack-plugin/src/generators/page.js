@@ -69,7 +69,7 @@ function generatePageJS(
     }, '')}].forEach(eventName => {
   events[eventName] = function(event) {
     if (this.window) {
-      this.window.$$$trigger(eventName, { event });
+      this.window.$$trigger(eventName, { event });
     }
   };
 });`,
@@ -79,7 +79,7 @@ function generatePageJS(
         currentCycle = `${current.name}(options) {
     if (this.window) {
       const shareInfo = {};
-      this.window.$$$trigger('onShareAppMessage', {
+      this.window.$$trigger('onShareAppMessage', {
         event: { options, shareInfo }
       });
       return shareInfo.content;
@@ -88,7 +88,7 @@ function generatePageJS(
       } else {
         currentCycle = `${current.name}(options) {
     if (this.window) {
-      return this.window.$$$trigger('${current.name}', {
+      return this.window.$$trigger('${current.name}', {
         event: options
       })
     }
