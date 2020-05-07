@@ -4,6 +4,7 @@ const {
   removeSync,
   readJsonSync,
   writeJsonSync,
+  moveSync
 } = require('fs-extra');
 const chalk = require('chalk');
 const { MINIAPP } = require('../constants');
@@ -33,8 +34,13 @@ module.exports = function(
       );
       const distNpmFileDir = resolve(distNpmDir, name);
       copySync(sourceNpmFileDir, distNpmFileDir);
-      // Remove index.min.js
-      removeSync(resolve(distNpmFileDir, 'index.min.js'));
+      if (command === 'build') {
+        // index.min.js overwrite index.js
+        moveSync(resolve(distNpmFileDir, 'index.min.js'), resolve(distNpmFileDir, 'index.js'), { overwrite: true });
+      } else {
+        // Remove index.min.js
+        removeSync(resolve(distNpmFileDir, 'index.min.js'));
+      }
       // Handle custom-component path in alibaba miniapp
       if (
         target === MINIAPP &&

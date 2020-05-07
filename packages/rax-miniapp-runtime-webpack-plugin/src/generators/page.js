@@ -67,12 +67,12 @@ function generatePageJS(
       }
       return prev + ',' + currentCycle;
     }, '')}].forEach(eventName => {
-        events[eventName] = function(event) {
-          if (this.window) {
-            this.window.$$$trigger(eventName, { event });
-          }
-        };
-      });`,
+  events[eventName] = function(event) {
+    if (this.window) {
+      this.window.$$$trigger(eventName, { event });
+    }
+  };
+});`,
     define_lifecycle_in_config: configProps.reduce((prev, current) => {
       let currentCycle;
       if (current.name === 'onShareAppMessage') {

@@ -1,4 +1,3 @@
-
 module.exports = function visitor({ types: t }) {
   return {
     visitor: {

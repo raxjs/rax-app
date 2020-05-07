@@ -4,8 +4,7 @@ const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
-
-const MiniAppPreComplieLoader = require.resolve('../../../loaders/MiniAppPreComplieLoader');
+const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
 
 module.exports = (context, target, options) => {
   const { rootDir, command } = context;
@@ -21,8 +20,7 @@ module.exports = (context, target, options) => {
   const usingComponents = [];
   // Native lifecycle map
   const nativeLifeCycleMap = {};
-  // Collect handled pages
-  const handledPages = [];
+
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
@@ -39,13 +37,14 @@ module.exports = (context, target, options) => {
     .libraryTarget('window');
 
   config.module.rule('jsx')
-    .use('miniapp-pre-complie-loader')
-    .loader(MiniAppPreComplieLoader)
-    .options({
-      usingComponents,
-      routes: appConfig.routes,
-      nativeLifeCycleMap,
-      handledPages
+    .use('babel')
+    .tap(options => {
+      options.plugins = [...getMiniAppBabelPlugins({
+        usingComponents,
+        routes: appConfig.routes,
+        nativeLifeCycleMap
+      }), ...options.plugins];
+      return options;
     });
 
   // Split common chunks

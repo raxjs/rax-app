@@ -17,7 +17,6 @@
     "rax": "^1.0.0"
   },
   "dependencies": {
-    "@babel/code-frame": "^7.8.3",
     "@babel/core": "7.2.0",
     "@babel/generator": "^7.9.6",
     "@reactml/loader": "^0.1.2",
@@ -71,6 +70,7 @@
     "webpack": "^4.27.1",
     "webpack-bundle-analyzer": "^3.4.1",
     "webpack-chain": "^6.0.0",
-    "webpack-sources": "^1.3.0"
+    "webpack-sources": "^1.3.0",
+    "rax-miniapp-babel-plugins": "^0.1.0"
   }
 }
