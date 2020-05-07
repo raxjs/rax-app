@@ -51,10 +51,11 @@ Component({
     // config of custom component
     const config = cache.getConfig();
     this.compConfig =
-      config.runtime &&
-        config.runtime.usingComponents &&
-        config.runtime.usingComponents[this.domNode.behavior] ||
+      config.nativeCustomComponent &&
+      config.nativeCustomComponent.usingComponents &&
+      config.nativeCustomComponent.usingComponents[this.domNode.behavior] ||
       {};
+
 
     // Listen on global event
     this.onSelfNodeUpdate = tool.throttle(this.onSelfNodeUpdate.bind(this));

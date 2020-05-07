@@ -32,10 +32,14 @@ const defaultCSSTmpl = readFileSync(
   resolve(__dirname, 'templates', 'default.css'),
   'utf8'
 );
-const customComponentJsTmpl = readFileSync(
-  resolve(__dirname, 'templates', 'custom-component.js'),
-  'utf8'
-);
+
+function getCustomComponentJsTmpl(target) {
+  if (target === MINIAPP) {
+    return resolve(__dirname, 'templates', 'ali-miniapp', 'custom-component.js');
+  } else if (target === WECHAT_MINIPROGRAM) {
+    return resolve(__dirname, 'templates', 'wechat-miniprogram', 'custom-component.js');
+  }
+}
 
 function isCSSFile(filePath) {
   const extMatch = extRegex.exec(filePath);
@@ -292,7 +296,10 @@ function handleCustomComponent(
   if (customComponentRoot) {
     copy(
       customComponentRoot,
-      resolve(outputPath, 'custom-component/components')
+      resolve(outputPath, 'custom-component/components'),
+      {
+        dereference: true
+      }
     );
 
     const realUsingComponents = {};
@@ -305,7 +312,7 @@ function handleCustomComponent(
     );
 
     // custom-component/index.js
-    addFile(compilation, { filename: 'custom-component/index.js', content: customComponentJsTmpl, target, command });
+    addFile(compilation, { filename: 'custom-component/index.js', content: getCustomComponentJsTmpl(target), target, command });
 
     // custom-component/index.xml
     addFile(compilation, {
@@ -318,7 +325,7 @@ function handleCustomComponent(
           }="{{name === '${key}'}}" id="{{id}}" class="{{class}}" style="{{style}}" ${props
             .map(name => `${name}="{{${name}}}"`)
             .join(' ')} ${events
-            .map(name => `bind${name}="on${name}"`)
+            .map(name => `${target === MINIAPP ? 'on' : 'bind'}${name}="on${name}"`)
             .join(' ')}><slot/></${key}>`;
         })
         .join('\n'),
@@ -353,10 +360,10 @@ function installDependencies(
   { target, isFirstRender, command },
   callback
 ) {
-  const sourcePath = join(process.cwd(), 'src');
+  const rootDir = process.cwd();
   const customComponentRoot =
   customComponentConfig.root &&
-  resolve(sourcePath, customComponentConfig.root);
+  resolve(rootDir, customComponentConfig.root);
 
   const outputPath = resolve(stats.compilation.outputOptions.path);
   const distNpmDir = resolve(outputPath, target, adapter[target].npmDirName);
@@ -427,7 +434,7 @@ class MiniAppRuntimePlugin {
       const customComponentConfig = config.nativeCustomComponent || {};
       const customComponentRoot =
         customComponentConfig.root &&
-        resolve(sourcePath, customComponentConfig.root);
+        resolve(options.rootDir, customComponentConfig.root);
       const customComponents = customComponentConfig.usingComponents || {};
       const pages = [];
       const subpackagesMap = {}; // page - subpackage
