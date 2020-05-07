@@ -21,7 +21,7 @@ module.exports = function visitor({ types: t }, { nativeLifeCycleMap, routes }, 
             }
           }
         } else {
-          path.skip();
+          path.stop();
         }
       }
     }
