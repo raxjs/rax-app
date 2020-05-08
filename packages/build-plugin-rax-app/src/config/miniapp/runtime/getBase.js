@@ -30,8 +30,8 @@ module.exports = (context, target, options) => {
     .libraryTarget('window');
 
   config.module.rule('jsx')
-    .use('fixRegeneratorRuntime')
-    .loader(require.resolve('../../../loaders/FixRegeneratorRuntimeLoader'));
+    .use('miniapp-runtime-loader')
+    .loader(require.resolve('../../../loaders/MiniAppRuntimeLoader'));
 
   // Split common chunks
   config.optimization.splitChunks({

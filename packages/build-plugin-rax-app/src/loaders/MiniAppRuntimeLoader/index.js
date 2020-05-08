@@ -18,7 +18,8 @@ module.exports = function(content) {
 
   const { code } = babel.transformSync(content, {
     plugins: [
-      require('./babel-plugin-remove-Function')
+      require('./babel-plugin-remove-Function'),
+      require('./babel-plugin-external-module')
     ],
     parserOpts: parserOpts
   });
