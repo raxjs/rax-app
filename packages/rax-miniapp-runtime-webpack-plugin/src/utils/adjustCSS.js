@@ -28,7 +28,7 @@ const replaceTagNamePlugin = postcss.plugin('replaceTagName', () => root => {
 
         const wavyLineIndex = selector.indexOf('~');
         if (wavyLineIndex !== -1 && selector[wavyLineIndex + 1] !== '=') {
-          console.warn(colors.bold(`\nselector ${colors.yellow(selector)} is not supported in wxss, so it will be deleted\n`));
+          console.warn(colors.bold(`\nselector ${colors.yellow(selector)} is not supported in miniapp css, so it will be deleted\n`));
           return;
         }
 

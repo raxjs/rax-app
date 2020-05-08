@@ -1,27 +1,11 @@
-const { resolve } = require('path');
-const { readFileSync } = require('fs-extra');
 const ejs = require('ejs');
 const lifeCycleMap = require('../nativeLifeCycle');
-const { MINIAPP, WECHAT_MINIPROGRAM } = require('../constants');
+const { MINIAPP } = require('../constants');
 const adapter = require('../adapter');
 const getAssetPath = require('../utils/getAssetPath');
 const addFileToCompilation = require('../utils/addFileToCompilation');
 const adjustCSS = require('../utils/adjustCSS');
-
-function getPageTmpl(target, rootDir) {
-  let pageTmplPath;
-  if (target === WECHAT_MINIPROGRAM) {
-    pageTmplPath = resolve(
-      rootDir,
-      'templates',
-      'wechat-miniprogram',
-      'page.js.ejs'
-    );
-  } else {
-    pageTmplPath = resolve(rootDir, 'templates', 'ali-miniapp', 'page.js.ejs');
-  }
-  return readFileSync(resolve(pageTmplPath), 'utf8');
-}
+const getTemplate = require('../utils/getTemplate');
 
 function generatePageJS(
   compilation,
@@ -49,7 +33,7 @@ function generatePageJS(
       configProps.push(lifeCycleMap.onPullIntercept);
     }
   }
-  const pageJsContent = ejs.render(getPageTmpl(target, rootDir), {
+  const pageJsContent = ejs.render(getTemplate(rootDir, target, 'page'), {
     config_path: `${getAssetPath('config.js', `${pageRoute}.js`)}`,
     init: `function init(window, document) {${assets.js
       .map(

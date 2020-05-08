@@ -1,8 +1,8 @@
 const { resolve } = require('path');
-const { copy, readFileSync } = require('fs-extra');
+const { copy } = require('fs-extra');
 const addFileToCompilation = require('../utils/addFileToCompilation');
 const adapter = require('../adapter');
-
+const getTemplate = require('../utils/getTemplate');
 
 module.exports = function(
   compilation,
@@ -11,10 +11,7 @@ module.exports = function(
   outputPath,
   { target, command, rootDir }
 ) {
-  const customComponentJsTmpl = readFileSync(
-    resolve(rootDir, 'templates', 'custom-component.js.ejs'),
-    'utf8'
-  );
+  const customComponentJsTmpl = getTemplate(rootDir, target, 'custom-component');
   if (customComponentRoot) {
     copy(
       customComponentRoot,
