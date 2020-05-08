@@ -10,6 +10,7 @@ module.exports = function getTemplate(rootDir, target, type) {
       break;
     case WECHAT_MINIPROGRAM:
       platformDir = 'wechat-miniprogram';
+      break;
   }
   return readFileSync(resolve(rootDir, 'templates', platformDir, `${type}.js.ejs`), 'utf8');
 };
