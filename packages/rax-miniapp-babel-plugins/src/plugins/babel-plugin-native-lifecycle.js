@@ -1,11 +1,11 @@
 const CodeError = require('../utils/CodeError');
 const getPagePath = require('../utils/getPagePath');
 
-module.exports = function visitor({ types: t }, { nativeLifeCycleMap, routes }, rootDir) {
+module.exports = function visitor({ types: t }, { nativeLifeCycleMap }) {
   return {
     visitor: {
       CallExpression(path, { file: { opts: { filename }, code } }) {
-        const pagePath = getPagePath(rootDir, filename, routes, nativeLifeCycleMap);
+        const pagePath = getPagePath(filename, nativeLifeCycleMap);
         if (pagePath) {
           const nativeLifeCycle = nativeLifeCycleMap[pagePath];
           if (t.isIdentifier(path.node.callee, {

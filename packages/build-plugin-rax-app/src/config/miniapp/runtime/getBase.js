@@ -10,16 +10,16 @@ module.exports = (context, target, options) => {
   const { rootDir, command } = context;
   const outputPath = getMiniAppOutput(context, { target });
 
-  const config = getWebpackBase(context, {
-    disableRegenerator: false
-  }, target);
-  const appConfig = getAppConfig(rootDir, target);
-  setEntry(config, context, appConfig.routes);
-
   // Using Components
   const usingComponents = [];
   // Native lifecycle map
   const nativeLifeCycleMap = {};
+
+  const config = getWebpackBase(context, {
+    disableRegenerator: false
+  }, target);
+  const appConfig = getAppConfig(rootDir, target, nativeLifeCycleMap);
+  setEntry(config, context, appConfig.routes);
 
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
@@ -41,7 +41,6 @@ module.exports = (context, target, options) => {
     .tap(options => {
       options.plugins = [...getMiniAppBabelPlugins({
         usingComponents,
-        routes: appConfig.routes,
         nativeLifeCycleMap
       }), ...options.plugins];
       return options;
@@ -85,6 +84,6 @@ module.exports = (context, target, options) => {
   ]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
-  config.devtool('none');
+  config.devtool('inline-source-map');
   return config;
 };
