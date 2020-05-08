@@ -1,3 +1,4 @@
+const { sep } = require('path');
 const getFilePath = require('./getFilePath');
 
 /**
@@ -6,7 +7,8 @@ const getFilePath = require('./getFilePath');
  * @return {string|undefined}
  */
 module.exports = function(filename, nativeLifeCycleMap) {
-  if (!/\/node_modules\//.test(filename)) {
+  const nodeModulesReg = new RegExp(`${sep}node_modules${sep}`);
+  if (!nodeModulesReg.exec(filename)) {
     const filePath = getFilePath(filename);
     if (nativeLifeCycleMap[filePath]) {
       // Reset page lifecycle map

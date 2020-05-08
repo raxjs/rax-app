@@ -4,7 +4,7 @@ const getPagePath = require('../utils/getPagePath');
 module.exports = function visitor({ types: t }, { nativeLifeCycleMap }) {
   return {
     visitor: {
-      CallExpression(path, { file: { opts: { filename }, code } }) {
+      CallExpression(path, { filename, file: { code } }) {
         const pagePath = getPagePath(filename, nativeLifeCycleMap);
         if (pagePath) {
           const nativeLifeCycle = nativeLifeCycleMap[pagePath];

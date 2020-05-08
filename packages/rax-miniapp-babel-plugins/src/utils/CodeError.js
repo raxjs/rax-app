@@ -1,10 +1,8 @@
 const { codeFrameColumns } = require('@babel/code-frame');
-const { default: generate } = require('@babel/generator');
 
 function createErrorMessage(sourceCode, node, loc, extraMessage) {
-  const rawLines = sourceCode ? sourceCode : generate(node).code;
   try {
-    return codeFrameColumns(rawLines, loc, { highlightCode: true, message: extraMessage });
+    return codeFrameColumns(sourceCode, loc, { highlightCode: true, message: extraMessage });
   } catch (err) {
     return 'Failed to locate source code position.';
   }
