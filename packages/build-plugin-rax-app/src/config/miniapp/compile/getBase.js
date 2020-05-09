@@ -11,7 +11,7 @@ const getOutputPath = require('../getOutputPath');
 const ModifyOutputFileSystemPlugin = require('../../../plugins/miniapp/ModifyOutputFileSystem');
 const CopyJsx2mpRuntimePlugin = require('../../../plugins/miniapp/CopyJsx2mpRuntime');
 const CopyPublicFilePlugin = require('../../../plugins/miniapp/CopyPublicFile');
-const GetChangedFiles = require('../../../plugins/miniapp/GetChangedFiles');
+const GetChangedFilesPlugin = require('../../../plugins/miniapp/GetChangedFiles');
 
 
 const platformConfig = require('./platformConfig');
@@ -189,7 +189,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     }
   }]);
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
-  config.plugin('getChangedFiles').use(GetChangedFiles, [changedFiles]);
+  config.plugin('getChangedFiles').use(GetChangedFilesPlugin, [changedFiles]);
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
   config.plugin('miniAppConfig').use(MiniAppConfigPlugin, [
     {

@@ -48,7 +48,7 @@ module.exports = class JSX2MPRuntimePlugin {
           : runtimePackageJSON.main || 'index.js';
         const sourceFile = require.resolve(join(runtimePackagePath, runtimeTargetPath));
         const targetFile = join(this.outputPath, 'npm', runtime + '.js');
-        // ensureFileSync(targetFile);
+
         if (this.mode === 'build') {
           const sourceCode = minify(readFileSync(sourceFile, 'utf-8')).code;
           writeFileSync(targetFile, sourceCode);
