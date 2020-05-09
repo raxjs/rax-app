@@ -165,7 +165,7 @@ function output(content, raw, options) {
       }
       css = css.replace(/rpx/g, 'px');
     }
-    writeFileWithDirCheck(outputPath.css, css, { changedFiles, resourcePath });
+    writeFileWithDirCheck(outputPath.css, css, { type: 'cssFile', changedFiles, resourcePath });
   }
   if (config) {
     writeFileWithDirCheck(outputPath.config, config, { changedFiles, resourcePath });
@@ -233,10 +233,10 @@ function writeFileWithDirCheck(filePath, content, { type = 'file', changedFiles,
     mkdirpSync(dirPath);
   }
   // If current file is not in changed files list and dist file exists, then there is no need to write file
-  if (existsSync(filePath) && changedFiles.length && changedFiles.indexOf(resourcePath) === -1) {
+  if (type !== 'cssFile' && existsSync(filePath) && changedFiles.length && changedFiles.indexOf(resourcePath) === -1) {
     return;
   }
-  if (type === 'file') {
+  if (type === 'file' || type === 'cssFile') {
     writeFileSync(filePath, content);
   } else if (type === 'json') {
     writeJSONSync(filePath, content, { spaces: 2 });
