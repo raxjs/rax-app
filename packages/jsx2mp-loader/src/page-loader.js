@@ -20,7 +20,7 @@ module.exports = async function pageLoader(content) {
   }
 
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, mode, disableCopyNpm, constantDir, turnOffSourceMap, outputPath, aliasEntries, injectAppCssComponent } = loaderOptions;
+  const { platform, entryPath, mode, disableCopyNpm, constantDir, turnOffSourceMap, outputPath, aliasEntries, injectAppCssComponent, changedFiles } = loaderOptions;
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
   const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
@@ -128,6 +128,8 @@ module.exports = async function pageLoader(content) {
     },
     mode,
     platform,
+    changedFiles,
+    resourcePath: this.resourcePath,
     isTypescriptFile: isTypescriptFile(this.resourcePath)
   };
 

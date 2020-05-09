@@ -1,4 +1,4 @@
-const { join, dirname, relative, resolve, sep } = require('path');
+const { join, dirname, relative, resolve, sep, extname } = require('path');
 
 const { copySync, existsSync, mkdirpSync, writeJSONSync, readFileSync, readJSONSync } = require('fs-extra');
 const { getOptions } = require('loader-utils');
@@ -21,7 +21,7 @@ module.exports = function scriptLoader(content) {
   }
 
   const loaderOptions = getOptions(this);
-  const { disableCopyNpm, outputPath, mode, entryPath, platform, importedComponent = '', isRelativeMiniappComponent = false, aliasEntries } = loaderOptions;
+  const { disableCopyNpm, outputPath, mode, entryPath, platform, importedComponent = '', isRelativeMiniappComponent = false, aliasEntries, changedFiles } = loaderOptions;
   const rootContext = this.rootContext;
   const isAppJSon = this.resourcePath === join(rootContext, 'src', 'app.json');
   const isJSON = !isAppJSon && isJSONFile(this.resourcePath);
@@ -79,6 +79,8 @@ module.exports = function scriptLoader(content) {
         ]
       ],
       platform,
+      changedFiles,
+      resourcePath: this.resourcePath,
       isTypescriptFile: isTypescriptFile(this.resourcePath)
     };
 
@@ -90,7 +92,7 @@ module.exports = function scriptLoader(content) {
       mkdirpSync(target);
       copySync(source, target, {
         overwrite: false,
-        filter: filename => !/__(mocks|tests?)__/.test(filename)
+        filter: filename => !/__(mocks|tests?)__/.test(filename) && extname(filename) !== '.json' // JSON file will be written later because usingComponents may be modified
       });
     }
   };
@@ -129,7 +131,9 @@ module.exports = function scriptLoader(content) {
           }
         }
       }
-      writeJSONSync(distComponentConfigPath, componentConfig);
+      if (!existsSync(distComponentConfigPath)) {
+        writeJSONSync(distComponentConfigPath, componentConfig);
+      }
     } else {
       this.emitWarning('Cannot found miniappConfig component for: ' + npmName);
     }
