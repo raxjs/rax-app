@@ -1,6 +1,6 @@
 const { codeFrameColumns } = require('@babel/code-frame');
 
-function createErrorMessage(sourceCode, node, loc, extraMessage) {
+function createErrorMessage(sourceCode, loc, extraMessage) {
   try {
     return codeFrameColumns(sourceCode, loc, { highlightCode: true, message: extraMessage });
   } catch (err) {
@@ -9,9 +9,8 @@ function createErrorMessage(sourceCode, node, loc, extraMessage) {
 }
 
 class CodeError extends Error {
-  constructor(sourceCode, node, loc, message) {
-    super('\n' + createErrorMessage(sourceCode, node, loc, message));
-    this.node = node;
+  constructor(sourceCode, loc, message) {
+    super('\n' + createErrorMessage(sourceCode, loc, message));
   }
 }
 

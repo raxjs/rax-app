@@ -16,7 +16,7 @@ module.exports = function visitor({ types: t }, { nativeLifeCycleMap }) {
                 nativeLifeCycle[element.value] = true;
               });
             } else {
-              throw new CodeError(code, path.node, path.node.loc,
+              throw new CodeError(code, path.node.loc,
                 "registerNativeEventListeners's second argument should be an array, like ['onReachBottom']");
             }
           }
