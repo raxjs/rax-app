@@ -54,7 +54,7 @@ function transformCode(rawContent, mode, externalPlugins = [], externalPreset = 
  * @param {object} options
  */
 function output(content, raw, options) {
-  const { mode, outputPath, externalPlugins = [], isTypescriptFile, platform, type, changedFiles, resourcePath } = options;
+  const { mode, outputPath, externalPlugins = [], isTypescriptFile, platform, type } = options;
   let { code, config, json, css, map, template, assets, importComponents = [], iconfontMap } = content;
   const isQuickApp = platform.type === QUICKAPP;
 
@@ -96,7 +96,7 @@ function output(content, raw, options) {
       // wrap with script for app.ux
       if (type === 'app') {
         code = `<script>\n${code}\n</script>\n`;
-        writeFileWithDirCheck(outputPath.code, code, { changedFiles, resourcePath });
+        writeFileWithDirCheck(outputPath.code, code);
         // check if update fns exists
         if (global._appUpdateFns && global._appUpdateFns.length) {
           global._appUpdateFns.map(fn => {
@@ -119,11 +119,11 @@ function output(content, raw, options) {
         }
       }
     }
-    writeFileWithDirCheck(outputPath.code, code, { changedFiles, resourcePath });
+    writeFileWithDirCheck(outputPath.code, code);
   }
 
   if (json) {
-    writeFileWithDirCheck(outputPath.json, json, { type: 'json', changedFiles, resourcePath });
+    writeFileWithDirCheck(outputPath.json, json, 'json');
   }
   if (template) {
     if (isQuickApp) {
@@ -147,7 +147,7 @@ function output(content, raw, options) {
     </style>\n`;
       }
     }
-    writeFileWithDirCheck(outputPath.template, template, { changedFiles, resourcePath });
+    writeFileWithDirCheck(outputPath.template, template);
   }
   if (css) {
     if (isQuickApp) {
@@ -165,10 +165,10 @@ function output(content, raw, options) {
       }
       css = css.replace(/rpx/g, 'px');
     }
-    writeFileWithDirCheck(outputPath.css, css, { type: 'cssFile', changedFiles, resourcePath });
+    writeFileWithDirCheck(outputPath.css, css);
   }
   if (config) {
-    writeFileWithDirCheck(outputPath.config, config, { changedFiles, resourcePath });
+    writeFileWithDirCheck(outputPath.config, config);
   }
 
   // Write extra assets
@@ -183,7 +183,7 @@ function output(content, raw, options) {
         content = minify(content, ext);
       }
       const assetsOutputPath = join(outputPath.assets, asset);
-      writeFileWithDirCheck(assetsOutputPath, content, { changedFiles, resourcePath });
+      writeFileWithDirCheck(assetsOutputPath, content);
     });
   }
 }
@@ -227,16 +227,13 @@ function updateAppUx(appContent, iconfontMap, appPath) {
  * @param {string|Buffer|TypedArray|DataView} content
  * @param {string}  [type=file] 'file' or 'json'
  */
-function writeFileWithDirCheck(filePath, content, { type = 'file', changedFiles, resourcePath } ) {
+function writeFileWithDirCheck(filePath, content, type = 'file') {
   const dirPath = dirname(filePath);
   if (!existsSync(dirPath)) {
     mkdirpSync(dirPath);
   }
-  // If current file is not in changed files list and dist file exists, then there is no need to write file
-  if (type !== 'cssFile' && existsSync(filePath) && changedFiles.length && changedFiles.indexOf(resourcePath) === -1) {
-    return;
-  }
-  if (type === 'file' || type === 'cssFile') {
+
+  if (type === 'file') {
     writeFileSync(filePath, content);
   } else if (type === 'json') {
     writeJSONSync(filePath, content, { spaces: 2 });

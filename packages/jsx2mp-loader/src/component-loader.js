@@ -21,7 +21,7 @@ module.exports = async function componentLoader(content) {
   }
 
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap, aliasEntries, injectAppCssComponent, changedFiles } = loaderOptions;
+  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap, aliasEntries, injectAppCssComponent } = loaderOptions;
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
   const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
@@ -121,7 +121,6 @@ module.exports = async function componentLoader(content) {
     },
     mode,
     platform,
-    changedFiles,
     resourcePath: this.resourcePath,
     isTypescriptFile: isTypescriptFile(this.resourcePath)
   };

@@ -11,7 +11,6 @@ const getOutputPath = require('../getOutputPath');
 const ModifyOutputFileSystemPlugin = require('../../../plugins/miniapp/ModifyOutputFileSystem');
 const CopyJsx2mpRuntimePlugin = require('../../../plugins/miniapp/CopyJsx2mpRuntime');
 const CopyPublicFilePlugin = require('../../../plugins/miniapp/CopyPublicFile');
-const GetChangedFilesPlugin = require('../../../plugins/miniapp/GetChangedFiles');
 
 
 const platformConfig = require('./platformConfig');
@@ -29,7 +28,6 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
   const entryPath = './src/app.js';
-  const changedFiles = []; // For watch mode
   let outputPath = getOutputPath(context, { target });
   // Quickapp's output should be wrapped in src
   if (target === QUICKAPP) {
@@ -51,8 +49,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     constantDir: constantDirectories,
     disableCopyNpm,
     turnOffSourceMap,
-    platform: platformInfo,
-    changedFiles
+    platform: platformInfo
   };
 
   const appEntry = 'src/app.js';
@@ -69,6 +66,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   };
 
   config
+    .cache(true)
     .mode('production')
     .target('node');
 
@@ -189,7 +187,6 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     }
   }]);
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
-  config.plugin('getChangedFiles').use(GetChangedFilesPlugin, [changedFiles]);
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
   config.plugin('miniAppConfig').use(MiniAppConfigPlugin, [
     {

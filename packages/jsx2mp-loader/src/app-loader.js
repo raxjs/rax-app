@@ -30,7 +30,7 @@ module.exports = async function appLoader(content) {
   }
 
   const loaderOptions = getOptions(this);
-  const { entryPath, outputPath, platform, mode, disableCopyNpm, turnOffSourceMap, aliasEntries, changedFiles } = loaderOptions;
+  const { entryPath, outputPath, platform, mode, disableCopyNpm, turnOffSourceMap, aliasEntries } = loaderOptions;
   const rawContent = content;
 
   if (!existsSync(outputPath)) mkdirpSync(outputPath);
@@ -85,8 +85,7 @@ module.exports = async function appLoader(content) {
     resourcePath: this.resourcePath,
     isTypescriptFile: isTypescriptFile(this.resourcePath),
     type: 'app',
-    platform,
-    changedFiles
+    platform
   };
 
   output(outputContent, rawContent, outputOption);
