@@ -121,7 +121,6 @@ module.exports = async function componentLoader(content) {
     },
     mode,
     platform,
-    resourcePath: this.resourcePath,
     isTypescriptFile: isTypescriptFile(this.resourcePath)
   };
 

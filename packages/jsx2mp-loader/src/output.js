@@ -232,7 +232,6 @@ function writeFileWithDirCheck(filePath, content, type = 'file') {
   if (!existsSync(dirPath)) {
     mkdirpSync(dirPath);
   }
-
   if (type === 'file') {
     writeFileSync(filePath, content);
   } else if (type === 'json') {

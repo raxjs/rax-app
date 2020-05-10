@@ -128,7 +128,6 @@ module.exports = async function pageLoader(content) {
     },
     mode,
     platform,
-    resourcePath: this.resourcePath,
     isTypescriptFile: isTypescriptFile(this.resourcePath)
   };
 

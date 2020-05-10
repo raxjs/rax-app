@@ -85,7 +85,7 @@ module.exports = async function appLoader(content) {
     resourcePath: this.resourcePath,
     isTypescriptFile: isTypescriptFile(this.resourcePath),
     type: 'app',
-    platform
+    platform,
   };
 
   output(outputContent, rawContent, outputOption);
