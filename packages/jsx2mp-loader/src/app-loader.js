@@ -82,7 +82,6 @@ module.exports = async function appLoader(content) {
       css: join(outputPath, 'app' + platform.extension.css),
     },
     mode,
-    resourcePath: this.resourcePath,
     isTypescriptFile: isTypescriptFile(this.resourcePath),
     type: 'app',
     platform,
