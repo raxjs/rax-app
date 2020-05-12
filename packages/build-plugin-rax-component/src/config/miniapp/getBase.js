@@ -45,6 +45,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     .add(`./${entryPath}?role=component`);
 
   config
+    .cache(true)
     .mode('production')
     .target('node');
 
