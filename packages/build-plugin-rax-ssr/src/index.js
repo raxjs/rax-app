@@ -50,10 +50,11 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, setValu
     }
   });
 
+  // build-manifest.json is generate after web complier, which is run parallel.
   onHook('after.build.compile', () => {
-    const files = klawSync(path.resolve(buildDir, 'node'));
     const buildManifest = JSON.stringify(require(buildManifestPath));
-
+    
+    const files = klawSync(path.resolve(buildDir, 'node'));
     files.map(fileInfo => {
       if (/\.js$/.test(fileInfo.path)) {
         const bundle = fse.readFileSync(fileInfo.path, 'utf-8');
