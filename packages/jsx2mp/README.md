@@ -18,7 +18,7 @@ await build(options);
 
 | param          | required | type     | default | explanation                                                  |
 | -------------- | -------- | -------- | ------- | ------------------------------------------------------------ |
-| buildType      | N        | string   | compile | Build type, 'compile'  or 'runtime' <br />**Attention:** <br />1.  `type`/`distDir`/`constantDir`/`disableCopyNpm`/`turnOffSourceMap` are only valid in compile mode<br />2. BuildType is only valid when type is 'project' |
+| buildType      | N        | string   | compile | Build type, 'compile'  or 'runtime' <br />**Attention:** <br />1.  `type`/`constantDir`/`disableCopyNpm`/`turnOffSourceMap` are only valid in compile mode<br />2. BuildType is only valid when type is 'project' |
 | type           | N        | string   | project | Build type,  'project' or 'component'                        |
 | target         | N        | stirng   | miniapp | Build target, 'miniapp' or 'wechat-miniprogram'              |
 | entry          | N        | string   | src/app | Entry file path                                              |
