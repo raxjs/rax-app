@@ -28,8 +28,8 @@ const appJsTmpl = readFileSync(
   'utf8'
 );
 
-const appCssTmpl = readFileSync(
-  resolve(__dirname, 'templates', 'app.css'),
+const defaultCSSTmpl = readFileSync(
+  resolve(__dirname, 'templates', 'default.css'),
   'utf8'
 );
 const customComponentJsTmpl = readFileSync(
@@ -242,14 +242,16 @@ function handleAppJS(compilation, commonAppJSFilePaths, assetsSubpackageMap, { t
 }
 
 function handleAppCSS(compilation, { target, command }) {
-  let appCssContent = adjustCss(appCssTmpl);
+  let defaultCSS = adjustCss(defaultCSSTmpl);
+  let appCssContent = "@import './default';";
   // If inlineStyle is set to false, css file will be extracted to vendor.css
   const extractedAppCSSFilePath = `${target}/${vendorCSSFileName}`;
   if (compilation.assets[extractedAppCSSFilePath]) {
     compilation.assets[`${extractedAppCSSFilePath}.${adapter[target].css}`] = new RawSource(adjustCss(compilation.assets[extractedAppCSSFilePath].source()));
     delete compilation.assets[extractedAppCSSFilePath];
-    appCssContent = `@import "./${vendorCSSFileName}";\n${appCssContent}`;
+    appCssContent = `${appCssContent}\n@import "./${vendorCSSFileName}";`;
   }
+  addFile(compilation, { filename: `default.${adapter[target].css}`, content: defaultCSS, target, command });
   addFile(compilation, { filename: `app.${adapter[target].css}`, content: appCssContent, target, command });
 }
 
