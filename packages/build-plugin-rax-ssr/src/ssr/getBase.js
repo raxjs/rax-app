@@ -1,13 +1,12 @@
 const path = require('path');
 const getWebpackBase = require('rax-webpack-config');
 const getBabelConfig = require('rax-babel-config');
-const getEntryName = require('./getEntryName');
 const EntryPlugin = require('./entryPlugin');
 
 const EntryLoader = require.resolve('./entryLoader');
 
 // Can‘t clone webpack chain object, so generate a new chain and reset config
-module.exports = (context, getValue) => {
+module.exports = (context, routes) => {
   const { userConfig, rootDir } = context;
 
   const babelConfig = getBabelConfig({
@@ -22,14 +21,11 @@ module.exports = (context, getValue) => {
   });
 
   config.target('node');
+  config.name('ssr');
 
-  const { plugins, inlineStyle = true } = userConfig;
-  // build-plugin-rax-multi-pages is deprecated, but still need to be compatible.
-  const isMultiPages = getValue('appType') === 'mpa' || !!~plugins.indexOf('build-plugin-rax-multi-pages');
-  const appJSON = require(path.resolve(rootDir, 'src/app.json'));
-  const entries = appJSON.routes.map((route) => {
+  const entries = routes.map((route) => {
     return {
-      name: getEntryName(route.path),
+      name: route.entryName,
       sourcePath: path.join(rootDir, 'src', route.source),
       pagePath: route.path,
     };
@@ -39,8 +35,6 @@ module.exports = (context, getValue) => {
     .use(EntryPlugin, [{
       entries,
       loader: EntryLoader,
-      isMultiPages: isMultiPages,
-      isInlineStyle: inlineStyle,
       absoluteDocumentPath: path.join(rootDir, 'src/document/index.jsx'),
       absoluteShellPath: path.join(rootDir, 'src/shell/index.jsx'),
     }]);
@@ -48,6 +42,8 @@ module.exports = (context, getValue) => {
   config.output
     .filename('node/[name].js')
     .libraryTarget('commonjs2');
+
+  const {inlineStyle = true } = userConfig;
 
   if (!inlineStyle) {
     // there is no need to generate css file in node

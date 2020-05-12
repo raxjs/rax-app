@@ -19,8 +19,6 @@ module.exports = function() {
     absoluteDocumentPath,
     absoluteShellPath,
     pagePath,
-    styles = [],
-    scripts = [],
   } = query;
 
   const absolutePagePath = formatPath(this.resourcePath);
@@ -28,6 +26,10 @@ module.exports = function() {
   const shellStr = hasShell ? `import Shell from '${formatPath(absoluteShellPath)}'` : 'const Shell = function (props) { return props.children };';
 
   const renderHtmlFnc = `
+    const BUILD_MANIFEST = __BUILD_MANIFEST__;
+
+    const pageAssets = BUILD_MANIFEST['${pagePath}'];
+
     async function renderComponentToHTML(Component, ctx) {
 
       const shellData = await getInitialProps(Shell, ctx);
@@ -53,8 +55,8 @@ module.exports = function() {
           __initialHtml: initialHtml,
           __initialData: JSON.stringify(initialData),
           __pagePath: '${pagePath}',
-          __styles: ${JSON.stringify(styles)},
-          __scripts: ${JSON.stringify(scripts)},
+          __styles: pageAssets.styles,
+          __scripts: pageAssets.scripts,
         };
       };
       DocumentContextProvider.prototype.render = function() {

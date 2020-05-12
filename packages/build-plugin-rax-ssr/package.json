@@ -7,11 +7,11 @@
   "dependencies": {
     "address": "^1.0.1",
     "error-stack-tracey": "^0.1.0",
+    "fs-extra": "^9.0.0",
     "klaw-sync": "^6.0.0",
     "null-loader": "^3.0.0",
     "qs": "^6.8.0",
     "rax-babel-config": "^0.1.0",
-    "rax-compile-config": "^0.2.0",
     "rax-webpack-config": "^0.0.1"
   }
 }

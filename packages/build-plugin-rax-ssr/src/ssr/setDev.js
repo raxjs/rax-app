@@ -1,8 +1,8 @@
 
 const path = require('path');
 const Module = require('module');
+const fse = require('fs-extra');
 const { parse, print } = require('error-stack-tracey');
-const getEntryName = require('./getEntryName');
 
 function exec(code, filename, filePath) {
   const module = new Module(filename, this);
@@ -12,45 +12,78 @@ function exec(code, filename, filePath) {
   return module.exports;
 }
 
-module.exports = (config, context) => {
-  const { rootDir } = context;
-
+module.exports = (config, routes, options) => {
   config.mode('development');
-
-  const absoluteAppJSONPath = path.join(rootDir, 'src/app.json');
-  const appJSON = require(absoluteAppJSONPath);
 
   const distDir = config.output.get('path');
   const filename = config.output.get('filename');
-  const routes = appJSON.routes;
-
   routes.forEach((route) => {
-    const entryName = getEntryName(route.path);
-    route.entryName = entryName;
-    route.componentPath = path.join(distDir, filename.replace('[name]', entryName));
+    route.componentPath = path.join(distDir, filename.replace('[name]', route.entryName));
   });
 
   config.devServer.hot(false);
 
   // There can only be one `before` config, this config will overwrite `before` config in web plugin.
   config.devServer.set('before', (app, devServer) => {
-    // outputFileSystem in devServer is MemoryFileSystem by defalut, but it can also be custom with other file systems.
-    const outputFs = devServer.compiler.compilers[0].outputFileSystem;
+    const compilers = devServer.compiler.compilers;
+    
+    const compiler = compilers.find(compiler => {
+      return compiler.name === 'ssr';
+    });
+
+    let compilationAssets = {};
+    const httpTaskQueue = [];
+
+    compiler.hooks.emit.tap(
+      'AppHistoryFallback',
+      (compilation, callback) => {
+        for (const [, entrypoint] of compilation.entrypoints.entries()) {
+          const files = entrypoint.getFiles();
+          const entryFile = files[0];
+          compilationAssets[entrypoint.name] = compilation.assets[entryFile];
+        }
+
+        let task;
+        // eslint-disable-next-line
+        while (task = httpTaskQueue.shift()) {
+          task();
+        }
+      }
+    );
+
     routes.forEach((route) => {
-      app.get(route.path, async function(req, res) {
-        const bundleContent = outputFs.readFileSync(route.componentPath, 'utf8');
+      app.get(route.path, function(req, res) {
+        const send = async () => {
+          if (!compilationAssets[route.entryName]) {
+            console.error(`Bundle is not found for ${routes.path}`);
+            return;
+          }
+  
+          const buildManifest = fse.readFileSync(options.buildManifestPath);
+          const mainifestJSON = JSON.parse(buildManifest);
+  
+          const bundleContent = compilationAssets[route.entryName].source();
+  
+          const newBundle = bundleContent.replace(/__BUILD_MANIFEST__/, JSON.stringify(mainifestJSON));
+  
+          process.once('unhandledRejection', async(error) => {
+            const errorStack = await parse(error, newBundle);
+            print(error.message, errorStack);
+          });
+  
+          try {
+            const mod = exec(newBundle, route.componentPath, route.componentPath);
+            mod.render(req, res);
+          } catch (error) {
+            const errorStack = await parse(error, newBundle);
+            print(error.message, errorStack);
+          }
+        };
 
-        process.once('unhandledRejection', async(error) => {
-          const errorStack = await parse(error, bundleContent);
-          print(error.message, errorStack);
-        });
-
-        try {
-          const mod = exec(bundleContent, route.componentPath, route.componentPath);
-          mod.render(req, res);
-        } catch (error) {
-          const errorStack = await parse(error, bundleContent);
-          print(error.message, errorStack);
+        if (compilationAssets) {
+          send();
+        } else {
+          httpTaskQueue.push(send);
         }
       });
     });

@@ -20,13 +20,9 @@ class EntryPlugin {
     const {
       loader,
       entries,
-      isMultiPages,
-      isInlineStyle,
       absoluteDocumentPath,
       absoluteShellPath
     } = this.options;
-
-    const publicPath = compiler.options.output.publicPath;
 
     const entryConfig = {};
 
@@ -39,8 +35,6 @@ class EntryPlugin {
 
       const query = {
         pagePath,
-        styles: isMultiPages && !isInlineStyle ? [`${publicPath}web/${name}.css`] : [],
-        scripts: isMultiPages ? [`${publicPath}web/${name}.js`] : [`${publicPath}web/index.js`],
         absoluteDocumentPath,
         absoluteShellPath,
       };
