@@ -19,7 +19,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, setValu
     route.entryName = getEntryName(route.path);
   });
 
-  const { outputDir = "build" } = userConfig;
+  const { outputDir = 'build' } = userConfig;
   const buildDir = path.resolve(rootDir, outputDir);
   const buildManifestPath = path.resolve(buildDir, 'build-manifest.json');
 
@@ -71,11 +71,11 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, setValu
 * Example: '/about/' -> 'about/index'
 */
 function getEntryName(path) {
- let entryName = 'index';
+  let entryName = 'index';
 
- if (path && path !== '/') {
-   entryName = `${path.replace(/^\/|\/$/g, '')}/index`;
- }
+  if (path && path !== '/') {
+    entryName = `${path.replace(/^\/|\/$/g, '')}/index`;
+  }
 
- return entryName;
+  return entryName;
 };

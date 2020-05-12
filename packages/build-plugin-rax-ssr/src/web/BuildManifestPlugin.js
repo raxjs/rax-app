@@ -30,7 +30,7 @@ module.exports = class BuildManifestPlugin {
 
           for (const file of files) {
             if (/\.js$/.test(file)) {
-              pagesAssets.scripts.push(publicPath + file.replace(/\\/g, '/'))
+              pagesAssets.scripts.push(publicPath + file.replace(/\\/g, '/'));
             }
 
             if (/\.css$/.test(file)) {
@@ -47,4 +47,4 @@ module.exports = class BuildManifestPlugin {
         callback();
       });
   }
-}
+};

@@ -26,7 +26,7 @@ module.exports = (config, routes, options) => {
   // There can only be one `before` config, this config will overwrite `before` config in web plugin.
   config.devServer.set('before', (app, devServer) => {
     const compilers = devServer.compiler.compilers;
-    
+
     const compiler = compilers.find(compiler => {
       return compiler.name === 'ssr';
     });
@@ -53,24 +53,24 @@ module.exports = (config, routes, options) => {
 
     routes.forEach((route) => {
       app.get(route.path, function(req, res) {
-        const send = async () => {
+        const send = async() => {
           if (!compilationAssets[route.entryName]) {
             console.error(`Bundle is not found for ${routes.path}`);
             return;
           }
-  
+
           const buildManifest = fse.readFileSync(options.buildManifestPath);
           const mainifestJSON = JSON.parse(buildManifest);
-  
+
           const bundleContent = compilationAssets[route.entryName].source();
-  
+
           const newBundle = bundleContent.replace(/__BUILD_MANIFEST__/, JSON.stringify(mainifestJSON));
-  
+
           process.once('unhandledRejection', async(error) => {
             const errorStack = await parse(error, newBundle);
             print(error.message, errorStack);
           });
-  
+
           try {
             const mod = exec(newBundle, route.componentPath, route.componentPath);
             mod.render(req, res);
