@@ -115,19 +115,19 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     if (targets.includes(MINIAPP)) {
       console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: MINIAPP })));
+      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: MINIAPP, distDir: options[MINIAPP].distDir })));
       console.log();
     }
 
     if (targets.includes(WECHAT_MINIPROGRAM)) {
       console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: WECHAT_MINIPROGRAM })));
+      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: WECHAT_MINIPROGRAM, distDir: options[WECHAT_MINIPROGRAM].distDir })));
       console.log();
     }
 
     if (targets.includes(BYTEDANCE_MICROAPP)) {
       console.log(chalk.green('[ByteDance MicroApp] Use bytedance microapp developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: BYTEDANCE_MICROAPP })));
+      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: BYTEDANCE_MICROAPP, distDir: options[BYTEDANCE_MICROAPP].distDir })));
       console.log();
     }
 

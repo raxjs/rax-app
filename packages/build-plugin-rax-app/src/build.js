@@ -35,7 +35,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
     if ([MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP].includes(target)) {
       if (options[target] && options[target].buildType === 'runtime') {
         const getBase = require('./config/miniapp/runtime/getBase');
-        registerTask(target, getBase(context, target, options));
+        registerTask(target, getBase(context, target, options, onGetWebpackConfig));
       } else {
         const getBase = require('./config/miniapp/compile/getBase');
         registerTask(target, getBase(context, target, options, onGetWebpackConfig));
@@ -105,6 +105,7 @@ function logBuildResult(targets = [], context = {}, options = {}) {
     console.log(chalk.green('[ByteDance MicroApp] Bundle at:'));
     console.log('   ', chalk.underline.white(getMiniAppOutput(context, {
       target: BYTEDANCE_MICROAPP,
+      distDir: options[BYTEDANCE_MICROAPP] && options[BYTEDANCE_MICROAPP].distDir
     })));
     console.log();
   }

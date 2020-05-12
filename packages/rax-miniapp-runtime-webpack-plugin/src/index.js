@@ -45,8 +45,8 @@ function isCSSFile(filePath) {
 /**
  * Add file to compilation
  */
-function addFile(compilation, { filename, content, command = 'build', target }) {
-  compilation.assets[`${target}/${filename}`] = {
+function addFile(compilation, { filename, content, command = 'build' }) {
+  compilation.assets[`${filename}`] = {
     source: () => command === 'build' ? minify(content, extname(filename)) : content,
     size: () => Buffer.from(content).length
   };
@@ -231,7 +231,7 @@ function handleAppJS(compilation, commonAppJSFilePaths, assetsSubpackageMap, { t
         filePath =>
           `require('${getAssetPath(
             '',
-            relative(target, filePath),
+            filePath,
             assetsSubpackageMap,
             'app.js'
           )}')(window)`
@@ -359,7 +359,7 @@ function installDependencies(
   resolve(sourcePath, customComponentConfig.root);
 
   const outputPath = resolve(stats.compilation.outputOptions.path);
-  const distNpmDir = resolve(outputPath, target, adapter[target].npmDirName);
+  const distNpmDir = resolve(outputPath, adapter[target].npmDirName);
 
   const build = () => {
     ['miniapp-element', 'miniapp-render'].forEach(name => {
@@ -455,30 +455,27 @@ class MiniAppRuntimePlugin {
 
           const ext = isCSSFile(filePath) ? 'css' : extMatch[1];
 
-          let relativeFilePath;
           // Adjust css content
           if (ext === 'css') {
-            relativeFilePath = filePath;
-            if (relativeFilePath !== `${target}/${vendorCSSFileName}`) {
+            if (filePath !== vendorCSSFileName) {
               compilation.assets[
-                `${relativeFilePath}.${adapter[target].css}`
-              ] = new RawSource(adjustCss(compilation.assets[relativeFilePath].source()));
-              delete compilation.assets[`${relativeFilePath}`];
+                `${filePath}.${adapter[target].css}`
+              ] = new RawSource(adjustCss(compilation.assets[filePath].source()));
+              delete compilation.assets[`${filePath}`];
             }
           }
-          relativeFilePath = relative(target, filePath);
 
           // Skip recorded
-          if (filePathMap[relativeFilePath]) return;
-          filePathMap[relativeFilePath] = true;
+          if (filePathMap[filePath]) return;
+          filePathMap[filePath] = true;
 
           // Record
-          assets[ext].push(relativeFilePath);
+          assets[ext].push(filePath);
 
           // Insert into assetsReverseMap
-          assetsReverseMap[relativeFilePath] = assetsReverseMap[relativeFilePath] || [];
-          if (assetsReverseMap[relativeFilePath].indexOf(entryName) === -1)
-            assetsReverseMap[relativeFilePath].push(entryName);
+          assetsReverseMap[filePath] = assetsReverseMap[filePath] || [];
+          if (assetsReverseMap[filePath].indexOf(entryName) === -1)
+            assetsReverseMap[filePath].push(entryName);
         });
 
         assetsMap[entryName] = assets;

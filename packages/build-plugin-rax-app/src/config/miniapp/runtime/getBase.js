@@ -4,8 +4,9 @@ const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
+const { resolve, join } = require('path');
 
-module.exports = (context, target, options) => {
+module.exports = (context, target, options, onGetWebpackConfig) => {
   const { rootDir, command } = context;
   const { distDir = '', entryPath = './src/app' } = options[target] || {};
   const outputPath = getMiniAppOutput(context, { target, distDir });
@@ -24,8 +25,8 @@ module.exports = (context, target, options) => {
     .use('json-loader')
     .loader(require.resolve('json-loader'));
 
-  config.output
-    .filename(`${target}/common/[name].js`)
+    config.output
+    .filename('common/[name].js')
     .library('createApp')
     .libraryExport('default')
     .libraryTarget('window');
@@ -71,5 +72,11 @@ module.exports = (context, target, options) => {
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
   config.devtool('none');
+
+  onGetWebpackConfig(target, (config) => {
+    const outputPath = resolve(rootDir, distDir ? distDir : join('build', target));
+    config.output.path(outputPath);
+  });
+
   return config;
 };
