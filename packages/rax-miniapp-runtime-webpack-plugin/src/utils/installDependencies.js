@@ -15,10 +15,10 @@ module.exports = function(
   customComponentConfig = {},
   { target, isFirstRender, command }
 ) {
-  const sourcePath = join(process.cwd(), 'src');
+  const rootDir = process.cwd();
   const customComponentRoot =
     customComponentConfig.root &&
-    resolve(sourcePath, customComponentConfig.root);
+    resolve(rootDir, customComponentConfig.root);
 
   const outputPath = resolve(stats.compilation.outputOptions.path);
   const distNpmDir = resolve(outputPath, target, adapter[target].npmDirName);

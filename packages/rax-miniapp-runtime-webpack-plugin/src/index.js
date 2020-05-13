@@ -52,7 +52,7 @@ class MiniAppRuntimePlugin {
       const customComponentConfig = config.nativeCustomComponent || {};
       const customComponentRoot =
         customComponentConfig.root &&
-        resolve(sourcePath, customComponentConfig.root);
+        resolve(options.rootDir, customComponentConfig.root);
       const customComponents = customComponentConfig.usingComponents || {};
       const pages = [];
       const assetsMap = {}; // page - asset
