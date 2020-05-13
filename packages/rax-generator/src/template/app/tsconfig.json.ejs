@@ -9,16 +9,13 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "alwaysStrict": true,
-    "baseUrl": ".",
+    "baseUrl": "."<%_ if (useReact) { -%>,
     "paths": {
-      "rax": [
-        "node_modules/@rax-types/rax"
-      ]<%_ if (useReact) { -%>,
       "react": [
         "node_modules/@rax-types/rax"
-      ],
-      <%_ } -%>
-    }
+      ]
+    }<%_ } -%>
+    
   },
   "include": [
     "./src/**/*"
