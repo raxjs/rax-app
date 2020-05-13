@@ -1,46 +1,33 @@
 const webpack = require('webpack');
-const { resolve, dirname, join } = require('path');
+const { resolve } = require('path');
 const { existsSync } = require('fs-extra');
 
-const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
-const getWebpackBase = require('../../getWebpackBase');
-const getAppConfig = require('../getAppConfig');
-const setEntry = require('./setEntry');
-const getOutputPath = require('../getOutputPath');
+const getWebpackBase = require('../getBaseWebpack');
+const getOutputPath = require('./getOutputPath');
 
-const ModifyOutputFileSystemPlugin = require('../../../plugins/miniapp/ModifyOutputFileSystem');
-const CopyJsx2mpRuntimePlugin = require('../../../plugins/miniapp/CopyJsx2mpRuntime');
-const CopyPublicFilePlugin = require('../../../plugins/miniapp/CopyPublicFile');
+const ModifyOutputFileSystemPlugin = require('../../plugins/miniapp/ModifyOutputFileSystem');
+const CopyJsx2mpRuntimePlugin = require('../../plugins/miniapp/CopyJsx2mpRuntime');
+const CopyPublicFilePlugin = require('../../plugins/miniapp/CopyPublicFile');
 
 
 const platformConfig = require('./platformConfig');
-const targetPlatformMap = require('../targetPlatformMap');
-const { QUICKAPP } = require('../../../constants');
+const targetPlatformMap = require('./targetPlatformMap');
 
-const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
-const PageLoader = require.resolve('jsx2mp-loader/src/page-loader');
 const ComponentLoader = require.resolve('jsx2mp-loader/src/component-loader');
 const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
 module.exports = (context, target, options = {}, onGetWebpackConfig) => {
-  const { platform = targetPlatformMap[target], mode = 'build', disableCopyNpm = false, turnOffSourceMap = false, constantDir = [] } = options[target] || {};
+  const { platform = targetPlatformMap[target], mode = 'build', entryPath = './src/index', distDir = '', disableCopyNpm = mode === 'build', turnOffSourceMap = false, constantDir = [] } = options[target] || {};
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
-  const entryPath = './src/app.js';
-  let outputPath = getOutputPath(context, { target });
-  // Quickapp's output should be wrapped in src
-  if (target === QUICKAPP) {
-    outputPath = join(outputPath, 'src');
-  }
+  const outputPath = getOutputPath(context, { target, distDir });
   const config = getWebpackBase(context, {
     disableRegenerator: true
   });
 
-  const appConfig = getAppConfig(rootDir, target);
-
-  const isPublicFileExist = existsSync(resolve(rootDir, 'src/public')); // `public` directory is the default static resource directory
-  const constantDirectories = isPublicFileExist ? ['src/public'].concat(constantDir) : constantDir; // To make old `constantDir` param compatible
+  const isPublicFileExist = existsSync(resolve(rootDir, 'src/public'));
+  const constantDirectories = isPublicFileExist ? ['src/public'].concat(constantDir) : constantDir;
 
   const loaderParams = {
     mode,
@@ -52,24 +39,14 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     platform: platformInfo
   };
 
-  const appEntry = 'src/app.js';
-  setEntry(config, appConfig.routes, { appEntry });
-
-  const pageLoaderParams = {
-    ...loaderParams,
-    entryPath: appEntry,
-  };
-
-  const appLoaderParams = {
-    ...loaderParams,
-    entryPath: dirname(appEntry)
-  };
+  config.entryPoints.clear();
+  config
+    .entry('component')
+    .add(`./${entryPath}?role=component`);
 
   config
     .mode('production')
     .target('node');
-
-  config.resolve.alias.clear();
 
   config.resolve.alias
     .set('react', 'rax')
@@ -77,7 +54,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
 
   onGetWebpackConfig(target, (config) => {
     const aliasEntries = config.resolve.alias.entries();
-    loaderParams.aliasEntries = pageLoaderParams.aliasEntries = appLoaderParams.aliasEntries = aliasEntries;
+    loaderParams.aliasEntries = aliasEntries;
   });
 
   config.module.rule('jsx').uses.clear();
@@ -100,17 +77,9 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     .exclude
     .add(/node_modules/)
     .end()
-    .use('app')
-    .loader(AppLoader)
-    .options(appLoaderParams)
-    .end()
-    .use('page')
-    .loader(PageLoader)
-    .options(pageLoaderParams)
-    .end()
     .use('component')
     .loader(ComponentLoader)
-    .options(pageLoaderParams)
+    .options(loaderParams)
     .end()
     .use('platform')
     .loader(require.resolve('rax-compile-config/src/platformLoader'))
@@ -172,10 +141,6 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
       if (/^@weex-module\//.test(request)) {
         return callback(null, `commonjs2 ${request}`);
       }
-      // Built-in modules in QuickApp
-      if (/^@system\./.test(request)) {
-        return callback(null, `commonjs2 ${request}`);
-      }
       callback();
     },
   ]);
@@ -187,16 +152,6 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   }]);
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
-  config.plugin('miniAppConfig').use(MiniAppConfigPlugin, [
-    {
-      type: 'complie',
-      appConfig,
-      getAppConfig,
-      outputPath,
-      target,
-      nativeConfig: options[target] && options[target].nativeConfig
-    }
-  ]);
 
   if (constantDirectories.length > 0) {
     config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir, constantDirectories }]);

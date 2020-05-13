@@ -7,7 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const getWebpackBase = require('rax-webpack-config');
-const getBabelConfig = require('rax-babel-config');
+const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
 
 module.exports = (context, options = {}, target) => {
   const { rootDir, command } = context;
@@ -25,6 +25,13 @@ module.exports = (context, options = {}, target) => {
   config.target('web');
   config.context(rootDir);
 
+  setBabelAlias(config);
+
+  config.resolve.extensions
+    .merge([
+      '.rml',
+    ]);
+
   config.resolve.alias
     .set('@core/app', 'universal-app-runtime')
     .set('@core/page', 'universal-app-runtime')
@@ -41,6 +48,17 @@ module.exports = (context, options = {}, target) => {
     .use('loader')
     .loader(require.resolve('../loaders/AppConfigLoader'));
 
+  // ReactML support
+  config.module.rule('rml')
+    .test(/\.rml$/i)
+    .use('rml')
+    .loader(require.resolve('@reactml/loader'))
+    .options({
+      renderer: 'rax',
+      inlineStyle: context.userConfig.inlineStyle,
+    })
+    .end();
+
   config.module.rule('tsx')
     .use('ts')
     .loader(require.resolve('ts-loader'))
@@ -51,55 +69,22 @@ module.exports = (context, options = {}, target) => {
     .use('platform')
     .loader(require.resolve('rax-compile-config/src/platformLoader'));
 
-  config.plugin('caseSensitivePaths')
-    .use(CaseSensitivePathsPlugin);
+  config.module.rule('jsx')
+    .test(/\.(js|mjs|jsx)$/)
+    .use('platform')
+    .loader(require.resolve('rax-compile-config/src/platformLoader'));
 
   if (target && fs.existsSync(path.resolve(rootDir, 'src/public'))) {
     config.plugin('copyWebpackPlugin')
       .use(CopyWebpackPlugin, [[{ from: 'src/public', to: `${target}/public` }]]);
   }
 
-  config.externals([
-    function(ctx, request, callback) {
-      if (request.indexOf('@weex-module') !== -1) {
-        return callback(null, `commonjs ${request}`);
-      }
-
-      // compatible with @system for quickapp
-      if (request.indexOf('@system') !== -1) {
-        return callback(null, `commonjs ${request}`);
-      }
-      callback();
-    },
-  ]);
-
-  config.plugin('noError')
-    .use(webpack.NoEmitOnErrorsPlugin);
-
   const copyWebpackPluginPatterns = [{ from: 'src/public', to: `${target}/public` }];
 
   if (command === 'start') {
-    config.mode('development');
-    config.devtool('inline-module-source-map');
     // MiniApp usually use `./public/xxx.png` as file src.
     // Dev Server start with '/'. if you want to use './public/xxx.png', should copy public to the root.
     copyWebpackPluginPatterns.push({ from: 'src/public', to: 'public' });
-  } else if (command === 'build') {
-    config.mode('production');
-
-    config.optimization
-      .minimizer('terser')
-      .use(TerserPlugin, [{
-        terserOptions: {
-          output: {
-            comments: false,
-          },
-        },
-        extractComments: false,
-      }])
-      .end()
-      .minimizer('optimizeCSS')
-      .use(OptimizeCSSAssetsPlugin);
   }
 
   if (target && fs.existsSync(path.resolve(rootDir, 'src/public'))) {

@@ -8,15 +8,20 @@ const { handleWebpackErr } = require('rax-compile-config');
 
 const getDistConfig = require('./config/getDistConfig');
 const getUMDConfig = require('./config/getUMDConfig');
+const getMiniappConfig = require('./config/miniapp/getBase');
+const miniappPlatformConfig = require('./config/miniapp/platformConfig');
 const buildLib = require('./buildLib');
 
-const { WEB, WEEX } = require('./constants');
+const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = (api, options = {}) => {
-  const { registerTask, modifyUserConfig, context, onHook } = api;
+  const { registerTask, modifyUserConfig, context, onHook, onGetWebpackConfig } = api;
   const { targets = [] } = options;
   const { rootDir, userConfig } = context;
   const { distDir, outputDir } = userConfig;
+
+  // lib needs to be generated if targets include web/weex and `omitLib` in miniapp is false/undefined
+  const generateLib = targets.includes(WEB) || targets.includes(WEEX) || !(options[MINIAPP] && options[MINIAPP].omitLib);
 
   targets.forEach(target => {
     if (target === WEEX || target === WEB) {
@@ -27,17 +32,24 @@ module.exports = (api, options = {}) => {
       registerTask(`component-build-${target}`, config);
       registerTask(`component-build-${target}-umd`, umdConfig);
     }
+    if (target === MINIAPP || target === WECHAT_MINIPROGRAM) {
+      options[target] = options[target] || {};
+      addMiniappTargetParam(target, options[target]);
+      const config = getMiniappConfig(context, target, options, onGetWebpackConfig);
+      registerTask(`component-build-${target}`, config);
+    }
   });
 
   onHook('before.build.load', async() => {
     consoleClear(true);
+    if (generateLib) {
+      const libBuildErr = await buildLib(api, options);
 
-    const libBuildErr = await buildLib(api, options);
-
-    if (libBuildErr) {
-      console.error(chalk.red('Build Lib error'));
-      console.log(libBuildErr.stats);
-      console.log(libBuildErr.err);
+      if (libBuildErr) {
+        console.error(chalk.red('Build Lib error'));
+        console.log(libBuildErr.stats);
+        console.log(libBuildErr.err);
+      }
     }
   });
 
@@ -51,12 +63,36 @@ module.exports = (api, options = {}) => {
     console.log(chalk.green('Rax Component build finished:'));
     console.log();
 
-    console.log(chalk.green('Component lib at:'));
-    console.log('   ', chalk.underline.white(path.resolve(rootDir, outputDir)));
-    console.log();
 
-    console.log(chalk.green('Component dist at:'));
-    console.log('   ', chalk.underline.white(path.resolve(rootDir, distDir)));
-    console.log();
+    if (targets.includes(WEB) || targets.includes(WEEX)) {
+      console.log(chalk.green('Component lib at:'));
+      console.log('   ', chalk.underline.white(path.resolve(rootDir, outputDir)));
+      console.log();
+
+      console.log(chalk.green('Component dist at:'));
+      console.log('   ', chalk.underline.white(path.resolve(rootDir, distDir)));
+      console.log();
+    }
+    Object.entries(miniappPlatformConfig).forEach(([platform, config]) => {
+      if (targets.includes(platform)) {
+        console.log(chalk.green(`[${config.name}] Component lib at:`));
+        const distDir = options[platform].distDir || `${outputDir}/${platform}`;
+        console.log('   ', chalk.underline.white(path.resolve(rootDir, distDir)));
+        console.log();
+      }
+    });
   });
 };
+
+/**
+ * Add miniapp target param to match jsx2mp-loader config
+ * */
+function addMiniappTargetParam(target, originalConfig = {}) {
+  switch (target) {
+    case WECHAT_MINIPROGRAM:
+      originalConfig.platform = 'wechat';
+      break;
+    default:
+      break;
+  }
+}

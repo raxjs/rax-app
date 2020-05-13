@@ -1,4 +1,4 @@
-const { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('../../../constants');
+const { MINIAPP, WECHAT_MINIPROGRAM } = require('../../constants');
 
 
 module.exports = {
@@ -16,22 +16,6 @@ module.exports = {
     extension: {
       xml: '.wxml',
       css: '.wxss',
-    }
-  },
-  [BYTEDANCE_MICROAPP]: {
-    type: 'bytedance',
-    name: 'ByteDance MicroApp',
-    extension: {
-      xml: '.ttml',
-      css: '.ttss'
-    }
-  },
-  [QUICKAPP]: {
-    type: 'quickapp',
-    name: 'QuickApp',
-    extension: {
-      xml: '.ux',
-      css: '.css',
     }
   },
   // Wait for implementation

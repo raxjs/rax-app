@@ -43,29 +43,21 @@ const TYPES_DIR = path.resolve(rootDir, typesOutputDir);
 const ES_DIR = esOutputDir ? path.resolve(rootDir, esOutputDir) : '';
 
 function clean(done) {
-  log.info('component', `Cleaning lib directory ${LIB_DIR}`);
   fs.removeSync(LIB_DIR);
   if (ES_DIR) {
-    log.info('component', `Cleaning es directory ${ES_DIR}`);
     fs.removeSync(ES_DIR);
   }
   if (fs.pathExistsSync(TYPES_DIR)) {
-    log.info('component', `Cleaning dts directory ${TYPES_DIR}`);
     fs.removeSync(TYPES_DIR);
   }
-  log.info('component', 'Build directory has been Cleaned');
   done();
 }
 
 // for js/jsx.
 function compileJs() {
-  log.info('component', 'Compiling javascript files');
   return src([JS_FILES_PATTERN], { ignore: IGNORE_PATTERN })
     .pipe(babel(babelConfig))
-    .pipe(dest(LIB_DIR))
-    .on('end', () => {
-      log.info('component', 'Javascript files have been compiled');
-    });
+    .pipe(dest(LIB_DIR));
 }
 
 function compileJS2ES() {
@@ -73,13 +65,9 @@ function compileJS2ES() {
     return src('.');
   }
 
-  log.info('component', 'Compiling javascript files to ES');
 
   return src([JS_FILES_PATTERN], { ignore: IGNORE_PATTERN })
-    .pipe(dest(ES_DIR))
-    .on('end', () => {
-      log.info('component', 'Javascript files have been compiled to es');
-    });
+    .pipe(dest(ES_DIR));
 }
 
 const tsProject = ts.createProject('tsconfig.json', {
@@ -89,15 +77,11 @@ const tsProject = ts.createProject('tsconfig.json', {
 
 // for ts/tsx.
 function compileTs() {
-  log.info('component', 'Compiling typescript files');
   return tsProject
     .src()
     .pipe(tsProject())
     .pipe(babel(babelConfig))
-    .pipe(dest(LIB_DIR))
-    .on('end', () => {
-      log.info('component', 'Typescript files have been compiled');
-    });
+    .pipe(dest(LIB_DIR));
 }
 
 const tsProject4Dts = ts.createProject('tsconfig.json', {
@@ -110,10 +94,7 @@ function compileDts() {
   return tsProject4Dts.src()
     .pipe(tsProject4Dts())
     .dts
-    .pipe(dest(TYPES_DIR))
-    .on('end', () => {
-      log.info('component', 'Declaration files have been generated');
-    });
+    .pipe(dest(TYPES_DIR));
 }
 
 const tsProject4ES = ts.createProject('tsconfig.json', {
@@ -127,19 +108,12 @@ function compileTS2ES() {
   }
   return tsProject4ES.src()
     .pipe(tsProject4ES())
-    .pipe(dest(ES_DIR))
-    .on('end', () => {
-      log.info('component', 'Typescript files have been compiled to es');
-    });
+    .pipe(dest(ES_DIR));
 }
 
 function copyOther() {
-  log.info('component', 'Copy other files');
   return src([OTHER_FILES_PATTERN], { ignore: IGNORE_PATTERN })
-    .pipe(dest(LIB_DIR))
-    .on('end', () => {
-      log.info('component', 'Other Files have been copied');
-    });
+    .pipe(dest(LIB_DIR));
 }
 
 if (isDev) {
@@ -149,7 +123,6 @@ if (isDev) {
   if (enableTypescript) {
     watch([TS_FILES_PATTERN], { ignore: IGNORE_PATTERN }, compileTs);
   }
-  log.info('component', 'Watching file changes');
 }
 
 let tasks = [compileJs];

@@ -21,6 +21,10 @@ module.exports = (context) => {
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, `commonjs ${request}`);
       }
+      // compatible with @system for quickapp
+      if (request.indexOf('@system') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
       callback();
     },
   ]);

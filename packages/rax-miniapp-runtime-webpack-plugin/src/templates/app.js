@@ -45,7 +45,12 @@ App({
           event: err
         });
       }
-      this.window.$$trigger('apperror');
+      this.window.$$trigger('apperror', {
+        event: {
+          context: this,
+          error: err
+        }
+      });
     }
   },
   onPageNotFound(options) {
