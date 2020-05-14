@@ -7,7 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const getWebpackBase = require('rax-webpack-config');
-const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
+const getBabelConfig = require('rax-babel-config');
 
 module.exports = (context, options = {}, target) => {
   const { rootDir, command } = context;
@@ -24,8 +24,6 @@ module.exports = (context, options = {}, target) => {
 
   config.target('web');
   config.context(rootDir);
-
-  setBabelAlias(config);
 
   config.resolve.extensions
     .merge([
