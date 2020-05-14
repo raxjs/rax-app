@@ -50,8 +50,10 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, setValu
     }
   });
 
+  const hookName = command == 'build' ? 'after.build.compile' : 'after.start.compile';
+
   // build-manifest.json is generate after web complier, which is run parallel.
-  onHook('after.build.compile', () => {
+  onHook(hookName, () => {
     const buildManifest = JSON.stringify(require(buildManifestPath));
 
     const files = klawSync(path.resolve(buildDir, 'node'));
@@ -63,7 +65,10 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, setValu
       }
     });
 
-    fse.removeSync(buildManifestPath);
+    // clear build-manifest.json after build
+    if (command === 'build') {
+      fse.removeSync(buildManifestPath);
+    }
   });
 };
 

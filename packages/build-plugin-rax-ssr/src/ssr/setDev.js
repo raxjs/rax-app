@@ -64,6 +64,7 @@ module.exports = (config, routes, options) => {
 
           const bundleContent = compilationAssets[route.entryName].source();
 
+          // insert build-manifest.json to get assets map for page
           const newBundle = bundleContent.replace(/__BUILD_MANIFEST__/, JSON.stringify(mainifestJSON));
 
           process.once('unhandledRejection', async(error) => {
