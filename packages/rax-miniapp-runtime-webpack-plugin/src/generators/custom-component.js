@@ -13,7 +13,6 @@ module.exports = function(
 ) {
   const customComponentJsTmpl = getTemplate(rootDir, target, 'custom-component');
   if (customComponentRoot) {
-    console.log("customComponentRoot", customComponentRoot)
     copy(
       customComponentRoot,
       resolve(outputPath, 'custom-component/components'),
