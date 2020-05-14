@@ -39,7 +39,7 @@ module.exports = (context) => {
 
   config.module
     .rule('tsx')
-    .test(/\.tsx?$/)
+    .test(/\.(ts|tsx)?$/)
     .use('babel')
     .loader(require.resolve('babel-loader'))
     .options(babelConfig)
