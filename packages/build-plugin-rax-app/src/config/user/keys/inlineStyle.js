@@ -107,6 +107,8 @@ function setCSSRule(configRule, context, value) {
         .use('postcss')
         .loader(require.resolve('postcss-loader'))
         .options(postcssConfig);
+    } else if (isInlineStandard) {
+      configInlineStyle(configRule);
     } else if (isNodeStandard) {
       // Do not generate CSS file, it will be built by web complier
       configRule
@@ -114,7 +116,6 @@ function setCSSRule(configRule, context, value) {
         .loader(require.resolve('null-loader'))
         .end();
     }
-    configInlineStyle(configRule);
   }
 }
 
