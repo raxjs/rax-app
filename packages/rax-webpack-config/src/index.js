@@ -58,7 +58,7 @@ module.exports = (context) => {
   config.plugin('noError').use(webpack.NoEmitOnErrorsPlugin);
   if (command === 'start') {
     config.mode('development');
-    config.devtool('inline-module-source-map');
+    config.devtool('eval-cheap-source-map');
   } else if (command === 'build') {
     config.mode('production');
 
