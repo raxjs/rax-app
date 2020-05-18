@@ -7,7 +7,7 @@ module.exports = function(compilation, chunks) {
     chunk.files.forEach(fileName => {
       if (ModuleFilenameHelpers.matchObject({ test: /\.js$/ }, fileName)) {
         // Page js
-        const headerContent = 'module.exports = function(window, document) {const App = function(options) {window.appOptions = options};var HTMLElement = window["HTMLElement"];';
+        const headerContent = 'module.exports = function(window, document) {const App = function(options) {window.appOptions = options};const HTMLElement = window["HTMLElement"];';
 
         const footerContent = '}';
 

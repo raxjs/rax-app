@@ -15,7 +15,7 @@ function generateAppJS(
 ) {
   const appJsTmpl = readFileSync(
     resolve(rootDir, 'templates', 'app.js.ejs'),
-    'utf8'
+    'utf-8'
   );
   const appJsContent = ejs.render(appJsTmpl, {
     init: `function init(window) {${commonAppJSFilePaths
@@ -41,7 +41,7 @@ function generateAppCSS(compilation, { target, command, rootDir }) {
   // Add default css file to compilation
   const defaultCSSTmpl = adjustCSS(readFileSync(
     resolve(rootDir, 'templates', 'default.css.ejs'),
-    'utf8'
+    'utf-8'
   ));
   addFileToCompilation(compilation, {
     filename: `default.${adapter[target].css}`,
