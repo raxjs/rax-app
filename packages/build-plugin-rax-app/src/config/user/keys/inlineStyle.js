@@ -1,6 +1,6 @@
 const { resolve } = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { WEB, WEEX, NODE, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../../../constants');
+const { WEB, WEEX, DOCUMENT, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../../../constants');
 
 const configPath = resolve(__dirname, '../..');
 
@@ -59,7 +59,7 @@ function setCSSRule(configRule, context, value) {
   const isInlineStandard = inlineStandardList.includes(taskName);
   const isWebStandard = webStandardList.includes(taskName);
   const isMiniAppStandard = miniappStandardList.includes(taskName);
-  const isNodeStandard = taskName === NODE;
+  const isNodeStandard = taskName === DOCUMENT;
   // enbale inlineStyle
   if (value) {
     if (isInlineStandard || isMiniAppStandard) {
