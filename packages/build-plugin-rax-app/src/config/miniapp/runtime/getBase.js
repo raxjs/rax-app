@@ -16,7 +16,7 @@ module.exports = (context, target, options) => {
   const nativeLifeCycleMap = {};
 
   const config = getWebpackBase(context, {
-    disableRegenerator: false
+    disableRegenerator: true
   }, target);
   const appConfig = getAppConfig(rootDir, target, nativeLifeCycleMap);
   setEntry(config, context, appConfig.routes);
