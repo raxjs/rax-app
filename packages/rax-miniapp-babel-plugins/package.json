@@ -1,0 +1,24 @@
+{
+  "name": "rax-miniapp-babel-plugins",
+  "version": "0.1.0",
+  "description": "rax miniapp babel plugins",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-scripts.git"
+  },
+  "keywords": [
+    "rax",
+    "babel",
+    "babel-plugins"
+  ],
+  "author": "Rax Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-scripts/issues"
+  },
+  "homepage": "https://github.com/raxjs/rax-scripts#readme",
+  "dependencies": {
+    "@babel/code-frame": "^7.8.3"
+  }
+}
