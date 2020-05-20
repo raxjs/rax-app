@@ -24,7 +24,6 @@ module.exports = function() {
       render(createElement(Entry), null, { driver: DriverUniversal });
     }
   `;
-
   const { code } = babel.transformSync(source, babelConfig);
 
   return code;
