@@ -1,0 +1,12 @@
+{
+  "plugins": [
+    [
+      "../../packages/build-plugin-rax-component",
+      {
+        "type": "rax",
+        "targets": ["web"],
+        "esOutputDir": "es"
+      }
+    ]
+  ]
+}

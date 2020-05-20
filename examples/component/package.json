@@ -1,0 +1,40 @@
+{
+  "name": "example-component",
+  "author": "rax",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/index.js",
+  "module": "src/index.js",
+  "files": [
+    "src",
+    "lib",
+    "dist"
+  ],
+  "scripts": {
+    "start": "build-scripts start",
+    "build": "build-scripts build"
+  },
+  "miniappConfig": {
+    "main": "lib/miniapp/index",
+    "main:wechat": "lib/wechat-miniprogram/index"
+  },
+  "keywords": [
+    "Rax",
+    "rax-component"
+  ],
+  "engines": {
+    "npm": ">=3.0.0"
+  },
+  "dependencies": {
+    "rax-text": "^1.0.0",
+    "rax-view": "^1.0.0"
+  },
+  "peerDependencies": {
+    "rax": "^1.0.0"
+  },
+  "devDependencies": {
+    "driver-universal": "^2.0.0",
+    "rax": "^1.0.0",
+    "@alib/build-scripts": "^0.1.0"
+  }
+}
