@@ -12,6 +12,7 @@ module.exports = {
       prefix: 'a',
       if: 'a:if',
       elif: 'a:alif',
+      event: 'on'
     },
   },
   [WECHAT_MINIPROGRAM]: {
@@ -25,6 +26,7 @@ module.exports = {
       prefix: 'wx',
       if: 'wx:if',
       elif: 'wx:alif',
+      event: 'bind'
     },
   },
 };

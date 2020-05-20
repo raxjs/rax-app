@@ -1,12 +1,7 @@
-/* global Component */
-/* eslint-disable module/no-implicit-dependencies */
 const render = require('miniapp-render');
 
 const { Event, cache, tool } = render.$$adapter;
 
-/**
- * Check component attributes
- */
 function checkComponentAttr({ props = [] }, name, domNode, destData, oldData) {
   if (props.length) {
     for (const name of props) {
@@ -15,18 +10,16 @@ function checkComponentAttr({ props = [] }, name, domNode, destData, oldData) {
     }
   }
 
-  // Add id, class and style
   const newId = domNode.id;
   if (!oldData || oldData.id !== newId) destData.id = newId;
   const newClass = `builtin-component-${name} node-${
     domNode.$$nodeId
   } ${domNode.className || ''}`;
-  if (!oldData || oldData.class !== newClass) destData.class = newClass;
+  if (!oldData || oldData.className !== newClass.className) destData.class = newClass;
   const newStyle = domNode.style.cssText;
   if (!oldData || oldData.style !== newStyle) destData.style = newStyle;
 }
 
-// eslint-disable-next-line new-cap
 Component({
   properties: {
     name: {
@@ -35,7 +28,7 @@ Component({
     },
   },
   options: {
-    addGlobalClass: true, // Turn global style on
+    addGlobalClass: true,
   },
   attached() {
     const nodeId = this.dataset.privateNodeId;
@@ -45,23 +38,19 @@ Component({
     this.nodeId = nodeId;
     this.pageId = pageId;
 
-    // Record DOM
     this.domNode = cache.getNode(pageId, nodeId);
 
-    // config of custom component
     const config = cache.getConfig();
     this.compConfig =
-      config.runtime &&
-        config.runtime.usingComponents &&
-        config.runtime.usingComponents[this.domNode.behavior] ||
+      config.nativeCustomComponent &&
+        config.nativeCustomComponent.usingComponents &&
+        config.nativeCustomComponent.usingComponents[this.domNode.behavior] ||
       {};
 
-    // Listen on global event
     this.onSelfNodeUpdate = tool.throttle(this.onSelfNodeUpdate.bind(this));
     this.domNode.$$clearEvent('$$domNodeUpdate');
     this.domNode.addEventListener('$$domNodeUpdate', this.onSelfNodeUpdate);
 
-    // Listen on event of custom component
     const { events = [] } = this.compConfig;
     if (events.length) {
       for (const name of events) {
@@ -76,7 +65,6 @@ Component({
       data,
     );
 
-    // Execute setData
     if (Object.keys(data).length) this.setData(data);
   },
   detached() {
@@ -85,11 +73,7 @@ Component({
     this.domNode = null;
   },
   methods: {
-    /**
-     * Watch current node change
-     */
     onSelfNodeUpdate() {
-      // Judge whether  it has been destoryed
       if (!this.pageId || !this.nodeId) return;
 
       const newData = {};
@@ -105,9 +89,6 @@ Component({
       this.setData(newData);
     },
 
-    /**
-     * Trigger simple event
-     */
     callSimpleEvent(eventName, evt) {
       const domNode = this.domNode;
       if (!domNode) return;
