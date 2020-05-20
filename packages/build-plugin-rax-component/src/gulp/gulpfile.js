@@ -3,7 +3,7 @@ const path = require('path');
 const { src, dest, series, parallel, watch } = require('gulp');
 const babel = require('gulp-babel');
 const ts = require('gulp-typescript');
-const { getBabelConfig } = require('rax-compile-config');
+const getBabelConfig = require('rax-babel-config');
 
 const {
   JS_FILES_PATTERN,
@@ -20,6 +20,13 @@ const babelConfig = getBabelConfig({
     ignore: ['**/**/*.d.ts'],
   },
 });
+const esBabelConfig = getBabelConfig({
+  styleSheet: true,
+  custom: {
+    ignore: ['**/**/*.d.ts'],
+  },
+  target: 'es',
+});
 
 const {
   api,
@@ -32,7 +39,7 @@ const {
 const { context, log } = api;
 const { rootDir, userConfig, command } = context;
 const { outputDir, devOutputDir } = userConfig;
-const { esOutputDir = '', typesOutputDir = 'lib' } = options;
+const { esOutputDir = 'es', typesOutputDir = 'lib' } = options;
 
 const isDev = command === 'dev';
 
@@ -65,8 +72,8 @@ function compileJS2ES() {
     return src('.');
   }
 
-
   return src([JS_FILES_PATTERN], { ignore: IGNORE_PATTERN })
+    .pipe(babel(esBabelConfig))
     .pipe(dest(ES_DIR));
 }
 

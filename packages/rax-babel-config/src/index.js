@@ -15,7 +15,9 @@ module.exports = (userOptions = {}) => {
     jsxPlus = true,
     jsxToHtml,
     isNode,
-    disableRegenerator = false
+    disableRegenerator = false,
+    // es/lib
+    target
   } = options;
 
   const baseConfig = {
@@ -31,7 +33,7 @@ module.exports = (userOptions = {}) => {
             ios: '8',
           },
           loose: true,
-          modules: 'auto',
+          modules: target === 'es' ? false : 'auto',
           include: [
             'transform-computed-properties',
           ],
