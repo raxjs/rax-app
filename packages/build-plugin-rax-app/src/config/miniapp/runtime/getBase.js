@@ -4,16 +4,23 @@ const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
+const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
 
 module.exports = (context, target, options) => {
   const { rootDir, command } = context;
   const outputPath = getMiniAppOutput(context, { target });
 
+  // Using Components
+  const usingComponents = [];
+  // Native lifecycle map
+  const nativeLifeCycleMap = {};
+
   const config = getWebpackBase(context, {
-    disableRegenerator: false
+    disableRegenerator: true
   }, target);
-  const appConfig = getAppConfig(rootDir, target);
+  const appConfig = getAppConfig(rootDir, target, nativeLifeCycleMap);
   setEntry(config, context, appConfig.routes);
+
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
@@ -30,8 +37,14 @@ module.exports = (context, target, options) => {
     .libraryTarget('window');
 
   config.module.rule('jsx')
-    .use('fixRegeneratorRuntime')
-    .loader(require.resolve('../../../loaders/FixRegeneratorRuntimeLoader'));
+    .use('babel')
+    .tap(options => {
+      options.plugins = [...getMiniAppBabelPlugins({
+        usingComponents,
+        nativeLifeCycleMap
+      }), ...options.plugins];
+      return options;
+    });
 
   // Split common chunks
   config.optimization.splitChunks({
@@ -63,12 +76,14 @@ module.exports = (context, target, options) => {
       ...appConfig,
       target,
       config: options[target],
+      usingComponents,
+      nativeLifeCycleMap,
       rootDir,
       command
     }
   ]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
-  config.devtool('none');
+  config.devtool('inline-source-map');
   return config;
 };

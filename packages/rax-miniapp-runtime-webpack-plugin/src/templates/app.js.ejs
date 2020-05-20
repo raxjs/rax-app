@@ -1,9 +1,6 @@
-/* INIT_FUNCTION */
-/* global init,App,getCurrentPages */
-/* eslint-disable module/no-implicit-dependencies */
+<%- init %>
 const render = require('miniapp-render');
 
-// eslint-disable-next-line new-cap
 App({
   onLaunch(options) {
     const window = render.createApp();
@@ -37,7 +34,6 @@ App({
   },
   onError(err) {
     if (this.window) {
-      // Support error event of window
       const pages = getCurrentPages() || [];
       const currentPage = pages[pages.length - 1];
       if (currentPage && currentPage.window) {
@@ -62,7 +58,7 @@ App({
         }
       });
     }
-  },
+  }<% if(isMiniApp) { %>,
   onShareAppMessage(options) {
     if (this.window) {
       const shareInfo = {};
@@ -70,5 +66,5 @@ App({
       this.window.$$trigger('appshare', { event: { options, shareInfo, context: this } });
       return shareInfo.content;
     }
-  }
+  }<% } %>
 });
