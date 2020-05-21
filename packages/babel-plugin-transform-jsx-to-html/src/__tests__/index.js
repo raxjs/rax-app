@@ -76,9 +76,11 @@ describe('transform jsx to html', () => {
     `)).toBe(`createElement(View, {
   key: "__key_0"
 }, [{
-  __html: "<div>a</div>"
+  __html: "<div>a</div>",
+  __isEndWithTextNode: false
 }], [{
-  __html: "<div>b</div>"
+  __html: "<div>b</div>",
+  __isEndWithTextNode: false
 }]);`);
   });
 
@@ -128,7 +130,8 @@ const slot = <div>slot</div>;
   {slot}
 </div>
 `)).toBe(`var slot = [{
-  __html: "<div>slot</div>"
+  __html: "<div>slot</div>",
+  __isEndWithTextNode: false
 }];
 [{
   __html: "<div class=\\"container\\">"
@@ -169,6 +172,33 @@ const slot = createElement('div', null, 'slot');
 }, {
   __html: a
 }, {
+  __html: "</div>"
+}];`);
+  });
+
+  it('mark html when start with text node  ', () => {
+    expect(getTransfromCode(`
+<div className="container">
+  {props.name}, hello!
+</div>
+`)).toBe(`[{
+  __html: "<div class=\\"container\\">"
+}, props.name, {
+  __html: ", hello!</div>",
+  __isStartWithTextNode: true,
+  __isEndWithTextNode: false
+}];`);
+  });
+
+  it('mark html when end with text node  ', () => {
+    expect(getTransfromCode(`
+<div className="container">
+  hello{props.name}
+</div>
+`)).toBe(`[{
+  __html: "<div class=\\"container\\">hello"
+  __isEndWithTextNode: true
+}, props.name, {
   __html: "</div>"
 }];`);
   });
