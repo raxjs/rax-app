@@ -178,9 +178,7 @@ const slot = createElement('div', null, 'slot');
 
   it('mark html when start with text node  ', () => {
     expect(getTransfromCode(`
-<div className="container">
-  {props.name}, hello!
-</div>
+<div className="container">{props.name}, hello!</div>
 `)).toBe(`[{
   __html: "<div class=\\"container\\">"
 }, props.name, {
@@ -192,9 +190,7 @@ const slot = createElement('div', null, 'slot');
 
   it('mark html when end with text node  ', () => {
     expect(getTransfromCode(`
-<div className="container">
-  hello{props.name}
-</div>
+<div className="container">hello{props.name}</div>
 `)).toBe(`[{
   __html: "<div class=\\"container\\">hello"
   __isEndWithTextNode: true
