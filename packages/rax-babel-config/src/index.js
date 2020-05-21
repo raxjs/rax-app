@@ -34,7 +34,7 @@ module.exports = (userOptions = {}) => {
             ios: '8',
           },
           loose: true,
-          modules: modules,
+          modules,
           include: [
             'transform-computed-properties',
           ],

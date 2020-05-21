@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-multi-demo-portal",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "multi demo portal page for rax component developmente",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
@@ -11,6 +11,7 @@
     "rax": "^1.0.0"
   },
   "dependencies": {
+    "@babel/core": "^7.9.6",
     "babel-loader": "8.0.4",
     "case-sensitive-paths-webpack-plugin": "^2.1.2",
     "chalk": "^2.4.2",
