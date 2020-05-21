@@ -14,18 +14,18 @@ const {
 
 const params = require('./params');
 
-const babelConfig = getBabelConfig({
+const babelOptions = {
   styleSheet: true,
   custom: {
     ignore: ['**/**/*.d.ts'],
   },
+};
+const babelConfig = getBabelConfig({
+  ...babelOptions
 });
 const esBabelConfig = getBabelConfig({
-  styleSheet: true,
-  custom: {
-    ignore: ['**/**/*.d.ts'],
-  },
-  target: 'es',
+  ...babelOptions,
+  modules: false,
 });
 
 const {

@@ -4,6 +4,7 @@ const babelMerge = require('babel-merge');
 const defaultOptions = {
   jsxPlus: !process.env.DISABLE_JSX_PLUS,
   styleSheet: false,
+  modules: 'auto',
 };
 
 let logOnce = true;
@@ -16,8 +17,8 @@ module.exports = (userOptions = {}) => {
     jsxToHtml,
     isNode,
     disableRegenerator = false,
-    // es/lib
-    target
+    // preset-env modules options
+    modules
   } = options;
 
   const baseConfig = {
@@ -33,7 +34,7 @@ module.exports = (userOptions = {}) => {
             ios: '8',
           },
           loose: true,
-          modules: target === 'es' ? false : 'auto',
+          modules: modules,
           include: [
             'transform-computed-properties',
           ],
