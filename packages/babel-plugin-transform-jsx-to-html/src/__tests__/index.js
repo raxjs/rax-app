@@ -192,7 +192,7 @@ const slot = createElement('div', null, 'slot');
     expect(getTransfromCode(`
 <div className="container">hello{props.name}</div>
 `)).toBe(`[{
-  __html: "<div class=\\"container\\">hello"
+  __html: "<div class=\\"container\\">hello",
   __isEndWithTextNode: true
 }, props.name, {
   __html: "</div>"
