@@ -8,7 +8,7 @@ const {
   getRelativePath
 } = require('./pathHelper');
 
-module.exports = (rootDir, target) => {
+module.exports = (rootDir, target, nativeLifeCycleMap) => {
   const entryPath = join(rootDir, 'src');
 
   const appConfig = readJSONSync(resolve(rootDir, 'src', 'app.json'));
@@ -27,6 +27,9 @@ module.exports = (rootDir, target) => {
     appConfig.pages.push(page);
     routes.push(route);
     pagesMap[route.path] = page;
+    if (nativeLifeCycleMap) {
+      nativeLifeCycleMap[resolve(entryPath, route.source)] = {};
+    }
   }
 
   appConfig.routes.map(route => {
