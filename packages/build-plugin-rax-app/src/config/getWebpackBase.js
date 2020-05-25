@@ -6,6 +6,7 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
 
 module.exports = (context, options = {}, target) => {
@@ -113,6 +114,11 @@ module.exports = (context, options = {}, target) => {
 
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);
+
+  config.plugin('progress-bar')
+    .use(ProgressBarPlugin, [{
+      clear: false
+    }]);
 
   const copyWebpackPluginPatterns = [{ from: 'src/public', to: `${target}/public` }];
 
