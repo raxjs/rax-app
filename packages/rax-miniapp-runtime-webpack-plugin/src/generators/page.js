@@ -1,6 +1,4 @@
 const ejs = require('ejs');
-const lifeCycleMap = require('../nativeLifeCycle');
-const { MINIAPP } = require('../constants');
 const adapter = require('../adapter');
 const getAssetPath = require('../utils/getAssetPath');
 const addFileToCompilation = require('../utils/addFileToCompilation');
@@ -11,28 +9,9 @@ function generatePageJS(
   compilation,
   assets,
   pageRoute,
-  needPullRefresh,
   nativeLifeCycles,
   { target, command, rootDir }
 ) {
-  const configProps = [];
-  const events = [];
-  Object.keys(nativeLifeCycles).forEach((cycleName) => {
-    const cycleConfig = lifeCycleMap[cycleName];
-    if (cycleConfig) {
-      if (cycleConfig.inEventsProps) {
-        events.push(cycleName);
-      } else {
-        configProps.push(cycleConfig);
-      }
-    }
-  });
-  if (needPullRefresh) {
-    configProps.push(lifeCycleMap.onPullDownRefresh);
-    if (target === MINIAPP) {
-      configProps.push(lifeCycleMap.onPullIntercept);
-    }
-  }
   const pageJsContent = ejs.render(getTemplate(rootDir, target, 'page'), {
     config_path: `${getAssetPath('config.js', `${pageRoute}.js`)}`,
     init: `function init(window, document) {${assets.js
@@ -44,42 +23,7 @@ function generatePageJS(
           )}')(window, document)`
       )
       .join(';')}}`,
-    define_native_lifecycle: `[${events.reduce((prev, current, index) => {
-      const currentCycle = "'" + current + "'";
-      if (index === 0) {
-        return currentCycle;
-      }
-      return prev + ',' + currentCycle;
-    }, '')}].forEach(eventName => {
-  events[eventName] = function(event) {
-    if (this.window) {
-      this.window.$$trigger(eventName, { event });
-    }
-  };
-});`,
-    define_lifecycle_in_config: configProps.reduce((prev, current) => {
-      let currentCycle;
-      if (current.name === 'onShareAppMessage') {
-        currentCycle = `${current.name}(options) {
-    if (this.window) {
-      const shareInfo = {};
-      this.window.$$trigger('onShareAppMessage', {
-        event: { options, shareInfo }
-      });
-      return shareInfo.content;
-    }
-  },`;
-      } else {
-        currentCycle = `${current.name}(options) {
-    if (this.window) {
-      return this.window.$$trigger('${current.name}', {
-        event: options
-      })
-    }
-  },`;
-      }
-      return prev + '\n\t' + currentCycle;
-    }, '')
+    native_lifecycles: `[${Object.keys(nativeLifeCycles).reduce((total, current) => `${total}'${current}'`, '')}]`
   });
 
   addFileToCompilation(compilation, {
