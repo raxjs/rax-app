@@ -26,6 +26,7 @@ module.exports = {
 
     setCSSRule(config.module.rule('css').test(/\.css?$/), context, value);
     setCSSRule(config.module.rule('less').test(/\.less?$/), context, value);
+    setCSSRule(config.module.rule('sass').test(/\.s[ac]ss?$/), context, value);
 
     if (inlineStandardList.includes(taskName) || value) {
       config.module.rule('less')
@@ -48,6 +49,10 @@ module.exports = {
           ignoreOrder: true
         }]);
     }
+
+    config.module.rule('sass')
+      .use('sass')
+      .loader(require.resolve('sass-loader'));
   },
 };
 
