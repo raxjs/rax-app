@@ -54,7 +54,7 @@
     "progress-bar-webpack-plugin": "^2.1.0",
     "qrcode-terminal": "^0.12.0",
     "qs": "^6.9.1",
-    "rax-babel-config": "^0.0.1",
+    "rax-babel-config": "^0.1.0",
     "rax-compile-config": "^0.2.0",
     "rax-miniapp-config-webpack-plugin": "^1.0.1",
     "rax-miniapp-runtime-webpack-plugin": "^0.1.7",
