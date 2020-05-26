@@ -21,6 +21,10 @@ module.exports = (context) => {
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, `commonjs ${request}`);
       }
+      // compatible with @system for quickapp
+      if (request.indexOf('@system') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
       callback();
     },
   ]);
@@ -35,7 +39,7 @@ module.exports = (context) => {
 
   config.module
     .rule('tsx')
-    .test(/\.tsx?$/)
+    .test(/\.(ts|tsx)?$/)
     .use('babel')
     .loader(require.resolve('babel-loader'))
     .options(babelConfig)
@@ -54,7 +58,7 @@ module.exports = (context) => {
   config.plugin('noError').use(webpack.NoEmitOnErrorsPlugin);
   if (command === 'start') {
     config.mode('development');
-    config.devtool('inline-module-source-map');
+    config.devtool('cheap-module-source-map');
   } else if (command === 'build') {
     config.mode('production');
 
