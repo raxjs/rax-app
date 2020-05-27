@@ -1,3 +1,5 @@
+const path = require('path');
+const chalk = require('chalk');
 const getSSRBase = require('./ssr/getBase');
 const setSSRBuild = require('./ssr/setBuild');
 const setSSRDev = require('./ssr/setDev');
@@ -5,9 +7,12 @@ const setSSRDev = require('./ssr/setDev');
 const setWebDev = require('./web/setDev');
 
 // can‘t clone webpack chain object
-module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, setValue }) => {
+module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, setValue, onHook }) => {
   process.env.RAX_SSR = 'true';
-  const { command } = context;
+
+  const { command, rootDir, userConfig = {} } = context;
+  const { outputDir } = userConfig;
+
   const ssrConfig = getSSRBase(context, getValue);
   registerTask('ssr', ssrConfig);
 
@@ -30,4 +35,10 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, setValu
       setWebDev(config, context);
     });
   }
+
+  onHook('after.build.compile', ({ err, stats }) => {
+    console.log(chalk.green('[SSR] Bundle at:'));
+    console.log('   ', chalk.underline.white(path.resolve(rootDir, outputDir, 'node')));
+    console.log();
+  });
 };
