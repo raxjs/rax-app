@@ -14,6 +14,9 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
   let devUrl = '';
   let devCompletedArr = [];
 
+  // disable webpack stats log
+  process.env.DISABLE_STATS = true;
+
   targets.forEach((target, index) => {
     const [getBase, setDev] = getConfig(target, options);
     registerTask(target, getBase(context, target, options, onGetWebpackConfig));
