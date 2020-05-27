@@ -5,7 +5,6 @@ const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const getWebpackBase = require('rax-webpack-config');
 const getBabelConfig = require('rax-babel-config');
 
-
 module.exports = (context, options = {}, target) => {
   const { rootDir, command } = context;
 
