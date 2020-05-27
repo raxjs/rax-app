@@ -1,12 +1,12 @@
 const fs = require('fs-extra');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const getWebpackBase = require('rax-webpack-config');
 const getBabelConfig = require('rax-babel-config');
 
 module.exports = (context, options = {}, target) => {
   const { rootDir, command } = context;
+  const { processBar } = options;
 
   const babelConfig = getBabelConfig({
     styleSheet: true,
@@ -15,6 +15,9 @@ module.exports = (context, options = {}, target) => {
 
   const config = getWebpackBase({
     ...context,
+    processBar: processBar || {
+      name: target
+    },
     babelConfig: babelConfig,
   });
 
@@ -72,11 +75,6 @@ module.exports = (context, options = {}, target) => {
     config.plugin('copyWebpackPlugin')
       .use(CopyWebpackPlugin, [[{ from: 'src/public', to: `${target}/public` }]]);
   }
-
-  config.plugin('progress-bar')
-    .use(ProgressBarPlugin, [{
-      clear: false
-    }]);
 
   const copyWebpackPluginPatterns = [{ from: 'src/public', to: `${target}/public` }];
 

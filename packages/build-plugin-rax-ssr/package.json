@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-ssr",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "rax ssr plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
@@ -12,6 +12,6 @@
     "qs": "^6.8.0",
     "rax-babel-config": "^0.1.0",
     "rax-compile-config": "^0.2.0",
-    "rax-webpack-config": "^0.0.1"
+    "rax-webpack-config": "^0.1.0"
   }
 }
