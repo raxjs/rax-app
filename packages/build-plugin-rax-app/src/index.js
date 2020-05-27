@@ -10,6 +10,9 @@ const pluginApp = (api, options = {}) => {
   api.setValue('targets', options.targets);
   api.setValue('appType', options.type || 'spa');
 
+  // disable webpack stats log
+  process.env.DISABLE_STATS = true;
+
   const { context } = api;
   const { command } = context;
 
