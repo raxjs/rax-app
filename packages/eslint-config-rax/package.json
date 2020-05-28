@@ -17,12 +17,12 @@
   },
   "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/eslint-config-rax#readme",
   "peerDependencies": {
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.16.0 || ^6.7.2",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-react": "^7.15.1",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.1.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-module": "^0.0.1",
-    "@typescript-eslint/eslint-plugin": "^1.7.0",
-    "@typescript-eslint/parser": "^1.7.0"
+    "@typescript-eslint/eslint-plugin": "^3.0.2",
+    "@typescript-eslint/parser": "^3.0.2"
   }
 }
