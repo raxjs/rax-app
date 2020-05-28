@@ -99,7 +99,11 @@ module.exports = {
     'semi-spacing': 'error',
     'keyword-spacing': 'error',
     'space-before-blocks': 'error',
-    'space-before-function-paren': ['error', 'never'],
+    'space-before-function-paren': ['error', {
+      anonymous: 'never',
+      named: 'never',
+      asyncArrow: 'always',
+    }],
     'space-infix-ops': 'error',
     'spaced-comment': ['error', 'always', {
       'line': {
