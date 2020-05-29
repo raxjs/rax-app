@@ -5,7 +5,7 @@ module.exports = function visitor({ types: t }, { nativeLifeCycleMap }) {
   return {
     visitor: {
       CallExpression(path, { filename, file: { code } }) {
-        const pagePath = getPagePath(filename, nativeLifeCycleMap);
+        const pagePath = getPagePath(filename);
         if (pagePath) {
           const nativeLifeCycle = nativeLifeCycleMap[pagePath];
           if (t.isIdentifier(path.node.callee, {
