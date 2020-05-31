@@ -1,5 +1,6 @@
 const postcss = require('postcss');
-const tagList = require('./tag-list');
+const colors = require('colors/safe');
+const tagList = require('../webTagList');
 
 const replaceRegexp = new RegExp(
   `(\\W|\\b)(${['html', ...tagList].join('|')})(\\W|\\b)`,
@@ -22,6 +23,15 @@ const replaceTagNamePlugin = postcss.plugin('replaceTagName', () => root => {
       const selectors = [];
 
       child.selectors.forEach(selector => {
+        // MiniApp doesn't support .xxx>:first-child
+        selector = selector.replace(/>:/g, '>*:');
+
+        const wavyLineIndex = selector.indexOf('~');
+        if (wavyLineIndex !== -1 && selector[wavyLineIndex + 1] !== '=') {
+          console.warn(colors.bold(`\nselector ${colors.yellow(selector)} is not supported in miniapp css, so it will be deleted\n`));
+          return;
+        }
+
         // Handle tag selector
         selector = selector.replace(
           replaceRegexp,
@@ -67,7 +77,12 @@ const replaceTagNamePlugin = postcss.plugin('replaceTagName', () => root => {
         if (selector.trim()) selectors.push(selector);
       });
 
-      child.selectors = selectors;
+
+      if (!selectors.length) {
+        child.remove();
+      } else {
+        child.selectors = selectors;
+      }
     }
   });
 });
