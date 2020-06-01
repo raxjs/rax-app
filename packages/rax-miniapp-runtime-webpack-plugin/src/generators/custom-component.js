@@ -11,7 +11,7 @@ module.exports = function(
   outputPath,
   { target, command, rootDir }
 ) {
-  const customComponentJsTmpl = getTemplate(rootDir, target, 'custom-component');
+  const customComponentJsTmpl = getTemplate(rootDir, target, 'custom-component.js');
   if (customComponentRoot) {
     copy(
       customComponentRoot,

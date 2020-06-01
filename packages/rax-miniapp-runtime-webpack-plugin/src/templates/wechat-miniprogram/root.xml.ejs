@@ -1,0 +1,17 @@
+<template name="element">
+  <view
+    style="{{style}}"
+    class="h5-{{tagName}} {{className}}"
+    id="{{id}}"
+    data-private-node-id="{{nodeId}}"
+    data-private-page-id="{{pageId}}"
+  >
+    <block wx:for="{{children}}" wx:key="nodeId">
+      <template is="{{item.type}}" data="{{item}}" />
+    </block>
+  </view>
+</template>
+
+<template name="text">
+  {{content}}
+</template>

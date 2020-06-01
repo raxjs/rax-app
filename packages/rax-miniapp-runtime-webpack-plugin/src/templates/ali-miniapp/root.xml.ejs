@@ -1,0 +1,17 @@
+<template name="element">
+  <view
+    style="{{r.style}}"
+    class="h5-{{r.tagName}} {{r.className}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+  >
+    <block a:for="{{r.children}}" a:key="nodeId">
+      <template is="{{item.type}}" data="{{r: item}}" />
+    </block>
+  </view>
+</template>
+
+<template name="text">
+  {{r.content}}
+</template>

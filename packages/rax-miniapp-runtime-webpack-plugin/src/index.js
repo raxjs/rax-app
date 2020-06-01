@@ -16,6 +16,7 @@ const {
   generatePageJS,
   generatePageJSON,
   generatePageXML,
+  generateRootTemplate
 } = require('./generators');
 
 const PluginName = 'MiniAppRuntimePlugin';
@@ -130,7 +131,7 @@ class MiniAppRuntimePlugin {
           // xml/css/json file only need writeOnce
           if (isFirstRender) {
             // Page xml
-            generatePageXML(compilation, customComponentRoot, entryName, {
+            generatePageXML(compilation, entryName, {
               target,
               command,
               rootDir,
@@ -199,6 +200,13 @@ class MiniAppRuntimePlugin {
       if (isFirstRender) {
         // Config js
         generateConfig(compilation, options || {}, {
+          target,
+          command,
+          rootDir,
+        });
+
+        // Generate root template xml
+        generateRootTemplate(compilation, {
           target,
           command,
           rootDir,

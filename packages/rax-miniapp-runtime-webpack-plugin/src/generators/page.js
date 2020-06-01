@@ -12,7 +12,7 @@ function generatePageJS(
   nativeLifeCycles,
   { target, command, rootDir }
 ) {
-  const pageJsContent = ejs.render(getTemplate(rootDir, target, 'page'), {
+  const pageJsContent = ejs.render(getTemplate(rootDir, target, 'page.js'), {
     config_path: `${getAssetPath('config.js', `${pageRoute}.js`)}`,
     init: `function init(window, document) {${assets.js
       .map(
@@ -36,15 +36,13 @@ function generatePageJS(
 
 function generatePageXML(
   compilation,
-  customComponentRoot,
   pageRoute,
   { target, command }
 ) {
-  let pageXmlContent = `<element ${
-    adapter[target].directive.if
-  }="{{pageId}}" class="{{bodyClass}}" data-private-node-id="e-body" data-private-page-id="{{pageId}}" ${
-    customComponentRoot ? 'generic:custom-component="custom-component"' : ''
-  }> </element>`;
+  let pageXmlContent = `<import src="../../root.axml"/>
+    <view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
+    <template is="element" data="{{r: root}}"  />
+  </view>`;
 
   addFileToCompilation(compilation, {
     filename: `${pageRoute}.${adapter[target].xml}`,
