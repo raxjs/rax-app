@@ -5,6 +5,8 @@
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
     data-private-page-id="{{r.pageId}}"
+
+    onTap="{{onTap}}"
   >
     <block a:for="{{r.children}}" a:key="nodeId">
       <template is="{{item.type}}" data="{{r: item}}" />
