@@ -15,7 +15,8 @@ module.exports = (userOptions = {}) => {
     jsxPlus = true,
     jsxToHtml,
     isNode,
-    disableRegenerator = false
+    disableRegenerator = false,
+    isES6 = false
   } = options;
 
   const baseConfig = {
@@ -26,7 +27,8 @@ module.exports = (userOptions = {}) => {
         {
           targets: isNode ? {
             node: '8',
-          } : {
+          } : isES6 ? 
+          ['last 1 chrome version', 'node 10'] : {
             chrome: '49',
             ios: '8',
           },
