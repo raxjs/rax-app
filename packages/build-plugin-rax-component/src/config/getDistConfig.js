@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const getBaseWebpack = require('./getBaseWebpack');
 
 module.exports = (context, options) => {
-  const config = getBaseWebpack(context);
+  const config = getBaseWebpack(context, options);
 
   const { rootDir, taskName } = context;
 
