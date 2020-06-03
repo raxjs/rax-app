@@ -39,9 +39,9 @@ function generatePageXML(
   pageRoute,
   { target, command }
 ) {
-  let pageXmlContent = `<import src="../../root.axml"/>
+  const pageXmlContent = `<import src="../../root.axml"/>
     <view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
-    <template is="element" data="{{r: root}}"  />
+    <template is="element" data="{{r: root.children[0]}}"  />
   </view>`;
 
   addFileToCompilation(compilation, {
