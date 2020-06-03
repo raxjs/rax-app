@@ -8,9 +8,9 @@
 
     onTap="onTap"
   >
-    <block a:for="{{r.children}}" a:key="nodeId">
-      <block a:if="{{r.type === 'text'}}">
-        {{r.content}}
+    <block a:for="{{item.children}}" a:key="nodeId">
+      <block a:if="{{item.type === 'text'}}">
+        {{item.content}}
       </block>
       <block a:else>
         <template is="element" data="{{r: item}}" />
