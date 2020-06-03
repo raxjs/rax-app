@@ -27,11 +27,11 @@ module.exports = (userOptions = {}) => {
         {
           targets: isNode ? {
             node: '8',
-          } : isES6 ? 
-          ['last 1 chrome version', 'node 10'] : {
-            chrome: '49',
-            ios: '8',
-          },
+          } : isES6 ?
+            ['last 1 chrome version', 'node 10'] : {
+              chrome: '49',
+              ios: '8',
+            },
           loose: true,
           modules: 'auto',
           include: [
