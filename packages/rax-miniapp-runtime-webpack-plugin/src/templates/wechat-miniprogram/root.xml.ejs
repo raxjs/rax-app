@@ -1,17 +1,910 @@
 <template name="element">
   <view
-    style="{{style}}"
-    class="h5-{{tagName}} {{className}}"
-    id="{{id}}"
-    data-private-node-id="{{nodeId}}"
-    data-private-page-id="{{pageId}}"
+    wx:if="{{r.tagName}}"
+    style="{{r.style}}"
+    class="h5-{{r.tagName}} {{r.className}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
   >
-    <block wx:for="{{children}}" wx:key="nodeId">
-      <template is="{{item.type}}" data="{{item}}" />
-    </block>
+    <template is="children" data="{{r: r.children}}" />
   </view>
 </template>
 
+<template name="children">
+  <block wx:for="{{r}}" wx:key="nodeId">
+    <block wx:if="{{item.type === 'text'}}">
+      {{item.content}}
+    </block>
+    <block wx:else>
+      <template is="{{item.behavior || 'element'}}" data="{{r: item}}" />
+    </block>
+    <block>
+  </block>
+</template>
+
+<!--Container-->
+<template name="view">
+  <view
+    style="{{r.style}}"
+    class="{{r.className}}"
+    id="{{r.id}}"
+    hidden="{{r.hidden}}"
+    animation="{{r.animation}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+    bindlongtap="onLongTap"
+
+    hover-class="{{r.hoverClass}}"
+    hover-start-time="{{r.hoverStartTime}}"
+    hover-stay-time="{{r.hoverStayTime}}"
+    hidden="{{r.hidden}}"
+    hover-stop-propagation="{{r.hoverStopPropagation}}"
+    role="{{r.role}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </view>
+</template>
+
+<template name="swiper">
+  <swiper
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindchange="onSwiperChange"
+    bindtransition="onSwiperTransition"
+    bindanimationEnd="onSwiperAnimationEnd"
+
+    indicator-dots="{{r.indicatorDots}}"
+    indicator-color="{{r.indicatorColor}}"
+    indicator-active-color="{{r.indicatorActiveColor}}"
+    active-class="{{r.activeClass}}"
+    changing-class="{{r.changingClass}}"
+    autoplay="{{r.autoPlay}}"
+    current="{{r.current}}"
+    duration="{{r.duration}}"
+    interval="{{r.interval}}"
+    circular="{{r.circular}}"
+    vertical="{{r.vertical}}"
+    previous-margin	="{{r.previousMargin}}"
+    next-margin="{{r.nextMargin}}"
+    acceleration="{{r.acceleration}}"
+    disable-programmatic-animation="{{r.disableProgrammaticAnimation}}"
+    disable-touch="{{r.disableTouch}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </swiper>
+</template>
+
+<template name="scroll-view">
+  <scroll-view
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindcrolltoupper="onScrollViewScrollToUpper"
+    bindscrolltolower="onScrollViewScrollToLower"
+    bindscroll="onScrollViewScroll"
+
+    scroll-x="{{r.scrollX}}"
+    scroll-y="{{r.scrollY}}"
+    upper-threshold="{{r.upperThreshold}}"
+    lower-threshold="{{r.lowerThreshold}}"
+    scroll-top="{{r.scrollTop}}"
+    scroll-left="{{r.scrollLeft}}"
+    scroll-into-view="{{r.scrollIntoView}}"
+    scroll-with-animation="{{r.scrollWithAnimation}}"
+    scroll-animation-duration="{{r.scrollAnimationDuration}}"
+    enable-back-to-top="{{r.enableBackToTop}}"
+    trap-scroll="{{r.trapScroll}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </scroll-view>
+</template>
+
+<template name="cover-view">
+  <cover-view
+    style="{{r.style}}"
+    class="{{r.className}}"
+    id="{{r.id}}"
+    hidden="{{r.hidden}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </cover-view>
+</template>
+
+<template name="cover-image">
+  <cover-image
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+
+    src="{{r.src}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </cover-image>
+</template>
+
+<template name="moveable-view">
+  <moveable-view
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    animation="{{r.animation}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindchange="onMovableViewChange"
+    bindscale="onMovableViewScale"
+
+    direction="{{r.direction}}"
+    inertia="{{r.inertia}}"
+    out-of-bounds="{{r.outOfBounds}}"
+    x="{{r.x}}"
+    y="{{r.y}}"
+    damping="{{r.damping}}"
+    friction="{{r.friction}}"
+    disabled="{{r.disabled}}"
+    scale="{{r.scale}}"
+    scale-min="{{r.scaleMin}}"
+    scale-max="{{r.scaleMax}}"
+    scale-value="{{r.scaleValue}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </moveable-view>
+</template>
+
+<template name="moveable-view">
+  <moveable-view
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    animation="{{r.animation}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    scale-area="{{r.scaleArea}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </moveable-view>
+</template>
+
+<!--Base content-->
 <template name="text">
-  {{content}}
+  <text
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    animation="{{r.animation}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    decode="{{r.decode}}"
+    space="{{r.space}}"
+    decode="{{r.decode}}"
+    number-of-lines="{{r.numberOfLines}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </text>
+</template>
+
+<template name="icon">
+  <icon
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    type="{{r.type}}"
+    size="{{r.size}}"
+    color="{{r.color}}"
+  >
+  </icon>
+</template>
+
+<template name="progress">
+  <progress
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindctiveend="onProgressActiveEnd"
+
+    percent="{{r.percent}}"
+    show-info="{{r.showInfo}}"
+    border-radius="{{r.borderRadius}}"
+    font-size="{{r.fontSize}}"
+    stroke-width="{{r.strokeWidth}}"
+    color="{{r.color}}"
+    active-color="{{r.activeColor}}"
+    background-color="{{r.backgroundColor}}"
+    active="{{r.active}}"
+    active-mode="{{r.activeMode}}"
+  >
+  </progress>
+</template>
+
+<template name="rich-text">
+  <rich-text
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+    bindlongtap="onLongTap"
+
+    nodes="{{r.nodes}}"
+  >
+  </rich-text>
+</template>
+
+<!--Form-->
+<template name="button">
+  <button
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    animation="{{r.animation}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindgetuserinfo="onButtonGetUserInfo"
+    bindcontact="onButtonContact"
+    bindgetphonenumber="onButtonGetPhoneNumber"
+    binderror="onButtonError"
+    bindopensetting="onButtonOpenSetting"
+    bindlaunchapp="onButtonLaunchApp"
+
+    size="{{r.size}}"
+    type="{{r.type}}"
+    plain="{{r.plain}}"
+    disabled="{{r.disabled}}"
+    loading="{{r.loading}}"
+    form-type="{{r.formType}}"
+    open-type="{{r.openType}}"
+    hover-class="{{r.hoverClass}}"
+    hover-stop-propagation="{{r.hoverStopPropagation}}"
+    hover-start-time="{{r.hoverStartTime}}"
+    hover-stay-time="{{r.hoverStayTime}}"
+    lang="{{r.lang}}"
+    session-from="{{r.sessionFrom}}"
+    send-message-title="{{r.sendMessageTitle}}"
+    send-message-path="{{r.sendMessagePath}}"
+    send-message-img="{{r.sendMessageImg}}"
+    app-parameter="{{r.appParameter}}"
+    show-message-card="{{r.showMessageCard}}"
+    business-id="{{r.businessId}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </button>
+</template>
+
+<template name="form">
+  <form
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    animation="{{r.animation}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindsubmit="onFormSubmit"
+    bindreset="onFormReset"
+
+    report-submit="{{r.reportSubmit}}"
+    report-submit-timeout="{{r.reportSubmitTimeout}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </form>
+</template>
+
+<template name="label">
+  <label
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    for="{{r.for}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </label>
+</template>
+
+<template name="input">
+  <input
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+
+    bindinput="onInputInput"
+    bindfocus="onInputFocus"
+    bindblur="onInputBlur"
+    bindconfirm="onInputConfirm"
+    bindkeyboardheightchange="onInputKeyBoardHeightChange"
+
+    value="{{r.value}}"
+    type="{{r.type}}"
+    password="{{r.password}}"
+    placeholder="{{r.placeholder}}"
+    placeholder-style="color:{{r.placeholderColor}}"
+    placeholder-class="{{r.placeholderClass}}"
+    disabled="{{r.disabled}}"
+    maxlength="{{r.maxlength}}"
+    cursor-spacing="{{r.cursorSpacing}}"
+    auto-focus="{{r.autoFocus}}"
+    focus="{{r.focus}}"
+    controlled="{{r.controlled}}"
+    confirm-type="{{r.confirmType}}"
+    confirm-hold="{{r.confirmHold}}"
+    cursor="{{r.cursor}}"
+    selection-start="{{r.selectionStart}}"
+    selection-end="{{r.selectionEnd}}"
+    adjust-position="{{r.adjustPosition}}"
+  >
+  </input>
+</template>
+
+<template name="textarea">
+  <textarea
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+
+    bindfocus="onTextareaFocus"
+    bindblur="onTextareaBlur"
+    bindlineChange="onTextareaLineChange"
+    bindinput="onTextareaInput"
+    bindconfirm="onTextareaConfirm"
+    bindkeyboardheightchange="onTextareaKeyBoardHeightChange"
+
+    value="{{r.value}}"
+    placeholder="{{r.placeholder}}"
+    placeholder-style="color:{{r.placeholderColor}}"
+    placeholder-class="{{r.placeholderClass}}"
+    disabled="{{r.disabled}}"
+    maxlength="{{r.maxlength}}"
+    auto-focus="{{r.autoFocus}}"
+    focus="{{r.focus}}"
+    controlled="{{r.controlled}}"
+    auto-height="{{r.autoHeight}}"
+    fixed="{{r.fixed}}"
+    cursor-spacing="{{r.cursorSpacing}}"
+    cursor="{{r.cursor}}"
+    show-confirm-bar="{{r.showConfirmBar}}"
+    selection-start="{{r.selectionStart}}"
+    selection-end="{{r.selectionEnd}}"
+    adjust-position="{{r.adjustPosition}}"
+  >
+  </textarea>
+</template>
+
+<template name="radio">
+  <radio
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+
+    value="{{r.value}}"
+    disabled="{{r.disabled}}"
+    checked="{{r.checked}}"
+    color="{{r.color}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </radio>
+</template>
+
+<template name="radio-group">
+  <radio-group
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindchange="onRadioChange"
+
+    name="{{name}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </radio-group>
+</template>
+
+<template name="checkbox">
+  <checkbox
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindchange="onCheckboxItemChange"
+
+    value="{{r.value}}"
+    disabled="{{r.disabled}}"
+    checked="{{r.checked}}"
+    color="{{r.color}}"
+  >
+  </checkbox>
+</template>
+
+<template name="checkbox-group">
+  <checkbox-group
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindchange="onCheckboxChange"
+
+    name="{{r.name}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </checkbox-group>
+</template>
+
+<template name="switch">
+  <switch
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindchange="onSwitchChange"
+
+    name="{{r.name}}"
+    checked="{{r.checked}}"
+    disabled="{{r.disabled}}"
+    type="{{r.type}}"
+    color="{{r.color}}"
+  >
+  </switch>
+</template>
+
+<template name="slider">
+  <slider
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindchange="onSliderChange"
+    bindchanging="onSliderChanging"
+
+    name="{{r.name}}"
+    min="{{r.min}}"
+    max="{{r.max}}"
+    step="{{r.step}}"
+    disabled="{{r.disabled}}"
+    value="{{r.value}}"
+    color="{{r.color}}"
+    selected-color="{{r.selectedColor}}"
+    active-color="{{r.activeColor}}"
+    background-color="{{r.backgroundColor}}"
+    block-size="{{r.blockSize}}"
+    block-color="{{r.blockColor}}"
+    show-value="{{r.showValue}}"
+  >
+  </slider>
+</template>
+
+<template name="picker-view">
+  <picker-view
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindchange="onPickerViewChange"
+    bindpickstart="onPickerViewPickstart"
+    onpickend="onPickerViewPickend"
+
+    indicator-style="{{r.indicatorStyle}}"
+    indicator-class="{{r.indicatorClass}}"
+    mask-style="{{r.maskStyle}}"
+    mask-class="{{r.maskClass}}"
+    value="{{value}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </picker-view>
+</template>
+
+<template name="picker-view-column">
+  <picker-view-column
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </picker-view-column>
+</template>
+
+<template name="picker">
+  <picker
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindchange="onPickerChange"
+    bindcancel="onPickerCancel"
+
+    name="{{r.name}}"
+    mode="{{r.mode}}"
+    disabled="{{r.disabled}}"
+    range="{{r.range}}"
+    range-key="{{r.rangeKey}}"
+    value="{{r.value}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </picker>
+</template>
+
+<template name="navigator">
+  <navigator
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindsuccess="onNavigatorSuccess"
+    bindfail="onNavigatorFail"
+    bindcomplete="onNavigatorComplete"
+
+    target="{{r.target}}"
+    url="{{r.url}}"
+    open-type="{{r.openType}}"
+    delta="{{r.delta}}"
+    app-id="{{r.appId}}"
+    path="{{r.path}}"
+    extra-data="{{r.extraData}}"
+    version="{{r.version}}"
+    hover-class="{{r.hoverClass}}"
+    hover-stop-propagation="{{r.hoverStopPropagation}}"
+    hover-start-time="{{r.hoverStartTime}}"
+    hover-stay-time="{{r.hoverStayTime}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </navigator>
+</template>
+
+<template name="image">
+  <image
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindload="onImageLoad"
+    binderror="onImageError"
+
+    rendering-mode="{{r.renderingMode}}"
+    src="{{r.src}}"
+    mode="{{r.mode}}"
+    lazy-load="{{r.lazyLoad}}"
+    show-menu-by-longpress="{{r.showMenuByLongpress}}"
+  >
+  </image>
+</template>
+
+<template name="video">
+  <video
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindplay="onVideoPlay"
+    bindpause="onVideoPause"
+    bindended="onVideoEnded"
+    bindtimeupdate="onVideoTimeUpdate"
+    bindfullscreenchange="onVideoFullScreenChange"
+    bindwaiting="onVideoWaiting"
+    binderror="onVideoError"
+    bindprogress="onVideoProgress"
+
+    src="{{r.src}}"
+    duration="{{r.duration}}"
+    controls="{{r.controls}}"
+    danmu-list="{{r.danmuList}}"
+    danmu-btn="{{r.danmuBtn}}"
+    enable-danmu="{{r.enableDanmu}}"
+    autoplay="{{r.autoplay}}"
+    loop="{{r.loop}}"
+    muted="{{r.muted}}"
+    initial-time="{{r.initialTime}}"
+    direction="{{r.direction}}"
+    show-progress="{{r.showProgress}}"
+    show-fullscreen-btn="{{r.showFullscreenBtn}}"
+    show-play-btn="{{r.showPlayBtn}}"
+    show-center-play-btn="{{r.showCenterPlayBtn}}"
+    enable-progress-gesture="{{r.enableProgressGesture}}"
+    object-fit="{{r.objectFit}}"
+    poster="{{r.poster}}"
+    show-mute-btn="{{r.showMuteBtn}}"
+    title="{{r.title}}"
+    play-btn-position="{{r.playBtnPosition}}"
+    enable-play-gesture="{{r.enablePlayGesture}}"
+    auto-pause-if-navigate="{{r.autoPauseIfNavigate}}"
+    auto-pause-if-open-native="{{r.autoPauseIfOpenNative}}"
+    vslide-gesture="{{r.vslideGesture}}"
+    vslide-gesture-in-fullscreen="{{r.vslideGestureInFullscreen}}"
+  >
+  </video>
+</template>
+
+<template name="map">
+  <map
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindmarkertap="onMapMarkerTap"
+    bindcontroltap="onMapControlTap"
+    bindcallouttap="onMapCalloutTap"
+    bindupdated="onMapUpdated"
+    bindregibindchange="onMapRegionChange"
+
+    longitude="{{r.longitude}}"
+    latitude="{{r.latitude}}"
+    scale="{{r.scale}}"
+    markers="{{r.markers}}"
+    polyline="{{r.polyline}}"
+    circles="{{r.circles}}"
+    controls="{{r.controls}}"
+    include-points="{{r.includePoints}}"
+    show-location="{{r.showLocation}}"
+    polygons="{{r.polygons}}"
+    subkey="{{r.subkey}}"
+    layer-style="{{r.layerStyle}}"
+    rotate="{{r.rotate}}"
+    skew="{{r.skew}}"
+    enable-3D="{{r.enable3D}}"
+    show-compass="{{r.showCompass}}"
+    enable-overlooking="{{r.enableOverlooking}}"
+    enable-zoom="{{r.enableZoom}}"
+    enable-scroll="{{r.enableScroll}}"
+    enable-rotate="{{r.enableRotate}}"
+    enable-satellite="{{r.enableSatellite}}"
+    enable-traffic="{{r.enableTraffic}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </map>
+</template>
+
+<template name="canvas">
+  <canvas
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindlongtap="onCanvasLongTap"
+    binderror="onCanvasError"
+
+    type="{{r.type}}"
+    canvas-id="{{r.canvasId}}"
+    disable-scroll="{{r.disableScroll}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </canvas>
+</template>
+
+<template name="web-view">
+  <web-view
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+
+    bindmessage="onWebviewMessage"
+    bindload="onWebviewLoad"
+    binderror="onWebviewError"
+
+    src="{{r.src}}"
+  >
+  </web-view>
 </template>

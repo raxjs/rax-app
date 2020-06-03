@@ -8,6 +8,7 @@
     data-private-page-id="{{r.pageId}}"
 
     onTap="onTap"
+    onTouchStart="onTouchStart"
     onTouchMove="onTouchMove"
     onTouchEnd="onTouchEnd"
     onTouchCancel="onTouchCancel"
@@ -555,7 +556,6 @@
     checked="{{r.checked}}"
     color="{{r.color}}"
   >
-    <template is="children" data="{{r: r.children}}" />
   </checkbox>
 </template>
 
@@ -571,8 +571,345 @@
     onTap="onTap"
     onChange="onCheckboxChange"
 
-    name="{{name}}"
+    name="{{r.name}}"
   >
     <template is="children" data="{{r: r.children}}" />
   </checkbox-group>
+</template>
+
+<template name="switch">
+  <switch
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    onTap="onTap"
+    onChange="onSwitchChange"
+
+    name="{{r.name}}"
+    checked="{{r.checked}}"
+    disabled="{{r.disabled}}"
+    type="{{r.type}}"
+    color="{{r.color}}"
+  >
+  </switch>
+</template>
+
+<template name="slider">
+  <slider
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    onTap="onTap"
+    onChange="onSliderChange"
+    onChanging="onSliderChanging"
+
+    name="{{r.name}}"
+    min="{{r.min}}"
+    max="{{r.max}}"
+    step="{{r.step}}"
+    disabled="{{r.disabled}}"
+    value="{{r.value}}"
+    color="{{r.color}}"
+    selected-color="{{r.selectedColor}}"
+    active-color="{{r.activeColor}}"
+    background-color="{{r.backgroundColor}}"
+    block-size="{{r.blockSize}}"
+    block-color="{{r.blockColor}}"
+    show-value="{{r.showValue}}"
+  >
+  </slider>
+</template>
+
+<template name="picker-view">
+  <picker-view
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    onChange="onPickerViewChange"
+    onPickStart="onPickerViewPickstart"
+    onPickEnd="onPickerViewPickend"
+
+    indicator-style="{{r.indicatorStyle}}"
+    indicator-class="{{r.indicatorClass}}"
+    mask-style="{{r.maskStyle}}"
+    mask-class="{{r.maskClass}}"
+    value="{{value}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </picker-view>
+</template>
+
+<template name="picker-view-column">
+  <picker-view-column
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    onTouchStart="onTouchStart"
+    onTouchMove="onTouchMove"
+    onTouchEnd="onTouchEnd"
+    onTouchCancel="onTouchCancel"
+    onTap="onTap"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </picker-view-column>
+</template>
+
+<template name="picker">
+  <picker
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    onTouchStart="onTouchStart"
+    onTouchMove="onTouchMove"
+    onTouchEnd="onTouchEnd"
+    onTouchCancel="onTouchCancel"
+    onTap="onTap"
+
+    onChange="onPickerChange"
+    onCancel="onPickerCancel"
+
+    name="{{r.name}}"
+    mode="{{r.mode}}"
+    disabled="{{r.disabled}}"
+    range="{{r.range}}"
+    range-key="{{r.rangeKey}}"
+    value="{{r.value}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </picker>
+</template>
+
+<template name="navigator">
+  <navigator
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    onTouchStart="onTouchStart"
+    onTouchMove="onTouchMove"
+    onTouchEnd="onTouchEnd"
+    onTouchCancel="onTouchCancel"
+    onTap="onTap"
+
+    onSuccess="onNavigatorSuccess"
+    onFail="onNavigatorFail"
+    onComplete="onNavigatorComplete"
+
+    target="{{r.target}}"
+    url="{{r.url}}"
+    open-type="{{r.openType}}"
+    delta="{{r.delta}}"
+    app-id="{{r.appId}}"
+    path="{{r.path}}"
+    extra-data="{{r.extraData}}"
+    version="{{r.version}}"
+    hover-class="{{r.hoverClass}}"
+    hover-stop-propagation="{{r.hoverStopPropagation}}"
+    hover-start-time="{{r.hoverStartTime}}"
+    hover-stay-time="{{r.hoverStayTime}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </navigator>
+</template>
+
+<template name="image">
+  <image
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    onTouchStart="onTouchStart"
+    onTouchMove="onTouchMove"
+    onTouchEnd="onTouchEnd"
+    onTouchCancel="onTouchCancel"
+    onTap="onTap"
+
+    onLoad="onImageLoad"
+    onError="onImageError"
+
+    rendering-mode="{{r.renderingMode}}"
+    src="{{r.src}}"
+    mode="{{r.mode}}"
+    lazy-load="{{r.lazyLoad}}"
+    show-menu-by-longpress="{{r.showMenuByLongpress}}"
+  >
+  </image>
+</template>
+
+<template name="video">
+  <video
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    onTouchStart="onTouchStart"
+    onTouchMove="onTouchMove"
+    onTouchEnd="onTouchEnd"
+    onTouchCancel="onTouchCancel"
+    onTap="onTap"
+
+    onPlay="onVideoPlay"
+    onPause="onVideoPause"
+    onEnded="onVideoEnded"
+    onTimeUpdate="onVideoTimeUpdate"
+    onFullScreenChange="onVideoFullScreenChange"
+    onWaiting="onVideoWaiting"
+    onError="onVideoError"
+    onProgress="onVideoProgress"
+
+    src="{{r.src}}"
+    duration="{{r.duration}}"
+    controls="{{r.controls}}"
+    danmu-list="{{r.danmuList}}"
+    danmu-btn="{{r.danmuBtn}}"
+    enable-danmu="{{r.enableDanmu}}"
+    autoplay="{{r.autoplay}}"
+    loop="{{r.loop}}"
+    muted="{{r.muted}}"
+    initial-time="{{r.initialTime}}"
+    direction="{{r.direction}}"
+    show-progress="{{r.showProgress}}"
+    show-fullscreen-btn="{{r.showFullscreenBtn}}"
+    show-play-btn="{{r.showPlayBtn}}"
+    show-center-play-btn="{{r.showCenterPlayBtn}}"
+    enable-progress-gesture="{{r.enableProgressGesture}}"
+    object-fit="{{r.objectFit}}"
+    poster="{{r.poster}}"
+    show-mute-btn="{{r.showMuteBtn}}"
+    title="{{r.title}}"
+    play-btn-position="{{r.playBtnPosition}}"
+    enable-play-gesture="{{r.enablePlayGesture}}"
+    auto-pause-if-navigate="{{r.autoPauseIfNavigate}}"
+    auto-pause-if-open-native="{{r.autoPauseIfOpenNative}}"
+    vslide-gesture="{{r.vslideGesture}}"
+    vslide-gesture-in-fullscreen="{{r.vslideGestureInFullscreen}}"
+  >
+  </video>
+</template>
+
+<template name="map">
+  <map
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    onTouchStart="onTouchStart"
+    onTouchMove="onTouchMove"
+    onTouchEnd="onTouchEnd"
+    onTouchCancel="onTouchCancel"
+    onTap="onTap"
+
+    onMarkerTap="onMapMarkerTap"
+    onControlTap="onMapControlTap"
+    onCalloutTap="onMapCalloutTap"
+    onUpdated="onMapUpdated"
+    onRegionChange="onMapRegionChange"
+
+    longitude="{{r.longitude}}"
+    latitude="{{r.latitude}}"
+    scale="{{r.scale}}"
+    markers="{{r.markers}}"
+    polyline="{{r.polyline}}"
+    circles="{{r.circles}}"
+    controls="{{r.controls}}"
+    include-points="{{r.includePoints}}"
+    show-location="{{r.showLocation}}"
+    polygons="{{r.polygons}}"
+    subkey="{{r.subkey}}"
+    layer-style="{{r.layerStyle}}"
+    rotate="{{r.rotate}}"
+    skew="{{r.skew}}"
+    enable-3D="{{r.enable3D}}"
+    show-compass="{{r.showCompass}}"
+    enable-overlooking="{{r.enableOverlooking}}"
+    enable-zoom="{{r.enableZoom}}"
+    enable-scroll="{{r.enableScroll}}"
+    enable-rotate="{{r.enableRotate}}"
+    enable-satellite="{{r.enableSatellite}}"
+    enable-traffic="{{r.enableTraffic}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </map>
+</template>
+
+<template name="canvas">
+  <canvas
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    onTouchStart="onTouchStart"
+    onTouchMove="onTouchMove"
+    onTouchEnd="onTouchEnd"
+    onTouchCancel="onTouchCancel"
+    onTap="onTap"
+
+    onLongTap="onCanvasLongTap"
+    onError="onCanvasError"
+
+    type="{{r.type}}"
+    canvas-id="{{r.canvasId}}"
+    disable-scroll="{{r.disableScroll}}"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </canvas>
+</template>
+
+<template name="web-view">
+  <web-view
+    style="{{r.style}}"
+    class="{{r.className}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    onTouchStart="onTouchStart"
+    onTouchMove="onTouchMove"
+    onTouchEnd="onTouchEnd"
+    onTouchCancel="onTouchCancel"
+    onTap="onTap"
+
+    onMessage="onWebviewMessage"
+    onLoad="onWebviewLoad"
+    onError="onWebviewError"
+
+    src="{{r.src}}"
+  >
+  </web-view>
 </template>
