@@ -1,5 +1,5 @@
 {
-  "name": "build-plugin-block-rax",
+  "name": "build-plugin-rax-block",
   "version": "0.1.0",
   "description": "plugin for rax block development",
   "main": "src/index.js",
