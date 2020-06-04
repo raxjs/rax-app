@@ -66,6 +66,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   };
 
   config
+    .cache(true)
     .mode('production')
     .target('node');
 
