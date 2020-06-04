@@ -1,0 +1,15 @@
+{
+  "name": "build-plugin-block-rax",
+  "version": "0.1.0",
+  "description": "plugin for rax block development",
+  "main": "src/index.js",
+  "keywords": [
+    "build-scripts",
+    "rax",
+    "block"
+  ],
+  "dependencies": {
+    "build-plugin-rax-component": "^0.2.0",
+    "html-webpack-plugin": "^4.3.0"
+  }
+}
