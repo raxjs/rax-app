@@ -16,7 +16,10 @@ const {
   generatePageJS,
   generatePageJSON,
   generatePageXML,
-  generateRootTemplate
+  generateRootTemplate,
+  generateElementJS,
+  generateElementJSON,
+  generateElementTemplate,
 } = require('./generators');
 
 const PluginName = 'MiniAppRuntimePlugin';
@@ -211,6 +214,25 @@ class MiniAppRuntimePlugin {
           command,
           rootDir,
         });
+
+        if (target !== MINIAPP) {
+          // Generate self loop element
+          generateElementJS(compilation, {
+            target,
+            command,
+            rootDir,
+          });
+          generateElementJSON(compilation, {
+            target,
+            command,
+            rootDir,
+          });
+          generateElementTemplate(compilation, {
+            target,
+            command,
+            rootDir,
+          });
+        }
       }
 
       // Custom-component

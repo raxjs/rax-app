@@ -4,6 +4,7 @@ const getAssetPath = require('../utils/getAssetPath');
 const addFileToCompilation = require('../utils/addFileToCompilation');
 const adjustCSS = require('../utils/adjustCSS');
 const getTemplate = require('../utils/getTemplate');
+const { MINIAPP } = require('../constants');
 
 function generatePageJS(
   compilation,
@@ -39,7 +40,7 @@ function generatePageXML(
   pageRoute,
   { target, command }
 ) {
-  const pageXmlContent = `<import src="../../root.axml"/>
+  const pageXmlContent = `<import src="../../root.${adapter[target].xml}"/>
     <view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
     <template is="element" data="{{r: root.children[0]}}"  />
   </view>`;
@@ -70,17 +71,16 @@ function generatePageCSS(compilation, assets, pageRoute, { target, command }) {
 
 function generatePageJSON(
   compilation,
-  pageExtraConfig,
+  pageConfig,
   customComponentRoot,
   pageRoute,
   { target, command }
 ) {
-  const pageConfig = {
-    ...pageExtraConfig,
-    usingComponents: {
-      element: 'miniapp-element',
-    },
-  };
+  if (target !== MINIAPP) {
+    pageConfig.usingComponents = {
+      'element': '../../comp'
+    };
+  }
   if (customComponentRoot) {
     pageConfig.usingComponents['custom-component'] = getAssetPath(
       'custom-component/index',

@@ -1,20 +1,25 @@
 <template name="element">
-  <view
-    wx:if="{{r.tagName}}"
-    style="{{r.style}}"
-    class="h5-{{r.tagName}} {{r.className}}"
-    id="{{r.id}}"
-    data-private-node-id="{{r.nodeId}}"
-    data-private-page-id="{{r.pageId}}"
+  <block wx:if="{{r.tagName}}">
+    <view
+      wx:if="{{!isComp}}"
+      style="{{r.style}}"
+      class="h5-{{r.tagName}} {{r.className}}"
+      id="{{r.id}}"
+      data-private-node-id="{{r.nodeId}}"
+      data-private-page-id="{{r.pageId}}"
 
-    bindtap="onTap"
-    bindtouchstart="onTouchStart"
-    bindtouchmove="onTouchMove"
-    bindtouchend="onTouchEnd"
-    bindtouchcancel="onTouchCancel"
-  >
-    <template is="children" data="{{r: r.children}}" />
-  </view>
+      bindtap="onTap"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+      bindtouchcancel="onTouchCancel"
+    >
+      <template is="children" data="{{r: r.children}}" />
+    </view>
+    <block wx:else>
+      <template is="children" data="{{r: r.children}}" />
+    </block>
+  </block>
 </template>
 
 <template name="children">
@@ -22,10 +27,25 @@
     <block wx:if="{{item.type === 'text'}}">
       {{item.content}}
     </block>
-    <block wx:else>
-      <template is="{{item.behavior || 'element'}}" data="{{r: item}}" />
+    <block wx:elif="{{item.behavior}}">
+      <template is="{{item.behavior}}" data="{{r: item}}" />
     </block>
-    <block>
+    <element
+      wx:else
+      style="{{item.style}}"
+      class="h5-{{item.tagName}} {{item.className}}"
+      id="{{item.id}}"
+      data-private-node-id="{{item.nodeId}}"
+      data-private-page-id="{{item.pageId}}"
+
+      bindtap="onTap"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+      bindtouchcancel="onTouchCancel"
+
+      r="{{item}}"
+     />
   </block>
 </template>
 

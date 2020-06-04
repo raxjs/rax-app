@@ -24,7 +24,7 @@ module.exports = function(
   const distNpmDir = resolve(outputPath, target, adapter[target].npmDirName);
 
   const build = () => {
-    ['miniapp-element', 'miniapp-render'].forEach((name) => {
+    ['miniapp-render'].forEach((name) => {
       const sourceNpmFileDir = resolve(
         process.cwd(),
         'node_modules',
