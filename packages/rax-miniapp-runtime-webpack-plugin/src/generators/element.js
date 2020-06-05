@@ -19,7 +19,7 @@ function generateElementTemplate(compilation,
     filename: `comp.${adapter[target].xml}`,
     content: `<import src="./root.${adapter[target].xml}"/>
 
-    <template is="element" data="{{r: r, isComp: true}}" />`,
+    <template is="{{r.behavior || 'element'}}" data="{{r: r, isComp: true}}" />`,
     target,
     command,
   });
