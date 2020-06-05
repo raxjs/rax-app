@@ -7,7 +7,7 @@ function generateRootTemplate(
   compilation,
   { target, command, rootDir }
 ) {
-  const template = ejs.render(getTemplate(rootDir, target, 'root.xml'));
+  const template = ejs.render(getTemplate(rootDir, 'root.xml', target));
   addFileToCompilation(compilation, {
     filename: `root.${adapter[target].xml}`,
     content: template,

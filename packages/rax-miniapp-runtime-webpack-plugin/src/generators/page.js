@@ -13,7 +13,7 @@ function generatePageJS(
   nativeLifeCycles,
   { target, command, rootDir }
 ) {
-  const pageJsContent = ejs.render(getTemplate(rootDir, target, 'page.js'), {
+  const pageJsContent = ejs.render(getTemplate(rootDir, 'page.js'), {
     config_path: `${getAssetPath('config.js', `${pageRoute}.js`)}`,
     init: `function init(window, document) {${assets.js
       .map(
@@ -38,12 +38,17 @@ function generatePageJS(
 function generatePageXML(
   compilation,
   pageRoute,
-  { target, command }
+  { target, command, rootDir }
 ) {
-  const pageXmlContent = `<import src="../../root.${adapter[target].xml}"/>
-    <view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
+  let pageXmlContent = `<view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
     <template is="element" data="{{r: root.children[0]}}"  />
   </view>`;
+
+  if (target === MINIAPP) {
+    pageXmlContent = ejs.render(getTemplate(rootDir, 'root.xml', target)) + pageXmlContent;
+  } else {
+    pageXmlContent = `<import src="../../root.${adapter[target].xml}"/>` + pageXmlContent;
+  }
 
   addFileToCompilation(compilation, {
     filename: `${pageRoute}.${adapter[target].xml}`,
@@ -82,6 +87,9 @@ function generatePageJSON(
     };
   }
   if (customComponentRoot) {
+    if (!pageConfig.usingComponents) {
+      pageConfig.usingComponents = {};
+    }
     pageConfig.usingComponents['custom-component'] = getAssetPath(
       'custom-component/index',
       `${pageRoute}.js`

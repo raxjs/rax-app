@@ -22,8 +22,21 @@
     <block a:if="{{item.type === 'text'}}">
       {{item.content}}
     </block>
+    <block a:elif="{{item.tagName === 'custom-component'}}">
+      <custom-component r="{{item}}">
+        <template is="children" data="{{r: item.children}}" />
+      </custom-component>
+    </block>
+    <block a:elif="{{!item.behavior}}">
+      <template a:if="{{item.tagName === 'img'}}" is="image" data="{{r: item}}" />
+      <template a:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item}}" />
+      <template a:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item}}" />
+      <template a:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item}}" />
+      <template a:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item}}" />
+      <template a:else is="element" data="{{r: item}}" />
+    </block>
     <block a:else>
-      <template is="{{item.behavior || 'element'}}" data="{{r: item}}" />
+      <template is="{{item.behavior}}" data="{{r: item}}" />
     </block>
   </block>
 </template>
