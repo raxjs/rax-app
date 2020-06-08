@@ -705,27 +705,25 @@
     mask-class="{{r.maskClass}}"
     value="{{value}}"
   >
-    <template is="children" data="{{r: r.children}}" />
+      <picker-view-column
+        wx:for="{{r.children}}"
+        wx:key="nodeId"
+        style="{{item.style}}"
+        class="{{item.className}}"
+        hidden="{{item.hidden}}"
+        id="{{item.id}}"
+        data-private-node-id="{{item.nodeId}}"
+        data-private-page-id="{{item.pageId}}"
+
+        bindtap="onTap"
+        bindtouchstart="onTouchStart"
+        bindtouchmove="onTouchMove"
+        bindtouchend="onTouchEnd"
+        bindtouchcancel="onTouchCancel"
+    >
+      <template is="children" data="{{r: item.children}}" />
+    </picker-view-column>
   </picker-view>
-</template>
-
-<template name="picker-view-column">
-  <picker-view-column
-    style="{{r.style}}"
-    class="{{r.className}}"
-    hidden="{{r.hidden}}"
-    id="{{r.id}}"
-    data-private-node-id="{{r.nodeId}}"
-    data-private-page-id="{{r.pageId}}"
-
-    bindtap="onTap"
-    bindtouchstart="onTouchStart"
-    bindtouchmove="onTouchMove"
-    bindtouchend="onTouchEnd"
-    bindtouchcancel="onTouchCancel"
-  >
-    <template is="children" data="{{r: r.children}}" />
-  </picker-view-column>
 </template>
 
 <template name="picker">

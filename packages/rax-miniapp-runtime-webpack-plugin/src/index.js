@@ -208,14 +208,13 @@ class MiniAppRuntimePlugin {
           rootDir,
         });
 
-        // Generate root template xml
-        generateRootTemplate(compilation, {
-          target,
-          command,
-          rootDir,
-        });
-
         if (target !== MINIAPP) {
+          // Generate root template xml
+          generateRootTemplate(compilation, {
+            target,
+            command,
+            rootDir,
+          });
           // Generate self loop element
           generateElementJS(compilation, {
             target,
