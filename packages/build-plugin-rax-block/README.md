@@ -1,4 +1,4 @@
-# build-plugin-block-rax
+# build-plugin-rax-block
 
 plugin for rax block development
 
