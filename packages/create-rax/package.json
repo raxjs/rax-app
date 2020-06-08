@@ -1,9 +1,9 @@
 {
   "name": "create-rax",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Creator alias for rax.",
   "bin": {
-    "create": "bin/create.js"
+    "create-rax": "bin/create.js"
   },
   "license": "BSD-3-Clause",
   "repository": {
