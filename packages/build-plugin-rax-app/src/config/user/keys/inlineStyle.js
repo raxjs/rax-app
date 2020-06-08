@@ -24,9 +24,9 @@ module.exports = {
     const { userConfig, taskName } = context;
     const { publicPath } = userConfig;
 
-    setCSSRule(config.module.rule('css').test(/\.css?$/), context, value);
-    setCSSRule(config.module.rule('less').test(/\.less?$/), context, value);
-    setCSSRule(config.module.rule('sass').test(/\.s[ac]ss?$/), context, value);
+    setCSSRule(config.module.rule('css').test(/\.css$/), context, value);
+    setCSSRule(config.module.rule('less').test(/\.less$/), context, value);
+    setCSSRule(config.module.rule('sass').test(/\.s[ac]ss$/), context, value);
 
     if (inlineStandardList.includes(taskName) || value) {
       config.module.rule('less')
