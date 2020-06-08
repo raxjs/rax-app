@@ -1,4 +1,3 @@
-const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const DocumentPlugin = require('../../plugins/DocumentPlugin/');
 const getWebpackBase = require('../getWebpackBase');
 const setEntry = require('../setEntry');
@@ -19,12 +18,6 @@ module.exports = (context, target, options = {}) => {
       }],
       doctype: options.doctype,
       staticExport: options.staticExport
-    }]);
-
-  config
-    .plugin('progress-bar')
-    .use(ProgressBarPlugin, [{
-      clear: false
     }]);
 
   return config;

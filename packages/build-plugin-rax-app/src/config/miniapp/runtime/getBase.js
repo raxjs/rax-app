@@ -39,10 +39,15 @@ module.exports = (context, target, options) => {
   config.module.rule('jsx')
     .use('babel')
     .tap(options => {
-      options.plugins = [...getMiniAppBabelPlugins({
-        usingComponents,
-        nativeLifeCycleMap
-      }), ...options.plugins];
+      options.presets = [
+        ...options.presets,
+        {
+          plugins: getMiniAppBabelPlugins({
+            usingComponents,
+            nativeLifeCycleMap
+          })
+        }
+      ];
       return options;
     });
 
