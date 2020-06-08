@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-app",
-  "version": "4.6.6",
+  "version": "4.7.0",
   "description": "rax app base plugins",
   "main": "src/index.js",
   "scripts": {
@@ -63,6 +63,7 @@
     "rax-quickapp-webpack-plugin": "^1.0.0",
     "rax-server-renderer": "^1.0.0",
     "rax-webpack-config": "^0.1.0",
+    "sass-loader": "^8.0.2",
     "stylesheet-loader": "^0.8.0",
     "terser": "^4.6.4",
     "terser-webpack-plugin": "^2.1.3",
