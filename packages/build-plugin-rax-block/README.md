@@ -7,7 +7,7 @@ plugin for rax block development
 ```json
 {
   "plugins": [
-    "build-plugin-block-rax"
+    "build-plugin-rax-block"
   ]
 }
 ```
