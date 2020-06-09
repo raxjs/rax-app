@@ -41,7 +41,7 @@ module.exports = function(
     // custom-component/index.xml
     addFileToCompilation(compilation, {
       filename: `custom-component/index.${adapter[target].xml}`,
-      content: `<block ${adapter[target].directive}="{{ready}}">
+      content: `<block ${adapter[target].directive.if}="{{ready}}">
         ${
   names
     .map((key, index) => {
