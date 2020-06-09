@@ -19,7 +19,7 @@
 
 <template name="children">
   <block a:for="{{r}}" a:key="nodeId">
-    <block a:if="{{item.type === 'text'}}">
+    <block a:if="{{item.nodeType === 'text'}}">
       {{item.content}}
     </block>
     <block a:elif="{{item.tagName === 'custom-component'}}">
@@ -28,11 +28,11 @@
       </custom-component>
     </block>
     <block a:elif="{{!item.behavior}}">
-      <template a:if="{{item.tagName === 'img'}}" is="image" data="{{r: item}}" />
-      <template a:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item}}" />
-      <template a:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item}}" />
-      <template a:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item}}" />
-      <template a:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item}}" />
+      <template a:if="{{item.tagName === 'img'}}" is="image" data="{{r: item, isHTMLElement: true}}" />
+      <template a:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item, isHTMLElement: true}}" />
+      <template a:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item, isHTMLElement: true}}" />
+      <template a:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item, isHTMLElement: true}}" />
+      <template a:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item, isHTMLElement: true}}" />
       <template a:else is="element" data="{{r: item}}" />
     </block>
     <block a:else>
@@ -438,7 +438,7 @@
 <template name="input">
   <input
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{isHTMLElement ? `h5-input ${r.className}` : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -477,7 +477,7 @@
 <template name="textarea">
   <textarea
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{isHTMLElement ? `h5-textarea ${r.className}` : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -677,7 +677,7 @@
       onTap="onTap"
     >
       <view a:for="{{item.children}}" a:for-item="pickerColumnItem">
-        <block a:if="{{pickerColumnItem.type === 'text'}}">
+        <block a:if="{{pickerColumnItem.nodeType === 'text'}}">
           {{pickerColumnItem.content}}
         </block>
         <block a:elif="{{pickerColumnItem.tagName === 'custom-component'}}">
@@ -761,7 +761,7 @@
 <template name="image">
   <image
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{isHTMLElement ? `h5-img ${r.className}` : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -788,7 +788,7 @@
 <template name="video">
   <video
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{isHTMLElement ? `h5-video ${r.className}` : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -890,7 +890,7 @@
 <template name="canvas">
   <canvas
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{isHTMLElement ? `h5-canvas ${r.className}` : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"

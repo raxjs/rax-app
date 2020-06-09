@@ -29,11 +29,11 @@
       <template wx:if="{{item.children}}" is="children_1" data="{{r: item.children}}" />
     </custom-component>
     <block wx:elif="{{!item.behavior}}">
-      <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item}}" />
+      <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item, isHTMLElement: true}}" />
+      <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item, isHTMLElement: true}}" />
+      <template wx:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item, isHTMLElement: true}}" />
+      <template wx:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item, isHTMLElement: true}}" />
+      <template wx:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item, isHTMLElement: true}}" />
       <element
         wx:else
         style="{{item.style}}"
@@ -59,7 +59,7 @@
 
 <template name="children_1">
   <block wx:for="{{r}}" wx:key="nodeId">
-    <block wx:if="{{item.type === 'text'}}">{{item.content}}</block>
+    <block wx:if="{{item.nodeType === 'text'}}">{{item.content}}</block>
     <custom-component wx:elif="{{item.tagName === 'custom-component'}}" r="{{item}}">
       <template wx:if="{{item.children}}" is="children" data="{{r: item.children}}" />
     </custom-component>
@@ -484,7 +484,7 @@
 <template name="input">
   <input
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{isHTMLElement ? `h5-input ${r.className}` : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -523,7 +523,7 @@
 <template name="textarea">
   <textarea
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{isHTMLElement ? `h5-textarea ${r.className}` : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -794,7 +794,7 @@
 <template name="image">
   <image
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{isHTMLElement ? `h5-img ${r.className}` : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -821,7 +821,7 @@
 <template name="video">
   <video
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{isHTMLElement ? `h5-video ${r.className}` : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -923,7 +923,7 @@
 <template name="canvas">
   <canvas
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{isHTMLElement ? `h5-canvas ${r.className}` : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
