@@ -1,4 +1,4 @@
-const { join, relative, sep } = require('path');
+const { join, relative, sep, resolve } = require('path');
 const { existsSync, statSync } = require('fs-extra');
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
@@ -75,9 +75,17 @@ function getRelativePath(filePath) {
   return relativePath;
 }
 
+function getDepPath(rootDir, com) {
+  if (com[0] === sep ) {
+    return join(rootDir, 'src', com);
+  } else {
+    return resolve(rootDir, 'src', com);
+  }
+}
 
 module.exports = {
   moduleResolve,
   normalizeOutputFilePath,
-  getRelativePath
+  getRelativePath,
+  getDepPath
 };
