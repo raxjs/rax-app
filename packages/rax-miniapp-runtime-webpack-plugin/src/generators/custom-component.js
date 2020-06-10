@@ -31,7 +31,7 @@ function generateCustomComponent(
     // custom-component/index.js
     addFileToCompilation(compilation, {
       filename: 'custom-component/index.js',
-      content: `const render = require('miniapp-render')
+      content: `const render = require('../render')
       Component(render.createCustomComponentConfig())`,
       target,
       command,

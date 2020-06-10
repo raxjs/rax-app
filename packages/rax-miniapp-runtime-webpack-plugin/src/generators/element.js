@@ -5,7 +5,7 @@ function generateElementJS(compilation,
   { target, command, rootDir }) {
   addFileToCompilation(compilation, {
     filename: 'comp.js',
-    content: `const render = require('miniapp-render');
+    content: `const render = require('./render');
 
     Component(render.createElementConfig());`,
     target,

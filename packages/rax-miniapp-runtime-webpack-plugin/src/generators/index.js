@@ -13,6 +13,7 @@ const {
   generateElementJSON,
   generateElementTemplate,
 } = require('./element');
+const generateRender = require('./render');
 
 module.exports = {
   generateAppCSS,
@@ -27,4 +28,5 @@ module.exports = {
   generateElementJS,
   generateElementJSON,
   generateElementTemplate,
+  generateRender
 };

@@ -6,7 +6,6 @@ const { MINIAPP, VENDOR_CSS_FILE_NAME, WECHAT_MINIPROGRAM } = require('./constan
 const adapter = require('./adapter');
 const isCSSFile = require('./utils/isCSSFile');
 const wrapChunks = require('./utils/wrapChunks');
-const installDependencies = require('./utils/installDependencies');
 const {
   generateAppCSS,
   generateAppJS,
@@ -20,6 +19,7 @@ const {
   generateElementJS,
   generateElementJSON,
   generateElementTemplate,
+  generateRender
 } = require('./generators');
 
 const PluginName = 'MiniAppRuntimePlugin';
@@ -124,6 +124,9 @@ class MiniAppRuntimePlugin {
             nativeLifeCycleMap[pageRoute] || {};
           const route = routes.find(({ source }) => source === entryName);
           if (route.window && route.window.pullRefresh) {
+            if (!nativeLifeCycles[pageRoute]) {
+              nativeLifeCycles[pageRoute] = {};
+            }
             nativeLifeCycles[pageRoute].onPullDownRefresh = true;
             // onPullIntercept only exits in wechat miniprogram
             if (target === WECHAT_MINIPROGRAM) {
@@ -208,6 +211,15 @@ class MiniAppRuntimePlugin {
           rootDir,
         });
 
+        // Custom-component
+        generateCustomComponent(
+          compilation,
+          customComponentRoot,
+          customComponents,
+          outputPath,
+          { target, command, rootDir }
+        );
+
         if (target !== MINIAPP) {
           // Generate root template xml
           generateRootTemplate(compilation, {
@@ -232,29 +244,11 @@ class MiniAppRuntimePlugin {
             rootDir,
           });
         }
+
+        // render.js
+        generateRender(compilation, { target, command, rootDir });
       }
 
-      // Custom-component
-      generateCustomComponent(
-        compilation,
-        customComponentRoot,
-        customComponents,
-        outputPath,
-        { target, command, rootDir }
-      );
-
-      callback();
-    });
-
-    compiler.hooks.done.tapAsync(PluginName, (stats, callback) => {
-      // Install dependency automatically
-      const customComponentConfig = config.nativeCustomComponent || {};
-      installDependencies(stats, customComponentConfig, {
-        target,
-        isFirstRender,
-        command,
-      });
-      isFirstRender = false;
       callback();
     });
   }
