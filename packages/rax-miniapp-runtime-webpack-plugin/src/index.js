@@ -204,6 +204,9 @@ class MiniAppRuntimePlugin {
 
       // These files only need write when first render
       if (isFirstRender) {
+        // render.js
+        generateRender(compilation, { target, command, rootDir });
+
         // Config js
         generateConfig(compilation, options || {}, {
           target,
@@ -244,9 +247,6 @@ class MiniAppRuntimePlugin {
             rootDir,
           });
         }
-
-        // render.js
-        generateRender(compilation, { target, command, rootDir });
       }
 
       callback();
