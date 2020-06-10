@@ -20,4 +20,4 @@ module.exports = (routes, { rootDir, target, outputPath }) => {
     }
     return true;
   });
-}
+};

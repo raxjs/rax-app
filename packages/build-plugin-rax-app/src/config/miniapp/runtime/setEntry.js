@@ -1,4 +1,5 @@
 const { getDepPath } = require('../pathHelper');
+
 const EntryLoader = require.resolve('../../../loaders/MiniAppEntryLoader');
 
 module.exports = (config, context, routes) => {
