@@ -20,7 +20,7 @@ module.exports = (context, target, options) => {
     disableRegenerator: true
   }, target);
   const appConfig = getAppConfig(rootDir, target, nativeLifeCycleMap);
-  appConfig.routes = filterNativePages(appConfig.routes, { rootDir, target, outputPath});
+  appConfig.routes = filterNativePages(appConfig.routes, { rootDir, target });
   setEntry(config, context, appConfig.routes);
 
   // Remove all app.json before it
