@@ -19,6 +19,10 @@ module.exports = {
     name: 'onPullIntercept',
     inEventsProps: false,
   },
+  onReachBottom: {
+    name: 'onReachBottom',
+    inEventsProps: false,
+  },
   onBack: {
     inEventsProps: true,
   },
@@ -41,9 +45,6 @@ module.exports = {
     inEventsProps: true,
   },
   onResize: {
-    inEventsProps: true,
-  },
-  onReachBottom: {
     inEventsProps: true,
   }
 };
