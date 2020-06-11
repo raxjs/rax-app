@@ -461,8 +461,7 @@
     disabled="{{r.disabled}}"
     maxlength="{{r.maxlength}}"
     cursor-spacing="{{r.cursorSpacing}}"
-    auto-focus="{{r.autoFocus}}"
-    focus="{{r.focus}}"
+    focus="{{r.autofocus || r.focus}}"
     controlled="{{r.controlled}}"
     confirm-type="{{r.confirmType}}"
     confirm-hold="{{r.confirmHold}}"
@@ -498,8 +497,7 @@
     placeholder-class="{{r.placeholderClass}}"
     disabled="{{r.disabled}}"
     maxlength="{{r.maxlength}}"
-    auto-focus="{{r.autoFocus}}"
-    focus="{{r.focus}}"
+    focus="{{r.autofocus || r.focus}}"
     controlled="{{r.controlled}}"
     auto-height="{{r.autoHeight}}"
     fixed="{{r.fixed}}"
@@ -905,8 +903,7 @@
     onLongTap="onCanvasLongTap"
     onError="onCanvasError"
 
-    type="{{r.type}}"
-    canvas-id="{{r.canvasId}}"
+    id="{{r.canvasId}}"
     disable-scroll="{{r.disableScroll}}"
   >
     <template is="children" data="{{r: r.children}}" />
