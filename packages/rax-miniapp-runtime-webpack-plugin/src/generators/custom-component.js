@@ -1,31 +1,19 @@
-const { resolve } = require('path');
-const { copy } = require('fs-extra');
 const addFileToCompilation = require('../utils/addFileToCompilation');
 const adapter = require('../adapter');
 
 function generateCustomComponent(
   compilation,
-  customComponentRoot,
-  customComponents,
-  outputPath,
-  { target, command, rootDir }
+  usingComponents,
+  { target, command }
 ) {
-  if (customComponentRoot) {
-    copy(
-      customComponentRoot,
-      resolve(outputPath, 'custom-component/components'),
-      {
-        dereference: true
-      }
-    );
-
+  if (Object.keys(usingComponents).length) {
     const realUsingComponents = {};
-    const names = Object.keys(customComponents);
+    const names = Object.keys(usingComponents);
     names.forEach(
       (key) =>
         realUsingComponents[
           key
-        ] = `./components/${customComponents[key].path}`
+        ] = usingComponents[key].path
     );
 
     // custom-component/index.js
@@ -43,7 +31,7 @@ function generateCustomComponent(
       content: `<block ${adapter[target].directive.if}="{{__ready}}">
         ${names
     .map((key, index) => {
-      const { props = [], events = [] } = customComponents[key];
+      const { props = [], events = [] } = usingComponents[key];
       return `<${key} ${adapter[target].directive.prefix}:${
         index === 0 ? 'if' : 'elif'
       }="{{r.behavior === '${key}'}}" id="{{id}}" class="{{className}}" style="{{style}}" ${props

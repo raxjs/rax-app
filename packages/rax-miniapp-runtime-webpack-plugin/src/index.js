@@ -35,9 +35,8 @@ class MiniAppRuntimePlugin {
     const rootDir = __dirname;
     const options = this.options;
     const target = this.target;
-    const { config = {}, nativeLifeCycleMap, routes = [], command } = options;
+    const { nativeLifeCycleMap, usingComponents, routes = [], command } = options;
     let isFirstRender = true;
-
     // Execute when compilation created
     compiler.hooks.compilation.tap(PluginName, (compilation) => {
       // Optimize chunk assets
@@ -53,11 +52,6 @@ class MiniAppRuntimePlugin {
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
       const outputPath = join(compilation.outputOptions.path, target);
       const sourcePath = join(options.rootDir, 'src');
-      const customComponentConfig = config.nativeCustomComponent || {};
-      const customComponentRoot =
-        customComponentConfig.root &&
-        resolve(options.rootDir, customComponentConfig.root);
-      const customComponents = customComponentConfig.usingComponents || {};
       const pages = [];
       const assetsMap = {}; // page - asset
       const assetsReverseMap = {}; // asset - page
@@ -66,6 +60,7 @@ class MiniAppRuntimePlugin {
       ).map((filePath) => {
         return filePath.replace(sourcePath, '');
       });
+      const useNativeComponent = Object.keys(usingComponents).length > 0;
 
       // Collect asset
       routes
@@ -137,7 +132,7 @@ class MiniAppRuntimePlugin {
           // xml/css/json file only need writeOnce
           if (isFirstRender) {
             // Page xml
-            generatePageXML(compilation, entryName, {
+            generatePageXML(compilation, entryName, useNativeComponent, {
               target,
               command,
               rootDir,
@@ -147,7 +142,7 @@ class MiniAppRuntimePlugin {
             generatePageJSON(
               compilation,
               pageConfig,
-              customComponentRoot,
+              usingComponents,
               entryName,
               { target, command, rootDir }
             );
@@ -171,15 +166,6 @@ class MiniAppRuntimePlugin {
           // Record page path
           pages.push(entryName);
         });
-
-      // Handle custom component
-      Object.keys(customComponents).forEach((key) => {
-        if (typeof customComponents[key] === 'string') {
-          customComponents[key] = {
-            path: customComponents[key],
-          };
-        }
-      });
 
       // Collect app.js
       if (isFirstRender || changedFiles.includes('/app.js' || '/app.ts')) {
@@ -208,7 +194,7 @@ class MiniAppRuntimePlugin {
         generateRender(compilation, { target, command, rootDir });
 
         // Config js
-        generateConfig(compilation, options || {}, {
+        generateConfig(compilation, usingComponents, {
           target,
           command,
           rootDir,
@@ -217,11 +203,18 @@ class MiniAppRuntimePlugin {
         // Custom-component
         generateCustomComponent(
           compilation,
-          customComponentRoot,
-          customComponents,
-          outputPath,
-          { target, command, rootDir }
+          usingComponents,
+          { target, command }
         );
+
+        if (target === MINIAPP && useNativeComponent) {
+          // Generate root template xml
+          generateRootTemplate(compilation, {
+            target,
+            command,
+            rootDir,
+          });
+        }
 
         if (target !== MINIAPP) {
           // Generate root template xml

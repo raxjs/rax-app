@@ -11,7 +11,7 @@ module.exports = (context, target, options) => {
   const outputPath = getMiniAppOutput(context, { target });
 
   // Using Components
-  const usingComponents = [];
+  const usingComponents = {};
   // Native lifecycle map
   const nativeLifeCycleMap = {};
 
@@ -44,7 +44,9 @@ module.exports = (context, target, options) => {
         {
           plugins: getMiniAppBabelPlugins({
             usingComponents,
-            nativeLifeCycleMap
+            nativeLifeCycleMap,
+            target,
+            rootDir,
           })
         }
       ];
