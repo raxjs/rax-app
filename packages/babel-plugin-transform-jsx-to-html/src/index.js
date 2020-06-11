@@ -89,34 +89,35 @@ function flattenChildren(children, result) {
     } else if (Array.isArray(child)) {
       flattenChildren(child, result);
     } else {
-      pushResult(child, result);
+      pushResult(child, result, true);
     }
   }
 }
 
 // push value to result and merge sibling string
-function pushResult(value, result) {
-  const len = result.length;
+function pushResult(value, result, isChild) {
+  const isTextNode = t.isStringLiteral(value) && isChild;
 
+  const len = result.length;
   if (len) {
     const lastIdx = len - 1;
     const lastChild = result[lastIdx];
 
     if (isStringObject(lastChild)) {
       if (isStringObject(value)) {
-        updateStringObject(lastChild, value.properties[0].value.value);
+        updateStringObject(lastChild, value.properties[0].value.value, isTextNode);
       } else if (t.isStringLiteral(value)) {
-        updateStringObject(lastChild, value.value);
+        updateStringObject(lastChild, value.value, isTextNode);
       } else {
         result.push(value);
       }
     } else if (t.isStringLiteral(value)) {
-      result.push(buildObject(KEY_FOR_HTML, value));
+      result.push(buildObject(KEY_FOR_HTML, value, isTextNode));
     } else {
       result.push(value);
     }
   } else if (t.isStringLiteral(value)) {
-    result.push(buildObject(KEY_FOR_HTML, value));
+    result.push(buildObject(KEY_FOR_HTML, value, isTextNode));
   } else {
     result.push(value);
   }
@@ -129,13 +130,32 @@ function isStringObject(obj) {
   && t.isStringLiteral(obj.properties[0].value);
 };
 
-function updateStringObject(obj, value) {
+function updateStringObject(obj, value, isTextNode) {
   obj.properties[0].value.value = obj.properties[0].value.value + value;
+
+  const textIdentifier = obj.properties.find((prop) => {
+    return prop && prop.key && prop.key.name === '__isEndWithTextNode';
+  });
+
+  // If merger a text node, should update the state of __isEndWithTextNode
+  if (textIdentifier) {
+    textIdentifier.value.value = isTextNode ? true : false;
+  } else if (isTextNode) {
+    obj.properties.push(t.objectProperty(t.identifier('__isEndWithTextNode'), t.booleanLiteral(true)));
+  }
 }
 
-function buildObject(name, value) {
+function buildObject(name, value, isTextNode) {
   let obj = t.objectProperty(t.identifier(name), value);
-  return t.objectExpression([obj]);
+  const properties = [obj];
+
+  // Add text node identifier for server renderer to add split between sidbling text node
+  if (isTextNode) {
+    properties.push(t.objectProperty(t.identifier('__isStartWithTextNode'), t.booleanLiteral(true)));
+    properties.push(t.objectProperty(t.identifier('__isEndWithTextNode'), t.booleanLiteral(true)));
+  }
+
+  return t.objectExpression(properties);
 }
 
 /**
