@@ -75,11 +75,11 @@ function getRelativePath(filePath) {
   return relativePath;
 }
 
-function getDepPath(rootDir, com) {
-  if (com[0] === sep ) {
-    return join(rootDir, 'src', com);
+function getDepPath(rootDir, componentFilePath) {
+  if (componentFilePath[0] === sep ) {
+    return join(rootDir, 'src', componentFilePath);
   } else {
-    return resolve(rootDir, 'src', com);
+    return resolve(rootDir, 'src', componentFilePath);
   }
 }
 
