@@ -53,7 +53,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   };
 
   const appEntry = 'src/app.js';
-  setEntry(config, appConfig.routes, { appEntry });
+  setEntry(config, appConfig.routes, { appEntry, rootDir, target });
 
   const pageLoaderParams = {
     ...loaderParams,
