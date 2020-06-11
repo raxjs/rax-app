@@ -1,6 +1,4 @@
-const { existsSync, copySync } = require('fs-extra');
-const { dirname, join } = require('path');
-const chokidar = require('chokidar');
+const { existsSync } = require('fs-extra');
 const { getDepPath } = require('./pathHelper');
 const targetPlatformMap = require('./targetPlatformMap');
 
