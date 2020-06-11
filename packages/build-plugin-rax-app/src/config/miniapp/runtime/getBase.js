@@ -1,10 +1,11 @@
 const MiniAppRuntimePlugin = require('rax-miniapp-runtime-webpack-plugin');
 const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
+const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
-const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
+const filterNativePages = require('../filterNativePages');
 
 module.exports = (context, target, options) => {
   const { rootDir, command } = context;
@@ -19,6 +20,7 @@ module.exports = (context, target, options) => {
     disableRegenerator: true
   }, target);
   const appConfig = getAppConfig(rootDir, target, nativeLifeCycleMap);
+  appConfig.routes = filterNativePages(appConfig.routes, { rootDir, target });
   setEntry(config, context, appConfig.routes);
 
   // Remove all app.json before it
