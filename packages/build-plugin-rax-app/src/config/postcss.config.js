@@ -1,3 +1,5 @@
+const atImport = require('postcss-import');
+
 // See https://github.com/postcss/postcss-loader#context-ctx
 module.exports = ({ file, options, env }) => {
   const type = options && options.type;
@@ -12,6 +14,7 @@ function getPlugins(type) {
     case 'inline':
       return [
         require('postcss-plugin-rpx2vw')(),
+        atImport()
       ];
 
     // extract css file in web while inlineStyle is disabled
@@ -24,7 +27,8 @@ function getPlugins(type) {
             flexbox: 'no-2009',
           },
           stage: 3,
-        })
+        }),
+        atImport()
       ];
       if (type === 'web') {
         plugins.push(require('postcss-plugin-rpx2vw')());

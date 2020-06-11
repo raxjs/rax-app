@@ -1,16 +1,12 @@
-const webpack = require('webpack');
-const Chain = require('webpack-chain');
 const fs = require('fs-extra');
 const path = require('path');
-const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const getWebpackBase = require('rax-webpack-config');
 const getBabelConfig = require('rax-babel-config');
 
 module.exports = (context, options = {}, target) => {
   const { rootDir, command } = context;
+  const { processBar } = options;
 
   const babelConfig = getBabelConfig({
     styleSheet: true,
@@ -19,6 +15,9 @@ module.exports = (context, options = {}, target) => {
 
   const config = getWebpackBase({
     ...context,
+    processBar: processBar || {
+      name: target
+    },
     babelConfig: babelConfig,
   });
 

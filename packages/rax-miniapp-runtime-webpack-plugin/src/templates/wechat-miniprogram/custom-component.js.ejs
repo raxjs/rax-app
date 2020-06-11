@@ -21,6 +21,9 @@ function checkComponentAttr({ props = [] }, name, domNode, destData, oldData) {
 }
 
 Component({
+  data: {
+    ready: false
+  },
   properties: {
     name: {
       type: String,
@@ -34,6 +37,10 @@ Component({
     const nodeId = this.dataset.privateNodeId;
     const pageId = this.dataset.privatePageId;
     const data = {};
+
+    if (!this.data.ready) {
+      data.ready = true;
+    }
 
     this.nodeId = nodeId;
     this.pageId = pageId;
