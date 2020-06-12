@@ -1,15 +1,55 @@
-const { relative, resolve, dirname } = require('path');
-const { existsSync } = require('fs-extra');
+const { resolve, dirname, join } = require('path');
+const { existsSync, readJSONSync } = require('fs-extra');
 const extMap = require('../utils/extMap');
 
 const RELATIVE_COMPONENTS_REG = /^\./;
 
-function getTmplPath(source, rootDir, dirName, ext) {
+const baseComponents = [
+  'rax-view',
+  'rax-canvas',
+  'rax-icon',
+  'rax-image',
+  'rax-picture',
+  'rax-text',
+  'rax-link',
+  'rax-scrollview',
+  'rax-recyclerview',
+  'rax-slider',
+  'rax-textinput',
+];
+
+/**
+ * Get native component npm path
+ * @param {string} rootDir project root dir
+ * @param {string} source module name
+ * @param {string} target miniapp platform
+ */
+function getNpmSourcePath(rootDir, source, target) {
+  const modulePath = resolve(rootDir, 'node_modules', source);
+  try {
+    const pkgConfig = readJSONSync(join(modulePath, 'package.json'));
+    const miniappConfig = pkgConfig.miniappConfig;
+    if (!miniappConfig || baseComponents.includes(source)) {
+      return modulePath;
+    }
+    const miniappEntry = target === 'miniapp' ? miniappConfig.main : miniappConfig[`main:${target}`];
+    // Ensure component has target platform rax complie result
+    if (!miniappEntry) {
+      return modulePath;
+    }
+    return join(source, miniappEntry);
+  } catch (err) {
+    return modulePath;
+  }
+};
+
+function getTmplPath(source, rootDir, dirName, target) {
   // If it's a npm module, keep source origin value, otherwise use absolute path
   const isNpm = !RELATIVE_COMPONENTS_REG.test(source);
-  const filePath = isNpm ? resolve(rootDir, 'node_modules', source) : resolve(dirName, source);
-  if (!existsSync(`${filePath}.${ext}`)) return false;
-  return isNpm ? source : `..${filePath.replace(resolve(rootDir, 'src'), '')}`;
+  const filePath = isNpm ? getNpmSourcePath(rootDir, source, target) : resolve(dirName, source);
+  const absPath = isNpm ? resolve(rootDir, 'node_modules', filePath) : filePath;
+  if (!existsSync(`${absPath}.${extMap[target]}`)) return false;
+  return isNpm ? filePath : `..${filePath.replace(resolve(rootDir, 'src'), '')}`;
 }
 
 module.exports = function visitor(
@@ -18,6 +58,7 @@ module.exports = function visitor(
 ) {
   // Collect imported dependencies
   const components = {};
+  const scanedPageMap = {};
 
   return {
     visitor: {
@@ -26,9 +67,10 @@ module.exports = function visitor(
           const { specifiers, source } = path.node;
           if (Array.isArray(specifiers) && t.isStringLiteral(source)) {
             const dirName = dirname(filename);
-            const filePath = getTmplPath(source.value, rootDir, dirName, extMap[target]);
+            const filePath = getTmplPath(source.value, rootDir, dirName, target);
             if (filePath) {
-              if (!Object.keys(components).length) {
+              if (!scanedPageMap[filename]) {
+                scanedPageMap[filename] = true;
                 path.parentPath.traverse({
                   JSXOpeningElement(innerPath) {
                     const { node } = innerPath;
