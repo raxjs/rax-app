@@ -14,6 +14,7 @@ function generatePageJS(
   { target, command, rootDir }
 ) {
   const pageJsContent = ejs.render(getTemplate(rootDir, 'page.js'), {
+    render_path: `${getAssetPath('render.js', `${pageRoute}.js`)}`,
     config_path: `${getAssetPath('config.js', `${pageRoute}.js`)}`,
     init: `function init(window, document) {${assets.js
       .map(
