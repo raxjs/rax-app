@@ -251,6 +251,7 @@ class MiniAppRuntimePlugin {
         }
       }
 
+      isFirstRender = false;
       callback();
     });
   }
