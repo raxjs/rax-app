@@ -1,5 +1,6 @@
 const { resolve, dirname, join } = require('path');
 const { existsSync, readJSONSync } = require('fs-extra');
+const md5 = require('md5');
 const extMap = require('../utils/extMap');
 
 const RELATIVE_COMPONENTS_REG = /^\./;
@@ -43,6 +44,10 @@ function getNpmSourcePath(rootDir, source, target) {
   }
 };
 
+function getTagName(str) {
+  return 'c' + md5(str).slice(0, 6);
+}
+
 function getTmplPath(source, rootDir, dirName, target) {
   // If it's a npm module, keep source origin value, otherwise use absolute path
   const isNpm = !RELATIVE_COMPONENTS_REG.test(source);
@@ -73,17 +78,16 @@ module.exports = function visitor(
                 scanedPageMap[filename] = true;
                 path.parentPath.traverse({
                   JSXOpeningElement(innerPath) {
-                    const { node } = innerPath;
-                    if (t.isJSXIdentifier(node.name)) {
-                      const tagName = node.name.name.toLowerCase();
-                      node.name.name = tagName;
+                    const { node: innerNode } = innerPath;
+                    if (t.isJSXIdentifier(innerNode.name)) {
+                      const tagName = innerNode.name.name;
                       if (!components[tagName]) {
                         components[tagName] = {
                           props: [],
-                          events: [],
+                          events: []
                         };
                       }
-                      node.attributes.forEach((attrNode) => {
+                      innerNode.attributes.forEach((attrNode) => {
                         if (!t.isJSXIdentifier(attrNode.name)) return;
                         const attrName = attrNode.name.name;
                         if (
@@ -103,19 +107,22 @@ module.exports = function visitor(
                 });
               }
               for (let specifier of specifiers) {
-                const tagName = specifier.local.name.toLowerCase();
+                const tagName = specifier.local.name;
                 const componentInfo = components[tagName];
                 if (componentInfo) {
-                  usingComponents[tagName] = {
+                  // Generate a random tag name
+                  const replacedTagName = getTagName(tagName);
+                  usingComponents[replacedTagName] = {
                     path: filePath,
-                    ...componentInfo,
+                    props: componentInfo.props,
+                    events: componentInfo.events
                   };
-                  // Use const Custom = 'custom' replace import Custom from '../public/xxx'
+                  // Use const Custom = 'c90589c' replace import Custom from '../public/xxx'
                   path.replaceWith(
                     t.VariableDeclaration('const', [
                       t.VariableDeclarator(
-                        t.identifier(specifier.local.name),
-                        t.stringLiteral(tagName)
+                        t.identifier(tagName),
+                        t.stringLiteral(replacedTagName)
                       ),
                     ])
                   );

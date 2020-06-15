@@ -14,6 +14,7 @@ const {
   generateElementTemplate,
 } = require('./element');
 const generateRender = require('./render');
+const generatePkg = require('./pkg');
 
 module.exports = {
   generateAppCSS,
@@ -28,5 +29,6 @@ module.exports = {
   generateElementJS,
   generateElementJSON,
   generateElementTemplate,
-  generateRender
+  generateRender,
+  generatePkg
 };

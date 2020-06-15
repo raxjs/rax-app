@@ -19,7 +19,8 @@ const {
   generateElementJS,
   generateElementJSON,
   generateElementTemplate,
-  generateRender
+  generateRender,
+  generatePkg
 } = require('./generators');
 
 const PluginName = 'MiniAppRuntimePlugin';
@@ -207,9 +208,9 @@ class MiniAppRuntimePlugin {
           { target, command }
         );
 
-        if (target === MINIAPP && useNativeComponent) {
-          // Generate root template xml
-          generateRootTemplate(compilation, {
+        // Only when developer may use native component, it will generate package.json in output
+        if (useNativeComponent || existsSync(join(sourcePath, 'public'))) {
+          generatePkg(compilation, {
             target,
             command,
             rootDir,
@@ -235,6 +236,14 @@ class MiniAppRuntimePlugin {
             rootDir,
           });
           generateElementTemplate(compilation, {
+            target,
+            command,
+            rootDir,
+          });
+        } else if (!useNativeComponent) {
+          // Only when there isn't native component, it need generate root template file
+          // Generate root template xml
+          generateRootTemplate(compilation, {
             target,
             command,
             rootDir,
