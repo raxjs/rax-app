@@ -17,6 +17,7 @@ const baseComponents = [
   'rax-recyclerview',
   'rax-slider',
   'rax-textinput',
+  'rax-video'
 ];
 
 /**
