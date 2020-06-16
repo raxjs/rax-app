@@ -41,18 +41,22 @@ module.exports = function(
     // custom-component/index.xml
     addFileToCompilation(compilation, {
       filename: `custom-component/index.${adapter[target].xml}`,
-      content: names
-        .map((key, index) => {
-          const { props = [], events = [] } = customComponents[key];
-          return `<${key} ${adapter[target].directive.prefix}:${
-            index === 0 ? 'if' : 'elif'
-          }="{{name === '${key}'}}" id="{{id}}" class="{{className}}" style="{{style}}" ${props
-            .map((name) => `${name}="{{${name}}}"`)
-            .join(' ')} ${events
-            .map((name) => `${adapter[target].directive.event}${name}="on${name}"`)
-            .join(' ')}><slot/></${key}>`;
-        })
-        .join('\n'),
+      content: `<block ${adapter[target].directive.if}="{{ready}}">
+        ${
+  names
+    .map((key, index) => {
+      const { props = [], events = [] } = customComponents[key];
+      return `<${key} ${adapter[target].directive.prefix}:${
+        index === 0 ? 'if' : 'elif'
+      }="{{name === '${key}'}}" id="{{id}}" class="{{className}}" style="{{style}}" ${props
+        .map((name) => `${name}="{{${name}}}"`)
+        .join(' ')} ${events
+        .map((name) => `${adapter[target].directive.event}${name}="on${name}"`)
+        .join(' ')}><slot/></${key}>`;
+    })
+    .join('\n')
+}
+      </block>`,
       target,
       command,
     });

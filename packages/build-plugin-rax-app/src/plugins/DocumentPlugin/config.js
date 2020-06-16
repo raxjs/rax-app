@@ -39,7 +39,7 @@ module.exports = (context, options) => {
     const value = userConfig[userConfigKey] || userConfigRegister.defaultValue;
     userConfigRegister.configWebpack(config, value, {
       ...context,
-      taskName: 'node',
+      taskName: 'document',
     });
   });
 

@@ -4,9 +4,10 @@ const Chain = require('webpack-chain');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const WebpackBar = require('webpackbar');
 
 module.exports = (context) => {
-  const { rootDir, command, babelConfig } = context;
+  const { rootDir, command, babelConfig, processBar } = context;
   const config = new Chain();
 
   config.resolve.alias
@@ -54,6 +55,11 @@ module.exports = (context) => {
     .loader(require.resolve('image-source-loader'));
 
   config.plugin('caseSensitivePaths').use(CaseSensitivePathsPlugin);
+
+  if (processBar) {
+    config.plugin('progress-bar')
+      .use(WebpackBar, [processBar]);
+  }
 
   config.plugin('noError').use(webpack.NoEmitOnErrorsPlugin);
   if (command === 'start') {
