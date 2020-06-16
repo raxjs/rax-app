@@ -143,7 +143,7 @@ class MiniAppRuntimePlugin {
             generatePageJSON(
               compilation,
               pageConfig,
-              usingComponents,
+              useNativeComponent,
               entryName,
               { target, command, rootDir }
             );

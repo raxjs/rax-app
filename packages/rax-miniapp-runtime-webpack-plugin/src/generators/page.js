@@ -78,7 +78,7 @@ function generatePageCSS(compilation, assets, pageRoute, { target, command }) {
 function generatePageJSON(
   compilation,
   pageConfig,
-  customComponentRoot,
+  useNativeComponent,
   pageRoute,
   { target, command }
 ) {
@@ -87,7 +87,7 @@ function generatePageJSON(
       'element': '../../comp'
     };
   }
-  if (customComponentRoot) {
+  if (useNativeComponent) {
     if (!pageConfig.usingComponents) {
       pageConfig.usingComponents = {};
     }
