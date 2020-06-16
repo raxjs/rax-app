@@ -39,13 +39,14 @@ function generatePageJS(
 function generatePageXML(
   compilation,
   pageRoute,
+  useNativeComponent,
   { target, command, rootDir }
 ) {
   let pageXmlContent = `<view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
     <template is="element" data="{{r: root.children[0]}}"  />
   </view>`;
 
-  if (target === MINIAPP) {
+  if (target === MINIAPP && useNativeComponent) {
     pageXmlContent = ejs.render(getTemplate(rootDir, 'root.xml', target)) + pageXmlContent;
   } else {
     pageXmlContent = `<import src="../../root.${adapter[target].xml}"/>` + pageXmlContent;
@@ -78,7 +79,7 @@ function generatePageCSS(compilation, assets, pageRoute, { target, command }) {
 function generatePageJSON(
   compilation,
   pageConfig,
-  customComponentRoot,
+  useNativeComponent,
   pageRoute,
   { target, command }
 ) {
@@ -87,7 +88,7 @@ function generatePageJSON(
       'element': '../../comp'
     };
   }
-  if (customComponentRoot) {
+  if (useNativeComponent) {
     if (!pageConfig.usingComponents) {
       pageConfig.usingComponents = {};
     }

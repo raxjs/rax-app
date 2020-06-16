@@ -1,15 +1,16 @@
 const addFileToCompilation = require('../utils/addFileToCompilation');
 
-module.exports = function(compilation, options = {}, { target, command }) {
-  const exportedConfig = {
-    optimization: options.optimization || {},
-    nativeCustomComponent:
-      options.config && options.config.nativeCustomComponent,
-    debug: options.config && options.config.debug,
-  };
+module.exports = function(compilation, usingComponents, { target, command }) {
+  const config = {};
+  Object.keys(usingComponents).forEach(name => {
+    config[name] = {
+      props: usingComponents[name].props,
+      events: usingComponents[name].events
+    };
+  });
   addFileToCompilation(compilation, {
     filename: 'config.js',
-    content: `module.exports = ${JSON.stringify(exportedConfig)}`,
+    content: `module.exports = ${JSON.stringify(usingComponents)}`,
     command,
     target,
   });
