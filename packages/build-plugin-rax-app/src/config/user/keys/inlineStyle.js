@@ -1,6 +1,6 @@
 const { resolve } = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { WEB, WEEX, NODE, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../../../constants');
+const { WEB, WEEX, DOCUMENT, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../../../constants');
 
 const configPath = resolve(__dirname, '../..');
 
@@ -24,8 +24,9 @@ module.exports = {
     const { userConfig, taskName } = context;
     const { publicPath } = userConfig;
 
-    setCSSRule(config.module.rule('css').test(/\.css?$/), context, value);
-    setCSSRule(config.module.rule('less').test(/\.less?$/), context, value);
+    setCSSRule(config.module.rule('css').test(/\.css$/), context, value);
+    setCSSRule(config.module.rule('less').test(/\.less$/), context, value);
+    setCSSRule(config.module.rule('sass').test(/\.s[ac]ss$/), context, value);
 
     if (inlineStandardList.includes(taskName) || value) {
       config.module.rule('less')
@@ -48,6 +49,10 @@ module.exports = {
           ignoreOrder: true
         }]);
     }
+
+    config.module.rule('sass')
+      .use('sass')
+      .loader(require.resolve('sass-loader'));
   },
 };
 
@@ -59,7 +64,7 @@ function setCSSRule(configRule, context, value) {
   const isInlineStandard = inlineStandardList.includes(taskName);
   const isWebStandard = webStandardList.includes(taskName);
   const isMiniAppStandard = miniappStandardList.includes(taskName);
-  const isNodeStandard = taskName === NODE;
+  const isNodeStandard = taskName === DOCUMENT;
   // enbale inlineStyle
   if (value) {
     if (isInlineStandard || isMiniAppStandard) {

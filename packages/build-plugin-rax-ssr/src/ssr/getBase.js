@@ -18,6 +18,9 @@ module.exports = (context, getValue) => {
 
   const config = getWebpackBase({
     ...context,
+    processBar: {
+      name: 'SSR'
+    },
     babelConfig: babelConfig,
   });
 

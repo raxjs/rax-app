@@ -78,7 +78,7 @@ module.exports = (userOptions = {}) => {
         require.resolve('@babel/plugin-proposal-class-properties'),
         { loose: true },
       ],
-      require.resolve('babel-plugin-minify-dead-code-elimination'),
+      require.resolve('babel-plugin-minify-dead-code-elimination-while-loop-fixed'),
     ],
   };
 
