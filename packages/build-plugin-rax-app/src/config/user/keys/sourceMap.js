@@ -1,7 +1,7 @@
 const { DOCUMENT } = require('../../../constants');
 
 module.exports = {
-  defaultValue: 'none',
+  defaultValue: '', // Do not set defaultValue, so other plugin can get actual user config for sourcemap
   validation: 'string',
   configWebpack: (config, value, context) => {
     const { command, taskName } = context;
