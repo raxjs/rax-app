@@ -32,7 +32,6 @@
       <template a:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item, isHTMLElement: true}}" />
       <template a:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item, isHTMLElement: true}}" />
       <template a:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item, isHTMLElement: true}}" />
-      <template a:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item, isHTMLElement: true}}" />
       <template a:else is="element" data="{{r: item}}" />
     </block>
     <block a:else>
@@ -890,7 +889,7 @@
 <template name="canvas">
   <canvas
     style="{{r.style}}"
-    class="{{isHTMLElement ? `h5-canvas ${r.className}` : r.className}}"
+    class="{{r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -909,7 +908,6 @@
     canvas-id="{{r.canvasId}}"
     disable-scroll="{{r.disableScroll}}"
   >
-    <template is="children" data="{{r: r.children}}" />
   </canvas>
 </template>
 
