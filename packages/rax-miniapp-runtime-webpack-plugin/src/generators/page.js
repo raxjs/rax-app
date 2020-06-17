@@ -49,7 +49,7 @@ function generatePageXML(
   if (target === MINIAPP && useNativeComponent) {
     pageXmlContent = ejs.render(getTemplate(rootDir, 'root.xml', target)) + pageXmlContent;
   } else {
-    pageXmlContent = `<import src="../../root.${adapter[target].xml}"/>` + pageXmlContent;
+    pageXmlContent = `<import src="${getAssetPath('root.' + adapter[target].xml, pageRoute + adapter[target].xml)}"/>` + pageXmlContent;
   }
 
   addFileToCompilation(compilation, {
