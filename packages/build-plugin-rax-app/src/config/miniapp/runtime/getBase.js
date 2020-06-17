@@ -93,6 +93,8 @@ module.exports = (context, target, options) => {
   ]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
-  config.devtool('inline-source-map');
+  if (command === 'start') {
+    config.devtool('inline-source-map');
+  }
   return config;
 };
