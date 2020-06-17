@@ -1,43 +1,43 @@
 <template name="element">
-  <view
-    a:if="{{r.tagName}}"
-    style="{{r.style}}"
-    class="h5-{{r.tagName}} {{r.className}}"
-    id="{{r.id}}"
-    animation="{{r.animation}}"
-    data-private-node-id="{{r.nodeId}}"
-    data-private-page-id="{{r.pageId}}"
+  <block a:if="{{r.nodeType === 'text'}}">
+    {{r.content}}
+  </block>
+  <block a:elif="{{r.tagName === 'custom-component'}}">
+    <custom-component r="{{r}}">
+      <template is="children" data="{{r: r.children}}" />
+    </custom-component>
+  </block>
+  <block a:elif="{{!r.behavior}}">
+    <template a:if="{{r.tagName === 'img'}}" is="image" data="{{r: r, isHTMLElement: true}}" />
+    <template a:elif="{{r.tagName === 'input'}}" is="input" data="{{r: r, isHTMLElement: true}}" />
+    <template a:elif="{{r.tagName === 'textarea'}}" is="textarea" data="{{r: r, isHTMLElement: true}}" />
+    <template a:elif="{{r.tagName === 'video'}}" is="video" data="{{r: r, isHTMLElement: true}}" />
+    <view
+      a:elif="{{r.tagName}}"
+      style="{{r.style}}"
+      class="h5-{{r.tagName}} {{r.className}}"
+      id="{{r.id}}"
+      animation="{{r.animation}}"
+      data-private-node-id="{{r.nodeId}}"
+      data-private-page-id="{{r.pageId}}"
 
-    onTap="onTap"
-    onTouchStart="onTouchStart"
-    onTouchMove="onTouchMove"
-    onTouchEnd="onTouchEnd"
-    onTouchCancel="onTouchCancel"
-  >
-    <template is="children" data="{{r: r.children}}" />
-  </view>
+      onTap="onTap"
+      onTouchStart="onTouchStart"
+      onTouchMove="onTouchMove"
+      onTouchEnd="onTouchEnd"
+      onTouchCancel="onTouchCancel"
+    >
+      <template is="children" data="{{r: r.children}}" />
+    </view>
+  </block>
+  <block a:else>
+    <template is="{{r.behavior}}" data="{{r: r}}" />
+  </block>
 </template>
 
 <template name="children">
   <block a:for="{{r}}" a:key="nodeId">
-    <block a:if="{{item.nodeType === 'text'}}">
-      {{item.content}}
-    </block>
-    <block a:elif="{{item.tagName === 'custom-component'}}">
-      <custom-component r="{{item}}">
-        <template is="children" data="{{r: item.children}}" />
-      </custom-component>
-    </block>
-    <block a:elif="{{!item.behavior}}">
-      <template a:if="{{item.tagName === 'img'}}" is="image" data="{{r: item, isHTMLElement: true}}" />
-      <template a:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item, isHTMLElement: true}}" />
-      <template a:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item, isHTMLElement: true}}" />
-      <template a:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item, isHTMLElement: true}}" />
-      <template a:else is="element" data="{{r: item}}" />
-    </block>
-    <block a:else>
-      <template is="{{item.behavior}}" data="{{r: item}}" />
-    </block>
+    <template is="element" data="{{r: item}}" />
   </block>
 </template>
 

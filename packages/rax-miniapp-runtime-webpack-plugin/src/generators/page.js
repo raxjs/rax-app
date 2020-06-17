@@ -43,7 +43,7 @@ function generatePageXML(
   { target, command, rootDir }
 ) {
   let pageXmlContent = `<view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
-    <template is="element" data="{{r: root.children[0]}}"  />
+    <template is="children" data="{{r: root.children}}"  />
   </view>`;
 
   if (target === MINIAPP && useNativeComponent) {
