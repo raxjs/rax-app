@@ -2,7 +2,7 @@ const { resolve, relative, join } = require('path');
 const { readJsonSync, existsSync } = require('fs-extra');
 const { RawSource } = require('webpack-sources');
 const adjustCSS = require('./utils/adjustCSS');
-const { MINIAPP, VENDOR_CSS_FILE_NAME, WECHAT_MINIPROGRAM } = require('./constants');
+const { MINIAPP, VENDOR_CSS_FILE_NAME } = require('./constants');
 const adapter = require('./adapter');
 const isCSSFile = require('./utils/isCSSFile');
 const wrapChunks = require('./utils/wrapChunks');
@@ -120,13 +120,10 @@ class MiniAppRuntimePlugin {
             nativeLifeCycleMap[pageRoute] || {};
           const route = routes.find(({ source }) => source === entryName);
           if (route.window && route.window.pullRefresh) {
-            if (!nativeLifeCycles[pageRoute]) {
-              nativeLifeCycles[pageRoute] = {};
-            }
-            nativeLifeCycles[pageRoute].onPullDownRefresh = true;
+            nativeLifeCycles.onPullDownRefresh = true;
             // onPullIntercept only exits in wechat miniprogram
-            if (target === WECHAT_MINIPROGRAM) {
-              nativeLifeCycles[pageRoute].onPullIntercept = true;
+            if (target === MINIAPP) {
+              nativeLifeCycles.onPullIntercept = true;
             }
           }
 
@@ -155,12 +152,13 @@ class MiniAppRuntimePlugin {
               rootDir,
             });
           }
+
           // Page js
           generatePageJS(
             compilation,
             assets,
             entryName,
-            nativeLifeCycles[pageRoute],
+            nativeLifeCycles,
             { target, command, rootDir }
           );
 
