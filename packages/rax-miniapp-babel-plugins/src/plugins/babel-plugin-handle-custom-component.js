@@ -56,7 +56,8 @@ function getTmplPath(source, rootDir, dirName, target) {
   const absPath = isNpm ? resolve(rootDir, 'node_modules', filePath) : filePath;
   if (!existsSync(`${absPath}.${extMap[target]}`)) return false;
   if (target === 'wechat-miniprogram') {
-    filePath = filePath.replace('/miniprogram_dist');
+    // In Wechat MiniProgram need remove miniprogram_dist
+    filePath = filePath.replace('/miniprogram_dist', '');
   }
   return isNpm ? filePath : `..${filePath.replace(resolve(rootDir, 'src'), '')}`;
 }
