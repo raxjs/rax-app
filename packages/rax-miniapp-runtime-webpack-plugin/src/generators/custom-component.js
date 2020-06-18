@@ -34,8 +34,8 @@ function generateCustomComponent(
       const { props = [], events = [] } = usingComponents[key];
       return `<${key} ${adapter[target].directive.prefix}:${
         index === 0 ? 'if' : 'elif'
-      }="{{r.behavior === '${key}'}}" id="{{id}}" class="{{className}}" style="{{style}}" ${props
-        .map((name) => `${name}="{{${name}}}"`)
+      }="{{r.behavior === '${key}'}}" ${props
+        .map((name) => `${name === 'className' ? 'class' : name}="{{${name}}}"`)
         .join(' ')} ${events
         .map((name) => `${adapter[target].directive.event}${name}="on${name}"`)
         .join(' ')}><slot/></${key}>`;

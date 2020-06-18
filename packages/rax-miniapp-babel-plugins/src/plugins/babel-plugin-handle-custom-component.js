@@ -32,16 +32,16 @@ function getNpmSourcePath(rootDir, source, target) {
     const pkgConfig = readJSONSync(join(modulePath, 'package.json'));
     const miniappConfig = pkgConfig.miniappConfig;
     if (!miniappConfig || baseComponents.includes(source)) {
-      return modulePath;
+      return source;
     }
     const miniappEntry = target === 'miniapp' ? miniappConfig.main : miniappConfig[`main:${target}`];
     // Ensure component has target platform rax complie result
     if (!miniappEntry) {
-      return modulePath;
+      return source;
     }
     return join(source, miniappEntry);
   } catch (err) {
-    return modulePath;
+    return source;
   }
 };
 
@@ -97,7 +97,7 @@ module.exports = function visitor(
                         ) {
                           // If it starts with 'on', it must be an event handler
                           if (/^on/.test(attrName)) {
-                            components[tagName].events.push(attrName);
+                            components[tagName].events.push(attrName.slice(2));
                           } else {
                             components[tagName].props.push(attrName);
                           }
@@ -112,7 +112,7 @@ module.exports = function visitor(
                 const componentInfo = components[tagName];
                 if (componentInfo) {
                   // Generate a random tag name
-                  const replacedTagName = getTagName(tagName);
+                  const replacedTagName = /[A-Z]/.test(tagName) ? getTagName(tagName) : tagName;
                   usingComponents[replacedTagName] = {
                     path: filePath,
                     props: componentInfo.props,
