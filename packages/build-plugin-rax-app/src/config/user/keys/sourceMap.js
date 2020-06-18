@@ -5,9 +5,8 @@ module.exports = {
   validation: 'string',
   configWebpack: (config, value, context) => {
     const { command, taskName } = context;
-
     // Only valid in build mode and non-document task
-    if (command === 'build' && taskName !== DOCUMENT) {
+    if (command === 'build' && taskName !== DOCUMENT && value) {
       config.devtool(value);
     }
   },
