@@ -160,7 +160,7 @@ class MiniAppRuntimePlugin {
             compilation,
             assets,
             entryName,
-            nativeLifeCycles,
+            nativeLifeCycles[pageRoute],
             { target, command, rootDir }
           );
 

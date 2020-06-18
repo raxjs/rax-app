@@ -52,9 +52,12 @@ function getTagName(str) {
 function getTmplPath(source, rootDir, dirName, target) {
   // If it's a npm module, keep source origin value, otherwise use absolute path
   const isNpm = !RELATIVE_COMPONENTS_REG.test(source);
-  const filePath = isNpm ? getNpmSourcePath(rootDir, source, target) : resolve(dirName, source);
+  let filePath = isNpm ? getNpmSourcePath(rootDir, source, target) : resolve(dirName, source);
   const absPath = isNpm ? resolve(rootDir, 'node_modules', filePath) : filePath;
   if (!existsSync(`${absPath}.${extMap[target]}`)) return false;
+  if (target === 'wechat-miniprogram') {
+    filePath = filePath.replace('/miniprogram_dist');
+  }
   return isNpm ? filePath : `..${filePath.replace(resolve(rootDir, 'src'), '')}`;
 }
 

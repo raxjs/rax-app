@@ -10,7 +10,7 @@ function generatePageJS(
   compilation,
   assets,
   pageRoute,
-  nativeLifeCycles,
+  nativeLifeCycles = {},
   { target, command, rootDir }
 ) {
   const pageJsContent = ejs.render(getTemplate(rootDir, 'page.js'), {
@@ -25,7 +25,8 @@ function generatePageJS(
           )}')(window, document)`
       )
       .join(';')}}`,
-    native_lifecycles: `[${Object.keys(nativeLifeCycles).reduce((total, current) => `${total}'${current}'`, '')}]`
+    native_lifecycles: `[${Object.keys(nativeLifeCycles).reduce((total, current, index) =>
+      index === 0 ? `${total}'${current}'` : `${total},'${current}'`, '')}]`
   });
 
   addFileToCompilation(compilation, {
@@ -43,7 +44,7 @@ function generatePageXML(
   { target, command, rootDir }
 ) {
   let pageXmlContent = `<view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
-    <template is="children" data="{{r: root.children}}"  />
+    <template is="element" data="{{r: root}}"  />
   </view>`;
 
   if (target === MINIAPP && useNativeComponent) {

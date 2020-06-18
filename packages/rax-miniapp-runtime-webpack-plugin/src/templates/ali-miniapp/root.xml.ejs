@@ -1,5 +1,8 @@
 <template name="element">
-  <block a:if="{{r.nodeType === 'text'}}">
+  <block a:if="{{!r.nodeId}}">
+    <template is="children" data="{{r: r.children}}" />
+  </block>
+  <block a:elif="{{r.nodeType === 'text'}}">
     {{r.content}}
   </block>
   <block a:elif="{{r.tagName === 'custom-component'}}">
