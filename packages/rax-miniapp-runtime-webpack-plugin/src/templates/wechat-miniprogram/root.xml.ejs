@@ -1,78 +1,100 @@
 <template name="element">
-  <block wx:if="{{item.type === 'text'}}">{{r.content}}</block>
-    <custom-component wx:elif="{{r.tagName === 'custom-component'}}" r="{{r}}">
-      <template wx:if="{{r.children}}" is="children" data="{{r: r.children}}" />
-    </custom-component>
-    <block wx:elif="{{!r.behavior}}">
-      <template wx:if="{{r.tagName === 'img'}}" is="image" data="{{r: r, isHTMLElement: true}}" />
-      <template wx:elif="{{r.tagName === 'input'}}" is="input" data="{{r: r, isHTMLElement: true}}" />
-      <template wx:elif="{{r.tagName === 'textarea'}}" is="textarea" data="{{r: r, isHTMLElement: true}}" />
-      <template wx:elif="{{r.tagName === 'video'}}" is="video" data="{{r: r, isHTMLElement: true}}" />
-      <element
-        wx:elif="{{r.tagName}}"
-        style="{{r.style}}"
-        class="h5-{{r.tagName}} {{r.className}}"
-        id="{{r.id}}"
-        animation="{{r.animation}}"
-        data-private-node-id="{{r.nodeId}}"
-        data-private-page-id="{{r.pageId}}"
+  <block wx:if="{{r.tagName}}">
+    <view
+      wx:if="{{!isComp}}"
+      style="{{r.style}}"
+      class="h5-{{r.tagName}} {{r.className}}"
+      id="{{r.id}}"
+      animation="{{r.animation}}"
+      data-private-node-id="{{r.nodeId}}"
+      data-private-page-id="{{r.pageId}}"
 
-        bindtap="onTap"
-        bindtouchstart="onTouchStart"
-        bindtouchmove="onTouchMove"
-        bindtouchend="onTouchEnd"
-        bindtouchcancel="onTouchCancel"
-
-        r="{{r}}"
-      />
-    </block>
+      bindtap="onTap"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+      bindtouchcancel="onTouchCancel"
+    >
+      <template is="children" data="{{r: r.children}}" />
+    </view>
     <block wx:else>
-      <element r="{{r}}" />
+      <template is="children" data="{{r: r.children}}" />
     </block>
-</template>
-
-<template name="element_1">
-  <block wx:if="{{item.type === 'text'}}">{{r.content}}</block>
-    <custom-component wx:elif="{{r.tagName === 'custom-component'}}" r="{{r}}">
-      <template wx:if="{{r.children}}" is="children_1" data="{{r: r.children}}" />
-    </custom-component>
-    <block wx:elif="{{!r.behavior}}">
-      <template wx:if="{{r.tagName === 'img'}}" is="image" data="{{r: r, isHTMLElement: true}}" />
-      <template wx:elif="{{r.tagName === 'input'}}" is="input" data="{{r: r, isHTMLElement: true}}" />
-      <template wx:elif="{{r.tagName === 'textarea'}}" is="textarea" data="{{r: r, isHTMLElement: true}}" />
-      <template wx:elif="{{r.tagName === 'video'}}" is="video" data="{{r: r, isHTMLElement: true}}" />
-      <element
-        wx:elif="{{r.tagName}}"
-        style="{{r.style}}"
-        class="h5-{{r.tagName}} {{r.className}}"
-        id="{{r.id}}"
-        animation="{{r.animation}}"
-        data-private-node-id="{{r.nodeId}}"
-        data-private-page-id="{{r.pageId}}"
-
-        bindtap="onTap"
-        bindtouchstart="onTouchStart"
-        bindtouchmove="onTouchMove"
-        bindtouchend="onTouchEnd"
-        bindtouchcancel="onTouchCancel"
-
-        r="{{r}}"
-      />
-    </block>
-    <block wx:else>
-      <element r="{{r}}" />
-    </block>
+  </block>
+  <block wx:else>
+    <template is="children" data="{{r: r.children}}" />
+  </block>
 </template>
 
 <template name="children">
   <block wx:for="{{r}}" wx:key="nodeId">
-    <template is="element_1" data="{{r: item}}" />
+    <block wx:if="{{item.nodeType === 'text'}}">{{item.content}}</block>
+    <custom-component wx:elif="{{item.tagName === 'custom-component'}}" r="{{item}}">
+      <template wx:if="{{item.children}}" is="children_1" data="{{r: item.children}}" />
+    </custom-component>
+    <block wx:elif="{{!item.behavior}}">
+      <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item, isHTMLElement: true}}" />
+      <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item, isHTMLElement: true}}" />
+      <template wx:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item, isHTMLElement: true}}" />
+      <template wx:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item, isHTMLElement: true}}" />
+      <template wx:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item, isHTMLElement: true}}" />
+      <element
+        wx:else
+        style="{{item.style}}"
+        class="h5-{{item.tagName}} {{item.className}}"
+        id="{{item.id}}"
+        animation="{{item.animation}}"
+        data-private-node-id="{{item.nodeId}}"
+        data-private-page-id="{{item.pageId}}"
+
+        bindtap="onTap"
+        bindtouchstart="onTouchStart"
+        bindtouchmove="onTouchMove"
+        bindtouchend="onTouchEnd"
+        bindtouchcancel="onTouchCancel"
+
+        r="{{item}}"
+      />
+    </block>
+    <block wx:else>
+      <element r="{{item}}" />
+    </block>
   </block>
 </template>
 
 <template name="children_1">
   <block wx:for="{{r}}" wx:key="nodeId">
-    <template is="element" data="{{r: item}}" />
+    <block wx:if="{{item.nodeType === 'text'}}">{{item.content}}</block>
+    <custom-component wx:elif="{{item.tagName === 'custom-component'}}" r="{{item}}">
+      <template wx:if="{{item.children}}" is="children" data="{{r: item.children}}" />
+    </custom-component>
+    <block wx:elif="{{!item.behavior}}">
+      <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item}}" />
+      <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item}}" />
+      <template wx:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item}}" />
+      <template wx:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item}}" />
+      <template wx:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item}}" />
+      <element
+        wx:else
+        style="{{item.style}}"
+        class="h5-{{item.tagName}} {{item.className}}"
+        id="{{item.id}}"
+        animation="{{item.animation}}"
+        data-private-node-id="{{item.nodeId}}"
+        data-private-page-id="{{item.pageId}}"
+
+        bindtap="onTap"
+        bindtouchstart="onTouchStart"
+        bindtouchmove="onTouchMove"
+        bindtouchend="onTouchEnd"
+        bindtouchcancel="onTouchCancel"
+
+        r="{{item}}"
+      />
+    </block>
+    <block wx:else>
+      <element r="{{item}}" />
+    </block>
   </block>
 </template>
 
@@ -468,7 +490,7 @@
 <template name="input">
   <input
     style="{{r.style}}"
-    class="{{isHTMLElement ? `h5-input ${r.className}` : r.className}}"
+    class="{{isHTMLElement ? 'h5-input ' + r.className : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -506,7 +528,7 @@
 <template name="textarea">
   <textarea
     style="{{r.style}}"
-    class="{{isHTMLElement ? `h5-textarea ${r.className}` : r.className}}"
+    class="{{isHTMLElement ? 'h5-textarea ' + r.className : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -776,7 +798,7 @@
 <template name="image">
   <image
     style="{{r.style}}"
-    class="{{isHTMLElement ? `h5-img ${r.className}` : r.className}}"
+    class="{{isHTMLElement ?  'h5-img ' + r.className : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -803,7 +825,7 @@
 <template name="video">
   <video
     style="{{r.style}}"
-    class="{{isHTMLElement ? `h5-video ${r.className}` : r.className}}"
+    class="{{isHTMLElement ?  'h5-video ' + r.className : r.className}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"

@@ -32,16 +32,16 @@ function getNpmSourcePath(rootDir, source, target) {
     const pkgConfig = readJSONSync(join(modulePath, 'package.json'));
     const miniappConfig = pkgConfig.miniappConfig;
     if (!miniappConfig || baseComponents.includes(source)) {
-      return modulePath;
+      return source;
     }
     const miniappEntry = target === 'miniapp' ? miniappConfig.main : miniappConfig[`main:${target}`];
     // Ensure component has target platform rax complie result
     if (!miniappEntry) {
-      return modulePath;
+      return source;
     }
     return join(source, miniappEntry);
   } catch (err) {
-    return modulePath;
+    return source;
   }
 };
 
@@ -52,9 +52,12 @@ function getTagName(str) {
 function getTmplPath(source, rootDir, dirName, target) {
   // If it's a npm module, keep source origin value, otherwise use absolute path
   const isNpm = !RELATIVE_COMPONENTS_REG.test(source);
-  const filePath = isNpm ? getNpmSourcePath(rootDir, source, target) : resolve(dirName, source);
+  let filePath = isNpm ? getNpmSourcePath(rootDir, source, target) : resolve(dirName, source);
   const absPath = isNpm ? resolve(rootDir, 'node_modules', filePath) : filePath;
   if (!existsSync(`${absPath}.${extMap[target]}`)) return false;
+  if (target === 'wechat-miniprogram') {
+    filePath = filePath.replace('/miniprogram_dist');
+  }
   return isNpm ? filePath : `..${filePath.replace(resolve(rootDir, 'src'), '')}`;
 }
 
@@ -97,7 +100,7 @@ module.exports = function visitor(
                         ) {
                           // If it starts with 'on', it must be an event handler
                           if (/^on/.test(attrName)) {
-                            components[tagName].events.push(attrName);
+                            components[tagName].events.push(attrName.slice(2));
                           } else {
                             components[tagName].props.push(attrName);
                           }
@@ -112,7 +115,7 @@ module.exports = function visitor(
                 const componentInfo = components[tagName];
                 if (componentInfo) {
                   // Generate a random tag name
-                  const replacedTagName = getTagName(tagName);
+                  const replacedTagName = /[A-Z]/.test(tagName) ? getTagName(tagName) : tagName;
                   usingComponents[replacedTagName] = {
                     path: filePath,
                     props: componentInfo.props,
