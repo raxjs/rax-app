@@ -38,6 +38,7 @@ class MiniAppRuntimePlugin {
     const target = this.target;
     const { nativeLifeCycleMap, usingComponents, routes = [], command } = options;
     let isFirstRender = true;
+    let lastUseNativeComponent = false; // Record whether using native component last time
     // Execute when compilation created
     compiler.hooks.compilation.tap(PluginName, (compilation) => {
       // Optimize chunk assets
@@ -61,7 +62,11 @@ class MiniAppRuntimePlugin {
         return filePath.replace(sourcePath, '');
       });
       const useNativeComponent = Object.keys(usingComponents).length > 0;
-
+      if (isFirstRender) {
+        lastUseNativeComponent = useNativeComponent;
+      }
+      const useNativeComponentChanged = useNativeComponent !== lastUseNativeComponent;
+      lastUseNativeComponent = useNativeComponent;
       // Collect asset
       routes
         .forEach(({ entryName }) => {
@@ -123,8 +128,8 @@ class MiniAppRuntimePlugin {
             }
           }
 
-          // xml/css/json file only need writeOnce
-          if (isFirstRender) {
+          // xml/css/json file need be written in first render or using native component state changes
+          if (isFirstRender || useNativeComponentChanged) {
             // Page xml
             generatePageXML(compilation, entryName, useNativeComponent, {
               target,
@@ -180,8 +185,8 @@ class MiniAppRuntimePlugin {
         generateAppCSS(compilation, { target, command, rootDir });
       }
 
-      // These files only need write when first render
-      if (isFirstRender) {
+      // These files need be written in first render or using native component state changes
+      if (isFirstRender || useNativeComponentChanged) {
         // render.js
         generateRender(compilation, { target, command, rootDir });
 
