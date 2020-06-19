@@ -27,6 +27,7 @@ module.exports = (context, target, options) => {
   config.module
     .rule('json')
     .test(/\.json$/)
+    .type('javascript/auto')
     .use('json-loader')
     .loader(require.resolve('json-loader'));
 
@@ -92,3 +93,4 @@ module.exports = (context, target, options) => {
   config.devtool('inline-source-map');
   return config;
 };
+
