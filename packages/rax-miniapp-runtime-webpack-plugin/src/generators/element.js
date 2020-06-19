@@ -32,7 +32,8 @@ function generateElementJSON(compilation,
     content: `{
       "component": true,
       "usingComponents": {
-        "element": "./comp"
+        "element": "./comp",
+        "custom-component": "./custom-component/index"
       }
     }`,
     target,
