@@ -151,7 +151,6 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   config.module
     .rule('json')
     .test(/\.json$/)
-    .type('javascript/auto')
     .use('script-loader')
     .loader(ScriptLoader)
     .options(loaderParams)
