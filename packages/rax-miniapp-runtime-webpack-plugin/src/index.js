@@ -53,7 +53,6 @@ class MiniAppRuntimePlugin {
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
       const outputPath = join(compilation.outputOptions.path, target);
       const sourcePath = join(options.rootDir, 'src');
-      const pages = [];
       const assetsMap = {}; // page - asset
       const assetsReverseMap = {}; // asset - page
       const changedFiles = Object.keys(
@@ -65,9 +64,6 @@ class MiniAppRuntimePlugin {
 
       // Collect asset
       routes
-        .filter(({ entryName }) => {
-          return isFirstRender || changedFiles.includes(entryName);
-        })
         .forEach(({ entryName }) => {
           const assets = { js: [], css: [] };
           const filePathMap = {};
@@ -161,9 +157,6 @@ class MiniAppRuntimePlugin {
             nativeLifeCycles,
             { target, command, rootDir }
           );
-
-          // Record page path
-          pages.push(entryName);
         });
 
       // Collect app.js
