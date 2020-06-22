@@ -228,7 +228,7 @@ class MiniAppRuntimePlugin {
             command,
             rootDir,
           });
-          generateElementJSON(compilation, {
+          generateElementJSON(compilation, useNativeComponent, {
             target,
             command,
             rootDir,

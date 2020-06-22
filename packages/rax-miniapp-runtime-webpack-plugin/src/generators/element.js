@@ -25,15 +25,15 @@ function generateElementTemplate(compilation,
   });
 }
 
-function generateElementJSON(compilation,
+function generateElementJSON(compilation, useNativeComponent,
   { target, command, rootDir }) {
   addFileToCompilation(compilation, {
     filename: 'comp.json',
     content: `{
       "component": true,
       "usingComponents": {
-        "element": "./comp",
-        "custom-component": "./custom-component/index"
+        ${useNativeComponent ? '"custom-component": "./custom-component/index",' : ''}
+        "element": "./comp"
       }
     }`,
     target,
