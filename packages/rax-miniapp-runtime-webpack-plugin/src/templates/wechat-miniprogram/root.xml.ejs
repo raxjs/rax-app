@@ -185,13 +185,11 @@
     data-private-node-id="{{r.nodeId}}"
     data-private-page-id="{{r.pageId}}"
 
-    bindtap="onTap"
-    bindtouchstart="onTouchStart"
-    bindtouchmove="onTouchMove"
-    bindtouchend="onTouchEnd"
-    bindtouchcancel="onTouchCancel"
-
-    bindcrolltoupper="onScrollViewScrollToUpper"
+    bindrefresherpulling="onScrollViewRefresherPulling"
+    bindrefresherrefresh="onScrollViewRefresherRefresh"
+    bindrefresherrestore="onScrollViewRefresherRestore"
+    bindrefresherabort="onScrollViewRefresherAbort"
+    bindscrolltoupper="onScrollViewScrollToUpper"
     bindscrolltolower="onScrollViewScrollToLower"
     bindscroll="onScrollViewScroll"
 
@@ -205,7 +203,13 @@
     scroll-with-animation="{{r['scroll-with-animation']}}"
     scroll-animation-duration="{{r['scroll-animation-duration']}}"
     enable-back-to-top="{{r['enable-back-to-top']}}"
-    trap-scroll="{{r['trap-scroll']}}"
+    enable-flex="{{true}}"
+    scroll-anchoring="{{r['scroll-anchoring']}}"
+    refresher-enabled="{{r['refresher-enabled']}}"
+    refresher-threshold="{{r['refresher-threshold']}}"
+    refresher-default-style="{{r['refresher-default-style']}}"
+    refresher-background="{{r['refresher-background']}}"
+    refresher-triggered="{{r['refresher-triggered']}}"
   >
     <template is="children" data="{{r: r.children}}" />
   </scroll-view>
