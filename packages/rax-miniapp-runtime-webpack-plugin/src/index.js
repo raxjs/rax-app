@@ -38,7 +38,7 @@ class MiniAppRuntimePlugin {
     const target = this.target;
     const { nativeLifeCycleMap, usingComponents, routes = [], command } = options;
     let isFirstRender = true;
-    let lastUseNativeComponent = false; // Record whether using native component last time
+    let lastUseNativeComponentCount = 0; // Record native component used count last time
     // Execute when compilation created
     compiler.hooks.compilation.tap(PluginName, (compilation) => {
       // Optimize chunk assets
@@ -61,12 +61,13 @@ class MiniAppRuntimePlugin {
       ).map((filePath) => {
         return filePath.replace(sourcePath, '');
       });
-      const useNativeComponent = Object.keys(usingComponents).length > 0;
+      const useNativeComponentCount = Object.keys(usingComponents).length;
+      const useNativeComponent = useNativeComponentCount > 0;
       if (isFirstRender) {
-        lastUseNativeComponent = useNativeComponent;
+        lastUseNativeComponentCount = useNativeComponentCount;
       }
-      const useNativeComponentChanged = useNativeComponent !== lastUseNativeComponent;
-      lastUseNativeComponent = useNativeComponent;
+      const useNativeComponentCountChanged = useNativeComponentCount !== lastUseNativeComponentCount;
+      lastUseNativeComponentCount = useNativeComponentCount;
       // Collect asset
       routes
         .forEach(({ entryName }) => {
@@ -129,7 +130,7 @@ class MiniAppRuntimePlugin {
           }
 
           // xml/css/json file need be written in first render or using native component state changes
-          if (isFirstRender || useNativeComponentChanged) {
+          if (isFirstRender || useNativeComponentCountChanged) {
             // Page xml
             generatePageXML(compilation, entryName, useNativeComponent, {
               target,
@@ -186,7 +187,7 @@ class MiniAppRuntimePlugin {
       }
 
       // These files need be written in first render or using native component state changes
-      if (isFirstRender || useNativeComponentChanged) {
+      if (isFirstRender || useNativeComponentCountChanged) {
         // render.js
         generateRender(compilation, { target, command, rootDir });
 
