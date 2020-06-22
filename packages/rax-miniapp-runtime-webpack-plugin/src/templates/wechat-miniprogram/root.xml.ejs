@@ -163,7 +163,17 @@
     disable-programmatic-animation="{{r['disable-programmatic-animation']}}"
     disable-touch="{{r['disable-touch']}}"
   >
-    <template is="children" data="{{r: r.children}}" />
+    <swiper-item
+      wx:for="{{r.children}}"
+      wx:key="nodeId"
+      style="{{item.style}}"
+      class="{{item.className}}"
+      id="{{item.id}}"
+      data-private-node-id="{{item.nodeId}}"
+      data-private-page-id="{{item.pageId}}"
+    >
+      <template is="children" data="{{r: item.children}}" />
+    </swiper-item>
   </swiper>
 </template>
 
