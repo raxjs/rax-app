@@ -215,7 +215,7 @@ class MiniAppRuntimePlugin {
           });
         }
 
-        if (target !== MINIAPP) {
+        if (target !== MINIAPP || useNativeComponent) {
           // Generate root template xml
           generateRootTemplate(compilation, {
             target,
@@ -238,7 +238,7 @@ class MiniAppRuntimePlugin {
             command,
             rootDir,
           });
-        } else if (!useNativeComponent) {
+        } else {
           // Only when there isn't native component, it need generate root template file
           // Generate root template xml
           generateRootTemplate(compilation, {
