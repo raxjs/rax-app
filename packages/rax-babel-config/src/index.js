@@ -18,7 +18,8 @@ module.exports = (userOptions = {}) => {
     isNode,
     disableRegenerator = false,
     // preset-env modules options
-    modules
+    modules,
+    isES6 = false
   } = options;
 
   const baseConfig = {
@@ -29,10 +30,11 @@ module.exports = (userOptions = {}) => {
         {
           targets: isNode ? {
             node: '8',
-          } : {
-            chrome: '49',
-            ios: '8',
-          },
+          } : isES6 ?
+            ['last 1 chrome version', 'node 10'] : {
+              chrome: '49',
+              ios: '8',
+            },
           loose: true,
           modules,
           include: [
@@ -79,7 +81,7 @@ module.exports = (userOptions = {}) => {
         require.resolve('@babel/plugin-proposal-class-properties'),
         { loose: true },
       ],
-      require.resolve('babel-plugin-minify-dead-code-elimination'),
+      require.resolve('babel-plugin-minify-dead-code-elimination-while-loop-fixed'),
     ],
   };
 

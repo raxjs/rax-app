@@ -8,6 +8,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 
 const getDistConfig = require('./config/getDistConfig');
 const getUMDConfig = require('./config/getUMDConfig');
+const getES6Config = require('./config/getES6Config');
 const getMiniappConfig = require('./config/miniapp/getBase');
 const miniappPlatformConfig = require('./config/miniapp/platformConfig');
 const buildLib = require('./buildLib');
@@ -27,10 +28,12 @@ module.exports = (api, options = {}) => {
     if (target === WEEX || target === WEB) {
       const config = getDistConfig(context, options);
       const umdConfig = getUMDConfig(context, options);
+      const es6Config = getES6Config(context, options);
       // compress and minify all files
       modifyUserConfig('outputDir', 'build');
       registerTask(`component-build-${target}`, config);
       registerTask(`component-build-${target}-umd`, umdConfig);
+      registerTask(`component-build-${target}-es6`, es6Config);
     }
     if (target === MINIAPP || target === WECHAT_MINIPROGRAM) {
       options[target] = options[target] || {};

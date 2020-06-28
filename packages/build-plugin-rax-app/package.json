@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-app",
-  "version": "4.6.5",
+  "version": "4.7.0",
   "description": "rax app base plugins",
   "main": "src/index.js",
   "scripts": {
@@ -48,20 +48,22 @@
     "null-loader": "^3.0.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss": "^7.0.17",
+    "postcss-import": "^12.0.1",
     "postcss-loader": "^3.0.0",
     "postcss-plugin-rpx2vw": "^0.0.1",
     "postcss-preset-env": "^6.6.0",
-    "progress-bar-webpack-plugin": "^2.1.0",
     "qrcode-terminal": "^0.12.0",
     "qs": "^6.9.1",
-    "rax-babel-config": "^0.0.1",
+    "rax-babel-config": "^0.1.0",
     "rax-compile-config": "^0.2.0",
+    "rax-miniapp-babel-plugins": "^0.1.0",
     "rax-miniapp-config-webpack-plugin": "^1.0.1",
     "rax-miniapp-runtime-webpack-plugin": "^0.1.7",
     "rax-multi-pages-settings": "^0.1.0",
     "rax-quickapp-webpack-plugin": "^1.0.0",
     "rax-server-renderer": "^1.0.0",
-    "rax-webpack-config": "^0.0.1",
+    "rax-webpack-config": "^0.1.0",
+    "sass-loader": "^8.0.2",
     "stylesheet-loader": "^0.8.0",
     "terser": "^4.6.4",
     "terser-webpack-plugin": "^2.1.3",
@@ -70,7 +72,6 @@
     "webpack": "^4.27.1",
     "webpack-bundle-analyzer": "^3.4.1",
     "webpack-chain": "^6.0.0",
-    "webpack-sources": "^1.3.0",
-    "rax-miniapp-babel-plugins": "^0.1.0"
+    "webpack-sources": "^1.3.0"
   }
 }

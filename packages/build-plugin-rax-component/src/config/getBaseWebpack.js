@@ -1,22 +1,24 @@
 const webpack = require('webpack');
 const path = require('path');
 const Chain = require('webpack-chain');
-const { getBabelConfig, setBabelAlias } = require('rax-compile-config');
+const { setBabelAlias } = require('rax-compile-config');
+const getBabelConfig = require('rax-babel-config');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
-const babelConfig = getBabelConfig({
-  styleSheet: true,
-  custom: {
-    ignore: ['**/**/*.d.ts'],
-  },
-});
 
-module.exports = (context) => {
+module.exports = (context, options) => {
   const { rootDir, command, pkg } = context;
-
   const config = new Chain();
+
+  const babelConfig = getBabelConfig({
+    styleSheet: true,
+    isES6: options.isES6,
+    custom: {
+      ignore: ['**/**/*.d.ts'],
+    },
+  });
 
   setBabelAlias(config);
 

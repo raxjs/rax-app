@@ -4,9 +4,10 @@ const Chain = require('webpack-chain');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const WebpackBar = require('webpackbar');
 
 module.exports = (context) => {
-  const { rootDir, command, babelConfig } = context;
+  const { rootDir, command, babelConfig, processBar } = context;
   const config = new Chain();
 
   config.resolve.alias
@@ -19,6 +20,10 @@ module.exports = (context) => {
   config.externals([
     function(ctx, request, callback) {
       if (request.indexOf('@weex-module') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
+      // compatible with @system for quickapp
+      if (request.indexOf('@system') !== -1) {
         return callback(null, `commonjs ${request}`);
       }
       callback();
@@ -35,7 +40,7 @@ module.exports = (context) => {
 
   config.module
     .rule('tsx')
-    .test(/\.tsx?$/)
+    .test(/\.(ts|tsx)?$/)
     .use('babel')
     .loader(require.resolve('babel-loader'))
     .options(babelConfig)
@@ -51,10 +56,15 @@ module.exports = (context) => {
 
   config.plugin('caseSensitivePaths').use(CaseSensitivePathsPlugin);
 
+  if (processBar) {
+    config.plugin('progress-bar')
+      .use(WebpackBar, [processBar]);
+  }
+
   config.plugin('noError').use(webpack.NoEmitOnErrorsPlugin);
   if (command === 'start') {
     config.mode('development');
-    config.devtool('inline-module-source-map');
+    config.devtool('cheap-module-source-map');
   } else if (command === 'build') {
     config.mode('production');
 
