@@ -10,11 +10,12 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 module.exports = (context, options) => {
   const { rootDir, command, pkg } = context;
+  const { isES6 } = options || {};
   const config = new Chain();
 
   const babelConfig = getBabelConfig({
     styleSheet: true,
-    isES6: options.isES6,
+    isES6,
     custom: {
       ignore: ['**/**/*.d.ts'],
     },
