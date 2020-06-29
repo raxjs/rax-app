@@ -6,7 +6,6 @@ const { MINIAPP, VENDOR_CSS_FILE_NAME } = require('./constants');
 const adapter = require('./adapter');
 const isCSSFile = require('./utils/isCSSFile');
 const wrapChunks = require('./utils/wrapChunks');
-const installDependencies = require('./utils/installDependencies');
 const {
   generateAppCSS,
   generateAppJS,
@@ -16,6 +15,12 @@ const {
   generatePageJS,
   generatePageJSON,
   generatePageXML,
+  generateRootTemplate,
+  generateElementJS,
+  generateElementJSON,
+  generateElementTemplate,
+  generateRender,
+  generatePkg
 } = require('./generators');
 
 const PluginName = 'MiniAppRuntimePlugin';
@@ -31,9 +36,9 @@ class MiniAppRuntimePlugin {
     const rootDir = __dirname;
     const options = this.options;
     const target = this.target;
-    const { config = {}, nativeLifeCycleMap, routes = [], command } = options;
+    const { nativeLifeCycleMap, usingComponents, routes = [], command } = options;
     let isFirstRender = true;
-
+    let lastUseNativeComponentCount = 0; // Record native component used count last time
     // Execute when compilation created
     compiler.hooks.compilation.tap(PluginName, (compilation) => {
       // Optimize chunk assets
@@ -49,12 +54,6 @@ class MiniAppRuntimePlugin {
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
       const outputPath = join(compilation.outputOptions.path, target);
       const sourcePath = join(options.rootDir, 'src');
-      const customComponentConfig = config.nativeCustomComponent || {};
-      const customComponentRoot =
-        customComponentConfig.root &&
-        resolve(options.rootDir, customComponentConfig.root);
-      const customComponents = customComponentConfig.usingComponents || {};
-      const pages = [];
       const assetsMap = {}; // page - asset
       const assetsReverseMap = {}; // asset - page
       const changedFiles = Object.keys(
@@ -62,12 +61,15 @@ class MiniAppRuntimePlugin {
       ).map((filePath) => {
         return filePath.replace(sourcePath, '');
       });
-
+      const useNativeComponentCount = Object.keys(usingComponents).length;
+      const useNativeComponent = useNativeComponentCount > 0;
+      if (isFirstRender) {
+        lastUseNativeComponentCount = useNativeComponentCount;
+      }
+      const useNativeComponentCountChanged = useNativeComponentCount !== lastUseNativeComponentCount;
+      lastUseNativeComponentCount = useNativeComponentCount;
       // Collect asset
       routes
-        .filter(({ entryName }) => {
-          return isFirstRender || changedFiles.includes(entryName);
-        })
         .forEach(({ entryName }) => {
           const assets = { js: [], css: [] };
           const filePathMap = {};
@@ -115,15 +117,22 @@ class MiniAppRuntimePlugin {
             pageConfig = readJsonSync(pageConfigPath);
           }
 
+          const pageRoute = join(sourcePath, entryName);
           const nativeLifeCycles =
-            nativeLifeCycleMap[join(sourcePath, entryName)] || [];
+            nativeLifeCycleMap[pageRoute] || {};
           const route = routes.find(({ source }) => source === entryName);
-          const needPullRefresh = route.window && route.window.pullRefresh;
+          if (route.window && route.window.pullRefresh) {
+            nativeLifeCycles.onPullDownRefresh = true;
+            // onPullIntercept only exits in wechat miniprogram
+            if (target === MINIAPP) {
+              nativeLifeCycles.onPullIntercept = true;
+            }
+          }
 
-          // xml/css/json file only need writeOnce
-          if (isFirstRender) {
+          // xml/css/json file need be written in first render or using native component state changes
+          if (isFirstRender || useNativeComponentCountChanged) {
             // Page xml
-            generatePageXML(compilation, customComponentRoot, entryName, {
+            generatePageXML(compilation, entryName, useNativeComponent, {
               target,
               command,
               rootDir,
@@ -133,7 +142,7 @@ class MiniAppRuntimePlugin {
             generatePageJSON(
               compilation,
               pageConfig,
-              customComponentRoot,
+              useNativeComponent,
               entryName,
               { target, command, rootDir }
             );
@@ -145,28 +154,16 @@ class MiniAppRuntimePlugin {
               rootDir,
             });
           }
+
           // Page js
           generatePageJS(
             compilation,
             assets,
             entryName,
-            needPullRefresh,
             nativeLifeCycles,
             { target, command, rootDir }
           );
-
-          // Record page path
-          pages.push(entryName);
         });
-
-      // Handle custom component
-      Object.keys(customComponents).forEach((key) => {
-        if (typeof customComponents[key] === 'string') {
-          customComponents[key] = {
-            path: customComponents[key],
-          };
-        }
-      });
 
       // Collect app.js
       if (isFirstRender || changedFiles.includes('/app.js' || '/app.ts')) {
@@ -189,36 +186,62 @@ class MiniAppRuntimePlugin {
         generateAppCSS(compilation, { target, command, rootDir });
       }
 
-      // These files only need write when first render
-      if (isFirstRender) {
+      // These files need be written in first render or using native component state changes
+      if (isFirstRender || useNativeComponentCountChanged) {
+        // render.js
+        generateRender(compilation, { target, command, rootDir });
+
         // Config js
-        generateConfig(compilation, options || {}, {
+        generateConfig(compilation, usingComponents, {
           target,
           command,
           rootDir,
         });
+
+        // Custom-component
+        generateCustomComponent(
+          compilation,
+          usingComponents,
+          { target, command }
+        );
+
+        // Only when developer may use native component, it will generate package.json in output
+        if (useNativeComponent || existsSync(join(sourcePath, 'public'))) {
+          generatePkg(compilation, {
+            target,
+            command,
+            rootDir,
+          });
+        }
+
+        if (target !== MINIAPP || useNativeComponent) {
+          // Generate self loop element
+          generateElementJS(compilation, {
+            target,
+            command,
+            rootDir,
+          });
+          generateElementJSON(compilation, useNativeComponent, {
+            target,
+            command,
+            rootDir,
+          });
+          generateElementTemplate(compilation, {
+            target,
+            command,
+            rootDir,
+          });
+        } else {
+          // Only when there isn't native component, it need generate root template file
+          // Generate root template xml
+          generateRootTemplate(compilation, {
+            target,
+            command,
+            rootDir,
+          });
+        }
       }
 
-      // Custom-component
-      generateCustomComponent(
-        compilation,
-        customComponentRoot,
-        customComponents,
-        outputPath,
-        { target, command, rootDir }
-      );
-
-      callback();
-    });
-
-    compiler.hooks.done.tapAsync(PluginName, (stats, callback) => {
-      // Install dependency automatically
-      const customComponentConfig = config.nativeCustomComponent || {};
-      installDependencies(stats, customComponentConfig, {
-        target,
-        isFirstRender,
-        command,
-      });
       isFirstRender = false;
       callback();
     });

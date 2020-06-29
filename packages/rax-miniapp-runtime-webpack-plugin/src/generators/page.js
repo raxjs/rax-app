@@ -1,39 +1,20 @@
 const ejs = require('ejs');
-const lifeCycleMap = require('../nativeLifeCycle');
-const { MINIAPP } = require('../constants');
 const adapter = require('../adapter');
 const getAssetPath = require('../utils/getAssetPath');
 const addFileToCompilation = require('../utils/addFileToCompilation');
 const adjustCSS = require('../utils/adjustCSS');
 const getTemplate = require('../utils/getTemplate');
+const { MINIAPP } = require('../constants');
 
 function generatePageJS(
   compilation,
   assets,
   pageRoute,
-  needPullRefresh,
-  nativeLifeCycles,
+  nativeLifeCycles = {},
   { target, command, rootDir }
 ) {
-  const configProps = [];
-  const events = [];
-  Object.keys(nativeLifeCycles).forEach((cycleName) => {
-    const cycleConfig = lifeCycleMap[cycleName];
-    if (cycleConfig) {
-      if (cycleConfig.inEventsProps) {
-        events.push(cycleName);
-      } else {
-        configProps.push(cycleConfig);
-      }
-    }
-  });
-  if (needPullRefresh) {
-    configProps.push(lifeCycleMap.onPullDownRefresh);
-    if (target === MINIAPP) {
-      configProps.push(lifeCycleMap.onPullIntercept);
-    }
-  }
-  const pageJsContent = ejs.render(getTemplate(rootDir, target, 'page'), {
+  const pageJsContent = ejs.render(getTemplate(rootDir, 'page.js'), {
+    render_path: `${getAssetPath('render.js', `${pageRoute}.js`)}`,
     config_path: `${getAssetPath('config.js', `${pageRoute}.js`)}`,
     init: `function init(window, document) {${assets.js
       .map(
@@ -44,42 +25,8 @@ function generatePageJS(
           )}')(window, document)`
       )
       .join(';')}}`,
-    define_native_lifecycle: `[${events.reduce((prev, current, index) => {
-      const currentCycle = "'" + current + "'";
-      if (index === 0) {
-        return currentCycle;
-      }
-      return prev + ',' + currentCycle;
-    }, '')}].forEach(eventName => {
-  events[eventName] = function(event) {
-    if (this.window) {
-      this.window.$$trigger(eventName, { event });
-    }
-  };
-});`,
-    define_lifecycle_in_config: configProps.reduce((prev, current) => {
-      let currentCycle;
-      if (current.name === 'onShareAppMessage') {
-        currentCycle = `${current.name}(options) {
-    if (this.window) {
-      const shareInfo = {};
-      this.window.$$trigger('onShareAppMessage', {
-        event: { options, shareInfo }
-      });
-      return shareInfo.content;
-    }
-  },`;
-      } else {
-        currentCycle = `${current.name}(options) {
-    if (this.window) {
-      return this.window.$$trigger('${current.name}', {
-        event: options
-      })
-    }
-  },`;
-      }
-      return prev + '\n\t' + currentCycle;
-    }, '')
+    native_lifecycles: `[${Object.keys(nativeLifeCycles).reduce((total, current, index) =>
+      index === 0 ? `${total}'${current}'` : `${total},'${current}'`, '')}]`
   });
 
   addFileToCompilation(compilation, {
@@ -92,15 +39,21 @@ function generatePageJS(
 
 function generatePageXML(
   compilation,
-  customComponentRoot,
   pageRoute,
-  { target, command }
+  useNativeComponent,
+  { target, command, rootDir }
 ) {
-  let pageXmlContent = `<element ${
-    adapter[target].directive.if
-  }="{{pageId}}" class="{{bodyClass}}" data-private-node-id="e-body" data-private-page-id="{{pageId}}" ${
-    customComponentRoot ? 'generic:custom-component="custom-component"' : ''
-  }> </element>`;
+  let pageXmlContent;
+  if (target === MINIAPP && useNativeComponent) {
+    pageXmlContent = `<view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
+    <element r="{{root}}"  />
+  </view>`;
+  } else {
+    pageXmlContent = `<import src="${getAssetPath('root.' + adapter[target].xml, pageRoute + adapter[target].xml)}"/>
+    <view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
+    <template is="element" data="{{r: root}}"  />
+  </view>`;
+  }
 
   addFileToCompilation(compilation, {
     filename: `${pageRoute}.${adapter[target].xml}`,
@@ -128,23 +81,28 @@ function generatePageCSS(compilation, assets, pageRoute, { target, command }) {
 
 function generatePageJSON(
   compilation,
-  pageExtraConfig,
-  customComponentRoot,
+  pageConfig,
+  useNativeComponent,
   pageRoute,
   { target, command }
 ) {
-  const pageConfig = {
-    ...pageExtraConfig,
-    usingComponents: {
-      element: 'miniapp-element',
-    },
-  };
-  if (customComponentRoot) {
+  if (!pageConfig.usingComponents) {
+    pageConfig.usingComponents = {};
+  }
+  const elementPath = getAssetPath(
+    'comp',
+    `${pageRoute}.js`
+  );
+  if (useNativeComponent) {
+    pageConfig.usingComponents.element = elementPath;
     pageConfig.usingComponents['custom-component'] = getAssetPath(
       'custom-component/index',
       `${pageRoute}.js`
     );
+  } else if (target !== MINIAPP) {
+    pageConfig.usingComponents.element = elementPath;
   }
+
   addFileToCompilation(compilation, {
     filename: `${pageRoute}.json`,
     content: JSON.stringify(pageConfig, null, 2),

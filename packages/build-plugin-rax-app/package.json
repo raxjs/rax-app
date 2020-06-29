@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-app",
-  "version": "4.7.0",
+  "version": "5.0.0",
   "description": "rax app base plugins",
   "main": "src/index.js",
   "scripts": {
@@ -43,8 +43,7 @@
     "lodash": "^4.17.15",
     "memory-fs": "^0.5.0",
     "mini-css-extract-plugin": "^0.9.0",
-    "miniapp-element": "^0.1.0",
-    "miniapp-render": "^0.1.1",
+    "miniapp-render": "^1.0.0",
     "null-loader": "^3.0.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss": "^7.0.17",
@@ -58,7 +57,7 @@
     "rax-compile-config": "^0.2.0",
     "rax-miniapp-babel-plugins": "^0.1.0",
     "rax-miniapp-config-webpack-plugin": "^1.0.1",
-    "rax-miniapp-runtime-webpack-plugin": "^0.1.7",
+    "rax-miniapp-runtime-webpack-plugin": "^1.0.0",
     "rax-multi-pages-settings": "^0.1.0",
     "rax-quickapp-webpack-plugin": "^1.0.0",
     "rax-server-renderer": "^1.0.0",
