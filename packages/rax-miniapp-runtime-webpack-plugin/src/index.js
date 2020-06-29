@@ -214,13 +214,7 @@ class MiniAppRuntimePlugin {
           });
         }
 
-        if (target !== MINIAPP) {
-          // Generate root template xml
-          generateRootTemplate(compilation, {
-            target,
-            command,
-            rootDir,
-          });
+        if (target !== MINIAPP || useNativeComponent) {
           // Generate self loop element
           generateElementJS(compilation, {
             target,
@@ -237,7 +231,7 @@ class MiniAppRuntimePlugin {
             command,
             rootDir,
           });
-        } else if (!useNativeComponent) {
+        } else {
           // Only when there isn't native component, it need generate root template file
           // Generate root template xml
           generateRootTemplate(compilation, {

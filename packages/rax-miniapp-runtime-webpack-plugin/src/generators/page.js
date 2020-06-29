@@ -43,14 +43,16 @@ function generatePageXML(
   useNativeComponent,
   { target, command, rootDir }
 ) {
-  let pageXmlContent = `<view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
+  let pageXmlContent;
+  if (target === MINIAPP && useNativeComponent) {
+    pageXmlContent = `<view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
+    <element r="{{root}}"  />
+  </view>`;
+  } else {
+    pageXmlContent = `<import src="${getAssetPath('root.' + adapter[target].xml, pageRoute + adapter[target].xml)}"/>
+    <view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
     <template is="element" data="{{r: root}}"  />
   </view>`;
-
-  if (target === MINIAPP && useNativeComponent) {
-    pageXmlContent = ejs.render(getTemplate(rootDir, 'root.xml', target)) + pageXmlContent;
-  } else {
-    pageXmlContent = `<import src="${getAssetPath('root.' + adapter[target].xml, pageRoute + adapter[target].xml)}"/>` + pageXmlContent;
   }
 
   addFileToCompilation(compilation, {
@@ -84,20 +86,23 @@ function generatePageJSON(
   pageRoute,
   { target, command }
 ) {
-  if (target !== MINIAPP) {
-    pageConfig.usingComponents = {
-      'element': '../../comp'
-    };
+  if (!pageConfig.usingComponents) {
+    pageConfig.usingComponents = {};
   }
+  const elementPath = getAssetPath(
+    'comp',
+    `${pageRoute}.js`
+  );
   if (useNativeComponent) {
-    if (!pageConfig.usingComponents) {
-      pageConfig.usingComponents = {};
-    }
+    pageConfig.usingComponents.element = elementPath;
     pageConfig.usingComponents['custom-component'] = getAssetPath(
       'custom-component/index',
       `${pageRoute}.js`
     );
+  } else if (target !== MINIAPP) {
+    pageConfig.usingComponents.element = elementPath;
   }
+
   addFileToCompilation(compilation, {
     filename: `${pageRoute}.json`,
     content: JSON.stringify(pageConfig, null, 2),
