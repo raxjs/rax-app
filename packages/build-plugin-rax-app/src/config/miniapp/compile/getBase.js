@@ -34,8 +34,11 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     outputPath = join(outputPath, 'src');
   }
   const config = getWebpackBase(context, {
-    disableRegenerator: true
-  });
+    disableRegenerator: true,
+    processBar: {
+      name: platformConfig[target].name,
+    }
+  }, target);
 
   const appConfig = getAppConfig(rootDir, target);
 
