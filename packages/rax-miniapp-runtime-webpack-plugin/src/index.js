@@ -38,6 +38,7 @@ class MiniAppRuntimePlugin {
     const target = this.target;
     const { nativeLifeCycleMap, usingComponents, routes = [], command } = options;
     let isFirstRender = true;
+    let lastUseNativeComponentCount = 0; // Record native component used count last time
     // Execute when compilation created
     compiler.hooks.compilation.tap(PluginName, (compilation) => {
       // Optimize chunk assets
@@ -53,7 +54,6 @@ class MiniAppRuntimePlugin {
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
       const outputPath = join(compilation.outputOptions.path, target);
       const sourcePath = join(options.rootDir, 'src');
-      const pages = [];
       const assetsMap = {}; // page - asset
       const assetsReverseMap = {}; // asset - page
       const changedFiles = Object.keys(
@@ -61,13 +61,15 @@ class MiniAppRuntimePlugin {
       ).map((filePath) => {
         return filePath.replace(sourcePath, '');
       });
-      const useNativeComponent = Object.keys(usingComponents).length > 0;
-
+      const useNativeComponentCount = Object.keys(usingComponents).length;
+      const useNativeComponent = useNativeComponentCount > 0;
+      if (isFirstRender) {
+        lastUseNativeComponentCount = useNativeComponentCount;
+      }
+      const useNativeComponentCountChanged = useNativeComponentCount !== lastUseNativeComponentCount;
+      lastUseNativeComponentCount = useNativeComponentCount;
       // Collect asset
       routes
-        .filter(({ entryName }) => {
-          return isFirstRender || changedFiles.includes(entryName);
-        })
         .forEach(({ entryName }) => {
           const assets = { js: [], css: [] };
           const filePathMap = {};
@@ -127,8 +129,8 @@ class MiniAppRuntimePlugin {
             }
           }
 
-          // xml/css/json file only need writeOnce
-          if (isFirstRender) {
+          // xml/css/json file need be written in first render or using native component state changes
+          if (isFirstRender || useNativeComponentCountChanged) {
             // Page xml
             generatePageXML(compilation, entryName, useNativeComponent, {
               target,
@@ -161,9 +163,6 @@ class MiniAppRuntimePlugin {
             nativeLifeCycles,
             { target, command, rootDir }
           );
-
-          // Record page path
-          pages.push(entryName);
         });
 
       // Collect app.js
@@ -187,8 +186,8 @@ class MiniAppRuntimePlugin {
         generateAppCSS(compilation, { target, command, rootDir });
       }
 
-      // These files only need write when first render
-      if (isFirstRender) {
+      // These files need be written in first render or using native component state changes
+      if (isFirstRender || useNativeComponentCountChanged) {
         // render.js
         generateRender(compilation, { target, command, rootDir });
 
