@@ -36,16 +36,15 @@ const {
   },
 } = params;
 
-const { context, log } = api;
+const { context } = api;
 const { rootDir, userConfig, command } = context;
-const { outputDir, devOutputDir } = userConfig;
 const { esOutputDir = 'es' } = options;
 
 const isDev = command === 'dev';
 
 const enableTypescript = fs.existsSync(path.join(rootDir, 'tsconfig.json'));
 
-const LIB_DIR = path.resolve(rootDir, isDev ? devOutputDir : outputDir);
+const LIB_DIR = 'lib';
 const ES_DIR = esOutputDir ? path.resolve(rootDir, esOutputDir) : '';
 
 function clean(done) {
