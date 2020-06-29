@@ -215,12 +215,6 @@ class MiniAppRuntimePlugin {
         }
 
         if (target !== MINIAPP || useNativeComponent) {
-          // Generate root template xml
-          generateRootTemplate(compilation, {
-            target,
-            command,
-            rootDir,
-          });
           // Generate self loop element
           generateElementJS(compilation, {
             target,
