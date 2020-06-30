@@ -3,7 +3,7 @@ const ejs = require('ejs');
 const addFileToCompilation = require('../utils/addFileToCompilation');
 const getTemplate = require('../utils/getTemplate');
 
-function generateRootTemplate(
+function generateRootTmpl(
   compilation,
   { target, command, rootDir }
 ) {
@@ -17,5 +17,5 @@ function generateRootTemplate(
 }
 
 module.exports = {
-  generateRootTemplate,
-};
+  generateRootTmpl
+}
