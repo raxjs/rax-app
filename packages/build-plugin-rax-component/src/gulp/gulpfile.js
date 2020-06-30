@@ -115,8 +115,8 @@ function compileTS2ES() {
 }
 
 function copyOther() {
-  return src([OTHER_FILES_PATTERN], { ignore: IGNORE_PATTERN })
-    .pipe(dest(LIB_DIR));
+  const task = src([OTHER_FILES_PATTERN], { ignore: IGNORE_PATTERN }).pipe(dest(LIB_DIR));
+  return ES_DIR ? task.pipe(dest(ES_DIR)) : task;
 }
 
 if (isDev) {
