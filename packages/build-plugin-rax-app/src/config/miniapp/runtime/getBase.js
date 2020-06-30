@@ -1,21 +1,32 @@
 const MiniAppRuntimePlugin = require('rax-miniapp-runtime-webpack-plugin');
 const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
+const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
+const { resolve, join } = require('path');
+
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
-const { resolve, join } = require('path');
+const filterNativePages = require('../filterNativePages');
 
 module.exports = (context, target, options, onGetWebpackConfig) => {
   const { rootDir, command } = context;
   const { distDir = '', entryPath = './src/app' } = options[target] || {};
   const outputPath = getMiniAppOutput(context, { target, distDir });
 
+  // Using Components
+  const usingComponents = {};
+  // Native lifecycle map
+  const nativeLifeCycleMap = {};
+
   const config = getWebpackBase(context, {
-    disableRegenerator: false
+    disableRegenerator: true
   }, target);
-  const appConfig = getAppConfig(rootDir, entryPath, target);
-  setEntry(config, rootDir, entryPath, appConfig.routes);
+
+  const appConfig = getAppConfig(rootDir, entryPath, target, nativeLifeCycleMap);
+  appConfig.routes = filterNativePages(appConfig.routes, { rootDir, target, outputPath });
+  setEntry(config, context, entryPath, appConfig.routes);
+
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
 
@@ -32,8 +43,21 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
     .libraryTarget('window');
 
   config.module.rule('jsx')
-    .use('fixRegeneratorRuntime')
-    .loader(require.resolve('../../../loaders/FixRegeneratorRuntimeLoader'));
+    .use('babel')
+    .tap(options => {
+      options.presets = [
+        ...options.presets,
+        {
+          plugins: getMiniAppBabelPlugins({
+            usingComponents,
+            nativeLifeCycleMap,
+            target,
+            rootDir,
+          })
+        }
+      ];
+      return options;
+    });
 
   // Split common chunks
   config.optimization.splitChunks({
@@ -65,18 +89,24 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
       ...appConfig,
       target,
       config: options[target],
+      usingComponents,
+      nativeLifeCycleMap,
       rootDir,
       command
     }
   ]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
-  config.devtool('none');
 
+  if (command === 'start') {
+    config.devtool('inline-source-map');
+  }
+  
   onGetWebpackConfig(target, (config) => {
     const outputPath = resolve(rootDir, distDir ? distDir : join('build', target));
     config.output.path(outputPath);
   });
+
 
   return config;
 };

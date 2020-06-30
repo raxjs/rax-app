@@ -1,23 +1,10 @@
-const { dirname, join, resolve, sep } = require('path');
+const { getDepPath } = require('../pathHelper');
 
 const EntryLoader = require.resolve('../../../loaders/MiniAppEntryLoader');
 
-/**
- *
- * @param {string} rootDir
- * @param {string} entryPath
- * @param {string} com
- */
-function getDepPath(rootDir, entryPath, com) {
-  const srcPath = dirname(entryPath);
-  if (com[0] === sep ) {
-    return join(rootDir, srcPath, com);
-  } else {
-    return resolve(rootDir, srcPath, com);
-  }
-};
+module.exports = (config, context, routes) => {
+  const { rootDir } = context;
 
-module.exports = (config, rootDir, entryPath = './src/app', routes) => {
   config.entryPoints.clear();
 
   routes.forEach(({ entryName, source }) => {

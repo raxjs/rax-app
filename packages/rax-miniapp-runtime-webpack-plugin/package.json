@@ -1,6 +1,6 @@
 {
   "name": "rax-miniapp-runtime-webpack-plugin",
-  "version": "0.1.12",
+  "version": "1.0.0",
   "description": "A webpack plugin for miniapp runtime build",
   "main": "src/index.js",
   "keywords": [
@@ -13,7 +13,9 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^3.0.0",
+    "colors": "^1.4.0",
     "csso": "^4.0.3",
+    "ejs": "^3.1.2",
     "fs-extra": "^8.1.0",
     "path-to-regexp": "^3.0.0",
     "postcss": "^7.0.17",

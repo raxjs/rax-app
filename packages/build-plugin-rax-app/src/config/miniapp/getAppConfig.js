@@ -9,7 +9,7 @@ const {
   removeExt
 } = require('./pathHelper');
 
-module.exports = (rootDir, entryPath = './src/app', target) => {
+module.exports = (rootDir, entryPath = './src/app', target, nativeLifeCycleMap) => {
   const srcPath = join(rootDir, dirname(entryPath));
 
   const appConfig = readJSONSync(resolve(rootDir, `${removeExt(entryPath)}.json`));
@@ -28,6 +28,9 @@ module.exports = (rootDir, entryPath = './src/app', target) => {
     appConfig.pages.push(page);
     routes.push(route);
     pagesMap[route.path] = page;
+    if (nativeLifeCycleMap) {
+      nativeLifeCycleMap[resolve(srcPath, route.source)] = {};
+    }
   }
 
   appConfig.routes.map(route => {
