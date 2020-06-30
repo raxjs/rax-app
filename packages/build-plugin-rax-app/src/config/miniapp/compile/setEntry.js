@@ -1,4 +1,5 @@
 const { dirname, join, sep } = require('path');
+const filterNativePages = require('../filterNativePages');
 
 /**
  * ./pages/foo -> based on src, return original
@@ -28,8 +29,8 @@ function getEntry(entryAppFilePath, routes) {
 
 module.exports = (config, routes, options) => {
   config.entryPoints.clear();
-  const { appEntry } = options;
-  const entries = getEntry(appEntry, routes);
+  const { appEntry, rootDir, target } = options;
+  const entries = getEntry(appEntry, filterNativePages(routes, { rootDir, target }));
   for (const [entryName, source] of Object.entries(entries)) {
     const entryConfig = config.entry(entryName);
     entryConfig.add(source);

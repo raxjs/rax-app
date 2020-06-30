@@ -20,8 +20,6 @@ module.exports = function visitor({ types: t }, { nativeLifeCycleMap }) {
                 "registerNativeEventListeners's second argument should be an array, like ['onReachBottom']");
             }
           }
-        } else {
-          path.skip();
         }
       }
     }
