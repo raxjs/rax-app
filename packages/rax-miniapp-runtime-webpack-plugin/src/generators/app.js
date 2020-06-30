@@ -22,7 +22,7 @@ function generateAppJS(
       .map(
         filePath =>
           `require('${getAssetPath(
-            relative(target, filePath),
+            filePath,
             'app.js'
           )}')(window)`
       )

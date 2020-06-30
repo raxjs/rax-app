@@ -16,9 +16,9 @@ function copyNativePage(pageEntry, source, outputPath) {
   copySync(dirname(pageEntry), join(outputPath, dirname(source)));
 }
 
-module.exports = (routes, { rootDir, target, outputPath }) => {
+module.exports = (routes, { rootDir, target, outputPath, entryPath = './src/app' }) => {
   return routes.filter(({ source }) => {
-    const pageEntry = getDepPath(rootDir, source);
+    const pageEntry = getDepPath(rootDir, entryPath, source);
     if (isNativePage(pageEntry, target)) {
       copyNativePage(pageEntry, source, outputPath);
       return false;

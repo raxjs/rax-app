@@ -24,7 +24,7 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
   }, target);
 
   const appConfig = getAppConfig(rootDir, entryPath, target, nativeLifeCycleMap);
-  appConfig.routes = filterNativePages(appConfig.routes, { rootDir, target, outputPath });
+  appConfig.routes = filterNativePages(appConfig.routes, { rootDir, entryPath, target, outputPath });
   setEntry(config, context, entryPath, appConfig.routes);
 
   // Remove all app.json before it
@@ -101,7 +101,7 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
   if (command === 'start') {
     config.devtool('inline-source-map');
   }
-  
+
   onGetWebpackConfig(target, (config) => {
     const outputPath = resolve(rootDir, distDir ? distDir : join('build', target));
     config.output.path(outputPath);

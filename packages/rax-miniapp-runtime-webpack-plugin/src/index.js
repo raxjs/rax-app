@@ -81,33 +81,30 @@ class MiniAppRuntimePlugin {
 
             const ext = isCSSFile(filePath) ? 'css' : extMatch[1];
 
-            let relativeFilePath;
             // Adjust css content
             if (ext === 'css') {
-              relativeFilePath = filePath;
-              if (relativeFilePath !== `${target}/${VENDOR_CSS_FILE_NAME}`) {
+              if (filePath !== `${target}/${VENDOR_CSS_FILE_NAME}`) {
                 compilation.assets[
-                  `${relativeFilePath}.${adapter[target].css}`
+                  `${filePath}.${adapter[target].css}`
                 ] = new RawSource(
-                  adjustCSS(compilation.assets[relativeFilePath].source())
+                  adjustCSS(compilation.assets[filePath].source())
                 );
-                delete compilation.assets[`${relativeFilePath}`];
+                delete compilation.assets[`${filePath}`];
               }
             }
-            relativeFilePath = relative(target, filePath);
 
             // Skip recorded
-            if (filePathMap[relativeFilePath]) return;
-            filePathMap[relativeFilePath] = true;
+            if (filePathMap[filePath]) return;
+            filePathMap[filePath] = true;
 
             // Record
-            assets[ext].push(relativeFilePath);
+            assets[ext].push(filePath);
 
             // Insert into assetsReverseMap
-            assetsReverseMap[relativeFilePath] =
-              assetsReverseMap[relativeFilePath] || [];
-            if (assetsReverseMap[relativeFilePath].indexOf(entryName) === -1)
-              assetsReverseMap[relativeFilePath].push(entryName);
+            assetsReverseMap[filePath] =
+              assetsReverseMap[filePath] || [];
+            if (assetsReverseMap[filePath].indexOf(entryName) === -1)
+              assetsReverseMap[filePath].push(entryName);
           });
 
           assetsMap[entryName] = assets;
