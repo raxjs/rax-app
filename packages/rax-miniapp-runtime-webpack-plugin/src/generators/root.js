@@ -18,4 +18,4 @@ function generateRootTmpl(
 
 module.exports = {
   generateRootTmpl
-}
+};
