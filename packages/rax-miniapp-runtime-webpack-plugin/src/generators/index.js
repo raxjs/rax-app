@@ -7,7 +7,7 @@ const {
   generatePageJSON,
   generatePageXML,
 } = require('./page');
-const { generateRootTemplate } = require('./root');
+const { generateRootTmpl } = require('./root');
 const {
   generateElementJS,
   generateElementJSON,
@@ -25,7 +25,7 @@ module.exports = {
   generatePageJS,
   generatePageJSON,
   generatePageXML,
-  generateRootTemplate,
+  generateRootTmpl,
   generateElementJS,
   generateElementJSON,
   generateElementTemplate,
