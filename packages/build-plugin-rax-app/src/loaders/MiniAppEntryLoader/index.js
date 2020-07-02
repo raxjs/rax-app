@@ -6,8 +6,8 @@ const babelConfig = getBabelConfig();
 module.exports = function() {
   const resourcePath = this.resourcePath.replace(/\\/g, '/'); // Avoid path error in Windows
   const source = `
-    import { render, createElement } from 'rax';
-    import Component from '${resourcePath}';
+    import { render, createElement, Component } from 'rax';
+    import PageComponent from '${resourcePath}';
     import DriverUniversal from 'driver-universal';
 
     const comProps = {
@@ -16,12 +16,17 @@ module.exports = function() {
       ...window.__pageProps
     };
 
-    function Entry() {
-      return createElement(Component, comProps);
+    class Entry extends Component {
+      render() {
+        return createElement(PageComponent, comProps);
+      }
     }
 
     export default function createApp() {
-      render(createElement(Entry), null, { driver: DriverUniversal });
+      const instance = render(<Entry />, null, { driver: DriverUniversal });
+      return {
+        unmount: instance._internal.unmountComponent.bind(instance._internal)
+      }
     }
   `;
   const { code } = babel.transformSync(source, babelConfig);
