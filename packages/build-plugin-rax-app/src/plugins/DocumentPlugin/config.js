@@ -36,7 +36,7 @@ module.exports = (context, options) => {
   files.map(fileInfo => {
     const userConfigKey = path.basename(fileInfo.path).replace('.js', '');
     const userConfigRegister = require(fileInfo.path);
-    const value = userConfig[userConfigKey] || userConfigRegister.defaultValue;
+    const value = userConfig.hasOwnProperty(userConfigKey) ? userConfig[userConfigKey] : userConfigRegister.defaultValue;
     userConfigRegister.configWebpack(config, value, {
       ...context,
       taskName: 'document',
