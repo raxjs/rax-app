@@ -1,4 +1,5 @@
 const { getDepPath } = require('../pathHelper');
+const { existsSync } = require('fs-extra');
 
 const EntryLoader = require.resolve('../../../loaders/MiniAppEntryLoader');
 
@@ -15,6 +16,9 @@ module.exports = (config, context, routes) => {
   });
 
   // Add app entry
-  config.entry('app').add(getDepPath(rootDir, 'app'));
+  // When using typescript, if not set extension, webpack will load app.json rathen than app.ts
+  const appFilePath = getDepPath(rootDir, 'app');
+  const appFilePathWithExt = existsSync(`${appFilePath}.ts`) ? `${appFilePath}.ts` : appFilePath;
+  config.entry('app').add(appFilePathWithExt);
 };
 
