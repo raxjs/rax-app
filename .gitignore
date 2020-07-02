@@ -25,5 +25,6 @@ npm-debug.log
 lerna-debug.log
 npm-debug.log*
 lib/
+es/
 dist/
 .idea/

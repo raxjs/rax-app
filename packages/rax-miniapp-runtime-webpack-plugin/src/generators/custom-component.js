@@ -1,39 +1,26 @@
-const { resolve } = require('path');
-const { copy } = require('fs-extra');
 const addFileToCompilation = require('../utils/addFileToCompilation');
 const adapter = require('../adapter');
-const getTemplate = require('../utils/getTemplate');
 
-module.exports = function(
+function generateCustomComponent(
   compilation,
-  customComponentRoot,
-  customComponents,
-  outputPath,
-  { target, command, rootDir }
+  usingComponents,
+  { target, command }
 ) {
-  const customComponentJsTmpl = getTemplate(rootDir, target, 'custom-component');
-  if (customComponentRoot) {
-    copy(
-      customComponentRoot,
-      resolve(outputPath, 'custom-component/components'),
-      {
-        dereference: true
-      }
-    );
-
+  if (Object.keys(usingComponents).length) {
     const realUsingComponents = {};
-    const names = Object.keys(customComponents);
+    const names = Object.keys(usingComponents);
     names.forEach(
       (key) =>
         realUsingComponents[
           key
-        ] = `./components/${customComponents[key].path}`
+        ] = usingComponents[key].path
     );
 
     // custom-component/index.js
     addFileToCompilation(compilation, {
       filename: 'custom-component/index.js',
-      content: customComponentJsTmpl,
+      content: `const render = require('../render')
+      Component(render.createCustomComponentConfig())`,
       target,
       command,
     });
@@ -41,21 +28,19 @@ module.exports = function(
     // custom-component/index.xml
     addFileToCompilation(compilation, {
       filename: `custom-component/index.${adapter[target].xml}`,
-      content: `<block ${adapter[target].directive.if}="{{ready}}">
-        ${
-  names
+      content: `<block ${adapter[target].directive.if}="{{__ready}}">
+        ${names
     .map((key, index) => {
-      const { props = [], events = [] } = customComponents[key];
+      const { props = [], events = [] } = usingComponents[key];
       return `<${key} ${adapter[target].directive.prefix}:${
         index === 0 ? 'if' : 'elif'
-      }="{{name === '${key}'}}" id="{{id}}" class="{{className}}" style="{{style}}" ${props
-        .map((name) => `${name}="{{${name}}}"`)
+      }="{{r.behavior === '${key}'}}" ${props
+        .map((name) => `${name === 'className' ? 'class' : name}="{{${name}}}"`)
         .join(' ')} ${events
         .map((name) => `${adapter[target].directive.event}${name}="on${name}"`)
         .join(' ')}><slot/></${key}>`;
     })
-    .join('\n')
-}
+    .join('\n')}
       </block>`,
       target,
       command,
@@ -85,3 +70,5 @@ module.exports = function(
     });
   }
 };
+
+module.exports = generateCustomComponent;

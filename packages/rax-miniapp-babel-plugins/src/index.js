@@ -1,4 +1,4 @@
-module.exports = function({ usingComponents, nativeLifeCycleMap }) {
+module.exports = function({ usingComponents, nativeLifeCycleMap, target, rootDir }) {
   return [
     require.resolve('./plugins/babel-plugin-remove-Function'),
     require.resolve('./plugins/babel-plugin-external-module'),
@@ -8,5 +8,13 @@ module.exports = function({ usingComponents, nativeLifeCycleMap }) {
         nativeLifeCycleMap,
       },
     ],
+    [
+      require.resolve('./plugins/babel-plugin-handle-custom-component'),
+      {
+        usingComponents,
+        target,
+        rootDir
+      }
+    ]
   ];
 };

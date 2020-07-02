@@ -4,14 +4,10 @@ const build = require('./build');
 
 module.exports = (api, options = {}) => {
   const { command, userConfig } = api.context;
+  const firstPlugin = userConfig.plugins[0];
+  const firstPluginName = Array.isArray(firstPlugin) ? firstPlugin[0] : firstPlugin;
 
-  const raxComponentPlugin = userConfig.plugins.find(
-    config =>
-      Array.isArray(config) && config[0] === 'build-plugin-rax-component' ||
-      config === 'build-plugin-rax-component',
-  );
-
-  if (!raxComponentPlugin) {
+  if (!/build-plugin-rax-component/.test(firstPluginName)) {
     console.error(
       chalk.red(
         '[build-plugin-multi-demo-portal] need build-plugin-rax-component to be set in build.json',
