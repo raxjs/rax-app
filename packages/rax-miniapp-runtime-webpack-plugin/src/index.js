@@ -15,7 +15,7 @@ const {
   generatePageJS,
   generatePageJSON,
   generatePageXML,
-  generateRootTemplate,
+  generateRootTmpl,
   generateElementJS,
   generateElementJSON,
   generateElementTemplate,
@@ -234,7 +234,7 @@ class MiniAppRuntimePlugin {
         } else {
           // Only when there isn't native component, it need generate root template file
           // Generate root template xml
-          generateRootTemplate(compilation, {
+          generateRootTmpl(compilation, {
             target,
             command,
             rootDir,
