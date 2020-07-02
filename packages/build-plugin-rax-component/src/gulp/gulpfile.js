@@ -3,7 +3,7 @@ const path = require('path');
 const { src, dest, series, parallel, watch } = require('gulp');
 const babel = require('gulp-babel');
 const ts = require('gulp-typescript');
-const { getBabelConfig } = require('rax-compile-config');
+const getBabelConfig = require('rax-babel-config');
 
 const {
   JS_FILES_PATTERN,
@@ -14,11 +14,18 @@ const {
 
 const params = require('./params');
 
-const babelConfig = getBabelConfig({
+const babelOptions = {
   styleSheet: true,
   custom: {
     ignore: ['**/**/*.d.ts'],
   },
+};
+const babelConfig = getBabelConfig({
+  ...babelOptions
+});
+const esBabelConfig = getBabelConfig({
+  ...babelOptions,
+  modules: false,
 });
 
 const {
@@ -29,26 +36,21 @@ const {
   },
 } = params;
 
-const { context, log } = api;
+const { context } = api;
 const { rootDir, userConfig, command } = context;
-const { outputDir, devOutputDir } = userConfig;
-const { esOutputDir = '', typesOutputDir = 'lib' } = options;
+const { esOutputDir = 'es' } = options;
 
 const isDev = command === 'dev';
 
 const enableTypescript = fs.existsSync(path.join(rootDir, 'tsconfig.json'));
 
-const LIB_DIR = path.resolve(rootDir, isDev ? devOutputDir : outputDir);
-const TYPES_DIR = path.resolve(rootDir, typesOutputDir);
+const LIB_DIR = 'lib';
 const ES_DIR = esOutputDir ? path.resolve(rootDir, esOutputDir) : '';
 
 function clean(done) {
   fs.removeSync(LIB_DIR);
   if (ES_DIR) {
     fs.removeSync(ES_DIR);
-  }
-  if (fs.pathExistsSync(TYPES_DIR)) {
-    fs.removeSync(TYPES_DIR);
   }
   done();
 }
@@ -65,8 +67,8 @@ function compileJS2ES() {
     return src('.');
   }
 
-
   return src([JS_FILES_PATTERN], { ignore: IGNORE_PATTERN })
+    .pipe(babel(esBabelConfig))
     .pipe(dest(ES_DIR));
 }
 
@@ -87,14 +89,14 @@ function compileTs() {
 const tsProject4Dts = ts.createProject('tsconfig.json', {
   skipLibCheck: true,
   declaration: true,
-  declarationDir: TYPES_DIR,
 });
 
 function compileDts() {
   return tsProject4Dts.src()
     .pipe(tsProject4Dts())
     .dts
-    .pipe(dest(TYPES_DIR));
+    .pipe(dest(LIB_DIR))
+    .pipe(dest(ES_DIR));
 }
 
 const tsProject4ES = ts.createProject('tsconfig.json', {
@@ -108,12 +110,13 @@ function compileTS2ES() {
   }
   return tsProject4ES.src()
     .pipe(tsProject4ES())
+    .pipe(babel(esBabelConfig))
     .pipe(dest(ES_DIR));
 }
 
 function copyOther() {
-  return src([OTHER_FILES_PATTERN], { ignore: IGNORE_PATTERN })
-    .pipe(dest(LIB_DIR));
+  const task = src([OTHER_FILES_PATTERN], { ignore: IGNORE_PATTERN }).pipe(dest(LIB_DIR));
+  return ES_DIR ? task.pipe(dest(ES_DIR)) : task;
 }
 
 if (isDev) {

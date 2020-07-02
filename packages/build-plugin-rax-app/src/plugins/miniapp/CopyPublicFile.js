@@ -1,6 +1,16 @@
-const { resolve } = require('path');
+const { resolve, sep } = require('path');
 const { copySync } = require('fs-extra');
 const chokidar = require('chokidar');
+
+/**
+ * Judge whether the native file is page
+ * By appointment, native pages must be placed in public/pages
+ * @param {string} filepath
+ */
+function isNativePage(filepath) {
+  const nativePagePathReg = new RegExp(`public${sep}pages`);
+  return nativePagePathReg.test(filepath);
+}
 
 /**
  * Copy directories from rootDir + `src/${dir}` to outputPath + `${dir}`
@@ -13,7 +23,9 @@ function copyPublicFile(constantDirectories, rootDir, outputPath) {
     const srcPath = resolve(rootDir, srcDir);
     const distPath = resolve(outputPath, srcDir.split('/').slice(1).join('/'));
     copySync(srcPath, distPath, {
-      filter: (file) => !/\.js$/.test(file)
+      filter: (file) => {
+        return isNativePage(file) || !/\.js$/.test(file);
+      }
     });
   }
 }
