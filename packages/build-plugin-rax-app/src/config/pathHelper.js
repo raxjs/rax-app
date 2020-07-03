@@ -1,5 +1,6 @@
 const { join, relative, sep, resolve } = require('path');
 const { existsSync, statSync } = require('fs-extra');
+const enhancedResolve = require('enhanced-resolve');
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -83,9 +84,20 @@ function getDepPath(rootDir, componentFilePath) {
   }
 }
 
+/**
+ * Resolve ts files
+ * @param  {...any} files
+ */
+function resolveWithTS(...files) {
+  return enhancedResolve.create.sync({
+    extensions: ['.ts', '.js']
+  })(...files);
+}
+
 module.exports = {
   moduleResolve,
   normalizeOutputFilePath,
   getRelativePath,
-  getDepPath
+  getDepPath,
+  resolveWithTS
 };

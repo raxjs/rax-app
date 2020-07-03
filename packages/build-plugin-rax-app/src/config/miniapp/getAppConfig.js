@@ -6,7 +6,7 @@ const {
   moduleResolve,
   normalizeOutputFilePath,
   getRelativePath
-} = require('./pathHelper');
+} = require('../pathHelper');
 
 module.exports = (rootDir, target, nativeLifeCycleMap) => {
   const entryPath = join(rootDir, 'src');
