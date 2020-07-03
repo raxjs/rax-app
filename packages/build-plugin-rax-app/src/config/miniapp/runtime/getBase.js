@@ -1,17 +1,17 @@
 const MiniAppRuntimePlugin = require('rax-miniapp-runtime-webpack-plugin');
 const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
+const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
-const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
 
 module.exports = (context, target, options) => {
   const { rootDir, command } = context;
   const outputPath = getMiniAppOutput(context, { target });
 
   // Using Components
-  const usingComponents = [];
+  const usingComponents = {};
   // Native lifecycle map
   const nativeLifeCycleMap = {};
 
@@ -27,6 +27,7 @@ module.exports = (context, target, options) => {
   config.module
     .rule('json')
     .test(/\.json$/)
+    .type('javascript/auto')
     .use('json-loader')
     .loader(require.resolve('json-loader'));
 
@@ -44,7 +45,9 @@ module.exports = (context, target, options) => {
         {
           plugins: getMiniAppBabelPlugins({
             usingComponents,
-            nativeLifeCycleMap
+            nativeLifeCycleMap,
+            target,
+            rootDir,
           })
         }
       ];
@@ -89,6 +92,8 @@ module.exports = (context, target, options) => {
   ]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
-  config.devtool('inline-source-map');
+  if (command === 'start') {
+    config.devtool('inline-source-map');
+  }
   return config;
 };
