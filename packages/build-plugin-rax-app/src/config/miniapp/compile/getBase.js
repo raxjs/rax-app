@@ -182,7 +182,6 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
       }
       // Miniapp plugin
       if (/^plugin\:\/\//.test(request)) {
-        console.log("request", request)
         return callback(null, `commonjs2 ${request}`);
       }
       callback();
