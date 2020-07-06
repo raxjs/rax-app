@@ -46,7 +46,15 @@ module.exports = (api, options = {}) => {
   onHook('before.build.load', async() => {
     consoleClear(true);
     if (generateLib) {
+      console.log('build lib/es start');
       const libBuildErr = await buildLib(api, options);
+      console.log('build lib/es end');
+
+      // buildLib 是个伪异步方法，内部调用的 gulp-cli 是同步执行的，此时 gulp clean 还没执行完，导致后续的构建产物可能会被 clean 掉
+      // 因此这里临时 hack 下
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1 * 1000);
+      });
 
       if (libBuildErr) {
         console.error(chalk.red('Build Lib error'));
