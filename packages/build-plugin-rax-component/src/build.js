@@ -55,11 +55,11 @@ module.exports = (api, options = {}) => {
     if (!disableGenerateLib) {
       // start build lib&es by babel
       log.info('component', chalk.green('Build start... '));
-    
+
       // set gulpParams
       gulpParams.api = api;
       gulpParams.options = options;
-    
+
       gulpCompile();
     }
   });
