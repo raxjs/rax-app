@@ -26,7 +26,9 @@
   },
   "dependencies": {
     "easyfile": "^0.1.1",
-    "ejs": "^2.6.2"
+    "ejs": "^2.6.2",
+    "fs-extra": "^9.0.1",
+    "ice-npm-utils": "^2.0.0"
   },
   "devDependencies": {
     "ejs-lint": "^0.3.0"
