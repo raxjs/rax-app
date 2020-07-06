@@ -37,41 +37,20 @@ function processLanguageType(args) {
 
 // get ignore files of template
 function getIgnore(args) {
-  const { appType, componentType, languageType, projectFeatures, projectTargets } = args;
+  const { projectType, languageType, projectTargets } = args;
   let list = [];
 
-  if (appType === 'lite') {
-    list = ['src/components', 'src/pages', 'src/app.json.ejs'];
-  } else if (componentType === 'ui') {
-    list = [
-      'demo/index.jsx.ejs',
-    ];
-
+  if (projectType === 'component') {
     if (projectTargets.indexOf('miniapp') < 0) {
       list = [...list, 'demo/miniapp'];
     }
     if (projectTargets.indexOf('wechat-miniprogram') < 0) {
       list = [...list, 'demo/wechat-miniprogram'];
     }
-  } else if (componentType === 'base') {
-    list = [
-      'demo/basic.md.ejs',
-      'demo/advance.md.ejs',
-      'src/ts/style',
-      'src/js/style',
-      'CHANGELOG.md.ejs',
-      'README.en-US.md.ejs',
-      '.commitlintrc.js.ejs',
-      '.eslintrc.js.ejs',
-      '.eslintignore.ejs',
-      '.prettierrc.ejs',
-      '.prettierignore.ejs',
-    ];
-  }
-
-  if (Array.isArray(projectFeatures) && !projectFeatures.includes('faas')) {
-    list.push('src/ts/api');
-    list.push('src/js/api');
+  } else if (projectType === 'app') {
+    if (appType === 'mpa') {
+      list = ['src/js/app.js.ejs', 'src/ts/app.ts.ejs'];
+    }
   }
 
   // Process languageType
@@ -96,7 +75,6 @@ function getIgnore(args) {
  * @param  {String} args.appType - The application type
  * @param  {String} args.projectAuthor - The name of project author
  * @param  {Array} args.projectTargets- The build targets of project
- * @param  {Array} args.projectFeatures- The features of project
  * @return {Promise}
  */
 module.exports = function(template, args) {
