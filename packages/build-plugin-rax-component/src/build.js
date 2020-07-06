@@ -2,7 +2,6 @@ const fse = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
 const consoleClear = require('console-clear');
-
 const { handleWebpackErr } = require('rax-compile-config');
 
 const getDistConfig = require('./config/getDistConfig');
@@ -10,16 +9,20 @@ const getUMDConfig = require('./config/getUMDConfig');
 const getES6Config = require('./config/getES6Config');
 const getMiniappConfig = require('./config/miniapp/getBase');
 const miniappPlatformConfig = require('./config/miniapp/platformConfig');
-const buildLib = require('./buildLib');
+const gulpCompile = require('./gulp/compile');
+const gulpParams = require('./gulp/params');
 
 const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = (api, options = {}) => {
-  const { registerTask, modifyUserConfig, context, onHook, onGetWebpackConfig } = api;
+  const { registerTask, modifyUserConfig, context, onHook, onGetWebpackConfig, log } = api;
   const { targets = [] } = options;
   const { rootDir } = context;
   const libDir = 'lib';
   const distDir = 'dist';
+
+  // omitLib just for sfc2mp，not for developer
+  const disableGenerateLib = options[MINIAPP] && options[MINIAPP].omitLib;
 
   // clean build results
   fse.removeSync(path.join(rootDir, libDir));
@@ -48,8 +51,17 @@ module.exports = (api, options = {}) => {
 
   onHook('before.build.load', async() => {
     consoleClear(true);
-    // start build lib&es by babel
-    buildLib(api, options);
+
+    if (!disableGenerateLib) {
+      // start build lib&es by babel
+      log.info('component', chalk.green('Build start... '));
+    
+      // set gulpParams
+      gulpParams.api = api;
+      gulpParams.options = options;
+    
+      gulpCompile();
+    }
   });
 
   onHook('after.build.compile', async({ err, stats }) => {
@@ -61,7 +73,6 @@ module.exports = (api, options = {}) => {
 
     console.log(chalk.green('Rax Component build finished:'));
     console.log();
-
 
     if (targets.includes(WEB) || targets.includes(WEEX)) {
       console.log(chalk.green('Component lib at:'));
