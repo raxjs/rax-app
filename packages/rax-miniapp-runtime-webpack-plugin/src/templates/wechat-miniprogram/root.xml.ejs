@@ -32,6 +32,9 @@
     <custom-component wx:elif="{{item.tagName === 'custom-component'}}" r="{{item}}">
       <template wx:if="{{item.children}}" is="children_1" data="{{r: item.children}}" />
     </custom-component>
+    <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
+      <template is="{{item.pluginName}}" data="{{r: item}}" />
+    </block>
     <block wx:elif="{{!item.behavior}}">
       <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item, isHTMLElement: true}}" />
       <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item, isHTMLElement: true}}" />
@@ -68,6 +71,9 @@
     <custom-component wx:elif="{{item.tagName === 'custom-component'}}" r="{{item}}">
       <template wx:if="{{item.children}}" is="children" data="{{r: item.children}}" />
     </custom-component>
+    <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
+      <template is="{{item.pluginName}}" data="{{r: item}}" />
+    </block>
     <block wx:elif="{{!item.behavior}}">
       <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item}}" />
       <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item}}" />

@@ -1,8 +1,9 @@
 const addFileToCompilation = require('../utils/addFileToCompilation');
 
-module.exports = function(compilation, usingComponents, { target, command }) {
+module.exports = function(compilation, usingComponents, usingPlugins, { target, command }) {
   const config = {
-    usingComponents: {}
+    usingComponents: {},
+    usingPlugins: {}
   };
 
   if (process.env.DEBUG === 'true') {
@@ -15,6 +16,13 @@ module.exports = function(compilation, usingComponents, { target, command }) {
       events: usingComponents[name].events
     };
   });
+
+  Object.keys(usingPlugins).forEach(name => {
+    config.usingPlugins[name] = {
+      props: usingPlugins[name].props,
+      events: usingPlugins[name].events
+    }
+  })
   addFileToCompilation(compilation, {
     filename: 'config.js',
     content: `module.exports = ${JSON.stringify(config)}`,

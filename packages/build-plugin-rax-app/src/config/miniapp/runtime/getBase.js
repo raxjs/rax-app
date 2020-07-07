@@ -11,10 +11,12 @@ module.exports = (context, target, options) => {
   const { rootDir, command } = context;
   const outputPath = getMiniAppOutput(context, { target });
 
-  // Using Components
+  // Using components
   const usingComponents = {};
   // Native lifecycle map
   const nativeLifeCycleMap = {};
+  // Using plugins
+  const usingPlugins = {};
 
   const config = getWebpackBase(context, {
     disableRegenerator: true
@@ -50,6 +52,7 @@ module.exports = (context, target, options) => {
             nativeLifeCycleMap,
             target,
             rootDir,
+            usingPlugins
           })
         }
       ];
@@ -89,7 +92,8 @@ module.exports = (context, target, options) => {
       usingComponents,
       nativeLifeCycleMap,
       rootDir,
-      command
+      command,
+      usingPlugins
     }
   ]);
 

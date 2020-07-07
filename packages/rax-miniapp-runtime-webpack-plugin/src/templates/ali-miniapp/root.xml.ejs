@@ -10,6 +10,9 @@
       <template is="children" data="{{r: r.children}}" />
     </custom-component>
   </block>
+  <block a:elif="{{r.tagName === 'miniapp-plugin'}}">
+    <template is="{{r.pluginName}}" data="{{r: r}}" />
+  </block>
   <block a:elif="{{!r.behavior}}">
     <template a:if="{{r.tagName === 'img'}}" is="image" data="{{r: r, isHTMLElement: true}}" />
     <template a:elif="{{r.tagName === 'input'}}" is="input" data="{{r: r, isHTMLElement: true}}" />

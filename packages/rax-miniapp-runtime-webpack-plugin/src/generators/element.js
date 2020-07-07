@@ -17,16 +17,20 @@ function generateElementJS(compilation,
   });
 }
 
-function generateElementTemplate(compilation,
+function generateElementTemplate(compilation, usingPlugins,
   { target, command, rootDir }) {
   let content = '<template is="{{r.behavior || \'element\'}}" data="{{r: r, isComp: true}}" />';
   if (target !== MINIAPP) {
-    generateRootTmpl(compilation,
-      { target, command, rootDir });
+    generateRootTmpl(compilation, usingPlugins, { target, command, rootDir });
     content = `<import src="./root.${adapter[target].xml}"/>` + content;
   } else {
+    const pluginTmpl = ejs.render(getTemplate(rootDir, 'plugin.xml', target), {
+      usingPlugins
+    });
     // In MiniApp, root.axml need be written into comp.axml
-    content = ejs.render(getTemplate(rootDir, 'root.xml', target)) + content;
+    content = ejs.render(getTemplate(rootDir, 'root.xml', target))
+    + pluginTmpl
+    + content;
   }
   addFileToCompilation(compilation, {
     filename: `comp.${adapter[target].xml}`,
@@ -36,18 +40,25 @@ function generateElementTemplate(compilation,
   });
 }
 
-function generateElementJSON(compilation, useNativeComponent,
+function generateElementJSON(compilation, useNativeComponent, usingPlugins,
   { target, command, rootDir }) {
+    const content = {
+      component: true,
+      usingComponents: {}
+    };
+    if (useNativeComponent) {
+      content.usingComponents['custom-component'] = './custom-component/index';
+    }
+    if (target !== MINIAPP) {
+      content.usingComponents['element'] = './comp';
+    }
+    Object.keys(usingPlugins).forEach(plugin => {
+      content.usingComponents[plugin] = usingPlugins[plugin].path;
+    });
+
   addFileToCompilation(compilation, {
     filename: 'comp.json',
-    content: `{
-      "component": true,
-      "usingComponents": {
-        ${useNativeComponent ? '"custom-component": "./custom-component/index"' : ''}
-        ${useNativeComponent && target !== MINIAPP ? ',' : ''}
-        ${target !== MINIAPP ? '"element": "./comp"' : ''}
-      }
-    }`,
+    content: JSON.stringify(content, null, 2),
     target,
     command,
   });

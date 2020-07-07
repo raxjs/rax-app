@@ -1,6 +1,6 @@
 const { resolve, dirname, join } = require('path');
 const { existsSync, readJSONSync } = require('fs-extra');
-const md5 = require('md5');
+const getTagName = require('../utils/getTagName');
 const extMap = require('../utils/extMap');
 
 const RELATIVE_COMPONENTS_REG = /^\./;
@@ -44,10 +44,6 @@ function getNpmSourcePath(rootDir, source, target) {
     return source;
   }
 };
-
-function getTagName(str) {
-  return 'c' + md5(str).slice(0, 6);
-}
 
 function getTmplPath(source, rootDir, dirName, target) {
   // If it's a npm module, keep source origin value, otherwise use absolute path
