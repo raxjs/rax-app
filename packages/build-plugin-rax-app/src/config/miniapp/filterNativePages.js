@@ -1,6 +1,6 @@
 const { existsSync, copySync } = require('fs-extra');
 const { dirname, join } = require('path');
-const { getDepPath } = require('./pathHelper');
+const { getDepPath } = require('../pathHelper');
 const targetPlatformMap = require('./targetPlatformMap');
 
 /**

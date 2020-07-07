@@ -1,8 +1,8 @@
-const path = require('path');
+const { absoluteModuleResolve } = require('../pathHelper');
 
 module.exports = (config, context) => {
   const { rootDir } = context;
-  const appEntry = path.resolve(rootDir, 'src/app.js');
+  const appEntry = absoluteModuleResolve(rootDir, './src/app');
   const entryConfig = config.entry('index');
 
   // Force disable HMR, kraken not support yet.
