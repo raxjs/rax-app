@@ -40,21 +40,20 @@ function generateElementTemplate(compilation, usingPlugins,
   });
 }
 
-function generateElementJSON(compilation, useNativeComponent, usingPlugins,
-  { target, command, rootDir }) {
-    const content = {
-      component: true,
-      usingComponents: {}
-    };
-    if (useNativeComponent) {
-      content.usingComponents['custom-component'] = './custom-component/index';
-    }
-    if (target !== MINIAPP) {
-      content.usingComponents['element'] = './comp';
-    }
-    Object.keys(usingPlugins).forEach(plugin => {
-      content.usingComponents[plugin] = usingPlugins[plugin].path;
-    });
+function generateElementJSON(compilation, useNativeComponent, usingPlugins, { target, command, rootDir }) {
+  const content = {
+    component: true,
+    usingComponents: {}
+  };
+  if (useNativeComponent) {
+    content.usingComponents['custom-component'] = './custom-component/index';
+  }
+  if (target !== MINIAPP) {
+    content.usingComponents.element = './comp';
+  }
+  Object.keys(usingPlugins).forEach(plugin => {
+    content.usingComponents[plugin] = usingPlugins[plugin].path;
+  });
 
   addFileToCompilation(compilation, {
     filename: 'comp.json',

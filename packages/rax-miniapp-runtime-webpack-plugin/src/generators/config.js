@@ -21,8 +21,8 @@ module.exports = function(compilation, usingComponents, usingPlugins, { target, 
     config.usingPlugins[name] = {
       props: usingPlugins[name].props,
       events: usingPlugins[name].events
-    }
-  })
+    };
+  });
   addFileToCompilation(compilation, {
     filename: 'config.js',
     content: `module.exports = ${JSON.stringify(config)}`,
