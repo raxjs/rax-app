@@ -1,4 +1,4 @@
-const { absoluteModuleResolve } = require('./pathHelper');
+const { absoluteModuleResolve } = require('../pathHelper');
 
 module.exports = (config, context) => {
   const { rootDir } = context;
