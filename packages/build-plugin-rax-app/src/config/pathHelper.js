@@ -41,12 +41,12 @@ function loadAsDirectory(module) {
 }
 
 /**
- * Resolve node path.
+ * Resolve relative path.
  * @param {string} script
  * @param {string} dependency
- * @return {*}
+ * @return {string}
  */
-function moduleResolve(script, dependency) {
+function relativeModuleResolve(script, dependency) {
   if (startsWithArr(dependency, ['./', '../', '/', '.\\', '..\\', '\\'])) {
     let dependencyPath = join(script, dependency);
     return relative(
@@ -85,19 +85,19 @@ function getDepPath(rootDir, componentFilePath) {
 }
 
 /**
- * Resolve ts files
+ * Resolve absolute path
  * @param  {...any} files
  */
-function resolveWithTS(...files) {
+function absoluteModuleResolve(...files) {
   return enhancedResolve.create.sync({
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js', '.tsx', '.jsx', '.json']
   })(...files);
 }
 
 module.exports = {
-  moduleResolve,
+  relativeModuleResolve,
   normalizeOutputFilePath,
   getRelativePath,
   getDepPath,
-  resolveWithTS
+  absoluteModuleResolve
 };

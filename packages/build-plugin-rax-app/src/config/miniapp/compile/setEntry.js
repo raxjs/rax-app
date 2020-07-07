@@ -1,5 +1,5 @@
 const { dirname, join, sep } = require('path');
-const { resolveWithTS } = require('../../pathHelper');
+const { absoluteModuleResolve } = require('../../pathHelper');
 const filterNativePages = require('../filterNativePages');
 
 /**
@@ -18,7 +18,7 @@ function getEntry(entryAppFilePath, routes, rootDir) {
   const sourcePath = dirname(entryAppFilePath);
   const entry = {};
 
-  entry.app = resolveWithTS(rootDir, `./${entryAppFilePath}`) + '?role=app'; // Mark it as app file
+  entry.app = absoluteModuleResolve(rootDir, `./${entryAppFilePath}`) + '?role=app'; // Mark it as app file
 
   if (Array.isArray(routes)) {
     routes.forEach(({ source: pageSource }) => {
