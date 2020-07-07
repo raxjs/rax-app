@@ -3,8 +3,6 @@
 const updateNotifier = require('update-notifier');
 const fs = require('fs');
 const path = require('path');
-const execSync = require('child_process').execSync;
-const spawn = require('cross-spawn');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const semver = require('semver');
@@ -172,9 +170,7 @@ function askProjectInformaction() {
 }
 
 function createProject(name, verbose, template, userAnswers) {
-  const pkgManager = shouldUseYarn() ? 'yarn' : 'npm';
   const projectName = name;
-  const autoInstallModules = userAnswers.autoInstallModules;
 
   let rootDir = process.cwd();
   if (!createInCurrent) {
@@ -197,57 +193,11 @@ function createProject(name, verbose, template, userAnswers) {
     template,
     ...userAnswers,
   }).then(function(directory) {
-    if (autoInstallModules) {
-      return install(directory, verbose);
-    } else {
-      return false;
-    }
-  }).then(function(isAutoInstalled) {
     console.log(chalk.white.bold('To run your app:'));
     if (!createInCurrent) {
       console.log(chalk.white(`   cd ${projectName}`));
     }
-    if (!isAutoInstalled) {
-      console.log(chalk.white(`   ${pkgManager === 'npm' ? 'npm install' : 'yarn'}`));
-    }
-    console.log(chalk.white(`   ${pkgManager} start`));
-  });
-}
-
-function shouldUseYarn() {
-  try {
-    execSync('yarn --version', { stdio: 'ignore' });
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-/**
- * run npm/yarn install
- * @param directory - the cwd directory
- * @param verbose - enable verbose mode
- * @returns {Promise}
- */
-function install(directory, verbose) {
-  console.log(chalk.white.bold('Install dependencies:'));
-
-  const pkgManager = shouldUseYarn() ? 'yarn' : 'npm';
-  const args = ['install'];
-  if (verbose) {
-    args.push('--verbose');
-  }
-
-  return new Promise(function(resolve) {
-    const proc = spawn(pkgManager, args, { stdio: 'inherit', cwd: directory });
-
-    proc.on('close', function(code) {
-      if (code !== 0) {
-        console.error(`\`${pkgManager} install\` failed`);
-        resolve(false);
-      } else {
-        resolve(true);
-      }
-    });
+    console.log(chalk.white('   npm install'));
+    console.log(chalk.white('   npm start'));
   });
 }
