@@ -39,10 +39,10 @@ function processLanguageType(args) {
 
 // get ignore files of template
 function getIgnore(args) {
-  const { projectType, languageType, projectTargets } = args;
+  const { projectType, languageType, projectTargets, appType } = args;
   let list = [];
 
-  if (projectType === 'component') {
+  if (projectType === 'component' || projectType === 'api') {
     if (projectTargets.indexOf('miniapp') < 0) {
       list = [...list, 'demo/miniapp'];
     }

@@ -197,7 +197,7 @@ function createProject(name, verbose, template, userAnswers) {
     if (!createInCurrent) {
       console.log(chalk.white(`   cd ${projectName}`));
     }
-    console.log(chalk.white(`   npm install`));
-    console.log(chalk.white(`   npm start`));
+    console.log(chalk.white('   npm install'));
+    console.log(chalk.white('   npm start'));
   });
 }
