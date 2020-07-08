@@ -7,6 +7,7 @@ const inquirer = require('inquirer');
 const chalk = require('chalk');
 const semver = require('semver');
 const kebabCase = require('lodash.kebabcase');
+const { checkAliInternal } = require('ice-npm-utils');
 const argv = require('minimist')(process.argv.slice(2));
 
 const generator = require('rax-generator');
@@ -197,7 +198,20 @@ function createProject(name, verbose, template, userAnswers) {
     if (!createInCurrent) {
       console.log(chalk.white(`   cd ${projectName}`));
     }
-    console.log(chalk.white('   npm install'));
-    console.log(chalk.white('   npm start'));
+    checkAliInternal().then((isAliInternal) => {
+      let npmCommand = 'npm';
+      let explanation = '';
+      if (isAliInternal) {
+        npmCommand = 'tnpm';
+        explanation = 'Detected that you are an Alibaba user, DEF plugin has been installed!\n\n';
+      }
+      console.log(chalk.white(`   ${npmCommand} install`));
+      console.log(chalk.white(`   ${npmCommand} start`));
+      console.log(chalk.white(`${explanation}We have prepared develop tool kit for you. \nSee: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks`));
+    }).catch(() => {
+      console.log(chalk.white('   npm install'));
+      console.log(chalk.white('   npm start'));
+      console.log(chalk.white('We have prepared develop tool kit for you. \nSee: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks'));
+    });
   });
 }
