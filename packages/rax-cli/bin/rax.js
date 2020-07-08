@@ -207,11 +207,11 @@ function createProject(name, verbose, template, userAnswers) {
       }
       console.log(chalk.white(`   ${npmCommand} install`));
       console.log(chalk.white(`   ${npmCommand} start`));
-      console.log(chalk.white(`${explanation}We have prepared develop tool kit for you. \nSee: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks`));
+      console.log(chalk.white(`${explanation}We have prepared develop toolkit for you. \nSee: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks`));
     }).catch(() => {
       console.log(chalk.white('   npm install'));
       console.log(chalk.white('   npm start'));
-      console.log(chalk.white('We have prepared develop tool kit for you. \nSee: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks'));
+      console.log(chalk.white('We have prepared develop toolkit for you. \nSee: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks'));
     });
   });
 }
