@@ -16,7 +16,6 @@ module.exports = {
    * @param  {String} args.projectType - Kebabcased project type
    * @param  {String} args.projectAuthor - The name of project author
    * @param  {Array} args.projectTargets- The build targets of project
-   * @param  {Array} args.projectFeatures- The features of project
    * @return {Promise}
    */
   init(args) {

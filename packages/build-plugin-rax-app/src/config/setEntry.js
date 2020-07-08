@@ -1,4 +1,4 @@
-const path = require('path');
+const { absoluteModuleResolve } = require('./pathHelper');
 
 const { hmrClient } = require('rax-compile-config');
 
@@ -10,7 +10,7 @@ module.exports = (config, context, target) => {
   const isDev = command === 'start';
 
   // SPA
-  const appEntry = path.resolve(rootDir, 'src/app.js');
+  const appEntry = absoluteModuleResolve(rootDir, './src/app');
   const entryConfig = config.entry('index');
 
   config.module.rule('appJSON')
