@@ -90,6 +90,7 @@ module.exports = (context, options) => {
         {
           terserOptions: {
             output: {
+              ascii_only: true,
               comments: false,
             },
           },
