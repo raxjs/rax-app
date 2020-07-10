@@ -1,5 +1,7 @@
 const ejs = require('ejs');
 const path = require('path');
+const fse = require('fs-extra');
+const { checkAliInternal } = require('ice-npm-utils');
 const TemplateProcesser = require('./templateProcesser');
 
 // Rename files start with '_'
@@ -37,41 +39,20 @@ function processLanguageType(args) {
 
 // get ignore files of template
 function getIgnore(args) {
-  const { appType, componentType, languageType, projectFeatures, projectTargets } = args;
+  const { projectType, languageType, projectTargets, appType } = args;
   let list = [];
 
-  if (appType === 'lite') {
-    list = ['src/components', 'src/pages', 'src/app.json.ejs'];
-  } else if (componentType === 'ui') {
-    list = [
-      'demo/index.jsx.ejs',
-    ];
-
+  if (projectType === 'component' || projectType === 'api') {
     if (projectTargets.indexOf('miniapp') < 0) {
       list = [...list, 'demo/miniapp'];
     }
     if (projectTargets.indexOf('wechat-miniprogram') < 0) {
       list = [...list, 'demo/wechat-miniprogram'];
     }
-  } else if (componentType === 'base') {
-    list = [
-      'demo/basic.md.ejs',
-      'demo/advance.md.ejs',
-      'src/ts/style',
-      'src/js/style',
-      'CHANGELOG.md.ejs',
-      'README.en-US.md.ejs',
-      '.commitlintrc.js.ejs',
-      '.eslintrc.js.ejs',
-      '.eslintignore.ejs',
-      '.prettierrc.ejs',
-      '.prettierignore.ejs',
-    ];
-  }
-
-  if (Array.isArray(projectFeatures) && !projectFeatures.includes('faas')) {
-    list.push('src/ts/api');
-    list.push('src/js/api');
+  } else if (projectType === 'app') {
+    if (appType === 'mpa') {
+      list = ['src/js/app.js.ejs', 'src/ts/app.ts.ejs'];
+    }
   }
 
   // Process languageType
@@ -92,18 +73,21 @@ function getIgnore(args) {
  * @param  {String} args.root - The absolute path of project directory
  * @param  {String} args.directoryName - The folder name
  * @param  {String} args.projectName - Kebabcased project name
- * @param  {String} args.projectType - Kebabcased project type
- * @param  {String} args.appType - The application type
- * @param  {String} args.projectAuthor - The name of project author
+ * @param  {String} args.projectType - Kebabcased project type: app/component/api/plugin
+ * @param  {String} args.appType - The application type: spa/mpa
  * @param  {Array} args.projectTargets- The build targets of project
- * @param  {Array} args.projectFeatures- The features of project
+ * @param  {String} args.npmName- npm package name
+ * @param  {Boolean} args.enablePegasus- generate seed
  * @return {Promise}
  */
-module.exports = function(template, args) {
-  const projectDir = args.root;
+module.exports = async function(template, args) {
+  const { root: projectDir, projectType } = args;
+  const isAliInternal = await checkAliInternal();
+  const npmName = args.npmName || (isAliInternal ? `@ali/${args.projectName}` : args.projectName);
+
   const ejsData = {
     ...args,
-    npmName: args.projectName, // Be consistent with ice-devtools
+    npmName,
   };
 
   new TemplateProcesser(template)
@@ -112,6 +96,41 @@ module.exports = function(template, args) {
     .use(processLanguageType(args))
     .ignore(getIgnore(args))
     .done(projectDir);
+
+  const abcPath = path.join(projectDir, 'abc.json');
+  const pkgPath = path.join(projectDir, 'package.json');
+  const buildJsonPath = path.join(projectDir, 'build.json');
+  const buildData = fse.readJsonSync(buildJsonPath);
+  const pkgData = fse.readJsonSync(pkgPath);
+
+  if (isAliInternal) {
+    const abcData = {
+      type: 'rax',
+      builder: '',
+      info: {
+        raxVersion: '1.x'
+      }
+    };
+
+    if (projectType === 'app') {
+      abcData.builder = '@ali/builder-rax-v1';
+      pkgData.devDependencies['@ali/build-plugin-rax-app-def'] = '^1.0.0';
+      buildData.plugins.push('@ali/build-plugin-rax-app-def');
+    } else {
+      abcData.builder = '@ali/builder-component';
+      if (args.enablePegasus) {
+        pkgData.devDependencies['@ali/build-plugin-rax-seed'] = '^1.0.0';
+        buildData.plugins.push('@ali/build-plugin-rax-seed');
+      }
+      pkgData.publishConfig = {
+        registry: 'https://registry.npm.alibaba-inc.com',
+      };
+    }
+
+    fse.writeJSONSync(abcPath, abcData, { spaces: 2 });
+    fse.writeJSONSync(buildJsonPath, buildData, { spaces: 2 });
+    fse.writeJSONSync(pkgPath, pkgData, { spaces: 2 });
+  }
 
   process.chdir(projectDir);
   return Promise.resolve(projectDir);

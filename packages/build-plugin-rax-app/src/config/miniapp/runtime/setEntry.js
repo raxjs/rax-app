@@ -1,4 +1,4 @@
-const { getDepPath } = require('../pathHelper');
+const { getDepPath, absoluteModuleResolve } = require('../../pathHelper');
 
 const EntryLoader = require.resolve('../../../loaders/MiniAppEntryLoader');
 
@@ -15,6 +15,7 @@ module.exports = (config, context, routes) => {
   });
 
   // Add app entry
-  config.entry('app').add(getDepPath(rootDir, 'app'));
+  const appEntry = absoluteModuleResolve(rootDir, './src/app');
+  config.entry('app').add(appEntry);
 };
 
