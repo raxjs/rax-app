@@ -114,7 +114,7 @@
     bindtouchmove="onTouchMove"
     bindtouchend="onTouchEnd"
     bindtouchcancel="onTouchCancel"
-    bindlongtap="onLongTap"
+    bindlongpress="onLongTap"
 
     hover-class="{{r['hover-class']}}"
     hover-start-time="{{r['hover-start-time']}}"
@@ -398,7 +398,7 @@
     bindtouchmove="onTouchMove"
     bindtouchend="onTouchEnd"
     bindtouchcancel="onTouchCancel"
-    bindlongtap="onLongTap"
+    bindlongpress="onLongTap"
 
     nodes="{{r.nodes}}"
   >
@@ -759,6 +759,7 @@
     bindtouchcancel="onTouchCancel"
 
     bindchange="onPickerChange"
+    bindcolumnchange="onPickerColumnChange"
     bindcancel="onPickerCancel"
 
     name="{{r.name}}"
@@ -952,7 +953,7 @@
     bindtouchend="onTouchEnd"
     bindtouchcancel="onTouchCancel"
 
-    bindlongtap="onCanvasLongTap"
+    bindlongpress="onCanvasLongTap"
     binderror="onCanvasError"
 
     type="{{r.type}}"
