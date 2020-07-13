@@ -1,7 +1,5 @@
-<%_ const useSSR = projectFeatures.includes('ssr') -%>
-<%_ const useFaaS = projectFeatures.includes('faas') -%>
-<%_ const useReact = projectFeatures.includes('react') -%>
 {
+  "inlineStyle": false,
   "plugins": [
     [
       "build-plugin-rax-app",
@@ -9,27 +7,6 @@
         "targets": ["<%- projectTargets.join('", "') %>"]<%_ if (appType === 'mpa') { -%>,
         "type": "mpa"<%_ } %>
       }
-    ]<%_ if (useSSR) { -%>,
-    "build-plugin-rax-ssr"<%_ } -%><%_ if (useFaaS) { -%>,
-    [
-      "build-plugin-rax-faas",
-      {
-        "aliyunConfig": {
-          "id": "<%= projectAliyunId %>",
-          "region": "<%= projectAliyunRegion %>"
-        },
-        "functionGroup": {
-          "name": "api",
-          "root": "src/api",
-          "functions": {
-            "user": {
-              "path": "user"
-            }
-          }
-        }
-      }
-    ]<%_ } -%><%_ if (useReact) { -%>,
-    "build-plugin-rax-compat-react"<%_ } -%>
-
+    ]
   ]
 }

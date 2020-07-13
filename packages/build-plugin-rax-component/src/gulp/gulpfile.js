@@ -47,14 +47,6 @@ const enableTypescript = fs.existsSync(path.join(rootDir, 'tsconfig.json'));
 const LIB_DIR = 'lib';
 const ES_DIR = esOutputDir ? path.resolve(rootDir, esOutputDir) : '';
 
-function clean(done) {
-  fs.removeSync(LIB_DIR);
-  if (ES_DIR) {
-    fs.removeSync(ES_DIR);
-  }
-  done();
-}
-
 // for js/jsx.
 function compileJs() {
   return src([JS_FILES_PATTERN], { ignore: IGNORE_PATTERN })
@@ -142,6 +134,6 @@ if (ES_DIR) {
   }
 }
 
-tasks = [clean, parallel(...tasks, copyOther)];
+tasks = [parallel(...tasks, copyOther)];
 
 exports.default = series(...tasks, callback);
