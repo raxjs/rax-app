@@ -2,10 +2,14 @@ const ErrorStackParser = require('error-stack-parser');
 const SourceMap = require('source-map');
 
 async function parse(error, bundleContent) {
-  const sourcemap = getSourceMap(bundleContent);
-  const consumer = await new SourceMap.SourceMapConsumer(sourcemap);
   const originalErrorStack = ErrorStackParser.parse(error);
+  const sourcemap = getSourceMap(bundleContent);
 
+  if (!sourcemap) {
+    return originalErrorStack;
+  }
+
+  const consumer = await new SourceMap.SourceMapConsumer(sourcemap);
   const mergedErrorStack = originalErrorStack.map((err, index) => {
     const errorFrame = originalErrorStack[index];
     const originalSourcePosition = consumer.originalPositionFor({
