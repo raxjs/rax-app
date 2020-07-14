@@ -6,6 +6,8 @@ const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 const filterNativePages = require('../filterNativePages');
+const targetPlatformMap = require('../targetPlatformMap');
+const { getPlatformExtensions } = require('../pathHelper');
 
 module.exports = (context, target, options) => {
   const { rootDir, command } = context;
@@ -24,6 +26,10 @@ module.exports = (context, target, options) => {
   const appConfig = getAppConfig(rootDir, target, nativeLifeCycleMap);
   appConfig.routes = filterNativePages(appConfig.routes, { rootDir, target, outputPath });
   setEntry(config, context, appConfig.routes);
+
+  config.resolve.extensions
+    .clear()
+    .merge(getPlatformExtensions(targetPlatformMap[target].name, ['.js', '.jsx', '.ts', '.tsx', '.json']));
 
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();

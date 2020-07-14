@@ -83,9 +83,33 @@ function getDepPath(rootDir, componentFilePath) {
   }
 }
 
+/**
+ * Resolve absolute path
+ * @param  {...any} files
+ */
+function absoluteModuleResolve(...files) {
+  return enhancedResolve.create.sync({
+    extensions: ['.ts', '.js', '.tsx', '.jsx', '.json']
+  })(...files);
+}
+
+/**
+ * get more specific files in miniapp
+ * @param {string} platform
+ * @param {array<string>} extensions
+ */
+function getPlatformExtensions(platform, extensions = []) {
+  return [
+    ...platform ? extensions.map((ext) => `.${platform}${ext}`) : [],
+    ...extensions,
+  ];
+}
+
 module.exports = {
   moduleResolve,
   normalizeOutputFilePath,
   getRelativePath,
-  getDepPath
+  getDepPath,
+  absoluteModuleResolve,
+  getPlatformExtensions
 };
