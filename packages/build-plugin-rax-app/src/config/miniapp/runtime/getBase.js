@@ -7,7 +7,7 @@ const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 const filterNativePages = require('../filterNativePages');
 const targetPlatformMap = require('../targetPlatformMap');
-const { getPlatformExtensions } = require('../pathHelper');
+const { getPlatformExtensions } = require('../../pathHelper');
 
 module.exports = (context, target, options) => {
   const { rootDir, command } = context;

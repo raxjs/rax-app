@@ -15,7 +15,7 @@ const CopyPublicFilePlugin = require('../../../plugins/miniapp/CopyPublicFile');
 
 const platformConfig = require('./platformConfig');
 const targetPlatformMap = require('../targetPlatformMap');
-const { getPlatformExtensions } = require('../pathHelper');
+const { getPlatformExtensions } = require('../../pathHelper');
 const { QUICKAPP } = require('../../../constants');
 
 const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
