@@ -2,6 +2,7 @@ const { resolve, dirname, join } = require('path');
 const { existsSync, readJSONSync } = require('fs-extra');
 const md5 = require('md5');
 const extMap = require('../utils/extMap');
+const { WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('../constants');
 
 const RELATIVE_COMPONENTS_REG = /^\./;
 
@@ -20,6 +21,12 @@ const baseComponents = [
   'rax-video'
 ];
 
+const targetMap = {
+  [WECHAT_MINIPROGRAM]: 'wechat',
+  [BYTEDANCE_MICROAPP]: 'bytedance',
+  [QUICKAPP]: 'quickapp'
+};
+
 /**
  * Get native component npm path
  * @param {string} rootDir project root dir
@@ -34,7 +41,7 @@ function getNpmSourcePath(rootDir, source, target) {
     if (!miniappConfig || baseComponents.includes(source)) {
       return source;
     }
-    const miniappEntry = target === 'miniapp' ? miniappConfig.main : miniappConfig[`main:${target}`];
+    const miniappEntry = target === 'miniapp' ? miniappConfig.main : miniappConfig[`main:${targetMap[target]}`];
     // Ensure component has target platform rax complie result
     if (!miniappEntry) {
       return source;
