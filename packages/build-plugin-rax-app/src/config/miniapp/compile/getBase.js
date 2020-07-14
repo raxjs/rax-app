@@ -28,7 +28,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const { platform = targetPlatformMap[target].name, mode = 'build', disableCopyNpm = false, turnOffSourceMap = false, constantDir = [] } = options[target] || {};
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
-  const entryPath = './src/app.js';
+  const entryPath = './src/app';
   let outputPath = getOutputPath(context, { target });
   // Quickapp's output should be wrapped in src
   if (target === QUICKAPP) {
@@ -56,7 +56,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     platform: platformInfo
   };
 
-  const appEntry = 'src/app.js';
+  const appEntry = 'src/app';
   setEntry(config, appConfig.routes, { appEntry, rootDir, target });
 
   const pageLoaderParams = {

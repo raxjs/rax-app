@@ -1,5 +1,6 @@
 const { join, relative, sep, resolve } = require('path');
 const { existsSync, statSync } = require('fs-extra');
+const enhancedResolve = require('enhanced-resolve');
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -40,12 +41,12 @@ function loadAsDirectory(module) {
 }
 
 /**
- * Resolve node path.
+ * Resolve relative path.
  * @param {string} script
  * @param {string} dependency
- * @return {*}
+ * @return {string}
  */
-function moduleResolve(script, dependency) {
+function relativeModuleResolve(script, dependency) {
   if (startsWithArr(dependency, ['./', '../', '/', '.\\', '..\\', '\\'])) {
     let dependencyPath = join(script, dependency);
     return relative(
@@ -106,7 +107,7 @@ function getPlatformExtensions(platform, extensions = []) {
 }
 
 module.exports = {
-  moduleResolve,
+  relativeModuleResolve,
   normalizeOutputFilePath,
   getRelativePath,
   getDepPath,
