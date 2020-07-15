@@ -25,7 +25,7 @@ describe('postcssRpxToVw', () => {
     font-size: 16rpx;
     line-height: 22rpx;
   }
-}    
+}
     `;
     const output = `
 .a {
@@ -49,7 +49,7 @@ describe('postcssRpxToVw', () => {
     font-size: 2.13333vw;
     line-height: 2.93333vw;
   }
-}    
+}
     `;
 
     const processed = postcss(postcssRpxToVw()).process(input).css;
@@ -86,7 +86,7 @@ describe('postcssRpxToVw', () => {
 
   it('should transform 0rpx to 0', () => {
     const input = '.box { width: 0rpx; }';
-    const output = '.box { width: 0; }';
+    const output = '.box { width: 0vw; }';
 
     const processed = postcss(postcssRpxToVw()).process(input).css;
     expect(processed).toBe(output);
