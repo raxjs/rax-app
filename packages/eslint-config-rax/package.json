@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-rax",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "ESLint config for Rax",
   "license": "BSD-3-Clause",
   "main": "index.js",
@@ -23,6 +23,5 @@
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-module": "^0.0.1",
     "@typescript-eslint/eslint-plugin": "^3.0.2",
-    "@typescript-eslint/parser": "^3.0.2"
   }
 }

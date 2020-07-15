@@ -1,15 +1,15 @@
-## <%= npmName %>
+## rax-component
 
 ## Install
 
 ```
-$ npm install <%= npmName %> --save
+$ npm install rax-component --save
 ```
 
 ## Usage
 
 ```
-import MyComponent from '<%= npmName %>';
+import MyComponent from 'rax-component';
 ```
 
 ## API
@@ -31,7 +31,7 @@ import MyComponent from '<%= npmName %>';
 ```
 import { createElement, render } from 'rax';
 import DriverUniversal from 'driver-universal';
-import MyComponent from '<%= npmName %>';
+import MyComponent from 'rax-component';
 
 render(<MyComponent />, document.body, { driver: DriverUniversal });
 ```

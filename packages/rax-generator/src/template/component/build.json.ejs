@@ -4,15 +4,9 @@
       "build-plugin-rax-component",
       {
         "type": "rax",
-        "targets": ["<%- projectTargets.join('", "') %>"]<%_ if (componentType === 'ui') { -%>,
-        "esOutputDir": "es",
-        "typesOutputDir": "types"
-        <%_ } -%>
-
+        "targets": ["<%- projectTargets.join('", "') %>"]
       }
-    ]<%_ if (componentType === 'ui') { -%>,
+    ],
     "build-plugin-multi-demo-portal"
-    <%_ } -%>
-
   ]
 }

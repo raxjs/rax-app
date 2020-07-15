@@ -1,14 +1,6 @@
-const path = require('path');
+const { getDepPath, absoluteModuleResolve } = require('../../pathHelper');
 
 const EntryLoader = require.resolve('../../../loaders/MiniAppEntryLoader');
-
-function getDepPath(rootDir, com) {
-  if (com[0] === path.sep ) {
-    return path.join(rootDir, 'src', com);
-  } else {
-    return path.resolve(rootDir, 'src', com);
-  }
-};
 
 module.exports = (config, context, routes) => {
   const { rootDir } = context;
@@ -23,6 +15,7 @@ module.exports = (config, context, routes) => {
   });
 
   // Add app entry
-  config.entry('app').add(getDepPath(rootDir, 'app'));
+  const appEntry = absoluteModuleResolve(rootDir, './src/app');
+  config.entry('app').add(appEntry);
 };
 

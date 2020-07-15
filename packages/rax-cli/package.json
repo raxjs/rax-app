@@ -1,6 +1,6 @@
 {
   "name": "rax-cli",
-  "version": "3.1.0",
+  "version": "3.2.1",
   "license": "BSD-3-Clause",
   "description": "Command line interface for Rax",
   "repository": {
@@ -20,11 +20,12 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "cross-spawn": "^6.0.5",
+    "ice-npm-utils": "^2.0.0",
     "inquirer": "^6.2.1",
+    "lodash.kebabcase": "^4.1.1",
     "minimist": "^1.2.0",
-    "rax-generator": "^1.0.0",
+    "rax-generator": "^1.2.0",
     "semver": "^5.6.0",
-    "update-notifier": "^2.5.0",
-    "lodash.kebabcase": "^4.1.1"
+    "update-notifier": "^2.5.0"
   }
 }

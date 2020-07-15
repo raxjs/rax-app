@@ -24,10 +24,10 @@ const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
 const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
 module.exports = (context, target, options = {}, onGetWebpackConfig) => {
-  const { platform = targetPlatformMap[target], mode = 'build', disableCopyNpm = false, turnOffSourceMap = false, constantDir = [] } = options[target] || {};
+  const { platform = targetPlatformMap[target].name, mode = 'build', disableCopyNpm = false, turnOffSourceMap = false, constantDir = [] } = options[target] || {};
   const { rootDir } = context;
   const platformInfo = platformConfig[target];
-  const entryPath = './src/app.js';
+  const entryPath = './src/app';
   let outputPath = getOutputPath(context, { target });
   // Quickapp's output should be wrapped in src
   if (target === QUICKAPP) {
@@ -55,8 +55,8 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     platform: platformInfo
   };
 
-  const appEntry = 'src/app.js';
-  setEntry(config, appConfig.routes, { appEntry });
+  const appEntry = 'src/app';
+  setEntry(config, appConfig.routes, { appEntry, rootDir, target });
 
   const pageLoaderParams = {
     ...loaderParams,

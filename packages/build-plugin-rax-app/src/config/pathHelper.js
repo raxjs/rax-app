@@ -1,5 +1,6 @@
-const { join, relative, sep } = require('path');
+const { join, relative, sep, resolve } = require('path');
 const { existsSync, statSync } = require('fs-extra');
+const enhancedResolve = require('enhanced-resolve');
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -40,12 +41,12 @@ function loadAsDirectory(module) {
 }
 
 /**
- * Resolve node path.
+ * Resolve relative path.
  * @param {string} script
  * @param {string} dependency
- * @return {*}
+ * @return {string}
  */
-function moduleResolve(script, dependency) {
+function relativeModuleResolve(script, dependency) {
   if (startsWithArr(dependency, ['./', '../', '/', '.\\', '..\\', '\\'])) {
     let dependencyPath = join(script, dependency);
     return relative(
@@ -75,9 +76,28 @@ function getRelativePath(filePath) {
   return relativePath;
 }
 
+function getDepPath(rootDir, componentFilePath) {
+  if (componentFilePath[0] === sep ) {
+    return join(rootDir, 'src', componentFilePath);
+  } else {
+    return resolve(rootDir, 'src', componentFilePath);
+  }
+}
+
+/**
+ * Resolve absolute path
+ * @param  {...any} files
+ */
+function absoluteModuleResolve(...files) {
+  return enhancedResolve.create.sync({
+    extensions: ['.ts', '.js', '.tsx', '.jsx', '.json']
+  })(...files);
+}
 
 module.exports = {
-  moduleResolve,
+  relativeModuleResolve,
   normalizeOutputFilePath,
-  getRelativePath
+  getRelativePath,
+  getDepPath,
+  absoluteModuleResolve
 };
