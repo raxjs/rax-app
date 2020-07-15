@@ -1,5 +1,5 @@
 const { existsSync, copySync } = require('fs-extra');
-const { dirname, join } = require('path');
+const { dirname, join, resolve } = require('path');
 const { getDepPath } = require('../pathHelper');
 const targetPlatformMap = require('./targetPlatformMap');
 
@@ -12,15 +12,14 @@ function isNativePage(filePath, target) {
   return existsSync(filePath + targetPlatformMap[target].tplExtension);
 }
 
-function copyNativePage(pageEntry, source, outputPath) {
-  copySync(dirname(pageEntry), join(outputPath, dirname(source)));
-}
-
-module.exports = (routes, { rootDir, target, outputPath }) => {
+module.exports = (routes, needCopyList, { rootDir, target, outputPath }) => {
   return routes.filter(({ source }) => {
     const pageEntry = getDepPath(rootDir, source);
     if (isNativePage(pageEntry, target)) {
-      copyNativePage(pageEntry, source, outputPath);
+      needCopyList.push({
+        from: dirname(pageEntry),
+        to: join(target, dirname(source))
+      });
       return false;
     }
     return true;
