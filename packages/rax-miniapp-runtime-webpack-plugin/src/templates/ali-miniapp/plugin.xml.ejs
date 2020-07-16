@@ -5,7 +5,7 @@
         <%= prop %>="{{r.<%= prop %>}}"
       <% });%>
       <% usingPlugins[pluginTag].events.forEach(function(event){%>
-        <%= `on${event}` %>="r.<%= event %>"
+        <%= `on${event}` %>="{{r.<%= event %>}}"
       <% });%>
     >
     </<%=pluginTag%>>
