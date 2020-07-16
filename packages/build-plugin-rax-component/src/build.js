@@ -16,10 +16,9 @@ const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = (api, options = {}) => {
   const { registerTask, modifyUserConfig, context, onHook, onGetWebpackConfig, log } = api;
-  const { targets = [] } = options;
+  const { targets = [], distDir = 'dist' } = options;
   const { rootDir } = context;
   const libDir = 'lib';
-  const distDir = 'dist';
 
   // omitLib just for sfc2mp，not for developer
   const disableGenerateLib = options[MINIAPP] && options[MINIAPP].omitLib;

@@ -18,6 +18,7 @@ module.exports = (api, options = {}) => {
     throw new Error('Rax block template need "demo/index" file to debug your block.');
   }
 
+  options.distDir = 'build';
   buildComponent(api, options);
 
   // Add build/index.html output
