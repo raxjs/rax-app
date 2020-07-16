@@ -38,7 +38,7 @@ module.exports = function visitor(
                       ) {
                         // If it starts with 'on', it must be an event handler
                         if (/^on/.test(attrName)) {
-                          plugins[tagName].events.push(attrName);
+                          plugins[tagName].events.push(attrName.slice(2));
                         } else {
                           plugins[tagName].props.push(attrName);
                         }
