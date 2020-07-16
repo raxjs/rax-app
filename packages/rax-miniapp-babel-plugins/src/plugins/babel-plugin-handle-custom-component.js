@@ -55,7 +55,7 @@ function getTmplPath(source, rootDir, dirName, target) {
     // In Wechat MiniProgram need remove miniprogram_dist
     filePath = filePath.replace('/miniprogram_dist', '');
   }
-  return isNpm ? filePath : `..${filePath.replace(resolve(rootDir, 'src'), '')}`;
+  return isNpm ? filePath : `.${filePath.replace(resolve(rootDir, 'src'), '')}`;
 }
 
 module.exports = function visitor(

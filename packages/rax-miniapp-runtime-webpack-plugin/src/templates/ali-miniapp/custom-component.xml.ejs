@@ -1,0 +1,14 @@
+<% Object.keys(usingComponents).forEach(function(componentTag){ %>
+  <template name="<%= componentTag %>">
+    <<%=componentTag%>
+      <% usingComponents[componentTag].props.forEach(function(prop){%>
+        <%= prop %>="{{r.<%= prop %>}}"
+      <% });%>
+      <% usingComponents[componentTag].events.forEach(function(event){%>
+        <%= `on${event}` %>="{{r.<%= event %>}}"
+      <% });%>
+    >
+      <template is="children" data="{{r: r.children}}" />
+    </<%=componentTag%>>
+  </template>
+<% }); %>

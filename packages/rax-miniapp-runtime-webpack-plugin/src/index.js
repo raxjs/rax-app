@@ -210,12 +210,6 @@ class MiniAppRuntimePlugin {
           rootDir,
         });
 
-        // Custom-component
-        generateCustomComponent(
-          compilation,
-          usingComponents,
-          { target, command }
-        );
 
         // Only when developer may use native component, it will generate package.json in output
         if (useNativeComponent || existsSync(join(sourcePath, 'public'))) {
@@ -233,12 +227,16 @@ class MiniAppRuntimePlugin {
             command,
             rootDir,
           });
-          generateElementJSON(compilation, useNativeComponent, usingPlugins, {
+          generateElementJSON(compilation, {
+            usingComponents,
+            usingPlugins,
             target,
             command,
             rootDir,
           });
-          generateElementTemplate(compilation, usingPlugins, {
+          generateElementTemplate(compilation, {
+            usingPlugins,
+            usingComponents,
             target,
             command,
             rootDir,
