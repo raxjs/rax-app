@@ -1,6 +1,8 @@
 <% Object.keys(usingComponents).forEach(function(componentTag){ %>
   <template name="<%= componentTag %>">
     <<%=componentTag%>
+      data-private-node-id="{{r.nodeId}}"
+      data-private-page-id="{{r.pageId}}"
       <% usingComponents[componentTag].props.forEach(function(prop){%>
         <%= prop %>="{{r.<%= prop %>}}"
       <% });%>
@@ -8,7 +10,7 @@
         <%= `bind${event.toLowerCase()}` %>="{{r.<%= event %>}}"
       <% });%>
     >
-      <template is="children" data="{{r: r.children}}" />
+      <template is="children_1" data="{{r: r.children}}" />
     </<%=componentTag%>>
   </template>
 <% }); %>

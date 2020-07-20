@@ -8,6 +8,7 @@
         <%= `on${event}` %>="{{r.<%= event %>}}"
       <% });%>
     >
+      <template is="children" data="{{r: r.children}}" />
     </<%=pluginTag%>>
   </template>
 <% }); %>

@@ -33,7 +33,7 @@
       <template wx:if="{{item.children}}" is="children_1" data="{{r: item.children}}" />
     </custom-component>
     <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
-      <template is="{{item.pluginName}}" data="{{r: item}}" />
+      <template is="{{item.miniappPluginName}}" data="{{r: item}}" />
     </block>
     <block wx:elif="{{!item.behavior}}">
       <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item, isHTMLElement: true}}" />
@@ -72,7 +72,7 @@
       <template wx:if="{{item.children}}" is="children" data="{{r: item.children}}" />
     </custom-component>
     <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
-      <template is="{{item.pluginName}}" data="{{r: item}}" />
+      <template is="{{item.miniappPluginName}}" data="{{r: item}}" />
     </block>
     <block wx:elif="{{!item.behavior}}">
       <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item}}" />

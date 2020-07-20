@@ -1,13 +1,16 @@
 <% Object.keys(usingPlugins).forEach(function(pluginTag){ %>
   <template name="<%= pluginTag %>">
     <<%=pluginTag%>
+      data-private-node-id="{{r.nodeId}}"
+      data-private-page-id="{{r.pageId}}"
       <% usingPlugins[pluginTag].props.forEach(function(prop){%>
         <%= prop %>="{{r.<%= prop %>}}"
       <% });%>
       <% usingPlugins[pluginTag].events.forEach(function(event){%>
-        <%= `bind${event}` %>="r.<%= event %>"
+        <%= `bind${event}` %>="{{r.<%= event %>}}"
       <% });%>
     >
+      <template is="children_1" data="{{r: r.children}}" />
     </<%=pluginTag%>>
   </template>
 <% }); %>

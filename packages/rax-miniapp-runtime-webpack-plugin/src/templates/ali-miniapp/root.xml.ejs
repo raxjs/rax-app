@@ -9,7 +9,7 @@
     <template is="{{r.customComponentName}}" data="{{r: r}}" />
   </block>
   <block a:elif="{{r.tagName === 'miniapp-plugin'}}">
-    <template is="{{r.pluginName}}" data="{{r: r}}" />
+    <template is="{{r.miniappPluginName}}" data="{{r: r}}" />
   </block>
   <block a:elif="{{!r.behavior}}">
     <template a:if="{{r.tagName === 'img'}}" is="image" data="{{r: r, isHTMLElement: true}}" />
