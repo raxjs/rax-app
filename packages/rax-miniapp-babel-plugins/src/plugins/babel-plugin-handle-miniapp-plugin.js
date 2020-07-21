@@ -97,7 +97,7 @@ module.exports = function visitor(
                 const slotInfo = slotAttribute ? { slot: slotAttribute.value.value } : {};
                 usingPlugins[replacedTagName].children.push(slotInfo);
               }
-            );
+              );
           }
         }
       },

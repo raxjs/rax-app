@@ -155,7 +155,7 @@ module.exports = function visitor(
                 const slotInfo = slotAttribute ? { slot: slotAttribute.value.value } : {};
                 usingComponents[replacedTagName].children.push(slotInfo);
               }
-            );
+              );
           }
         }
       },
