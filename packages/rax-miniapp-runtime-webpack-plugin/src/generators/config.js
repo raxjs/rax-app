@@ -13,14 +13,16 @@ module.exports = function(compilation, { usingComponents, usingPlugins, target, 
   Object.keys(usingComponents).forEach(name => {
     config.usingComponents[name] = {
       props: usingComponents[name].props,
-      events: usingComponents[name].events
+      events: usingComponents[name].events,
+      children: usingComponents[name].children
     };
   });
 
   Object.keys(usingPlugins).forEach(name => {
     config.usingPlugins[name] = {
       props: usingPlugins[name].props,
-      events: usingPlugins[name].events
+      events: usingPlugins[name].events,
+      children: usingPlugins[name].children
     };
   });
   addFileToCompilation(compilation, {

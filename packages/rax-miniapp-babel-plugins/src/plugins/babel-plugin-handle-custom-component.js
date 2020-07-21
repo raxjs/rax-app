@@ -64,12 +64,14 @@ module.exports = function visitor(
 ) {
   // Collect imported dependencies
   const components = {};
+  const componentNameMap = new Map();
+
   const scanedPageMap = {};
 
   return {
     visitor: {
       ImportDeclaration: {
-        exit(path, { filename }) {
+        enter(path, { filename }) {
           const { specifiers, source } = path.node;
           if (Array.isArray(specifiers) && t.isStringLiteral(source)) {
             const dirName = dirname(filename);
@@ -113,11 +115,16 @@ module.exports = function visitor(
                 if (componentInfo) {
                   // Generate a random tag name
                   const replacedTagName = /[A-Z]/.test(tagName) ? getTagName(tagName) : tagName;
+                  if (!usingComponents[replacedTagName]) {
+                    usingComponents[replacedTagName] = { props: [], events: [], children: []};
+                  }
                   usingComponents[replacedTagName] = {
                     path: filePath,
-                    props: componentInfo.props,
-                    events: componentInfo.events
+                    props: [...new Set(componentInfo.props.concat(usingComponents[replacedTagName].props))],
+                    events: [...new Set(componentInfo.events.concat(usingComponents[replacedTagName].events))],
+                    children: []
                   };
+                  componentNameMap.set(tagName, replacedTagName);
                   // Use const Custom = 'c90589c' replace import Custom from '../public/xxx'
                   path.replaceWith(
                     t.VariableDeclaration('const', [
@@ -134,7 +141,24 @@ module.exports = function visitor(
           }
         },
       },
-
+      JSXOpeningElement: {
+        exit(path) {
+          const { name } = path.node;
+          if (componentNameMap.has(name.name)) {
+            const replacedTagName = componentNameMap.get(name.name);
+            path.parent.children
+              .filter(child => t.isJSXElement(child))
+              .forEach((child) => {
+                const childOpeningElement = child.openingElement;
+                const childAttributes = childOpeningElement.attributes;
+                const slotAttribute = childAttributes.find(attr => attr.name && attr.name.name === 'slot');
+                const slotInfo = slotAttribute ? { slot: slotAttribute.value.value } : {};
+                usingComponents[replacedTagName].children.push(slotInfo);
+              }
+            );
+          }
+        }
+      },
     },
   };
 };

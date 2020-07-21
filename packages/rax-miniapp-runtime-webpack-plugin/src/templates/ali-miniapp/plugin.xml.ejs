@@ -8,7 +8,15 @@
         <%= `on${event}` %>="{{r.<%= event %>}}"
       <% });%>
     >
-      <template is="children" data="{{r: r.children}}" />
+        <% usingPlugins[pluginTag].children.forEach(function(child, index){%>
+          <% if(child.slot) {%>
+            <view slot="<%= child.slot %>">
+              <template is="element" data="{{r: r.children[<%= index %>]}}" />
+            </view>
+          <% } else { %>
+            <template is="element" data="{{r: r.children[<%= index %>]}}" />
+          <% } %>
+        <% });%>
     </<%=pluginTag%>>
   </template>
 <% }); %>

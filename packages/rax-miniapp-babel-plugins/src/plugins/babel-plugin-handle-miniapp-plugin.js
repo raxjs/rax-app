@@ -8,12 +8,13 @@ module.exports = function visitor(
 ) {
   // Collect imported dependencies
   const plugins = {};
+  const pluginNameMap = new Map();
   const scanedFileMap = {};
 
   return {
     visitor: {
       ImportDeclaration: {
-        exit(path, { filename }) {
+        enter(path, { filename }) {
           const { specifiers, source } = path.node;
           if (t.isStringLiteral(source) && MINIAPP_PLUGIN_COMPONENTS_REG.test(source.value)) {
             if (!scanedFileMap[filename]) {
@@ -55,11 +56,16 @@ module.exports = function visitor(
               if (pluginInfo) {
                 // Generate a random tag name
                 const replacedTagName = /[A-Z]/.test(tagName) ? getTagName(tagName) : tagName;
+                if (!usingPlugins[replacedTagName]) {
+                  usingPlugins[replacedTagName] = { props: [], events: [], children: [] };
+                }
                 usingPlugins[replacedTagName] = {
                   path: source.value,
-                  props: pluginInfo.props,
-                  events: pluginInfo.events
+                  props: [...new Set(pluginInfo.props.concat(usingPlugins[replacedTagName].props))],
+                  events: [...new Set(pluginInfo.events.concat(usingPlugins[replacedTagName].events))],
+                  children: []
                 };
+                pluginNameMap.set(tagName, replacedTagName);
                 // Use const PluginComp = 'c90589c' replace import PluginComp from 'plugin://...'
                 path.replaceWith(
                   t.VariableDeclaration('const', [
@@ -76,7 +82,25 @@ module.exports = function visitor(
             }
           }
         },
-      }
+      },
+      JSXOpeningElement: {
+        exit(path) {
+          const { name } = path.node;
+          if (pluginNameMap.has(name.name)) {
+            const replacedTagName = pluginNameMap.get(name.name);
+            path.parent.children
+              .filter(child => t.isJSXElement(child))
+              .forEach((child) => {
+                const childOpeningElement = child.openingElement;
+                const childAttributes = childOpeningElement.attributes;
+                const slotAttribute = childAttributes.find(attr => attr.name && attr.name.name === 'slot');
+                const slotInfo = slotAttribute ? { slot: slotAttribute.value.value } : {};
+                usingPlugins[replacedTagName].children.push(slotInfo);
+              }
+            );
+          }
+        }
+      },
     },
   };
 };
