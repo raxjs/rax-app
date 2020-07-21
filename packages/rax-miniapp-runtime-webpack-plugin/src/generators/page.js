@@ -15,16 +15,7 @@ function generatePageJS(
 ) {
   const pageJsContent = ejs.render(getTemplate(rootDir, 'page.js'), {
     render_path: `${getAssetPath('render.js', `${pageRoute}.js`)}`,
-    config_path: `${getAssetPath('config.js', `${pageRoute}.js`)}`,
-    init: `function init(window, document) {${assets.js
-      .map(
-        (js) =>
-          `require('${getAssetPath(
-            js,
-            `${pageRoute}.js`
-          )}')(window, document)`
-      )
-      .join(';')}}`,
+    route: pageRoute,
     native_lifecycles: `[${Object.keys(nativeLifeCycles).reduce((total, current, index) =>
       index === 0 ? `${total}'${current}'` : `${total},'${current}'`, '')}]`
   });
@@ -63,22 +54,6 @@ function generatePageXML(
   });
 }
 
-function generatePageCSS(compilation, assets, pageRoute, { target, command }) {
-  const pageCssContent = assets.css
-    .map(
-      (css) =>
-        `@import "${getAssetPath(css, `${pageRoute}.${adapter[target].css}`)}";`
-    )
-    .join('\n');
-
-  addFileToCompilation(compilation, {
-    filename: `${pageRoute}.${adapter[target].css}`,
-    content: adjustCSS(pageCssContent),
-    target,
-    command,
-  });
-}
-
 function generatePageJSON(
   compilation,
   pageConfig,
@@ -112,7 +87,6 @@ function generatePageJSON(
 }
 
 module.exports = {
-  generatePageCSS,
   generatePageJS,
   generatePageJSON,
   generatePageXML

@@ -1,8 +1,16 @@
 const addFileToCompilation = require('../utils/addFileToCompilation');
 
-module.exports = function(compilation, usingComponents, { target, command }) {
+/**
+ * Generate config js file
+ * @param {object} compilation webpack current compilation
+ * @param {object} usingComponents native components
+ * @param {Array} pages all pages
+ * @param {object} param3 target/command which common options
+ */
+module.exports = function(compilation, usingComponents, pages, { target, command }) {
   const config = {
-    usingComponents: {}
+    usingComponents: {},
+    pages
   };
 
   if (process.env.DEBUG === 'true') {
