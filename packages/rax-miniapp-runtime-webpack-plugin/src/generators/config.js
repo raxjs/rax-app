@@ -1,6 +1,6 @@
 const addFileToCompilation = require('../utils/addFileToCompilation');
 
-module.exports = function(compilation,  { usingComponents, usingPlugins, target, command }) {
+module.exports = function(compilation, { usingComponents, usingPlugins, target, command }) {
   const config = {
     usingComponents: {},
     usingPlugins: {}
