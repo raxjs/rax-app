@@ -118,6 +118,9 @@ module.exports = class DocumentPlugin {
       });
     });
 
+    let lastHash;
+    let currentHash;
+
     // Executed before finishing the compilation.
     compiler.hooks.make.tapAsync(PLUGIN_NAME, (mainCompilation, callback) => {
       /**
@@ -135,58 +138,72 @@ module.exports = class DocumentPlugin {
           fileDependencies = childCompilation.fileDependencies;
         }
 
+        lastHash = currentHash;
+        currentHash = childCompilation.hash;
+
         callback();
       });
     });
 
     // Render into index.html
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, async(compilation, callback) => {
-      const entries = Object.keys(pages);
-
-      let hasPrintError = false;
-
-      for (var i = 0, l = entries.length; i < l; i++) {
-        const entryName = entries[i];
-        const { tempFile, fileName } = pages[entryName];
-
-        const files = compilation.entrypoints.get(entryName).getFiles();
-        const assets = getAssetsForPage(files, publicPath);
-
-        const documentContent = compilation.assets[`${tempFile}.js`].source();
-
-        let pageSource;
-
-        try {
-          const Document = loadDocument(documentContent);
-          pageSource = Document.renderToHTML(assets);
-        } catch (error) {
-          const errorStack = await parse(error, documentContent);
-          // Prevent print duplicate error info
-          if (!hasPrintError) {
-            print(error.message, errorStack);
-            hasPrintError = true;
-          }
-
-          const stackMessage = errorStack.map(frame => {
-            if (frame.fromSourceMap) {
-              return `at ${frame.functionName} (${frame.source}:${frame.lineNumber}:${frame.columnNumber})`;
-            }
-            // the origin source info already has position info
-            return frame.source;
-          });
-          pageSource = `Error: ${error.message}<br>&nbsp;&nbsp;${stackMessage.join('<br>&nbsp;&nbsp;')}`;
-        }
-
-        // insert html file
-        compilation.assets[fileName] = new RawSource(pageSource);
-
-        delete compilation.assets[`${tempFile}.js`];
+      // Render document to html only when hash change to avoid memory leak.
+      if (currentHash !== lastHash) {
+        await generateHtml(compilation, {
+          pages,
+          publicPath
+        });
       }
 
       callback();
     });
   }
 };
+
+async function generateHtml(compilation, options) {
+  const { pages, publicPath } = options;
+  const entries = Object.keys(pages);
+
+  let hasPrintError = false;
+
+  for (var i = 0, l = entries.length; i < l; i++) {
+    const entryName = entries[i];
+    const { tempFile, fileName } = pages[entryName];
+
+    const files = compilation.entrypoints.get(entryName).getFiles();
+    const assets = getAssetsForPage(files, publicPath);
+
+    const documentContent = compilation.assets[`${tempFile}.js`].source();
+
+    let pageSource;
+
+    try {
+      const Document = loadDocument(documentContent);
+      pageSource = Document.renderToHTML(assets);
+    } catch (error) {
+      const errorStack = await parse(error, documentContent);
+      // Prevent print duplicate error info
+      if (!hasPrintError) {
+        print(error.message, errorStack);
+        hasPrintError = true;
+      }
+
+      const stackMessage = errorStack.map(frame => {
+        if (frame.fromSourceMap) {
+          return `at ${frame.functionName} (${frame.source}:${frame.lineNumber}:${frame.columnNumber})`;
+        }
+        // the origin source info already has position info
+        return frame.source;
+      });
+      pageSource = `Error: ${error.message}<br>&nbsp;&nbsp;${stackMessage.join('<br>&nbsp;&nbsp;')}`;
+    }
+
+    // insert html file
+    compilation.assets[fileName] = new RawSource(pageSource);
+
+    delete compilation.assets[`${tempFile}.js`];
+  }
+}
 
 /**
  * Get path info from the output filename
