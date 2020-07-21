@@ -41,11 +41,10 @@ function generatePageXML(
   compilation,
   pageRoute,
   useNativeComponent,
-  usePlugin,
   { target, command, rootDir }
 ) {
   let pageXmlContent;
-  if (target === MINIAPP && (useNativeComponent || usePlugin)) {
+  if (target === MINIAPP && (useNativeComponent)) {
     pageXmlContent = `<view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
     <element r="{{root}}"  />
   </view>`;
@@ -84,7 +83,6 @@ function generatePageJSON(
   compilation,
   pageConfig,
   useNativeComponent,
-  usePlugin,
   pageRoute,
   { target, command }
 ) {
@@ -95,7 +93,7 @@ function generatePageJSON(
     'comp',
     `${pageRoute}.js`
   );
-  if (useNativeComponent || target !== MINIAPP || usePlugin) {
+  if (useNativeComponent || target !== MINIAPP) {
     pageConfig.usingComponents.element = elementPath;
   }
 

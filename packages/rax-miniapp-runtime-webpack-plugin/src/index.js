@@ -10,7 +10,6 @@ const {
   generateAppCSS,
   generateAppJS,
   generateConfig,
-  generateCustomComponent,
   generatePageCSS,
   generatePageJS,
   generatePageJSON,
@@ -38,8 +37,7 @@ class MiniAppRuntimePlugin {
     const target = this.target;
     const { nativeLifeCycleMap, usingComponents, usingPlugins, routes = [], command } = options;
     let isFirstRender = true;
-    let lastUseNativeComponentCount = 0; // Record native component used count last time
-    let lastUsePluginCount = 0; // Record plugin used count last time
+    let lastUseNativeComponentCount = 0; // Record native component and plugin used count last time
 
     // Execute when compilation created
     compiler.hooks.compilation.tap(PluginName, (compilation) => {
@@ -66,19 +64,15 @@ class MiniAppRuntimePlugin {
       const usePluginCount = Object.keys(usingPlugins).length;
       const useNativeComponentCount = Object.keys(usingComponents).length;
 
-      const useNativeComponent = useNativeComponentCount > 0;
-      const usePlugin = usePluginCount > 0;
+      const useNativeComponent = useNativeComponentCount > 0 || usePluginCount > 0;
 
       if (isFirstRender) {
-        lastUseNativeComponentCount = useNativeComponentCount;
-        lastUsePluginCount = usePluginCount;
+        lastUseNativeComponentCount = useNativeComponentCount + usePluginCount;
       }
 
       const useNativeComponentCountChanged = useNativeComponentCount !== lastUseNativeComponentCount;
       lastUseNativeComponentCount = useNativeComponentCount;
 
-      const usePluginCountChanged = usePluginCount !== lastUsePluginCount;
-      lastUsePluginCount = usePluginCount;
       // Collect asset
       routes
         .forEach(({ entryName }) => {
@@ -141,9 +135,9 @@ class MiniAppRuntimePlugin {
           }
 
           // xml/css/json file need be written in first render or using native component state changes
-          if (isFirstRender || useNativeComponentCountChanged || usePluginCountChanged) {
+          if (isFirstRender || useNativeComponentCountChanged) {
             // Page xml
-            generatePageXML(compilation, entryName, useNativeComponent, usePlugin, {
+            generatePageXML(compilation, entryName, useNativeComponent, {
               target,
               command,
               rootDir,
@@ -154,7 +148,6 @@ class MiniAppRuntimePlugin {
               compilation,
               pageConfig,
               useNativeComponent,
-              usePlugin,
               entryName,
               { target, command, rootDir }
             );
@@ -199,12 +192,14 @@ class MiniAppRuntimePlugin {
       }
 
       // These files need be written in first render or using native component state changes
-      if (isFirstRender || useNativeComponentCountChanged || usePluginCountChanged) {
+      if (isFirstRender || useNativeComponentCountChanged) {
         // render.js
         generateRender(compilation, { target, command, rootDir });
 
         // Config js
-        generateConfig(compilation, usingComponents, usingPlugins, {
+        generateConfig(compilation, {
+          usingComponents,
+          usingPlugins,
           target,
           command,
           rootDir,
@@ -212,7 +207,7 @@ class MiniAppRuntimePlugin {
 
 
         // Only when developer may use native component, it will generate package.json in output
-        if (useNativeComponent || existsSync(join(sourcePath, 'public'))) {
+        if (useNativeComponentCount > 0 || existsSync(join(sourcePath, 'public'))) {
           generatePkg(compilation, {
             target,
             command,
@@ -220,7 +215,7 @@ class MiniAppRuntimePlugin {
           });
         }
 
-        if (target !== MINIAPP || useNativeComponent || usePlugin) {
+        if (target !== MINIAPP || useNativeComponent) {
           // Generate self loop element
           generateElementJS(compilation, {
             target,
