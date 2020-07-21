@@ -6,16 +6,19 @@ const path = require('path');
 const { handleWebpackErr } = require('rax-compile-config');
 const getDemos = require('./config/getDemos');
 const miniappPlatformConfig = require('./config/miniapp/platformConfig');
-
-const watchLib = require('./watchLib');
+const gulpCompile = require('./gulp/compile');
+const gulpParams = require('./gulp/params');
 
 const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM, NODE } = require('./constants');
 
 module.exports = (api, options = {}) => {
   const { registerTask, context, onHook, onGetWebpackConfig } = api;
-  const { rootDir, userConfig } = context;
-  const { devWatchLib } = userConfig;
+  const { rootDir, command } = context;
   const { targets = [] } = options;
+
+  // set gulpParams
+  gulpParams.rootDir = rootDir;
+  gulpParams.command = command;
 
   let devUrl = '';
   let devCompletedArr = [];
@@ -36,11 +39,10 @@ module.exports = (api, options = {}) => {
     }
   });
 
-  if (devWatchLib) {
-    onHook('after.start.devServer', () => {
-      watchLib(api, options);
-    });
-  }
+  onHook('after.start.devServer', () => {
+    // watch compile es&lib
+    gulpCompile();
+  });
 
   onHook('after.start.compile', async(args) => {
     devUrl = args.url;

@@ -1,12 +1,12 @@
 const deepmerge = require('deepmerge');
 const chalk = require('chalk');
-const setUserConfig = require('./config/user/setConfig');
-const defaultUserConfig = require('./config/user/default.config');
+const setConfig = require('./config/user/setConfig');
 const dev = require('./dev');
 const build = require('./build');
 
 module.exports = (api, options = {}) => {
-  setUserConfig(api, options);
+  // set default webpack config
+  setConfig(api, options);
 
   api.setValue('targets', options.targets);
 
@@ -15,7 +15,6 @@ module.exports = (api, options = {}) => {
     console.log();
     process.exit(1);
   }
-  api.context.userConfig = deepmerge(defaultUserConfig, api.context.userConfig);
   const { command } = api.context;
 
   // set dev config

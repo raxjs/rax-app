@@ -29,23 +29,14 @@ const esBabelConfig = getBabelConfig({
 });
 
 const {
-  api,
-  options,
-  callback = done => {
-    done();
-  },
+  rootDir, command
 } = params;
 
-const { context } = api;
-const { rootDir, userConfig, command } = context;
-const { esOutputDir = 'es' } = options;
-
-const isDev = command === 'dev';
-
+const isDev = command === 'start';
 const enableTypescript = fs.existsSync(path.join(rootDir, 'tsconfig.json'));
 
 const LIB_DIR = 'lib';
-const ES_DIR = esOutputDir ? path.resolve(rootDir, esOutputDir) : '';
+const ES_DIR = 'es';
 
 // for js/jsx.
 function compileJs() {
@@ -112,11 +103,11 @@ function copyOther() {
 }
 
 if (isDev) {
-  watch([JS_FILES_PATTERN], { ignore: IGNORE_PATTERN }, compileJs);
+  watch([JS_FILES_PATTERN], { ignore: IGNORE_PATTERN }, parallel(compileJs, compileJS2ES));
   watch([OTHER_FILES_PATTERN], { ignore: IGNORE_PATTERN }, copyOther);
 
   if (enableTypescript) {
-    watch([TS_FILES_PATTERN], { ignore: IGNORE_PATTERN }, compileTs);
+    watch([TS_FILES_PATTERN], { ignore: IGNORE_PATTERN }, parallel(compileDts, compileTs, compileTS2ES));
   }
 }
 
@@ -136,4 +127,4 @@ if (ES_DIR) {
 
 tasks = [parallel(...tasks, copyOther)];
 
-exports.default = series(...tasks, callback);
+exports.default = series(...tasks);

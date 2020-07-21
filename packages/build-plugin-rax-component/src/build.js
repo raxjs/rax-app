@@ -17,9 +17,13 @@ const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 module.exports = (api, options = {}) => {
   const { registerTask, modifyUserConfig, context, onHook, onGetWebpackConfig, log } = api;
   const { targets = [] } = options;
-  const { rootDir } = context;
+  const { rootDir, command } = context;
   const libDir = 'lib';
   const distDir = 'dist';
+
+   // set gulpParams
+   gulpParams.rootDir = rootDir;
+   gulpParams.command = command;
 
   // omitLib just for sfc2mp，not for developer
   const disableGenerateLib = options[MINIAPP] && options[MINIAPP].omitLib;
@@ -55,11 +59,6 @@ module.exports = (api, options = {}) => {
     if (!disableGenerateLib) {
       // start build lib&es by babel
       log.info('component', chalk.green('Build start... '));
-
-      // set gulpParams
-      gulpParams.api = api;
-      gulpParams.options = options;
-
       gulpCompile();
     }
   });
