@@ -1,6 +1,6 @@
 {
   "name": "rax-jest-config",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "rax jest config",
   "main": "src/index.js",
   "license": "BSD-3-Clause",
