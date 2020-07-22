@@ -157,7 +157,7 @@ module.exports = class DocumentPlugin {
         });
       }
 
-      for(var page in cachedHTML) {
+      for (var page in cachedHTML) {
         compilation.assets[page] = cachedHTML[page];
       }
 
