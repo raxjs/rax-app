@@ -1,6 +1,6 @@
 {
   "name": "rax-jest-config",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "rax jest config",
   "main": "src/index.js",
   "license": "BSD-3-Clause",
@@ -14,7 +14,7 @@
   "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-jest-config#readme",
   "dependencies": {
     "babel-jest": "^26.1.0",
-    "identity-obj-proxy": "^3.0.0",
+    "jest-transform-css": "^2.0.0",
     "rax-babel-config": "^0.1.2"
   }
 }
