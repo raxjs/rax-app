@@ -36,7 +36,7 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
     .use('json-loader')
     .loader(require.resolve('json-loader'));
 
-    config.output
+  config.output
     .filename('common/[name].js')
     .library('createApp')
     .libraryExport('default')
