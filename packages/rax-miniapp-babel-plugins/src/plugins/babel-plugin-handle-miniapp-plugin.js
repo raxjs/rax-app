@@ -89,13 +89,17 @@ module.exports = function visitor(
           if (pluginNameMap.has(name.name)) {
             const replacedTagName = pluginNameMap.get(name.name);
             path.parent.children
-              .filter(child => t.isJSXElement(child))
+              .filter(child => !t.isJSXText(child))
               .forEach((child) => {
-                const childOpeningElement = child.openingElement;
-                const childAttributes = childOpeningElement.attributes;
-                const slotAttribute = childAttributes.find(attr => attr.name && attr.name.name === 'slot');
-                const slotInfo = slotAttribute ? { slot: slotAttribute.value.value } : {};
-                usingPlugins[replacedTagName].children.push(slotInfo);
+                if (t.isJSXElement(child)) {
+                  const childOpeningElement = child.openingElement;
+                  const childAttributes = childOpeningElement.attributes;
+                  const slotAttribute = childAttributes.find(attr => attr.name && attr.name.name === 'slot');
+                  const slotInfo = slotAttribute ? { slot: slotAttribute.value.value } : {};
+                  usingPlugins[replacedTagName].children.push(slotInfo);
+                } else {
+                  usingPlugins[replacedTagName].children.push({});
+                }
               }
               );
           }
