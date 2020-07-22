@@ -30,6 +30,8 @@ module.exports = (context) => {
     },
   ]);
 
+  config.resolve.modules.add('node_modules');
+  config.resolve.modules.add(path.join(rootDir, 'node_modules'));
   config.resolve.extensions.merge(['.js', '.json', '.jsx', '.ts', '.tsx', '.html']);
   config.module
     .rule('jsx')
