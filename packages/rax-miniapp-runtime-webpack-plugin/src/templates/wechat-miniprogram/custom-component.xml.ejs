@@ -10,7 +10,7 @@
         <%= `bind${event.toLowerCase()}` %>="{{r.<%= event %>}}"
       <% });%>
     >
-      <% usingComponents[pluginTag].children.forEach(function(child, index){%>
+      <% usingComponents[componentTag].children.forEach(function(child, index){%>
         <% if(child.slot) {%>
           <view slot="<%= child.slot %>">
             <template is="element" data="{{r: r.children[<%= index %>]}}" />
