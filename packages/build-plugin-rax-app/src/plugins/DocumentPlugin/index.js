@@ -101,6 +101,8 @@ module.exports = class DocumentPlugin {
 
     const config = baseConfig.toConfig();
 
+    let cachedHTML = {};
+
     let fileDependencies = [];
 
     /**
@@ -149,10 +151,14 @@ module.exports = class DocumentPlugin {
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, async(compilation, callback) => {
       // Render document to html only when hash change to avoid memory leak.
       if (currentHash !== lastHash) {
-        await generateHtml(compilation, {
+        cachedHTML = await generateHtml(compilation, {
           pages,
           publicPath
         });
+      }
+
+      for (var page in cachedHTML) {
+        compilation.assets[page] = cachedHTML[page];
       }
 
       callback();
@@ -166,6 +172,7 @@ async function generateHtml(compilation, options) {
 
   let hasPrintError = false;
 
+  const htmlMap = {};
   for (var i = 0, l = entries.length; i < l; i++) {
     const entryName = entries[i];
     const { tempFile, fileName } = pages[entryName];
@@ -198,11 +205,12 @@ async function generateHtml(compilation, options) {
       pageSource = `Error: ${error.message}<br>&nbsp;&nbsp;${stackMessage.join('<br>&nbsp;&nbsp;')}`;
     }
 
-    // insert html file
-    compilation.assets[fileName] = new RawSource(pageSource);
+    htmlMap[fileName] = new RawSource(pageSource);
 
     delete compilation.assets[`${tempFile}.js`];
   }
+
+  return htmlMap;
 }
 
 /**
