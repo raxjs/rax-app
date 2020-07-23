@@ -24,7 +24,7 @@ module.exports = (context, target, options) => {
   }, target);
   const appConfig = getAppConfig(rootDir, target, nativeLifeCycleMap);
   appConfig.routes = filterNativePages(appConfig.routes, needCopyList, { rootDir, target, outputPath });
-  setEntry(config, context, target)
+  setEntry(config, context, target);
 
   config.output
     .filename(`${target}/common/[name].js`);

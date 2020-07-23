@@ -1,4 +1,4 @@
-const ModuleFilenameHelpers = require("webpack/lib/ModuleFilenameHelpers");
+const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 const { RawSource, ConcatSource } = require('webpack-sources');
 const adjustCSS = require('../utils/adjustCSS');
 const adapter = require('../adapter');
@@ -10,7 +10,7 @@ const matchFile = (fileName, ext) =>
   );
 
 // Add content to chunks head and tail
-module.exports = function (compilation, chunks, target) {
+module.exports = function(compilation, chunks, target) {
   chunks.forEach((chunk) => {
     chunk.files.forEach((fileName) => {
       if (matchFile(fileName, 'js')) {
@@ -18,7 +18,7 @@ module.exports = function (compilation, chunks, target) {
         const headerContent =
           'module.exports = function(window, document) {const HTMLElement = window["HTMLElement"];';
 
-        const footerContent = "}";
+        const footerContent = '}';
 
         compilation.assets[fileName] = new ConcatSource(
           headerContent,
