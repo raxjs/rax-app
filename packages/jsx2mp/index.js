@@ -1,17 +1,17 @@
 const { start, build } = require('@alib/build-scripts');
 const log = require('@alib/build-scripts/lib/utils/log');
 
-const { DEFAULT_TYPE, DEFAULT_TARGET, DEFAULT_ENTRY, DEFAULT_RUNTIME_VERSION, DEFAULT_CONSTANT_DIR, DEFAULT_BUILD_TYPE } = require('./default');
+const { DEFAULT_TYPE, DEFAULT_TARGET, DEFAULT_ENTRY, DEFAULT_RUNTIME_VERSION, DEFAULT_CONSTANT_DIR, DEFAULT_BUILD_TYPE, DEFAULT_DUAL_ENGINE } = require('./default');
 
 async function baseProcess(command, options) {
-  const { type, buildType, target, entry, distDir, constantDir, runtimeVersion, disableCopyNpm = false, turnOffSourceMap = false, afterCompiled, configWebpack } = options;
+  const { type, buildType, target, entry, distDir, constantDir, runtimeVersion, disableCopyNpm = false, turnOffSourceMap = false, afterCompiled, configWebpack, dualEngine } = options;
   process.env.DISABLE_STATS = true; // Disable webpack output info which is not useful in miniapp build
   const usedPlugin = [];
   const pluginParam = {
     targets: [target],
     [target]: {
       entryPath: entry,
-      distDir, constantDir, disableCopyNpm, turnOffSourceMap, buildType, afterCompiled, configWebpack
+      distDir, constantDir, disableCopyNpm, turnOffSourceMap, buildType, afterCompiled, configWebpack, dualEngine
     }
   };
 
@@ -54,7 +54,8 @@ function ensureOptions(options) {
     target: DEFAULT_TARGET,
     entry: DEFAULT_ENTRY,
     constantDir: DEFAULT_CONSTANT_DIR,
-    runtimeVersion: DEFAULT_RUNTIME_VERSION
+    runtimeVersion: DEFAULT_RUNTIME_VERSION,
+    dualEngine: DEFAULT_DUAL_ENGINE
   }, options);
 }
 

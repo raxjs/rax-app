@@ -26,6 +26,8 @@ await build(options);
 | constantDir    | N        | array    | /       | Static file directories                                      |
 | disableCopyNpm | N        | boolean  | false   | Disable copy npm modules                                     |
 | configWebpack  | N        | function | /       | Used for add webpack config, get the argument `config` which is the webpack-chain config instance |
+| dualEngine     | N        | boolean | true       | Whether use compile component in runtime mode, only valid in runtime mode |
+
 
 Options below are only valid in dev mode: 
 
