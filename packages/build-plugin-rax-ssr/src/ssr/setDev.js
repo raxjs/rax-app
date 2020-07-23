@@ -30,6 +30,9 @@ module.exports = (config, context) => {
     route.componentPath = path.join(distDir, filename.replace('[name]', entryName));
   });
 
+  // enable inline soucremap for get error stack
+  config.devtool('eval-cheap-source-map');
+
   config.devServer.hot(false);
 
   // There can only be one `before` config, this config will overwrite `before` config in web plugin.

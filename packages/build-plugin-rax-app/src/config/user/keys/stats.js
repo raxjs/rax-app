@@ -5,7 +5,7 @@ module.exports = {
     const { command } = context;
 
     // disable webpack stats log
-    if (command === 'start' && !value) {
+    if (command === 'start' && value) {
       process.env.DISABLE_STATS = true;
     }
   },
