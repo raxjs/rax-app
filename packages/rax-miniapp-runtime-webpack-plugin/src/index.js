@@ -1,5 +1,5 @@
-const { resolve, relative, join } = require('path');
-const { readJsonSync, existsSync } = require('fs-extra');
+const { resolve, relative, join, dirname } = require('path');
+const { readJsonSync, existsSync, copyFileSync, lstatSync, ensureDirSync } = require('fs-extra');
 const { RawSource } = require('webpack-sources');
 const adjustCSS = require('./utils/adjustCSS');
 const { MINIAPP, VENDOR_CSS_FILE_NAME } = require('./constants');
@@ -170,6 +170,12 @@ class MiniAppRuntimePlugin {
           );
         });
 
+      // These files need be written in first render
+      if (isFirstRender) {
+        // render.js
+        generateRender(compilation, { target, command, rootDir });
+      }
+
       // Collect app.js
       if (isFirstRender || changedFiles.includes('/app.js' || '/app.ts')) {
         const commonAppJSFilePaths = compilation.entrypoints
@@ -191,11 +197,8 @@ class MiniAppRuntimePlugin {
         generateAppCSS(compilation, { target, command, rootDir });
       }
 
-      // These files need be written in first render or using native component state changes
+      // These files need be written in first render and using native component state changes
       if (isFirstRender || useNativeComponentCountChanged) {
-        // render.js
-        generateRender(compilation, { target, command, rootDir });
-
         // Config js
         generateConfig(compilation, {
           usingComponents,
