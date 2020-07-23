@@ -3,6 +3,7 @@ const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
 const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
 const { resolve, join } = require('path');
 
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
@@ -18,13 +19,15 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
   const usingComponents = {};
   // Native lifecycle map
   const nativeLifeCycleMap = {};
+  // Need Copy files or dir
+  const needCopyList = [];
 
   const config = getWebpackBase(context, {
     disableRegenerator: true
   }, target);
 
   const appConfig = getAppConfig(rootDir, entryPath, target, nativeLifeCycleMap);
-  appConfig.routes = filterNativePages(appConfig.routes, { rootDir, entryPath, target, outputPath });
+  appConfig.routes = filterNativePages(appConfig.routes, needCopyList, { rootDir, entryPath, target, outputPath });
   setEntry(config, context, entryPath, appConfig.routes);
 
   // Remove all app.json before it
@@ -93,9 +96,13 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
       usingComponents,
       nativeLifeCycleMap,
       rootDir,
-      command
+      command,
+      needCopyList
     }
   ]);
+
+  config.plugin('copyWebpackPlugin')
+    .use(CopyWebpackPlugin, [needCopyList]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
 
