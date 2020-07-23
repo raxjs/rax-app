@@ -42,7 +42,7 @@ function createRpxReplace(opts, viewportUnit, viewportSize) {
     if (!$1) return m;
     const pixels = parseFloat($1);
     const parsedVal = toFixed(pixels / viewportSize * 100, opts.unitPrecision);
-    return parsedVal === 0 ? '0' : parsedVal + viewportUnit;
+    return parsedVal + viewportUnit;
   };
 }
 

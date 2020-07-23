@@ -33,6 +33,7 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
   config.module
     .rule('json')
     .test(/\.json$/)
+    .type('javascript/auto')
     .use('json-loader')
     .loader(require.resolve('json-loader'));
 
@@ -110,3 +111,4 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
 
   return config;
 };
+

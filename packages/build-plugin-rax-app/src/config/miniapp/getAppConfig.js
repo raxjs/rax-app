@@ -3,11 +3,11 @@ const { readJSONSync } = require('fs-extra');
 const { getRouteName } = require('rax-compile-config');
 
 const {
-  moduleResolve,
+  relativeModuleResolve,
   normalizeOutputFilePath,
   getRelativePath,
   removeExt
-} = require('./pathHelper');
+} = require('../pathHelper');
 
 module.exports = (rootDir, entryPath = './src/app', target, nativeLifeCycleMap) => {
   const srcPath = join(rootDir, dirname(entryPath));
@@ -23,7 +23,7 @@ module.exports = (rootDir, entryPath = './src/app', target, nativeLifeCycleMap) 
 
   function addPage(route) {
     const page = normalizeOutputFilePath(
-      moduleResolve(srcPath, getRelativePath(route.source))
+      relativeModuleResolve(entryPath, getRelativePath(route.source))
     );
     appConfig.pages.push(page);
     routes.push(route);

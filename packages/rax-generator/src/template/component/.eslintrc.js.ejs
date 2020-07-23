@@ -1,32 +1,3 @@
 module.exports = {
-  extends: ['eslint-config-rax/typescript'],
-  globals: {
-    Component: true,
-    Page: true,
-    App: true,
-    my: true,
-    it: true,
-    describe: true,
-    test: true,
-    expect: true,
-  },
-  rules: {
-    'no-return-assign': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/no-angle-bracket-type-assertion': 'off',
-    '@typescript-eslint/no-object-literal-type-assertion': 'off',
-    '@typescript-eslint/no-triple-slash-reference': 'off',
-    '@typescript-eslint/prefer-interface': 'off',
-    '@typescript-eslint/no-unused-vars': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/camelcase': 'off',
-    'import/no-extraneous-dependencies': 'off',
-    'new-cap': [
-      'error',
-      {
-        newIsCap: true,
-        capIsNewExceptions: ['Component', 'Page', 'App'],
-      },
-    ],
-  },
+  extends: ['rax']
 };

@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-component",
-  "version": "0.2.8",
+  "version": "0.2.11",
   "description": "rax component base plugins",
   "license": "BSD-3-Clause",
   "main": "src/index.js",

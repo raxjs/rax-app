@@ -6,7 +6,7 @@ const getFilePath = require('./getFilePath');
  * @return {string|undefined}
  */
 module.exports = function(filename) {
-  const nodeModulesReg = new RegExp(`${sep}node_modules${sep}`);
+  const nodeModulesReg = new RegExp(`\\${sep}node_modules\\${sep}`);
   if (!nodeModulesReg.exec(filename)) {
     return getFilePath(filename);
   }

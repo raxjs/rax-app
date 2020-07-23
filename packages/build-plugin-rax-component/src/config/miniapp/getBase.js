@@ -9,7 +9,6 @@ const ModifyOutputFileSystemPlugin = require('../../plugins/miniapp/ModifyOutput
 const CopyJsx2mpRuntimePlugin = require('../../plugins/miniapp/CopyJsx2mpRuntime');
 const CopyPublicFilePlugin = require('../../plugins/miniapp/CopyPublicFile');
 
-
 const platformConfig = require('./platformConfig');
 const targetPlatformMap = require('./targetPlatformMap');
 

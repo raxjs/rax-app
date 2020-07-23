@@ -1,18 +1,10 @@
-<%_ const useSSR = projectFeatures.includes('ssr') -%>
 {
   "routes": [
     {
       "path": "/",
-      <%_ if (useSSR) { -%>
-      "name": "home",<%# When SSR Project is deployed as function (FaaS), name will be used as function name %>
-      <%_ } -%>
       "source": "pages/Home/index"
     }
   ],
-  <%_ if (useSSR) { -%>
-  "historyType": "browser",
-  "hydrate": true,
-  <%_ } -%>
   "window": {
     "title": "Rax App"
   }
