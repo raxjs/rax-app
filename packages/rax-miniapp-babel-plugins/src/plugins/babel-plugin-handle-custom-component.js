@@ -1,6 +1,6 @@
 const { resolve, dirname, join } = require('path');
 const { existsSync, readJSONSync } = require('fs-extra');
-const md5 = require('md5');
+const getTagName = require('../utils/getTagName');
 const extMap = require('../utils/extMap');
 const { WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('../constants');
 
@@ -52,10 +52,6 @@ function getNpmSourcePath(rootDir, source, target) {
   }
 };
 
-function getTagName(str) {
-  return 'c' + md5(str).slice(0, 6);
-}
-
 function getTmplPath(source, rootDir, dirName, target) {
   // If it's a npm module, keep source origin value, otherwise use absolute path
   const isNpm = !RELATIVE_COMPONENTS_REG.test(source);
@@ -66,7 +62,7 @@ function getTmplPath(source, rootDir, dirName, target) {
     // In Wechat MiniProgram need remove miniprogram_dist
     filePath = filePath.replace('/miniprogram_dist', '');
   }
-  return isNpm ? filePath : `..${filePath.replace(resolve(rootDir, 'src'), '')}`;
+  return isNpm ? filePath : `.${filePath.replace(resolve(rootDir, 'src'), '')}`;
 }
 
 module.exports = function visitor(
@@ -75,12 +71,14 @@ module.exports = function visitor(
 ) {
   // Collect imported dependencies
   const components = {};
+  const componentNameMap = new Map();
+
   const scanedPageMap = {};
 
   return {
     visitor: {
       ImportDeclaration: {
-        exit(path, { filename }) {
+        enter(path, { filename }) {
           const { specifiers, source } = path.node;
           if (Array.isArray(specifiers) && t.isStringLiteral(source)) {
             const dirName = dirname(filename);
@@ -124,11 +122,16 @@ module.exports = function visitor(
                 if (componentInfo) {
                   // Generate a random tag name
                   const replacedTagName = /[A-Z]/.test(tagName) ? getTagName(tagName) : tagName;
+                  if (!usingComponents[replacedTagName]) {
+                    usingComponents[replacedTagName] = { props: [], events: [], children: []};
+                  }
                   usingComponents[replacedTagName] = {
                     path: filePath,
-                    props: componentInfo.props,
-                    events: componentInfo.events
+                    props: [...new Set(componentInfo.props.concat(usingComponents[replacedTagName].props))],
+                    events: [...new Set(componentInfo.events.concat(usingComponents[replacedTagName].events))],
+                    children: []
                   };
+                  componentNameMap.set(tagName, replacedTagName);
                   // Use const Custom = 'c90589c' replace import Custom from '../public/xxx'
                   path.replaceWith(
                     t.VariableDeclaration('const', [
@@ -145,7 +148,28 @@ module.exports = function visitor(
           }
         },
       },
-
+      JSXOpeningElement: {
+        exit(path) {
+          const { name } = path.node;
+          if (componentNameMap.has(name.name)) {
+            const replacedTagName = componentNameMap.get(name.name);
+            path.parent.children
+              .filter(child => !t.isJSXText(child))
+              .forEach((child) => {
+                if (t.isJSXElement(child)) {
+                  const childOpeningElement = child.openingElement;
+                  const childAttributes = childOpeningElement.attributes;
+                  const slotAttribute = childAttributes.find(attr => attr.name && attr.name.name === 'slot');
+                  const slotInfo = slotAttribute ? { slot: slotAttribute.value.value } : {};
+                  usingComponents[replacedTagName].children.push(slotInfo);
+                } else {
+                  usingComponents[replacedTagName].children.push({});
+                }
+              }
+              );
+          }
+        }
+      },
     },
   };
 };

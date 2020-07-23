@@ -6,9 +6,10 @@
     {{r.content}}
   </block>
   <block a:elif="{{r.tagName === 'custom-component'}}">
-    <custom-component r="{{r}}">
-      <template is="children" data="{{r: r.children}}" />
-    </custom-component>
+    <template is="{{r.customComponentName}}" data="{{r: r}}" />
+  </block>
+  <block a:elif="{{r.tagName === 'miniapp-plugin'}}">
+    <template is="{{r.miniappPluginName}}" data="{{r: r}}" />
   </block>
   <block a:elif="{{!r.behavior}}">
     <template a:if="{{r.tagName === 'img'}}" is="image" data="{{r: r, isHTMLElement: true}}" />

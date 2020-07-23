@@ -93,13 +93,7 @@ function generatePageJSON(
     'comp',
     `${pageRoute}.js`
   );
-  if (useNativeComponent) {
-    pageConfig.usingComponents.element = elementPath;
-    pageConfig.usingComponents['custom-component'] = getAssetPath(
-      'custom-component/index',
-      `${pageRoute}.js`
-    );
-  } else if (target !== MINIAPP) {
+  if (useNativeComponent || target !== MINIAPP) {
     pageConfig.usingComponents.element = elementPath;
   }
 

@@ -9,16 +9,22 @@ const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 const filterNativePages = require('../filterNativePages');
+const targetPlatformMap = require('../targetPlatformMap');
+const { getPlatformExtensions } = require('../../pathHelper');
 
 module.exports = (context, target, options, onGetWebpackConfig) => {
   const { rootDir, command } = context;
   const { distDir = '', entryPath = './src/app' } = options[target] || {};
   const outputPath = getMiniAppOutput(context, { target, distDir });
 
-  // Using Components
+  // Using components
   const usingComponents = {};
   // Native lifecycle map
   const nativeLifeCycleMap = {};
+
+  // Using plugins
+  const usingPlugins = {};
+
   // Need Copy files or dir
   const needCopyList = [];
 
@@ -29,6 +35,10 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
   const appConfig = getAppConfig(rootDir, entryPath, target, nativeLifeCycleMap);
   appConfig.routes = filterNativePages(appConfig.routes, needCopyList, { rootDir, entryPath, target, outputPath });
   setEntry(config, context, entryPath, appConfig.routes);
+
+  config.resolve.extensions
+    .clear()
+    .merge(getPlatformExtensions(targetPlatformMap[target].name, ['.js', '.jsx', '.ts', '.tsx', '.json']));
 
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
@@ -57,6 +67,7 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
             nativeLifeCycleMap,
             target,
             rootDir,
+            usingPlugins
           })
         }
       ];
@@ -97,6 +108,7 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
       nativeLifeCycleMap,
       rootDir,
       command,
+      usingPlugins,
       needCopyList
     }
   ]);

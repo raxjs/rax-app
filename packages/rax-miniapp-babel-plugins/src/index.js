@@ -1,4 +1,4 @@
-module.exports = function({ usingComponents, nativeLifeCycleMap, target, rootDir }) {
+module.exports = function({ usingComponents, nativeLifeCycleMap, target, rootDir, usingPlugins }) {
   return [
     require.resolve('./plugins/babel-plugin-remove-Function'),
     require.resolve('./plugins/babel-plugin-external-module'),
@@ -15,6 +15,13 @@ module.exports = function({ usingComponents, nativeLifeCycleMap, target, rootDir
         target,
         rootDir
       }
-    ]
+    ],
+    [
+      require.resolve('./plugins/babel-plugin-handle-miniapp-plugin'),
+      {
+        usingPlugins
+      }
+    ],
+
   ];
 };

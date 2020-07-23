@@ -100,10 +100,24 @@ function absoluteModuleResolve(...files) {
   })(...files);
 }
 
+/**
+ * get more specific files in miniapp
+ * @param {string} platform
+ * @param {array<string>} extensions
+ */
+function getPlatformExtensions(platform, extensions = []) {
+  return [
+    ...platform ? extensions.map((ext) => `.${platform}${ext}`) : [],
+    ...extensions,
+  ];
+}
+
 module.exports = {
   relativeModuleResolve,
   normalizeOutputFilePath,
   getRelativePath,
   removeExt,
-  absoluteModuleResolve
+  getDepPath,
+  absoluteModuleResolve,
+  getPlatformExtensions
 };

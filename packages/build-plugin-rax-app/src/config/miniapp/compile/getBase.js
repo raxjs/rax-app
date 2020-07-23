@@ -15,6 +15,7 @@ const CopyPublicFilePlugin = require('../../../plugins/miniapp/CopyPublicFile');
 
 const platformConfig = require('./platformConfig');
 const targetPlatformMap = require('../targetPlatformMap');
+const { getPlatformExtensions } = require('../../pathHelper');
 const { QUICKAPP } = require('../../../constants');
 
 const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
@@ -159,9 +160,9 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     .use('json-loader')
     .loader(require.resolve('json-loader'));
 
-
   config.resolve.extensions
-    .add('.js').add('.jsx').add('.ts').add('.tsx').add('.json');
+    .clear()
+    .merge(getPlatformExtensions(targetPlatformMap[target].name, ['.js', '.jsx', '.ts', '.tsx', '.json']));
 
   config.resolve.mainFields
     .add('main').add('module');
@@ -179,6 +180,10 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
       }
       // Built-in modules in QuickApp
       if (/^@system\./.test(request)) {
+        return callback(null, `commonjs2 ${request}`);
+      }
+      // Miniapp plugin
+      if (/^plugin\:\/\//.test(request)) {
         return callback(null, `commonjs2 ${request}`);
       }
       callback();
