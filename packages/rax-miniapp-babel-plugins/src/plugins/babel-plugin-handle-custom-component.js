@@ -32,13 +32,14 @@ const targetMap = {
  * @param {string} rootDir project root dir
  * @param {string} source module name
  * @param {string} target miniapp platform
+ * @param {boolean} dualEngine whether use compile component
  */
-function getNpmSourcePath(rootDir, source, target) {
+function getNpmSourcePath(rootDir, source, target, dualEngine) {
   const modulePath = resolve(rootDir, 'node_modules', source);
   try {
     const pkgConfig = readJSONSync(join(modulePath, 'package.json'));
     const miniappConfig = pkgConfig.miniappConfig;
-    if (!miniappConfig || baseComponents.includes(source)) {
+    if (!dualEngine || !miniappConfig || baseComponents.includes(source)) {
       return source;
     }
     const miniappEntry = target === 'miniapp' ? miniappConfig.main : miniappConfig[`main:${targetMap[target]}`];
@@ -52,10 +53,10 @@ function getNpmSourcePath(rootDir, source, target) {
   }
 };
 
-function getTmplPath(source, rootDir, dirName, target) {
+function getTmplPath(source, rootDir, dirName, target, dualEngine) {
   // If it's a npm module, keep source origin value, otherwise use absolute path
   const isNpm = !RELATIVE_COMPONENTS_REG.test(source);
-  let filePath = isNpm ? getNpmSourcePath(rootDir, source, target) : resolve(dirName, source);
+  let filePath = isNpm ? getNpmSourcePath(rootDir, source, target, dualEngine) : resolve(dirName, source);
   const absPath = isNpm ? resolve(rootDir, 'node_modules', filePath) : filePath;
   if (!existsSync(`${absPath}.${extMap[target]}`)) return false;
   if (target === 'wechat-miniprogram') {
@@ -67,7 +68,7 @@ function getTmplPath(source, rootDir, dirName, target) {
 
 module.exports = function visitor(
   { types: t },
-  { usingComponents, target, rootDir }
+  { usingComponents, target, rootDir, dualEngine }
 ) {
   // Collect imported dependencies
   const components = {};
@@ -82,7 +83,7 @@ module.exports = function visitor(
           const { specifiers, source } = path.node;
           if (Array.isArray(specifiers) && t.isStringLiteral(source)) {
             const dirName = dirname(filename);
-            const filePath = getTmplPath(source.value, rootDir, dirName, target);
+            const filePath = getTmplPath(source.value, rootDir, dirName, target, dualEngine);
             if (filePath) {
               if (!scanedPageMap[filename]) {
                 scanedPageMap[filename] = true;

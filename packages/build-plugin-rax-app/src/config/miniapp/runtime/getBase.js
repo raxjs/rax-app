@@ -14,7 +14,7 @@ const { getPlatformExtensions } = require('../../pathHelper');
 
 module.exports = (context, target, options, onGetWebpackConfig) => {
   const { rootDir, command } = context;
-  const { distDir = '', entryPath = './src/app' } = options[target] || {};
+  const { distDir = '', entryPath = './src/app', dualEngine = true } = options[target] || {};
   const outputPath = getMiniAppOutput(context, { target, distDir });
 
   // Using components
@@ -67,7 +67,8 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
             nativeLifeCycleMap,
             target,
             rootDir,
-            usingPlugins
+            usingPlugins,
+            dualEngine
           })
         }
       ];
