@@ -23,7 +23,7 @@ module.exports = (rootDir, entryPath = './src/app', target, nativeLifeCycleMap) 
 
   function addPage(route) {
     const page = normalizeOutputFilePath(
-      relativeModuleResolve(entryPath, getRelativePath(route.source))
+      relativeModuleResolve(srcPath, getRelativePath(route.source))
     );
     appConfig.pages.push(page);
     routes.push(route);

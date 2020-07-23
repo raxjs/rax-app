@@ -240,6 +240,8 @@ class MiniAppRuntimePlugin {
           // Only when there isn't native component, it need generate root template file
           // Generate root template xml
           generateRootTmpl(compilation, {
+            usingPlugins,
+            usingComponents,
             target,
             command,
             rootDir,
