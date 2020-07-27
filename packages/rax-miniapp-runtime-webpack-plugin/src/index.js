@@ -1,7 +1,5 @@
 const { resolve, relative, join, dirname } = require('path');
 const { readJsonSync, existsSync, copyFileSync, lstatSync, ensureDirSync } = require('fs-extra');
-const { RawSource } = require('webpack-sources');
-const adjustCSS = require('./utils/adjustCSS');
 const { MINIAPP, VENDOR_CSS_FILE_NAME } = require('./constants');
 const adapter = require('./adapter');
 const isCSSFile = require('./utils/isCSSFile');
@@ -24,7 +22,6 @@ const {
 } = require('./generators');
 
 const PluginName = 'MiniAppRuntimePlugin';
-const extRegex = /\.(css|js|wxss|acss)(\?|$)/;
 
 class MiniAppRuntimePlugin {
   constructor(options) {
@@ -45,7 +42,7 @@ class MiniAppRuntimePlugin {
       compilation.hooks.optimizeChunkAssets.tapAsync(
         PluginName,
         (chunks, callback) => {
-          wrapChunks(compilation, chunks);
+          wrapChunks(compilation, chunks, target);
           callback();
         }
       );
@@ -54,8 +51,7 @@ class MiniAppRuntimePlugin {
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
       const outputPath = join(compilation.outputOptions.path, target);
       const sourcePath = join(options.rootDir, 'src');
-      const assetsMap = {}; // page - asset
-      const assetsReverseMap = {}; // asset - page
+      const pages = [];
       const changedFiles = Object.keys(
         compiler.watchFileSystem.watcher.mtimes
       ).map((filePath) => {
@@ -71,46 +67,8 @@ class MiniAppRuntimePlugin {
       // Collect asset
       routes
         .forEach(({ entryName }) => {
+          pages.push(entryName);
           const assets = { js: [], css: [] };
-          const filePathMap = {};
-          const entryFiles = compilation.entrypoints.get(entryName).getFiles();
-          entryFiles.forEach((filePath) => {
-            // Skip non css or js
-            const extMatch = extRegex.exec(filePath);
-            if (!extMatch) return;
-
-            const ext = isCSSFile(filePath) ? 'css' : extMatch[1];
-
-            let relativeFilePath;
-            // Adjust css content
-            if (ext === 'css') {
-              relativeFilePath = filePath;
-              if (relativeFilePath !== `${target}/${VENDOR_CSS_FILE_NAME}`) {
-                compilation.assets[
-                  `${relativeFilePath}.${adapter[target].css}`
-                ] = new RawSource(
-                  adjustCSS(compilation.assets[relativeFilePath].source())
-                );
-                delete compilation.assets[`${relativeFilePath}`];
-              }
-            }
-            relativeFilePath = relative(target, filePath);
-
-            // Skip recorded
-            if (filePathMap[relativeFilePath]) return;
-            filePathMap[relativeFilePath] = true;
-
-            // Record
-            assets[ext].push(relativeFilePath);
-
-            // Insert into assetsReverseMap
-            assetsReverseMap[relativeFilePath] =
-              assetsReverseMap[relativeFilePath] || [];
-            if (assetsReverseMap[relativeFilePath].indexOf(entryName) === -1)
-              assetsReverseMap[relativeFilePath].push(entryName);
-          });
-
-          assetsMap[entryName] = assets;
           let pageConfig = {};
           const pageConfigPath = resolve(outputPath, entryName + '.json');
           if (existsSync(pageConfigPath)) {
@@ -146,13 +104,6 @@ class MiniAppRuntimePlugin {
               entryName,
               { target, command, rootDir }
             );
-
-            // Page css
-            generatePageCSS(compilation, assets, entryName, {
-              target,
-              command,
-              rootDir,
-            });
           }
 
           // Page js
@@ -174,7 +125,7 @@ class MiniAppRuntimePlugin {
       // Collect app.js
       if (isFirstRender || changedFiles.includes('/app.js' || '/app.ts')) {
         const commonAppJSFilePaths = compilation.entrypoints
-          .get('app')
+          .get('index')
           .getFiles()
           .filter((filePath) => !isCSSFile(filePath));
         // App js
@@ -195,7 +146,7 @@ class MiniAppRuntimePlugin {
       // These files need be written in first render and using native component state changes
       if (isFirstRender || useNativeComponentCountChanged) {
         // Config js
-        generateConfig(compilation, usingComponents, {
+        generateConfig(compilation, usingComponents, pages, {
           target,
           command,
           rootDir,
