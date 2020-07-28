@@ -1,3 +1,5 @@
 const render = require('<%- render_path %>');
+const config = require('<%- config_path %>');
 
-Page(render.createPageConfig('<%- route %>', <%- native_lifecycles %>));
+<%- init %>
+Page(render.createPageConfig(init, config, <%- native_lifecycles %>));
