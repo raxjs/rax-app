@@ -246,6 +246,8 @@ class MiniAppRuntimePlugin {
             target,
             command,
             rootDir,
+            usingPlugins,
+            usingComponents,
           });
         }
       }
