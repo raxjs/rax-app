@@ -89,16 +89,16 @@ module.exports = function visitor(
               if (!scanedPageMap[filename]) {
                 scanedPageMap[filename] = true;
                 path.parentPath.traverse({
-                  JSXOpeningElement: collectComponentAttr(nativeComponents)
+                  JSXOpeningElement: collectComponentAttr(nativeComponents, t)
                 });
               }
-              collectUsings(path, nativeComponents, nativeComponentsNameMap, usingComponents, filePath);
+              collectUsings(path, nativeComponents, nativeComponentsNameMap, usingComponents, filePath, t);
             }
           }
         },
       },
       JSXOpeningElement: {
-        exit: scanSlot(nativeComponentsNameMap, usingComponents)
+        exit: scanSlot(nativeComponentsNameMap, usingComponents, t)
       },
     },
   };

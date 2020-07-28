@@ -112,7 +112,7 @@ module.exports = (context, target, options) => {
   ]);
 
   config.plugin('copyWebpackPlugin')
-    .use(CopyWebpackPlugin, [needCopyList]);
+    .tap(args => [...args, needCopyList])
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
   if (command === 'start') {

@@ -1,6 +1,6 @@
 const getTagName = require('./getTagName');
 
-function collectComponentAttr(components) {
+function collectComponentAttr(components, t) {
   return (innerPath) => {
     const { node: innerNode } = innerPath;
     if (t.isJSXIdentifier(innerNode.name)) {
@@ -30,7 +30,7 @@ function collectComponentAttr(components) {
   }
 }
 
-function collectUsings(path, components, componentsNameMap, usings, filePath) {
+function collectUsings(path, components, componentsNameMap, usings, filePath, t) {
   const { specifiers } = path.node;
   for (let specifier of specifiers) {
     const tagName = specifier.local.name;
@@ -64,7 +64,7 @@ function collectUsings(path, components, componentsNameMap, usings, filePath) {
   }
 }
 
-function scanSlot(componentsNameMap, usings) {
+function scanSlot(componentsNameMap, usings,  t) {
   return (path) => {
     const { name } = path.node;
     if (componentsNameMap.has(name.name)) {

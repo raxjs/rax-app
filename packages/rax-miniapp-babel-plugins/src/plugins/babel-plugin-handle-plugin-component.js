@@ -19,15 +19,15 @@ module.exports = function visitor(
             if (!scanedFileMap[filename]) {
               scanedFileMap[filename] = true;
               path.parentPath.traverse({
-                JSXOpeningElement: collectComponentAttr(pluginComponents)
+                JSXOpeningElement: collectComponentAttr(pluginComponents, t)
               });
             }
-            collectUsings(path, pluginComponents, pluginComponentsNameMap, usingPlugins, source.value);
+            collectUsings(path, pluginComponents, pluginComponentsNameMap, usingPlugins, source.value, t);
           }
         },
       },
       JSXOpeningElement: {
-        exit: scanSlot(pluginComponentsNameMap, usingPlugins)
+        exit: scanSlot(pluginComponentsNameMap, usingPlugins, t)
       },
     },
   };

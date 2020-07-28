@@ -71,10 +71,6 @@ module.exports = (context, options = {}, target) => {
     .use('platform')
     .loader(require.resolve('rax-compile-config/src/platformLoader'));
 
-  if (target && fs.existsSync(path.resolve(rootDir, 'src/public'))) {
-    config.plugin('copyWebpackPlugin')
-      .use(CopyWebpackPlugin, [[{ from: 'src/public', to: `${target}/public` }]]);
-  }
 
   const copyWebpackPluginPatterns = [{ from: 'src/public', to: `${target}/public` }];
 
