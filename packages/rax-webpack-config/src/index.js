@@ -26,9 +26,17 @@ module.exports = (context) => {
       if (request.indexOf('@system') !== -1) {
         return callback(null, `commonjs ${request}`);
       }
+      // compatible with plugin with miniapp plugin
+      if (/^plugin\:\/\//.test(request)) {
+        return callback(null, `commonjs ${request}`);
+      }
       callback();
     },
   ]);
+
+  config.resolve.modules
+    .add('node_modules')
+    .add(path.join(rootDir, 'node_modules'));
 
   config.resolve.extensions.merge(['.js', '.json', '.jsx', '.ts', '.tsx', '.html']);
   config.module
