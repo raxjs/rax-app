@@ -98,7 +98,7 @@ function absoluteModuleResolve(...files) {
 /**
  * get more specific files in miniapp
  * @param {string} platform
- * @param {array<string>} extensions
+ * @param {string[]} extensions
  */
 function getPlatformExtensions(platform, extensions = []) {
   return [

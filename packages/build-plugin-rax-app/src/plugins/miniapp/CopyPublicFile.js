@@ -5,7 +5,7 @@ const { isNativePage, removeExt } = require('../../config/pathHelper');
 
 /**
  * Copy directories from rootDir + `src/${dir}` to outputPath + `${dir}`
- * @param {array<string>} constantDirectories
+ * @param {string[]} constantDirectories
  * @param {string} rootDir
  * @param {string} outputPath
  */
