@@ -15,6 +15,8 @@ const CopyPublicFilePlugin = require('../../../plugins/miniapp/CopyPublicFile');
 
 const platformConfig = require('./platformConfig');
 const targetPlatformMap = require('../targetPlatformMap');
+const filterNativePages = require('../filterNativePages');
+const { getPlatformExtensions } = require('../../pathHelper');
 const { QUICKAPP } = require('../../../constants');
 
 const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
@@ -45,6 +47,9 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const isPublicFileExist = existsSync(resolve(rootDir, 'src/public')); // `public` directory is the default static resource directory
   const constantDirectories = isPublicFileExist ? ['src/public'].concat(constantDir) : constantDir; // To make old `constantDir` param compatible
 
+  // Need Copy files or dir
+  const needCopyList = [];
+
   const loaderParams = {
     mode,
     entryPath,
@@ -56,6 +61,11 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   };
 
   const appEntry = 'src/app';
+  appConfig.routes = filterNativePages(appConfig.routes, needCopyList, { rootDir, target, outputPath });
+  needCopyList.forEach(dirPatterns => {
+    constantDirectories.push(dirPatterns.from)
+  });
+
   setEntry(config, appConfig.routes, { appEntry, rootDir, target });
 
   const pageLoaderParams = {
@@ -158,9 +168,9 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     .use('json-loader')
     .loader(require.resolve('json-loader'));
 
-
   config.resolve.extensions
-    .add('.js').add('.jsx').add('.ts').add('.tsx').add('.json');
+    .clear()
+    .merge(getPlatformExtensions(targetPlatformMap[target].name, ['.js', '.jsx', '.ts', '.tsx', '.json']));
 
   config.resolve.mainFields
     .add('main').add('module');
@@ -178,6 +188,10 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
       }
       // Built-in modules in QuickApp
       if (/^@system\./.test(request)) {
+        return callback(null, `commonjs2 ${request}`);
+      }
+      // Miniapp plugin
+      if (/^plugin\:\/\//.test(request)) {
         return callback(null, `commonjs2 ${request}`);
       }
       callback();
@@ -203,7 +217,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   ]);
 
   if (constantDirectories.length > 0) {
-    config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir, constantDirectories }]);
+    config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir, constantDirectories, target }]);
   }
 
   if (!disableCopyNpm) {

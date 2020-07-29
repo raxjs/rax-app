@@ -1,6 +1,7 @@
 const { join, relative, sep, resolve } = require('path');
 const { existsSync, statSync } = require('fs-extra');
 const enhancedResolve = require('enhanced-resolve');
+const targetPlatformMap = require('../config/miniapp/targetPlatformMap');
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -94,10 +95,43 @@ function absoluteModuleResolve(...files) {
   })(...files);
 }
 
+/**
+ * get more specific files in miniapp
+ * @param {string} platform
+ * @param {string[]} extensions
+ */
+function getPlatformExtensions(platform, extensions = []) {
+  return [
+    ...platform ? extensions.map((ext) => `.${platform}${ext}`) : [],
+    ...extensions,
+  ];
+}
+
+/**
+ * Judge whether the file is a native page according to the existence of the template file
+ * @param {string} filePath
+ * @param {string} target
+ */
+function isNativePage(filePath, target) {
+  return existsSync(filePath + targetPlatformMap[target].tplExtension);
+}
+
+/**
+ * Remove file extension
+ * @param {string} filePath
+ */
+function removeExt(filePath) {
+  const lastDot = filePath.lastIndexOf('.');
+  return filePath.slice(0, lastDot);
+}
+
 module.exports = {
   relativeModuleResolve,
   normalizeOutputFilePath,
   getRelativePath,
   getDepPath,
-  absoluteModuleResolve
+  absoluteModuleResolve,
+  getPlatformExtensions,
+  isNativePage,
+  removeExt
 };

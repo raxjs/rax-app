@@ -5,12 +5,18 @@ const getTemplate = require('../utils/getTemplate');
 
 function generateRootTmpl(
   compilation,
-  { target, command, rootDir }
+  { usingPlugins, usingComponents, target, command, rootDir }
 ) {
   const template = ejs.render(getTemplate(rootDir, 'root.xml', target));
+  const pluginTmpl = ejs.render(getTemplate(rootDir, 'plugin.xml', target), {
+    usingPlugins
+  });
+  const componentTmpl = ejs.render(getTemplate(rootDir, 'custom-component.xml', target), {
+    usingComponents
+  });
   addFileToCompilation(compilation, {
     filename: `root.${adapter[target].xml}`,
-    content: template,
+    content: template + pluginTmpl + componentTmpl,
     target,
     command,
   });

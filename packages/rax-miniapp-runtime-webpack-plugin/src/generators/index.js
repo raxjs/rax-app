@@ -1,6 +1,5 @@
 const { generateAppJS, generateAppCSS } = require('./app');
 const generateConfig = require('./config');
-const generateCustomComponent = require('./custom-component');
 const {
   generatePageCSS,
   generatePageJS,
@@ -20,7 +19,6 @@ module.exports = {
   generateAppCSS,
   generateAppJS,
   generateConfig,
-  generateCustomComponent,
   generatePageCSS,
   generatePageJS,
   generatePageJSON,

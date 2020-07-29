@@ -26,6 +26,10 @@ module.exports = (context) => {
       if (request.indexOf('@system') !== -1) {
         return callback(null, `commonjs ${request}`);
       }
+      // compatible with plugin with miniapp plugin
+      if (/^plugin\:\/\//.test(request)) {
+        return callback(null, `commonjs ${request}`);
+      }
       callback();
     },
   ]);
