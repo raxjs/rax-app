@@ -3,7 +3,6 @@ const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
 const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
 const { resolve, join } = require('path');
 
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
@@ -67,8 +66,7 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
             nativeLifeCycleMap,
             target,
             rootDir,
-            usingPlugins,
-            dualEngine
+            usingPlugins
           })
         }
       ];
@@ -115,7 +113,10 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
   ]);
 
   config.plugin('copyWebpackPlugin')
-    .use(CopyWebpackPlugin, [needCopyList]);
+    .tap(args => {
+      args[0] = args[0].concat(needCopyList);
+      return args;
+    });
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
 

@@ -13,10 +13,10 @@
       <% usingComponents[componentTag].children.forEach(function(child, index){%>
         <% if(child.slot) {%>
           <view slot="<%= child.slot %>">
-            <template is="element" data="{{r: r.children[<%= index %>]}}" />
+            <template is="element_1" data="{{r: r.children[<%= index %>]}}" />
           </view>
         <% } else { %>
-          <template is="element" data="{{r: r.children[<%= index %>]}}" />
+          <template is="element_1" data="{{r: r.children[<%= index %>]}}" />
         <% } %>
       <% });%>
     </<%=componentTag%>>

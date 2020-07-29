@@ -5,7 +5,9 @@ const build = require('./build');
 const dev = require('./dev');
 
 const pluginApp = (api, options = {}) => {
-  enterCheck(api, options);
+  if (typeof options.enterCheck === 'boolean' ? options.enterCheck : true) {
+    enterCheck(api, options);
+  }
 
   api.setValue('targets', options.targets);
   api.setValue('appType', options.type || 'spa');
