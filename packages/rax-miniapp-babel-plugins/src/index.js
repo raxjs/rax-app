@@ -1,4 +1,4 @@
-module.exports = function({ usingComponents, nativeLifeCycleMap, target, rootDir, usingPlugins }) {
+module.exports = function({ usingComponents, nativeLifeCycleMap, target, rootDir, usingPlugins, dualEngine }) {
   return [
     require.resolve('./plugins/babel-plugin-remove-Function'),
     require.resolve('./plugins/babel-plugin-external-module'),
@@ -13,7 +13,8 @@ module.exports = function({ usingComponents, nativeLifeCycleMap, target, rootDir
       {
         usingComponents,
         target,
-        rootDir
+        rootDir,
+        dualEngine
       }
     ],
     [

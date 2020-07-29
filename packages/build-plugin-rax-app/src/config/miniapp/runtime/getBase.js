@@ -67,7 +67,8 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
             nativeLifeCycleMap,
             target,
             rootDir,
-            usingPlugins
+            usingPlugins,
+            dualEngine
           })
         }
       ];
