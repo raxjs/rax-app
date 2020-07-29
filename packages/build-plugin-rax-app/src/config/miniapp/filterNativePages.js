@@ -7,8 +7,8 @@ module.exports = (routes, needCopyList, { rootDir, target, outputPath, entryPath
     const pageEntry = getDepPath(rootDir, entryPath, source);
     if (isNativePage(pageEntry, target)) {
       needCopyList.push({
-        from: dirname(join('src', source)),
-        to: join(target, dirname(source))
+        from: dirname(join(dirname(entryPath), source)),
+        to: join(outputPath, dirname(source))
       });
       return false;
     }

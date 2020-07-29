@@ -15,7 +15,7 @@ module.exports = (config, context, entryPath, routes) => {
   });
 
   // Add app entry
-  const appEntry = absoluteModuleResolve(rootDir, './src/app');
+  const appEntry = absoluteModuleResolve(rootDir, `./${entryPath}`);
   config.entry('app').add(appEntry);
 };
 
