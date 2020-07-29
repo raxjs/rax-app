@@ -66,7 +66,7 @@ class MiniAppRuntimePlugin {
 
       let useComponentCountChanged = false;
       if (!isFirstRender) {
-        useComponentCountChanged  = useNativeComponentCount !== lastUseComponentCount;
+        useComponentCountChanged = useNativeComponentCount !== lastUseComponentCount;
       }
       lastUseComponentCount = useNativeComponentCount + usePluginComponentCount;
       const useComponent = lastUseComponentCount > 0;

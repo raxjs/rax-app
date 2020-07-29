@@ -1,4 +1,5 @@
 const { collectComponentAttr, collectUsings, scanSlot } = require('../utils/handleComponentAST');
+
 const MINIAPP_PLUGIN_COMPONENTS_REG = /^plugin\:\/\//;
 
 module.exports = function visitor(

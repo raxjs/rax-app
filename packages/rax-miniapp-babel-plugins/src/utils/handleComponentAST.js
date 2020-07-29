@@ -27,7 +27,7 @@ function collectComponentAttr(components, t) {
         }
       });
     }
-  }
+  };
 }
 
 function collectUsings(path, components, componentsNameMap, usings, filePath, t) {
@@ -64,7 +64,7 @@ function collectUsings(path, components, componentsNameMap, usings, filePath, t)
   }
 }
 
-function scanSlot(componentsNameMap, usings,  t) {
+function scanSlot(componentsNameMap, usings, t) {
   return (path) => {
     const { name } = path.node;
     if (componentsNameMap.has(name.name)) {
@@ -84,11 +84,11 @@ function scanSlot(componentsNameMap, usings,  t) {
         }
         );
     }
-  }
+  };
 }
 
-module.exports ={
+module.exports = {
   collectComponentAttr,
   collectUsings,
   scanSlot
-}
+};

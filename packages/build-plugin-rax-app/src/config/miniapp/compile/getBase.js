@@ -62,9 +62,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
 
   const appEntry = 'src/app';
   appConfig.routes = filterNativePages(appConfig.routes, needCopyList, { rootDir, target, outputPath });
-  needCopyList.forEach(dirPatterns => {
-    constantDirectories.push(dirPatterns.from)
-  });
+  needCopyList.forEach(dirPatterns => constantDirectories.push(dirPatterns.from));
 
   setEntry(config, appConfig.routes, { appEntry, rootDir, target });
 
