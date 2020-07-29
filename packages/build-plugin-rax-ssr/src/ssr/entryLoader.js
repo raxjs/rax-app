@@ -46,6 +46,11 @@ module.exports = function() {
         defaultUnit: 'rpx'
       });
 
+      let styles = ${JSON.stringify(styles)};
+      let scripts = ${JSON.stringify(scripts)};
+      
+      ${process.env.__ASSETS_PROCESSOR__ || ''}
+
       // This loader is executed after babel, so need to be tansformed to ES5.
       const DocumentContextProvider = function() {};
       DocumentContextProvider.prototype.getChildContext = function() {
@@ -53,8 +58,8 @@ module.exports = function() {
           __initialHtml: initialHtml,
           __initialData: JSON.stringify(initialData),
           __pagePath: '${pagePath}',
-          __styles: ${JSON.stringify(styles)},
-          __scripts: ${JSON.stringify(scripts)},
+          __styles: styles,
+          __scripts: scripts,
         };
       };
       DocumentContextProvider.prototype.render = function() {
