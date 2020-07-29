@@ -43,7 +43,7 @@ async function baseProcess(command, options) {
     });
   } catch (err) {
     log.error(err.message);
-    console.error(err);
+    throw new Error(err);
   }
 }
 
