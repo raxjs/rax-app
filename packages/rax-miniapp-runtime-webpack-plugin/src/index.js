@@ -64,14 +64,13 @@ class MiniAppRuntimePlugin {
       const usePluginComponentCount = Object.keys(usingPlugins).length;
       const useNativeComponentCount = Object.keys(usingComponents).length;
 
-      const useComponent = useNativeComponentCount > 0 || usePluginComponentCount > 0;
-
-      if (isFirstRender) {
-        lastUseComponentCount = useNativeComponentCount + usePluginComponentCount;
+      let useComponentCountChanged = false;
+      if (!isFirstRender) {
+        useComponentCountChanged  = useNativeComponentCount !== lastUseComponentCount;
       }
-
-      const useComponentCountChanged = useNativeComponentCount !== lastUseComponentCount;
       lastUseComponentCount = useNativeComponentCount + usePluginComponentCount;
+      const useComponent = lastUseComponentCount > 0;
+
 
       // Collect asset
       routes
