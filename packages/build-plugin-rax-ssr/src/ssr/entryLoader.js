@@ -21,6 +21,7 @@ module.exports = function() {
     pagePath,
     styles = [],
     scripts = [],
+    assetsProcessor
   } = query;
 
   const absolutePagePath = formatPath(this.resourcePath);
@@ -46,12 +47,12 @@ module.exports = function() {
         defaultUnit: 'rpx'
       });
 
-      // use let statement, because styles and scripts may be changed by __ASSETS_PROCESSOR__
+      // use let statement, because styles and scripts may be changed by assetsProcessor
       let styles = ${JSON.stringify(styles)};
       let scripts = ${JSON.stringify(scripts)};
       
       // process public path for different runtime env
-      ${process.env.__ASSETS_PROCESSOR__ || ''}
+      ${assetsProcessor || ''}
 
       // This loader is executed after babel, so need to be tansformed to ES5.
       const DocumentContextProvider = function() {};
