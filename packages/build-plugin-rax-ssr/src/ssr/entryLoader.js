@@ -46,9 +46,11 @@ module.exports = function() {
         defaultUnit: 'rpx'
       });
 
+      // use let statement, because styles and scripts may be changed by __ASSETS_PROCESSOR__
       let styles = ${JSON.stringify(styles)};
       let scripts = ${JSON.stringify(scripts)};
       
+      // process public path for different runtime env
       ${process.env.__ASSETS_PROCESSOR__ || ''}
 
       // This loader is executed after babel, so need to be tansformed to ES5.
