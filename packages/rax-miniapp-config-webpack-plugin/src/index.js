@@ -31,11 +31,10 @@ module.exports = class MiniAppConfigPlugin {
         safeWriteFile(join(outputPath, target === 'quickapp' ? 'appConfig.js' : 'app.config.js'), `module.exports = ${JSON.stringify(appConfig, null, 2)}`);
       }
       // Transform page config
-      config.pages.map((page, index) => {
-        const route = appConfig.routes[index];
+      appConfig.routes.map((route) => {
         if (route && route.window) {
           ensureDirSync(outputPath);
-          safeWriteFile(join(outputPath, page + '.json'), adaptConfig(route.window, 'window', target), true);
+          safeWriteFile(join(outputPath, route.source + '.json'), adaptConfig(route.window, 'window', target), true);
         }
       });
 

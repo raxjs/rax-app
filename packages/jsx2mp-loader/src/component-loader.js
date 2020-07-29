@@ -12,6 +12,7 @@ const processCSS = require('./styleProcessor');
 const output = require('./output');
 
 const ScriptLoader = require.resolve('./script-loader');
+const MINIAPP_PLUGIN_COMPONENTS_REG = /^plugin\:\/\//;
 
 module.exports = async function componentLoader(content) {
   const query = parse(this.request);
@@ -79,7 +80,7 @@ module.exports = async function componentLoader(content) {
       const value = config.usingComponents[key];
 
       if (/^c-/.test(key)) {
-        const result = removeExt(addRelativePathPrefix(relative(dirname(this.resourcePath), value))); // ./components/Repo
+        const result = MINIAPP_PLUGIN_COMPONENTS_REG.test(value) ? value : removeExt(addRelativePathPrefix(relative(dirname(this.resourcePath), value)));
         usingComponents[key] = normalizeOutputFilePath(result);
       } else {
         usingComponents[key] = normalizeOutputFilePath(value);
