@@ -108,11 +108,8 @@ module.exports = (context, target, options) => {
     }
   ]);
 
-  config.plugin('copyWebpackPlugin')
-    .tap(args => {
-      args[0] = args[0].concat(needCopyList);
-      return args;
-    });
+  config.plugin('copyWebpackPluginForRuntimeMiniapp')
+    .use(CopyWebpackPlugin, [needCopyList]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
   if (command === 'start') {
