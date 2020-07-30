@@ -1,27 +1,41 @@
 const MiniAppRuntimePlugin = require('rax-miniapp-runtime-webpack-plugin');
 const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
 const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 const filterNativePages = require('../filterNativePages');
+const targetPlatformMap = require('../targetPlatformMap');
+const { getPlatformExtensions } = require('../../pathHelper');
 
 module.exports = (context, target, options) => {
   const { rootDir, command } = context;
   const outputPath = getMiniAppOutput(context, { target });
 
-  // Using Components
+  // Using components
   const usingComponents = {};
   // Native lifecycle map
   const nativeLifeCycleMap = {};
+
+  // Using plugins
+  const usingPlugins = {};
+
+  // Need Copy files or dir
+  const needCopyList = [];
 
   const config = getWebpackBase(context, {
     disableRegenerator: true
   }, target);
   const appConfig = getAppConfig(rootDir, target, nativeLifeCycleMap);
-  appConfig.routes = filterNativePages(appConfig.routes, { rootDir, target, outputPath });
+  appConfig.routes = filterNativePages(appConfig.routes, needCopyList, { rootDir, target, outputPath });
   setEntry(config, context, appConfig.routes);
+
+  config.resolve.extensions
+    .clear()
+    .merge(getPlatformExtensions(targetPlatformMap[target].name, ['.js', '.jsx', '.ts', '.tsx', '.json']));
 
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
@@ -50,6 +64,7 @@ module.exports = (context, target, options) => {
             nativeLifeCycleMap,
             target,
             rootDir,
+            usingPlugins
           })
         }
       ];
@@ -89,9 +104,14 @@ module.exports = (context, target, options) => {
       usingComponents,
       nativeLifeCycleMap,
       rootDir,
-      command
+      command,
+      usingPlugins,
+      needCopyList
     }
   ]);
+
+  config.plugin('copyWebpackPluginForRuntimeMiniapp')
+    .use(CopyWebpackPlugin, [needCopyList]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
   if (command === 'start') {

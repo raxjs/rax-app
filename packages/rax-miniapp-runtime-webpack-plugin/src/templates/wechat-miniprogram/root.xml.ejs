@@ -26,12 +26,43 @@
   </block>
 </template>
 
+<template name="element_1">
+  <block wx:if="{{r.tagName}}">
+    <view
+      wx:if="{{!isComp}}"
+      style="{{r.style}}"
+      class="h5-{{r.tagName}} {{r.className}}"
+      id="{{r.id}}"
+      animation="{{r.animation}}"
+      data-private-node-id="{{r.nodeId}}"
+      data-private-page-id="{{r.pageId}}"
+
+      bindtap="onTap"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+      bindtouchcancel="onTouchCancel"
+    >
+      <template is="children_1" data="{{r: r.children}}" />
+    </view>
+    <block wx:else>
+      <template is="children_1" data="{{r: r.children}}" />
+    </block>
+  </block>
+  <block wx:else>
+    <template is="children_1" data="{{r: r.children}}" />
+  </block>
+</template>
+
 <template name="children">
   <block wx:for="{{r}}" wx:key="nodeId">
     <block wx:if="{{item.nodeType === 'text'}}">{{item.content}}</block>
-    <custom-component wx:elif="{{item.tagName === 'custom-component'}}" r="{{item}}">
-      <template wx:if="{{item.children}}" is="children_1" data="{{r: item.children}}" />
-    </custom-component>
+    <block wx:elif="{{item.tagName === 'custom-component'}}">
+      <template is="{{item.customComponentName}}" data="{{r: item}}" />
+    </block>
+    <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
+      <template is="{{item.miniappPluginName}}" data="{{r: item}}" />
+    </block>
     <block wx:elif="{{!item.behavior}}">
       <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item, isHTMLElement: true}}" />
       <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item, isHTMLElement: true}}" />
@@ -65,9 +96,12 @@
 <template name="children_1">
   <block wx:for="{{r}}" wx:key="nodeId">
     <block wx:if="{{item.nodeType === 'text'}}">{{item.content}}</block>
-    <custom-component wx:elif="{{item.tagName === 'custom-component'}}" r="{{item}}">
-      <template wx:if="{{item.children}}" is="children" data="{{r: item.children}}" />
-    </custom-component>
+    <block wx:elif="{{item.tagName === 'custom-component'}}">
+      <template is="{{item.customComponentName}}" data="{{r: item}}" />
+    </block>
+    <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
+      <template is="{{item.miniappPluginName}}" data="{{r: item}}" />
+    </block>
     <block wx:elif="{{!item.behavior}}">
       <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item}}" />
       <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item}}" />
@@ -114,7 +148,7 @@
     bindtouchmove="onTouchMove"
     bindtouchend="onTouchEnd"
     bindtouchcancel="onTouchCancel"
-    bindlongtap="onLongTap"
+    bindlongpress="onLongTap"
 
     hover-class="{{r['hover-class']}}"
     hover-start-time="{{r['hover-start-time']}}"
@@ -398,7 +432,7 @@
     bindtouchmove="onTouchMove"
     bindtouchend="onTouchEnd"
     bindtouchcancel="onTouchCancel"
-    bindlongtap="onLongTap"
+    bindlongpress="onLongTap"
 
     nodes="{{r.nodes}}"
   >
@@ -526,8 +560,7 @@
     disabled="{{r.disabled}}"
     maxlength="{{r.maxlength}}"
     cursor-spacing="{{r['cursor-spacing']}}"
-    focus="{{r.autofocus || r.focus}}"
-    controlled="{{r.controlled}}"
+    focus="{{r['focus-state']}}"
     confirm-type="{{r['confirm-type']}}"
     confirm-hold="{{r['confirm-hold']}}"
     cursor="{{r.cursor}}"
@@ -558,12 +591,11 @@
 
     value="{{r.value}}"
     placeholder="{{r.placeholder}}"
-    placeholder-style="color:{{r.placeholderColor}}"
+    placeholder-style="{{r['placeholder-style']}}"
     placeholder-class="{{r['placeholder-class']}}"
     disabled="{{r.disabled}}"
     maxlength="{{r.maxlength}}"
-    focus="{{r.autofocus || r.focus}}"
-    controlled="{{r.controlled}}"
+    focus="{{r['focus-state']}}"
     auto-height="{{r['auto-height']}}"
     fixed="{{r.fixed}}"
     cursor-spacing="{{r['cursor-spacing']}}"
@@ -759,6 +791,7 @@
     bindtouchcancel="onTouchCancel"
 
     bindchange="onPickerChange"
+    bindcolumnchange="onPickerColumnChange"
     bindcancel="onPickerCancel"
 
     name="{{r.name}}"
@@ -952,7 +985,7 @@
     bindtouchend="onTouchEnd"
     bindtouchcancel="onTouchCancel"
 
-    bindlongtap="onCanvasLongTap"
+    bindlongpress="onCanvasLongTap"
     binderror="onCanvasError"
 
     type="{{r.type}}"

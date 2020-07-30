@@ -40,11 +40,11 @@ function generatePageJS(
 function generatePageXML(
   compilation,
   pageRoute,
-  useNativeComponent,
+  useComponent,
   { target, command, rootDir }
 ) {
   let pageXmlContent;
-  if (target === MINIAPP && useNativeComponent) {
+  if (target === MINIAPP && useComponent) {
     pageXmlContent = `<view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
     <element r="{{root}}"  />
   </view>`;
@@ -82,7 +82,7 @@ function generatePageCSS(compilation, assets, pageRoute, { target, command }) {
 function generatePageJSON(
   compilation,
   pageConfig,
-  useNativeComponent,
+  useComponent,
   pageRoute,
   { target, command }
 ) {
@@ -93,13 +93,7 @@ function generatePageJSON(
     'comp',
     `${pageRoute}.js`
   );
-  if (useNativeComponent) {
-    pageConfig.usingComponents.element = elementPath;
-    pageConfig.usingComponents['custom-component'] = getAssetPath(
-      'custom-component/index',
-      `${pageRoute}.js`
-    );
-  } else if (target !== MINIAPP) {
+  if (useComponent || target !== MINIAPP) {
     pageConfig.usingComponents.element = elementPath;
   }
 

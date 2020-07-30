@@ -21,6 +21,7 @@ module.exports = function() {
     pagePath,
     styles = [],
     scripts = [],
+    assetsProcessor
   } = query;
 
   const absolutePagePath = formatPath(this.resourcePath);
@@ -46,6 +47,13 @@ module.exports = function() {
         defaultUnit: 'rpx'
       });
 
+      // use let statement, because styles and scripts may be changed by assetsProcessor
+      let styles = ${JSON.stringify(styles)};
+      let scripts = ${JSON.stringify(scripts)};
+      
+      // process public path for different runtime env
+      ${assetsProcessor || ''}
+
       // This loader is executed after babel, so need to be tansformed to ES5.
       const DocumentContextProvider = function() {};
       DocumentContextProvider.prototype.getChildContext = function() {
@@ -53,8 +61,8 @@ module.exports = function() {
           __initialHtml: initialHtml,
           __initialData: JSON.stringify(initialData),
           __pagePath: '${pagePath}',
-          __styles: ${JSON.stringify(styles)},
-          __scripts: ${JSON.stringify(scripts)},
+          __styles: styles,
+          __scripts: scripts,
         };
       };
       DocumentContextProvider.prototype.render = function() {

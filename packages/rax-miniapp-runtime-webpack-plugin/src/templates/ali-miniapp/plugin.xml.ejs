@@ -1,0 +1,22 @@
+<% Object.keys(usingPlugins).forEach(function(pluginTag){ %>
+  <template name="<%= pluginTag %>">
+    <<%=pluginTag%>
+      <% usingPlugins[pluginTag].props.forEach(function(prop){%>
+        <%= prop %>="{{r.<%= prop %>}}"
+      <% });%>
+      <% usingPlugins[pluginTag].events.forEach(function(event){%>
+        <%= `on${event}` %>="{{r.<%= event %>}}"
+      <% });%>
+    >
+        <% usingPlugins[pluginTag].children.forEach(function(child, index){%>
+          <% if(child.slot) {%>
+            <view slot="<%= child.slot %>">
+              <template is="element" data="{{r: r.children[<%= index %>]}}" />
+            </view>
+          <% } else { %>
+            <template is="element" data="{{r: r.children[<%= index %>]}}" />
+          <% } %>
+        <% });%>
+    </<%=pluginTag%>>
+  </template>
+<% }); %>
