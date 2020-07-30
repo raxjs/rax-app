@@ -3,7 +3,7 @@ module.exports = ({rootDir = process.cwd(), moduleNameMapper = {}} = {}) => {
     rootDir,
     collectCoverage: true,
     verbose: true,
-    testMatch: ['**/?*.(spec|test).(j|t)s?(x)'],
+    testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?*.(spec|test).(j|t)s?(x)'],
     transform: {
       '^.+\\.(js|jsx|ts|tsx)$': require.resolve('./babelTransform.js'),
       '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': require.resolve('./fileTransform.js'),
