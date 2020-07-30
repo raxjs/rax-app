@@ -14,7 +14,6 @@ module.exports = function(compilation, { usingComponents, usingPlugins, target, 
     config.usingComponents[name] = {
       props: usingComponents[name].props,
       events: usingComponents[name].events,
-      children: usingComponents[name].children
     };
   });
 
@@ -22,7 +21,6 @@ module.exports = function(compilation, { usingComponents, usingPlugins, target, 
     config.usingPlugins[name] = {
       props: usingPlugins[name].props,
       events: usingPlugins[name].events,
-      children: usingPlugins[name].children
     };
   });
   addFileToCompilation(compilation, {
