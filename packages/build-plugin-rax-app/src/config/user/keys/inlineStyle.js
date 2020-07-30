@@ -24,24 +24,39 @@ module.exports = {
     const { userConfig, taskName } = context;
     const { publicPath } = userConfig;
 
-    setCSSRule(config.module.rule('css').test(/\.css$/), context, value);
-    setCSSRule(config.module.rule('less').test(/\.less$/), context, value);
-    setCSSRule(config.module.rule('sass').test(/\.s[ac]ss$/), context, value);
+    const cssRule = config.module.rule('css').test(/\.css$/).exclude.add(/\.module\.css$/).end();
+    const cssModuleRule = config.module.rule('css-module').test(/\.module\.css$/);
+    setCSSRule(cssRule, context, value);
+    setCSSRule(cssModuleRule, context, value, true);
+
+    const lessRule = config.module.rule('less').test(/\.less$/).exclude.add(/\.module\.less$/).end();
+    const lessModuleRule = config.module.rule('less-module').test(/\.module\.less$/);
+    setCSSRule(lessRule, context, value, true);
+    setCSSRule(lessModuleRule, context, value);
+
+    const sassRule = config.module.rule('sass').test(/\.s[ac]ss$/).exclude.add(/\.module\.s[ac]ss$/).end();
+    const sassModuleRule = config.module.rule('sass-module').test(/\.module\.s[ac]ss$/);
+    setCSSRule(sassRule, context, value);
+    setCSSRule(sassModuleRule, context, value, true);
 
     if (inlineStandardList.includes(taskName) || value) {
-      config.module.rule('less')
-        .use('less')
-        .loader(require.resolve('less-loader'));
+      [lessRule, lessModuleRule].forEach(configRule => {
+        configRule
+          .use('less')
+          .loader(require.resolve('less-loader'));
+      });
     } else if ((webStandardList.includes(taskName) || miniappStandardList.includes(taskName)) && !value) {
-      config.module.rule('less')
-        .oneOf('raw')
-        .use('less')
-        .loader(require.resolve('less-loader'))
-        .end()
-        .end()
-        .oneOf('normal')
-        .use('less')
-        .loader(require.resolve('less-loader'));
+      [lessRule, lessModuleRule].forEach(configRule => {
+        configRule
+          .oneOf('raw')
+          .use('less')
+          .loader(require.resolve('less-loader'))
+          .end()
+          .end()
+          .oneOf('normal')
+          .use('less')
+          .loader(require.resolve('less-loader'));
+      });
 
       config.plugin('minicss')
         .use(MiniCssExtractPlugin, [{
@@ -50,23 +65,23 @@ module.exports = {
         }]);
     }
 
-    config.module.rule('sass')
-      .use('sass')
-      .loader(require.resolve('sass-loader'));
+    [sassRule, sassModuleRule].forEach(configRule => {
+      configRule
+        .use('sass')
+        .loader(require.resolve('sass-loader'));
+    });
   },
 };
 
-function setCSSRule(configRule, context, value) {
-  const { userConfig, taskName } = context;
-  const { extraStyle = {} } = userConfig;
-  const { cssModules = {} } = extraStyle;
-  const { modules, resourceQuery } = cssModules;
+function setCSSRule(configRule, context, value, isCSSModule) {
+  const { taskName } = context;
   const isInlineStandard = inlineStandardList.includes(taskName);
   const isWebStandard = webStandardList.includes(taskName);
   const isMiniAppStandard = miniappStandardList.includes(taskName);
   const isNodeStandard = taskName === DOCUMENT;
-  // enbale inlineStyle
+
   if (value) {
+    // enbale inlineStyle
     if (isInlineStandard || isMiniAppStandard) {
       configInlineStyle(configRule);
     } else {
@@ -94,24 +109,24 @@ function setCSSRule(configRule, context, value) {
           },
         },
       };
+      const cssLoaderOptions = isCSSModule ? {
+        modules: {
+          localIdentName: '[folder]--[local]--[hash:base64:7]',
+        }
+      } : {};
+
       configRule
         .use('minicss')
-        .loader(MiniCssExtractPlugin.loader)
-        .end()
+          .loader(MiniCssExtractPlugin.loader)
+          .end()
         .use('css')
-        .loader(require.resolve('css-loader'))
-        .end()
+          .loader(require.resolve('css-loader'))
+          .options(cssLoaderOptions)
+          .end()
         .use('postcss')
-        .loader(require.resolve('postcss-loader'))
-        .options(postcssConfig)
-        .end()
-        .use('css')
-        .loader(require.resolve('css-loader'))
-        .options({ modules })
-        .end()
-        .use('postcss')
-        .loader(require.resolve('postcss-loader'))
-        .options(postcssConfig);
+          .loader(require.resolve('postcss-loader'))
+          .options(postcssConfig)
+          .end()
     } else if (isInlineStandard) {
       configInlineStyle(configRule);
     } else if (isNodeStandard) {
