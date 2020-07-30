@@ -1,6 +1,8 @@
 const MiniAppRuntimePlugin = require('rax-miniapp-runtime-webpack-plugin');
 const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
 const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
 const setEntry = require('./setEntry');
@@ -108,11 +110,8 @@ module.exports = (context, target, options) => {
     }
   ]);
 
-  config.plugin('copyWebpackPlugin')
-    .tap(args => {
-      args[0] = args[0].concat(needCopyList);
-      return args;
-    });
+  config.plugin('copyWebpackPluginForRuntimeMiniapp')
+    .use(CopyWebpackPlugin, [needCopyList]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
   if (command === 'start') {
