@@ -9,7 +9,7 @@ const {
   removeExt
 } = require('../pathHelper');
 
-module.exports = (rootDir, entryPath = './src/app', target, nativeLifeCycleMap) => {
+module.exports = (rootDir, entryPath = 'src/app', target, nativeLifeCycleMap) => {
   const srcPath = join(rootDir, dirname(entryPath));
 
   const appConfig = readJSONSync(resolve(rootDir, `${removeExt(entryPath)}.json`));
