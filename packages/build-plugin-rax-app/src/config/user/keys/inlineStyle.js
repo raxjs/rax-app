@@ -31,8 +31,8 @@ module.exports = {
 
     const lessRule = config.module.rule('less').test(/\.less$/).exclude.add(/\.module\.less$/).end();
     const lessModuleRule = config.module.rule('less-module').test(/\.module\.less$/);
-    setCSSRule(lessRule, context, value, true);
-    setCSSRule(lessModuleRule, context, value);
+    setCSSRule(lessRule, context, value);
+    setCSSRule(lessModuleRule, context, value, true);
 
     const sassRule = config.module.rule('sass').test(/\.s[ac]ss$/).exclude.add(/\.module\.s[ac]ss$/).end();
     const sassModuleRule = config.module.rule('sass-module').test(/\.module\.s[ac]ss$/);
