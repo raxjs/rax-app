@@ -1,4 +1,4 @@
-# @ali/rax-css
+# rax-app-ts
 
 ## Getting Started
 
