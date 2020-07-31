@@ -122,7 +122,7 @@ function isNativePage(filePath, target) {
  */
 function removeExt(filePath) {
   const lastDot = filePath.lastIndexOf('.');
-  return filePath.slice(0, lastDot);
+  return lastDot === -1 ? filePath : filePath.slice(0, lastDot);
 }
 
 module.exports = {
