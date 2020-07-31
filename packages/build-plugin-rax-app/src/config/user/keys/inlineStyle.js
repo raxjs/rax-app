@@ -117,16 +117,16 @@ function setCSSRule(configRule, context, value, isCSSModule) {
 
       configRule
         .use('minicss')
-          .loader(MiniCssExtractPlugin.loader)
-          .end()
+        .loader(MiniCssExtractPlugin.loader)
+        .end()
         .use('css')
-          .loader(require.resolve('css-loader'))
-          .options(cssLoaderOptions)
-          .end()
+        .loader(require.resolve('css-loader'))
+        .options(cssLoaderOptions)
+        .end()
         .use('postcss')
-          .loader(require.resolve('postcss-loader'))
-          .options(postcssConfig)
-          .end()
+        .loader(require.resolve('postcss-loader'))
+        .options(postcssConfig)
+        .end();
     } else if (isInlineStandard) {
       configInlineStyle(configRule);
     } else if (isNodeStandard) {
