@@ -19,7 +19,6 @@ module.exports = {
   generateAppCSS,
   generateAppJS,
   generateConfig,
-  generateCustomComponent,
   generatePageJS,
   generatePageJSON,
   generatePageXML,
