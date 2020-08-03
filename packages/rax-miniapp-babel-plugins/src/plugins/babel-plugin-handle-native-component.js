@@ -1,7 +1,8 @@
 const { resolve, dirname, join } = require('path');
 const { existsSync, readJSONSync } = require('fs-extra');
-const md5 = require('md5');
 const extMap = require('../utils/extMap');
+const { collectComponentAttr, collectUsings, scanSlot } = require('../utils/handleComponentAST');
+
 const { WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('../constants');
 
 const RELATIVE_COMPONENTS_REG = /^\./;
@@ -52,10 +53,6 @@ function getNpmSourcePath(rootDir, source, target) {
   }
 };
 
-function getTagName(str) {
-  return 'c' + md5(str).slice(0, 6);
-}
-
 function getTmplPath(source, rootDir, dirName, target) {
   // If it's a npm module, keep source origin value, otherwise use absolute path
   const isNpm = !RELATIVE_COMPONENTS_REG.test(source);
@@ -66,7 +63,7 @@ function getTmplPath(source, rootDir, dirName, target) {
     // In Wechat MiniProgram need remove miniprogram_dist
     filePath = filePath.replace('/miniprogram_dist', '');
   }
-  return isNpm ? filePath : `..${filePath.replace(resolve(rootDir, 'src'), '')}`;
+  return isNpm ? filePath : `.${filePath.replace(resolve(rootDir, 'src'), '')}`;
 }
 
 module.exports = function visitor(
@@ -74,13 +71,15 @@ module.exports = function visitor(
   { usingComponents, target, rootDir }
 ) {
   // Collect imported dependencies
-  const components = {};
+  const nativeComponents = {};
+  const nativeComponentsNameMap = new Map();
+
   const scanedPageMap = {};
 
   return {
     visitor: {
       ImportDeclaration: {
-        exit(path, { filename }) {
+        enter(path, { filename }) {
           const { specifiers, source } = path.node;
           if (Array.isArray(specifiers) && t.isStringLiteral(source)) {
             const dirName = dirname(filename);
@@ -89,63 +88,17 @@ module.exports = function visitor(
               if (!scanedPageMap[filename]) {
                 scanedPageMap[filename] = true;
                 path.parentPath.traverse({
-                  JSXOpeningElement(innerPath) {
-                    const { node: innerNode } = innerPath;
-                    if (t.isJSXIdentifier(innerNode.name)) {
-                      const tagName = innerNode.name.name;
-                      if (!components[tagName]) {
-                        components[tagName] = {
-                          props: [],
-                          events: []
-                        };
-                      }
-                      innerNode.attributes.forEach((attrNode) => {
-                        if (!t.isJSXIdentifier(attrNode.name)) return;
-                        const attrName = attrNode.name.name;
-                        if (
-                          !components[tagName].props.includes(attrName) &&
-                          !components[tagName].events.includes(attrName)
-                        ) {
-                          // If it starts with 'on', it must be an event handler
-                          if (/^on/.test(attrName)) {
-                            components[tagName].events.push(attrName.slice(2));
-                          } else {
-                            components[tagName].props.push(attrName);
-                          }
-                        }
-                      });
-                    }
-                  },
+                  JSXOpeningElement: collectComponentAttr(nativeComponents, t)
                 });
               }
-              for (let specifier of specifiers) {
-                const tagName = specifier.local.name;
-                const componentInfo = components[tagName];
-                if (componentInfo) {
-                  // Generate a random tag name
-                  const replacedTagName = /[A-Z]/.test(tagName) ? getTagName(tagName) : tagName;
-                  usingComponents[replacedTagName] = {
-                    path: filePath,
-                    props: componentInfo.props,
-                    events: componentInfo.events
-                  };
-                  // Use const Custom = 'c90589c' replace import Custom from '../public/xxx'
-                  path.replaceWith(
-                    t.VariableDeclaration('const', [
-                      t.VariableDeclarator(
-                        t.identifier(tagName),
-                        t.stringLiteral(replacedTagName)
-                      ),
-                    ])
-                  );
-                  break;
-                }
-              }
+              collectUsings(path, nativeComponents, nativeComponentsNameMap, usingComponents, filePath, t);
             }
           }
         },
       },
-
+      JSXOpeningElement: {
+        exit: scanSlot(nativeComponentsNameMap, usingComponents, t)
+      },
     },
   };
 };

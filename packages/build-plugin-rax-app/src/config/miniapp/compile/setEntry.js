@@ -1,6 +1,5 @@
 const { dirname, join, sep } = require('path');
 const { absoluteModuleResolve } = require('../../pathHelper');
-const filterNativePages = require('../filterNativePages');
 
 /**
  * ./pages/foo -> based on src, return original
@@ -31,7 +30,7 @@ function getEntry(entryAppFilePath, routes, rootDir) {
 module.exports = (config, routes, options) => {
   config.entryPoints.clear();
   const { appEntry, rootDir, target } = options;
-  const entries = getEntry(appEntry, filterNativePages(routes, { rootDir, target }), rootDir);
+  const entries = getEntry(appEntry, routes, rootDir);
   for (const [entryName, source] of Object.entries(entries)) {
     const entryConfig = config.entry(entryName);
     entryConfig.add(source);

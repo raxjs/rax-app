@@ -18,15 +18,23 @@ function generateElementJS(compilation,
 }
 
 function generateElementTemplate(compilation,
-  { target, command, rootDir }) {
+  { usingPlugins, usingComponents, target, command, rootDir }) {
   let content = '<template is="{{r.behavior || \'element\'}}" data="{{r: r, isComp: true}}" />';
   if (target !== MINIAPP) {
-    generateRootTmpl(compilation,
-      { target, command, rootDir });
+    generateRootTmpl(compilation, { usingPlugins, usingComponents, target, command, rootDir });
     content = `<import src="./root.${adapter[target].xml}"/>` + content;
   } else {
+    const pluginTmpl = ejs.render(getTemplate(rootDir, 'plugin.xml', target), {
+      usingPlugins
+    });
+    const componentTmpl = ejs.render(getTemplate(rootDir, 'custom-component.xml', target), {
+      usingComponents
+    });
     // In MiniApp, root.axml need be written into comp.axml
-    content = ejs.render(getTemplate(rootDir, 'root.xml', target)) + content;
+    content = ejs.render(getTemplate(rootDir, 'root.xml', target))
+    + pluginTmpl
+    + componentTmpl
+    + content;
   }
   addFileToCompilation(compilation, {
     filename: `comp.${adapter[target].xml}`,
@@ -36,18 +44,25 @@ function generateElementTemplate(compilation,
   });
 }
 
-function generateElementJSON(compilation, useNativeComponent,
-  { target, command, rootDir }) {
+function generateElementJSON(compilation, { usingComponents, usingPlugins, target, command, rootDir }) {
+  const content = {
+    component: true,
+    usingComponents: {}
+  };
+
+  if (target !== MINIAPP) {
+    content.usingComponents.element = './comp';
+  }
+  Object.keys(usingComponents).forEach(component => {
+    content.usingComponents[component] = usingComponents[component].path;
+  });
+  Object.keys(usingPlugins).forEach(plugin => {
+    content.usingComponents[plugin] = usingPlugins[plugin].path;
+  });
+
   addFileToCompilation(compilation, {
     filename: 'comp.json',
-    content: `{
-      "component": true,
-      "usingComponents": {
-        ${useNativeComponent ? '"custom-component": "./custom-component/index"' : ''}
-        ${useNativeComponent && target !== MINIAPP ? ',' : ''}
-        ${target !== MINIAPP ? '"element": "./comp"' : ''}
-      }
-    }`,
+    content: JSON.stringify(content, null, 2),
     target,
     command,
   });

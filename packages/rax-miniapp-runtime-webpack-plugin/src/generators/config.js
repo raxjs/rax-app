@@ -1,15 +1,9 @@
 const addFileToCompilation = require('../utils/addFileToCompilation');
 
-/**
- * Generate config js file
- * @param {Object} compilation webpack current compilation
- * @param {Object} usingComponents native components
- * @param {Array} pages all pages
- * @param {Object} param3 target/command which common options
- */
-module.exports = function(compilation, usingComponents, pages, { target, command }) {
+module.exports = function(compilation, { usingComponents, usingPlugins, pages, target, command }) {
   const config = {
     usingComponents: {},
+    usingPlugins: {},
     pages
   };
 
@@ -20,7 +14,16 @@ module.exports = function(compilation, usingComponents, pages, { target, command
   Object.keys(usingComponents).forEach(name => {
     config.usingComponents[name] = {
       props: usingComponents[name].props,
-      events: usingComponents[name].events
+      events: usingComponents[name].events,
+      children: usingComponents[name].children
+    };
+  });
+
+  Object.keys(usingPlugins).forEach(name => {
+    config.usingPlugins[name] = {
+      props: usingPlugins[name].props,
+      events: usingPlugins[name].events,
+      children: usingPlugins[name].children
     };
   });
   addFileToCompilation(compilation, {
