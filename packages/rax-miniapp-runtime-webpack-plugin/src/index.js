@@ -52,7 +52,7 @@ class MiniAppRuntimePlugin {
     });
 
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
-      const outputPath = join(compilation.outputOptions.path, target);
+      const outputPath = compilation.outputOptions.path;
       const sourcePath = join(options.rootDir, 'src');
       const assetsMap = {}; // page - asset
       const assetsReverseMap = {}; // asset - page
