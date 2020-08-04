@@ -1,6 +1,6 @@
 {
   "name": "jsx2mp",
-  "version": "1.0.0-14",
+  "version": "1.0.0-15",
   "license": "BSD-3-Clause",
   "description": "API designed for transforming Rax JSX based project to MiniApp.",
   "main": "index.js",
@@ -11,7 +11,7 @@
   "author": "Rax Team",
   "dependencies": {
     "@alib/build-scripts": "^0.1.25",
-    "build-plugin-rax-app": "5.1.1-2",
+    "build-plugin-rax-app": "5.1.3-0",
     "build-plugin-rax-component": "0.2.5-0"
   }
 }
