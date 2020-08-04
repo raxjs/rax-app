@@ -69,7 +69,7 @@ function output(content, raw, options) {
         mode,
         externalPlugins.concat([require('@babel/plugin-proposal-class-properties')]),
         [['@babel/preset-env', {
-          exclude: ["@babel/plugin-transform-regenerator"]
+          exclude: ['@babel/plugin-transform-regenerator']
         }]]
       ).code)
     );
