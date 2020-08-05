@@ -87,12 +87,16 @@ module.exports = function scriptLoader(content) {
     output(outputContent, null, outputOption);
   };
 
-  const outputDir = (source, target) => {
+  const outputDir = (source, target, { isThirdMiniappComponent = false, resourcePath } = {}) => {
     if (existsSync(source)) {
       mkdirpSync(target);
       copySync(source, target, {
         overwrite: false,
-        filter: filename => !/__(mocks|tests?)__/.test(filename) && extname(filename) !== '.json' // JSON file will be written later because usingComponents may be modified
+        filter: filename => {
+          // if isThirdMiniappComponent, only exclude the json file of the component itself
+          const filterJSONFile = isThirdMiniappComponent ? filename !== `${removeExt(resourcePath)}.json` : extname(filename) !== '.json';
+          return !/__(mocks|tests?)__/.test(filename) && filterJSONFile; // JSON file will be written later because usingComponents may be modified
+        }
       });
     }
   };
@@ -204,7 +208,10 @@ module.exports = function scriptLoader(content) {
       if (isThirdMiniappComponent) {
         const source = dirname(this.resourcePath);
         const target = dirname(normalizeNpmFileName(join(outputPath, 'npm', relative(rootNodeModulePath, this.resourcePath))));
-        outputDir(source, target);
+        outputDir(source, target, {
+          isThirdMiniappComponent,
+          resourcePath: this.resourcePath
+        });
         outputFile(rawContent);
 
         const originalComponentConfigPath = removeExt(this.resourcePath) + '.json';
