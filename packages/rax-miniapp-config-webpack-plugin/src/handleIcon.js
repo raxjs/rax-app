@@ -1,4 +1,4 @@
-const { resolve, dirname, relative } = require('path');
+const { dirname, join } = require('path');
 const { copy, existsSync, ensureDirSync } = require('fs-extra');
 
 function isUrl(src) {
@@ -7,9 +7,9 @@ function isUrl(src) {
 
 module.exports = function(path, outputPath) {
   if (!isUrl(path)) {
-    const sourcePath = resolve('src', path);
+    const sourcePath = join(process.cwd(), 'src', path);
     if (existsSync(sourcePath)) {
-      const distPath = resolve(outputPath, path);
+      const distPath = join(outputPath, path);
       ensureDirSync(dirname(distPath));
       copy(sourcePath, distPath);
     }
