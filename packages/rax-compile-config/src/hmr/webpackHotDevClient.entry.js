@@ -7,9 +7,11 @@ let wsProtocol = 'ws';
 if (window.location.protocol === 'https:') {
   wsProtocol = 'wss';
 }
-const wsUrl = `${wsProtocol}://${window.location.hostname}:${window.location.port}/sockjs-node/websocket`;
+const wsHost = process.env.SOCK_HOST || window.location.hostname;
+const wsPort = process.env.SOCK_PORT || window.location.port;
+
+const wsUrl = `${wsProtocol}://${wsHost}:${wsPort}/sockjs-node/websocket`;
 // Connect to WebpackDevServer via a socket.
-console.log('The development server at', wsUrl);
 const connection = new WebSocket(wsUrl);
 
 // Unlike WebpackDevServer client, we won't try to reconnect
