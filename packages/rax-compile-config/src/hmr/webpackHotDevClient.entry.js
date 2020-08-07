@@ -3,7 +3,6 @@
 const stripAnsi = require('strip-ansi');
 const formatWebpackMessages = require('./formatWebpackMessages');
 
-
 let wsProtocol = 'ws';
 if (process.env.SOCK_PROTOCOL) {
   wsProtocol = process.env.SOCK_PROTOCOL;
