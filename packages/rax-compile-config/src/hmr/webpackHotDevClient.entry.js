@@ -3,10 +3,14 @@
 const stripAnsi = require('strip-ansi');
 const formatWebpackMessages = require('./formatWebpackMessages');
 
+
 let wsProtocol = 'ws';
-if (window.location.protocol === 'https:') {
+if (process.env.SOCK_PROTOCOL) {
+  wsProtocol = process.env.SOCK_PROTOCOL;
+} else if (window.location.protocol === 'https:') {
   wsProtocol = 'wss';
 }
+
 const wsHost = process.env.SOCK_HOST || window.location.hostname;
 const wsPort = process.env.SOCK_PORT || window.location.port;
 
