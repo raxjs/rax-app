@@ -194,7 +194,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
       }
 
       // rax-app
-      if (/rax\-app/.test(request)) {
+      if (request === 'rax-app') {
         return callback(null, `commonjs2 ${request}`);
       }
       callback();
