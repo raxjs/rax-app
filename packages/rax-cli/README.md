@@ -12,7 +12,12 @@ $ npm install -g rax-cli
 
 ```sh
 $ rax init <ProjectName>
+
+$ rax init
+
+$ rax init <ProjectName> --template <npmPackageName>
 ```
+
 npm version >= 6.1.0
 
 ```sh

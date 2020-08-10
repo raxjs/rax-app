@@ -119,12 +119,12 @@ async function init(name, verbose, template) {
     projectName = process.cwd().split(path.sep).pop();
   }
 
-  const answers = await askProjectInformaction();
+  const answers = await askProjectInformaction(template);
 
   await createProject(kebabCase(projectName), verbose, template, answers);
 }
 
-function askProjectInformaction() {
+function askProjectInformaction(appTemplate) {
   const rootDir = path.resolve(projectName);
   const conflictFiles = ['src', 'build.json', 'package.json'];
 
@@ -137,7 +137,7 @@ function askProjectInformaction() {
     return conflictFiles.some(filename => fs.existsSync(path.join(targetDir, filename)));
   };
 
-  let prompts = config.promptQuestion;
+  let prompts = config.getPromptQuestion(appTemplate);
   if (containConflictFile(rootDir)) {
     prompts = [
       {
@@ -184,16 +184,20 @@ async function createProject(name, verbose, template, userAnswers) {
     process.chdir(rootDir);
   }
 
+  template = template || (languageType === 'ts' ? '@rax-materials/scaffolds-app-ts' : '@rax-materials/scaffolds-app-js');
+
   console.log(
     'Creating a new Rax project in',
     rootDir,
+    'template',
+    template
   );
 
   const { projectType, projectTargets, appType, languageType } = userAnswers;
   if (projectType === 'app') {
     await downloadAndGenerateProject(
       rootDir,
-      languageType === 'ts' ? '@rax-materials/scaffolds-app-ts' : '@rax-materials/scaffolds-app-js',
+      template,
       null,
       null,
       null,
@@ -215,6 +219,7 @@ async function createProject(name, verbose, template, userAnswers) {
       template: typeToTemplate[projectType],
       templateOptions: {
         npmName: 'rax-example',
+        projectTargets,
       }
     });
   }
