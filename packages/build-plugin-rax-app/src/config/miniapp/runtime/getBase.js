@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
-const setEntry = require('./setEntry');
+const setEntry = require('../../setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 const filterNativePages = require('../filterNativePages');
 const targetPlatformMap = require('../targetPlatformMap');
@@ -31,27 +31,13 @@ module.exports = (context, target, options) => {
   }, target);
   const appConfig = getAppConfig(rootDir, target, nativeLifeCycleMap);
   appConfig.routes = filterNativePages(appConfig.routes, needCopyList, { rootDir, target, outputPath });
-  setEntry(config, context, appConfig.routes);
-
+  setEntry(config, context, target);
   config.resolve.extensions
     .clear()
     .merge(getPlatformExtensions(targetPlatformMap[target].name, ['.js', '.jsx', '.ts', '.tsx', '.json']));
 
-  // Remove all app.json before it
-  config.module.rule('appJSON').uses.clear();
-
-  config.module
-    .rule('json')
-    .test(/\.json$/)
-    .type('javascript/auto')
-    .use('json-loader')
-    .loader(require.resolve('json-loader'));
-
   config.output
-    .filename(`${target}/common/[name].js`)
-    .library('createApp')
-    .libraryExport('default')
-    .libraryTarget('window');
+    .filename(`${target}/common/[name].js`);
 
   config.module.rule('jsx')
     .use('babel')
@@ -70,21 +56,6 @@ module.exports = (context, target, options) => {
       ];
       return options;
     });
-
-  // Split common chunks
-  config.optimization.splitChunks({
-    cacheGroups: {
-      commons: {
-        name: 'vendor',
-        chunks: 'all',
-        minChunks: 2
-      }
-    }
-  });
-  // 2MB
-  config.performance.maxEntrypointSize(2097152);
-  // 1.5MB
-  config.performance.maxAssetSize(1572864);
 
   config.plugin('MiniAppConfigPlugin').use(MiniAppConfigPlugin, [
     {
