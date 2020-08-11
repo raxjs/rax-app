@@ -2,6 +2,7 @@
 
 const updateNotifier = require('update-notifier');
 const fs = require('fs');
+const fse = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
@@ -10,7 +11,7 @@ const kebabCase = require('lodash.kebabcase');
 const { checkAliInternal } = require('ice-npm-utils');
 const argv = require('minimist')(process.argv.slice(2));
 const { downloadAndGenerateProject } = require('@iceworks/generate-project');
-const { generateComponent } = require('@iceworks/generate-material');
+const { generateMaterial, downloadMaterialTemplate } = require('@iceworks/generate-material');
 
 const config = require('./config');
 const pkg = require('../package.json');
@@ -184,6 +185,8 @@ async function createProject(name, verbose, template, userAnswers) {
     process.chdir(rootDir);
   }
 
+  const { projectType, projectTargets, appType, languageType } = userAnswers;
+  const registry = 'https://registry.npm.taobao.org';
   template = template || (languageType === 'ts' ? '@rax-materials/scaffolds-app-ts' : '@rax-materials/scaffolds-app-js');
 
   console.log(
@@ -193,13 +196,12 @@ async function createProject(name, verbose, template, userAnswers) {
     template
   );
 
-  const { projectType, projectTargets, appType, languageType } = userAnswers;
   if (projectType === 'app') {
     await downloadAndGenerateProject(
       rootDir,
       template,
       null,
-      null,
+      registry,
       null,
       {
         targets: projectTargets,
@@ -213,15 +215,18 @@ async function createProject(name, verbose, template, userAnswers) {
       plugin: '@icedesign/template-rax-miniapp-plugin'
     };
 
-    await generateComponent({
+    const tempDir = path.join(rootDir, '.tmp');
+    await downloadMaterialTemplate(tempDir, typeToTemplate[projectType], registry);
+    await generateMaterial({
       rootDir,
-      registry: 'https://registry.npm.alibaba-inc.com',
-      template: typeToTemplate[projectType],
+      materialTemplateDir: tempDir,
       templateOptions: {
         npmName: 'rax-example',
         projectTargets,
-      }
+      },
+      materialType: 'component'
     });
+    await fse.remove(tempDir);
   }
 
   console.log(chalk.white.bold('To run your app:'));

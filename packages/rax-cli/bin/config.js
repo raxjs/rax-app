@@ -53,11 +53,10 @@ function getPromptQuestion(appTemplate) {
           targets = [{
             name: 'Web',
             value: 'web',
-          },
-          {
+          }].concat(targets).concat([{
             name: 'Kraken (Flutter)',
             value: 'kraken',
-          }].concat(targets);
+          }]);
         }
         return targets;
       },
