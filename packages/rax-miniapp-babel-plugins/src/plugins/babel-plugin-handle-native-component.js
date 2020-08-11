@@ -1,7 +1,7 @@
 const { resolve, dirname, join } = require('path');
 const { existsSync, readJSONSync } = require('fs-extra');
 const extMap = require('../utils/extMap');
-const { collectComponentAttr, collectUsings, scanSlot } = require('../utils/handleComponentAST');
+const { collectComponentAttr, collectUsings } = require('../utils/handleComponentAST');
 
 const { WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('../constants');
 
@@ -96,10 +96,7 @@ module.exports = function visitor(
             }
           }
         },
-      },
-      JSXOpeningElement: {
-        exit: scanSlot(nativeComponentsNameMap, usingComponents, t)
-      },
+      }
     },
   };
 };

@@ -1,16 +1,12 @@
-const { resolve, relative, join, dirname } = require('path');
-const { readJsonSync, existsSync, copyFileSync, lstatSync, ensureDirSync } = require('fs-extra');
-const { RawSource } = require('webpack-sources');
-const adjustCSS = require('./utils/adjustCSS');
-const { MINIAPP, VENDOR_CSS_FILE_NAME } = require('./constants');
-const adapter = require('./adapter');
+const { resolve, join } = require('path');
+const { readJsonSync, existsSync } = require('fs-extra');
+const { MINIAPP } = require('./constants');
 const isCSSFile = require('./utils/isCSSFile');
 const wrapChunks = require('./utils/wrapChunks');
 const {
   generateAppCSS,
   generateAppJS,
   generateConfig,
-  generatePageCSS,
   generatePageJS,
   generatePageJSON,
   generatePageXML,
@@ -23,7 +19,6 @@ const {
 } = require('./generators');
 
 const PluginName = 'MiniAppRuntimePlugin';
-const extRegex = /\.(css|js|wxss|acss)(\?|$)/;
 
 class MiniAppRuntimePlugin {
   constructor(options) {
@@ -35,7 +30,7 @@ class MiniAppRuntimePlugin {
     const rootDir = __dirname;
     const options = this.options;
     const target = this.target;
-    const { nativeLifeCycleMap, usingComponents, usingPlugins, routes = [], command } = options;
+    const { nativeLifeCycleMap, usingComponents = {}, usingPlugins = {}, routes = [], command } = options;
     let isFirstRender = true;
     let lastUseComponentCount = 0; // Record native component and plugin component used count last time
 
@@ -45,7 +40,7 @@ class MiniAppRuntimePlugin {
       compilation.hooks.optimizeChunkAssets.tapAsync(
         PluginName,
         (chunks, callback) => {
-          wrapChunks(compilation, chunks);
+          wrapChunks(compilation, chunks, target);
           callback();
         }
       );
@@ -54,8 +49,7 @@ class MiniAppRuntimePlugin {
     compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
       const outputPath = compilation.outputOptions.path;
       const sourcePath = join(options.rootDir, 'src');
-      const assetsMap = {}; // page - asset
-      const assetsReverseMap = {}; // asset - page
+      const pages = [];
       const changedFiles = Object.keys(
         compiler.watchFileSystem.watcher.mtimes
       ).map((filePath) => {
@@ -75,43 +69,8 @@ class MiniAppRuntimePlugin {
       // Collect asset
       routes
         .forEach(({ entryName }) => {
+          pages.push(entryName);
           const assets = { js: [], css: [] };
-          const filePathMap = {};
-          const entryFiles = compilation.entrypoints.get(entryName).getFiles();
-          entryFiles.forEach((filePath) => {
-            // Skip non css or js
-            const extMatch = extRegex.exec(filePath);
-            if (!extMatch) return;
-
-            const ext = isCSSFile(filePath) ? 'css' : extMatch[1];
-
-            // Adjust css content
-            if (ext === 'css') {
-              if (filePath !== `${target}/${VENDOR_CSS_FILE_NAME}`) {
-                compilation.assets[
-                  `${filePath}.${adapter[target].css}`
-                ] = new RawSource(
-                  adjustCSS(compilation.assets[filePath].source())
-                );
-                delete compilation.assets[`${filePath}`];
-              }
-            }
-
-            // Skip recorded
-            if (filePathMap[filePath]) return;
-            filePathMap[filePath] = true;
-
-            // Record
-            assets[ext].push(filePath);
-
-            // Insert into assetsReverseMap
-            assetsReverseMap[filePath] =
-              assetsReverseMap[filePath] || [];
-            if (assetsReverseMap[filePath].indexOf(entryName) === -1)
-              assetsReverseMap[filePath].push(entryName);
-          });
-
-          assetsMap[entryName] = assets;
           let pageConfig = {};
           const pageConfigPath = resolve(outputPath, entryName + '.json');
           if (existsSync(pageConfigPath)) {
@@ -147,13 +106,6 @@ class MiniAppRuntimePlugin {
               entryName,
               { target, command, rootDir }
             );
-
-            // Page css
-            generatePageCSS(compilation, assets, entryName, {
-              target,
-              command,
-              rootDir,
-            });
           }
 
           // Page js
@@ -175,7 +127,7 @@ class MiniAppRuntimePlugin {
       // Collect app.js
       if (isFirstRender || changedFiles.includes('/app.js' || '/app.ts')) {
         const commonAppJSFilePaths = compilation.entrypoints
-          .get('app')
+          .get('index')
           .getFiles()
           .filter((filePath) => !isCSSFile(filePath));
         // App js
@@ -199,6 +151,7 @@ class MiniAppRuntimePlugin {
         generateConfig(compilation, {
           usingComponents,
           usingPlugins,
+          pages,
           target,
           command,
           rootDir,

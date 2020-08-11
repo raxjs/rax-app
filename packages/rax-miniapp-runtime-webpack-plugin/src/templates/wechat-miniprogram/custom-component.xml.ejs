@@ -10,15 +10,16 @@
         <%= `bind${event.toLowerCase()}` %>="{{r.<%= event %>}}"
       <% });%>
     >
-      <% usingComponents[componentTag].children.forEach(function(child, index){%>
-        <% if(child.slot) {%>
-          <view slot="<%= child.slot %>">
-            <template is="element_1" data="{{r: r.children[<%= index %>]}}" />
+      <block wx:for="{{r.children}}" wx:key="nodeId">
+        <block wx:if="{{item['slot']}}">
+          <view slot="{{item['slot']}}">
+            <template is="element_1" data="{{r: item}}" />
           </view>
-        <% } else { %>
-          <template is="element_1" data="{{r: r.children[<%= index %>]}}" />
-        <% } %>
-      <% });%>
+        </block>
+        <block wx:else>
+          <template is="element_1" data="{{r: item}}" />
+        </block>
+      </block>
     </<%=componentTag%>>
   </template>
 <% }); %>

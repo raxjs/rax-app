@@ -23,7 +23,8 @@ class EntryPlugin {
       isMultiPages,
       isInlineStyle,
       absoluteDocumentPath,
-      absoluteShellPath
+      absoluteShellPath,
+      assetsProcessor
     } = this.options;
 
     const publicPath = compiler.options.output.publicPath;
@@ -43,6 +44,7 @@ class EntryPlugin {
         scripts: isMultiPages ? [`${publicPath}web/${name}.js`] : [`${publicPath}web/index.js`],
         absoluteDocumentPath,
         absoluteShellPath,
+        assetsProcessor
       };
 
       entryConfig[name] = `${loader}?${qs.stringify(query)}!${sourcePath}`;
