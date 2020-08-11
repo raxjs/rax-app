@@ -33,13 +33,13 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
   }, target);
   const appConfig = getAppConfig(rootDir, entryPath, target, nativeLifeCycleMap);
   appConfig.routes = filterNativePages(appConfig.routes, needCopyList, { rootDir, entryPath, target, outputPath });
-  setEntry(config, context, target);
+  setEntry(config, context, entryPath, target);
   config.resolve.extensions
     .clear()
     .merge(getPlatformExtensions(targetPlatformMap[target].name, ['.js', '.jsx', '.ts', '.tsx', '.json']));
 
   config.output
-    .filename(`${target}/common/[name].js`);
+    .filename('common/[name].js');
 
   config.module.rule('jsx')
     .use('babel')

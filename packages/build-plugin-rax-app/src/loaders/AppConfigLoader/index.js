@@ -1,7 +1,6 @@
-const { getRouteName } = require('rax-compile-config');
 const { getOptions } = require('loader-utils');
 const getDepPath = require('./getDepPath');
-
+const getRouteName = require('./getRouteName');
 /**
  * universal-app-config-loader
  * return {
@@ -21,7 +20,8 @@ const getDepPath = require('./getDepPath');
  */
 module.exports = function(appJSON) {
   const options = getOptions(this) || {};
-  const { type } = options;
+  const { type, entryPath } = options;
+
   const appConfig = JSON.parse(appJSON);
 
   if (!appConfig.routes || !Array.isArray(appConfig.routes)) {
@@ -53,7 +53,7 @@ module.exports = function(appJSON) {
     // Second level function to support rax-use-router rule autorun function type component.
     const dynamicImportComponent =
       `(routeProps) =>
-      import(/* webpackChunkName: "${getRouteName(route, this.rootContext).toLocaleLowerCase()}.chunk" */ '${getDepPath(route.source, this.rootContext)}')
+      import(/* webpackChunkName: "${getRouteName(route, this.rootContext, entryPath).toLocaleLowerCase()}.chunk" */ '${getDepPath(route.source, this.rootContext)}')
       .then((mod) => () => {
         const reference = interopRequire(mod);
         function Component(props) {

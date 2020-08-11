@@ -5,17 +5,17 @@ const { hmrClient } = require('rax-compile-config');
 const { WECHAT_MINIPROGRAM, MINIAPP, QUICKAPP } = require('../constants');
 
 
-module.exports = (config, context, target) => {
+module.exports = (config, context, entryPath, target) => {
   const { rootDir, command } = context;
   const isDev = command === 'start';
 
   // SPA
-  const appEntry = absoluteModuleResolve(rootDir, './src/app');
+  const appEntry = absoluteModuleResolve(rootDir, `./${entryPath}`);
   const entryConfig = config.entry('index');
 
   config.module.rule('appJSON')
     .use('loader')
-    .tap(() => ({ type: target }));
+    .tap(() => ({ type: target, entryPath }));
 
 
   ['jsx', 'tsx'].forEach(tag => {
