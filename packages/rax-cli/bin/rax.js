@@ -187,19 +187,17 @@ async function createProject(name, verbose, template, userAnswers) {
 
   const { projectType, projectTargets, appType, languageType } = userAnswers;
   const registry = 'https://registry.npm.taobao.org';
-  template = template || (languageType === 'ts' ? '@rax-materials/scaffolds-app-ts' : '@rax-materials/scaffolds-app-js');
 
   console.log(
     'Creating a new Rax project in',
     rootDir,
-    'template',
-    template
   );
 
   if (projectType === 'app') {
+    const appTemplate = template || (languageType === 'ts' ? '@rax-materials/scaffolds-app-ts' : '@rax-materials/scaffolds-app-js');
     await downloadAndGenerateProject(
       rootDir,
-      template,
+      appTemplate,
       null,
       registry,
       null,
