@@ -73,7 +73,7 @@ function getTmplPath(source, rootDir, dirName, target, runtimeDependencies) {
  * @param {string} str
  */
 function isRegExpStr(str) {
-  return str[0] === '/' && str[str.length - 1] === '/'
+  return str[0] === '/' && str[str.length - 1] === '/';
 }
 
 /**
@@ -87,7 +87,7 @@ function isInRuntimeDependencies(dependency, runtimeDependencies = []) {
       const reg = new RegExp(runtimeDependency.slice(1, -1));
       if (reg.test(dependency)) return true;
     } else if (runtimeDependency === dependency) {
-       return true;
+      return true;
     }
   }
   return false;
@@ -96,7 +96,7 @@ function isInRuntimeDependencies(dependency, runtimeDependencies = []) {
 module.exports = function visitor(
   { types: t },
   { usingComponents, target, rootDir, runtimeDependencies }
-  ) {
+) {
   // Collect imported dependencies
   const nativeComponents = {};
   const nativeComponentsNameMap = new Map();
