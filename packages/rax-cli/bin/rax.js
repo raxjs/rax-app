@@ -191,6 +191,7 @@ async function createProject(name, verbose, template, userAnswers) {
   console.log(
     'Creating a new Rax project in',
     rootDir,
+    userAnswers,
   );
 
   if (projectType === 'app') {

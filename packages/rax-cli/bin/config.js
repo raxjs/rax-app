@@ -66,7 +66,6 @@ function getPromptQuestion(appTemplate) {
     name: 'appType',
     message: 'What\'s your application type? (Only valid in target: Web/Kraken)',
     when(answers) {
-      console.log(111, answers);
       // app and targets not include miniapp/wechat-miniprogram
       return answers.projectType === 'app' && !(answers.projectTargets.includes('miniapp') && answers.projectTargets.includes('wechat-miniprogram'));
     },
