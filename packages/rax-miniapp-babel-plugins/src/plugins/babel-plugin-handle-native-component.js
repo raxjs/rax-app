@@ -86,9 +86,7 @@ function isInRuntimeDependencies(dependency, runtimeDependencies = []) {
     if (isRegExpStr(runtimeDependency)) {
       const reg = new RegExp(runtimeDependency.slice(1, -1));
       if (reg.test(dependency)) return true;
-    } else if (runtimeDependency === dependency) {
-      return true;
-    }
+    } else if (runtimeDependency === dependency) return true;
   }
   return false;
 }
