@@ -20,13 +20,6 @@ function eliminateDeadCode(source) {
     parserOpts,
     plugins: [
       [
-        require('babel-plugin-minify-dead-code-elimination'),
-        {
-          optimizeRawSize: true,
-          keepFnName: true
-        }
-      ],
-      [
         require('babel-plugin-danger-remove-unused-import'),
         {
           ignore: 'rax'
