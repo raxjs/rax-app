@@ -1,11 +1,9 @@
-const { join, relative, dirname, extname } = require('path');
+const { join, relative, dirname, resolve } = require('path');
 const enhancedResolve = require('enhanced-resolve');
 const chalk = require('chalk');
 
-const { QUICKAPP } = require('./constants');
-const { isNpmModule, isWeexModule, isQuickAppModule, isRaxModule, isJsx2mpRuntimeModule, isNodeNativeModule } = require('./utils/judgeModule');
-const { addRelativePathPrefix, normalizeOutputFilePath, removeExt } = require('./utils/pathHelper');
-const getAliasCorrespondingValue = require('./utils/getAliasCorrespondingValue');
+const { isNpmModule, isWeexModule, isRaxModule, isJsx2mpRuntimeModule, isNodeNativeModule } = require('./utils/judgeModule');
+const { addRelativePathPrefix, normalizeOutputFilePath } = require('./utils/pathHelper');
 
 const RUNTIME = 'jsx2mp-runtime';
 
@@ -19,13 +17,9 @@ const defaultOptions = {
 
 const transformPathMap = {};
 
-const resolveWithTS = enhancedResolve.create.sync({
-  extensions: ['.ts', '.js']
-});
-
 module.exports = function visitor({ types: t }, options) {
   options = Object.assign({}, defaultOptions, options);
-  const { normalizeNpmFileName, distSourcePath, resourcePath, outputPath, disableCopyNpm, platform, aliasEntries } = options;
+  const { normalizeNpmFileName, distSourcePath, resourcePath, outputPath, disableCopyNpm, platform } = options;
   const source = (value, rootContext) => {
     // Example:
     // value => '@ali/universal-goldlog' or '@ali/xxx/foo/lib'
@@ -36,43 +30,24 @@ module.exports = function visitor({ types: t }, options) {
 
     const rootNodeModulePath = join(rootContext, 'node_modules');
     const filePath = relative(dirname(distSourcePath), join(outputPath, 'npm', relative(rootNodeModulePath, target)));
-    let modifiedValue = normalizeNpmFileName(addRelativePathPrefix(normalizeOutputFilePath(filePath)));
-    // json file will be transformed to js file
-    if (extname(value) === '.json') {
-      modifiedValue = removeExt(modifiedValue);
-    }
-    return t.stringLiteral(modifiedValue);
+    return t.stringLiteral(normalizeNpmFileName(addRelativePathPrefix(normalizeOutputFilePath(filePath))));
   };
 
   // In WeChat MiniProgram, `require` can't get index file if index is omitted
   const ensureIndexInPath = (value, resourcePath) => {
-    const target = resolveWithTS(dirname(resourcePath), value);
+    const target = require.resolve(resolve(dirname(resourcePath), value));
     const result = relative(dirname(resourcePath), target);
-    return removeExt(addRelativePathPrefix(normalizeOutputFilePath(result)));
+    return addRelativePathPrefix(normalizeOutputFilePath(result));
   };
 
   return {
     visitor: {
       ImportDeclaration(path, state) {
-        let { value } = path.node.source;
-        // Handle alias
-        const aliasCorrespondingValue = getAliasCorrespondingValue(aliasEntries, value, resourcePath);
-        if (aliasCorrespondingValue) {
-          path.node.source = t.stringLiteral(aliasCorrespondingValue);
-          value = path.node.source.value;
-        }
+        const { value } = path.node.source;
 
         if (isNpmModule(value)) {
           if (isWeexModule(value)) {
             path.remove();
-            return;
-          }
-          if (isQuickAppModule(value)) {
-            if (platform.type === QUICKAPP) {
-              path.skip();
-            } else {
-              path.remove();
-            }
             return;
           }
           if (isNodeNativeModule(value)) {
@@ -114,26 +89,11 @@ module.exports = function visitor({ types: t }, options) {
           node.arguments.length === 1
         ) {
           if (t.isStringLiteral(node.arguments[0])) {
-            let moduleName = node.arguments[0].value;
-            // Handle alias
-            const aliasCorrespondingValue = getAliasCorrespondingValue(aliasEntries, moduleName, resourcePath);
-            if (aliasCorrespondingValue) {
-              path.node.arguments = [
-                t.stringLiteral(aliasCorrespondingValue)
-              ];
-              moduleName = node.arguments[0].value;
-            }
+            const moduleName = node.arguments[0].value;
+
             if (isNpmModule(moduleName)) {
               if (isWeexModule(moduleName)) {
                 path.replaceWith(t.nullLiteral());
-                return;
-              }
-              if (isQuickAppModule(moduleName)) {
-                if (platform.type === QUICKAPP) {
-                  path.skip();
-                } else {
-                  path.replaceWith(t.nullLiteral());
-                }
                 return;
               }
               if (isNodeNativeModule(moduleName)) {

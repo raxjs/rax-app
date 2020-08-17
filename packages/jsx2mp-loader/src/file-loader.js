@@ -4,8 +4,9 @@ const { copySync } = require('fs-extra');
 const loaderUtils = require('loader-utils');
 
 module.exports = function fileLoader(content) {
-  const { entryPath, outputPath } = loaderUtils.getOptions(this) || {};
+  const { entryPath } = loaderUtils.getOptions(this) || {};
   const rootContext = this.rootContext;
+  const outputPath = this._compiler.outputPath;
 
   const relativeFilePath = relative(
     join(rootContext, dirname(entryPath)),

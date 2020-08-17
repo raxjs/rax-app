@@ -1,7 +1,6 @@
 const { extname } = require('path');
 
 const WEEX_MODULE_REG = /^@?weex-/;
-const QUICKAPP_MODULE_REG = /^@system\./;
 const JSX2MP_RUNTIME_MODULE_REG = /^jsx2mp-runtime/;
 
 function isNpmModule(value) {
@@ -10,10 +9,6 @@ function isNpmModule(value) {
 
 function isWeexModule(value) {
   return WEEX_MODULE_REG.test(value);
-}
-
-function isQuickAppModule(value) {
-  return QUICKAPP_MODULE_REG.test(value);
 }
 
 function isRaxModule(value) {
@@ -39,7 +34,6 @@ function isTypescriptFile(value) {
 module.exports = {
   isNpmModule,
   isWeexModule,
-  isQuickAppModule,
   isRaxModule,
   isJsx2mpRuntimeModule,
   isNodeNativeModule,

@@ -1,6 +1,6 @@
 {
   "name": "jsx2mp-loader",
-  "version": "0.4.13",
+  "version": "0.3.1",
   "description": "",
   "files": [
     "src"
@@ -29,8 +29,9 @@
     "less": "^3.10.3",
     "loader-utils": "^1.2.3",
     "pretty-data": "^0.40.0",
+    "pretty-error": "^2.1.1",
     "sass": "^1.23.2",
-    "stylesheet-loader": "^0.8.0",
+    "stylesheet-loader": "^0.6.8",
     "stylus": "^0.54.7",
     "terser": "^4.3.8"
   }

@@ -1,41 +1,35 @@
-const { existsSync, mkdirpSync } = require('fs-extra');
+const { readFileSync, existsSync, mkdirpSync } = require('fs-extra');
 const { relative, join, dirname, resolve } = require('path');
+const compiler = require('jsx-compiler');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
+const PrettyError = require('pretty-error');
 const cached = require('./cached');
-const { removeExt, isFromTargetDirs, doubleBackslash, normalizeOutputFilePath, addRelativePathPrefix, getHighestPriorityPackage } = require('./utils/pathHelper');
+const { removeExt, isFromTargetDirs, doubleBackslash, normalizeOutputFilePath, addRelativePathPrefix } = require('./utils/pathHelper');
 const eliminateDeadCode = require('./utils/dce');
 const { isTypescriptFile } = require('./utils/judgeModule');
-const parse = require('./utils/parseRequest');
-
 const processCSS = require('./styleProcessor');
 const output = require('./output');
 
+const pe = new PrettyError();
+
+const ComponentLoader = __filename;
 const ScriptLoader = require.resolve('./script-loader');
-const MINIAPP_PLUGIN_COMPONENTS_REG = /^plugin\:\/\//;
 
 module.exports = async function componentLoader(content) {
-  const query = parse(this.request);
-  // Only handle component role file
-  if (query.role !== 'component') {
-    return content;
-  }
-
   const loaderOptions = getOptions(this);
-  const { platform, entryPath, outputPath, constantDir, mode, disableCopyNpm, turnOffSourceMap, aliasEntries, injectAppCssComponent } = loaderOptions;
+  const { platform, entryPath, constantDir, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
+  const rawContent = readFileSync(this.resourcePath, 'utf-8');
   const resourcePath = this.resourcePath;
   const rootContext = this.rootContext;
   const absoluteConstantDir = constantDir.map(dir => join(rootContext, dir));
-
+  const outputPath = this._compiler.outputPath;
   const sourcePath = join(rootContext, dirname(entryPath));
 
   const relativeSourcePath = relative(sourcePath, this.resourcePath);
   const distFileWithoutExt = removeExt(join(outputPath, relativeSourcePath), platform.type);
 
   const isFromConstantDir = cached(isFromTargetDirs(absoluteConstantDir));
-
-  const JSXCompilerPath = getHighestPriorityPackage('jsx-compiler', this.rootContext);
-  const compiler = require(JSXCompilerPath);
 
   const compilerOptions = Object.assign({}, compiler.baseOptions, {
     resourcePath: this.resourcePath,
@@ -45,23 +39,18 @@ module.exports = async function componentLoader(content) {
     platform,
     sourceFileName: this.resourcePath,
     disableCopyNpm,
-    turnOffSourceMap,
-    aliasEntries
+    turnOffSourceMap
   });
 
-  const rawContentAfterDCE = eliminateDeadCode(content);
+  const rawContentAfterDCE = eliminateDeadCode(rawContent);
 
   let transformed;
   try {
     transformed = compiler(rawContentAfterDCE, compilerOptions);
   } catch (e) {
     console.log(chalk.red(`\n[${platform.name}] Error occured when handling Component ${this.resourcePath}`));
-    if (process.env.DEBUG === 'true') {
-      throw new Error(e);
-    } else {
-      const errMsg = e.node ? `${e.message}\nat ${this.resourcePath}` : `Unknown compile error! please check your code at ${this.resourcePath}`;
-      throw new Error(errMsg);
-    }
+    console.log(pe.render(e));
+    return '';
   }
 
   const { style, assets } = await processCSS(transformed.cssFiles, sourcePath);
@@ -80,7 +69,7 @@ module.exports = async function componentLoader(content) {
       const value = config.usingComponents[key];
 
       if (/^c-/.test(key)) {
-        const result = MINIAPP_PLUGIN_COMPONENTS_REG.test(value) ? value : removeExt(addRelativePathPrefix(relative(dirname(this.resourcePath), value)));
+        const result = removeExt(addRelativePathPrefix(relative(dirname(this.resourcePath), value))); // ./components/Repo
         usingComponents[key] = normalizeOutputFilePath(result);
       } else {
         usingComponents[key] = normalizeOutputFilePath(value);
@@ -92,25 +81,13 @@ module.exports = async function componentLoader(content) {
   const distFileDir = dirname(distFileWithoutExt);
   if (!existsSync(distFileDir)) mkdirpSync(distFileDir);
 
-  // Only works when developing miniapp plugin, to declare the use of __app_css component
-  if (injectAppCssComponent) {
-    const appCssComponentPath = resolve(outputPath, '__app_css', 'index');
-    const relativeAppCssComponentPath = relative(distFileDir, appCssComponentPath);
-    config.usingComponents = {
-      '__app_css': relativeAppCssComponentPath,
-      ...config.usingComponents
-    };
-  }
-
   const outputContent = {
     code: transformed.code,
     map: transformed.map,
     css: transformed.style || '',
     json: config,
     template: transformed.template,
-    assets: transformed.assets,
-    importComponents: transformed.importComponents,
-    iconfontMap: transformed.iconfontMap,
+    assets: transformed.assets
   };
   const outputOption = {
     outputPath: {
@@ -121,11 +98,10 @@ module.exports = async function componentLoader(content) {
       assets: outputPath
     },
     mode,
-    platform,
     isTypescriptFile: isTypescriptFile(this.resourcePath)
   };
 
-  output(outputContent, content, outputOption);
+  output(outputContent, rawContent, outputOption);
 
   function isCustomComponent(name, usingComponents = {}) {
     const matchingPath = join(dirname(resourcePath), name);
@@ -146,7 +122,8 @@ module.exports = async function componentLoader(content) {
     if (isCustomComponent(name, transformed.usingComponents)) {
       const componentPath = resolve(dirname(resourcePath), name);
       dependencies.push({
-        name: isFromConstantDir(componentPath) ? name : `${name}?role=component`, // Native miniapp component js file will loaded by script-loader
+        name,
+        loader: isFromConstantDir(componentPath) ? ScriptLoader : ComponentLoader, // Native miniapp component js file will loaded by script-loader
         options: loaderOptions
       });
     } else {

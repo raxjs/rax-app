@@ -1,15 +1,19 @@
-const { existsSync, mkdirpSync } = require('fs-extra');
-const { join } = require('path');
+const { readJSONSync, readFileSync, existsSync, mkdirSync } = require('fs-extra');
+const { join, sep, extname } = require('path');
+const compiler = require('jsx-compiler');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
-const { doubleBackslash, getHighestPriorityPackage } = require('./utils/pathHelper');
+const PrettyError = require('pretty-error');
+const moduleResolve = require('./utils/moduleResolve');
+const { removeExt, doubleBackslash, normalizeOutputFilePath } = require('./utils/pathHelper');
 const eliminateDeadCode = require('./utils/dce');
 const defaultStyle = require('./defaultStyle');
-const { QUICKAPP } = require('./constants');
 const processCSS = require('./styleProcessor');
 const output = require('./output');
+const adaptAppConfig = require('./adaptConfig');
 const { isTypescriptFile } = require('./utils/judgeModule');
-const parse = require('./utils/parseRequest');
+
+const pe = new PrettyError();
 
 function createImportStatement(req) {
   return `import '${doubleBackslash(req)}';`;
@@ -22,23 +26,29 @@ function generateDependencies(dependencies) {
     .join('\n');
 }
 
-module.exports = async function appLoader(content) {
-  const query = parse(this.request);
-  // Only handle app role file
-  if (query.role !== 'app') {
-    return content;
+function getRelativePath(filePath) {
+  let relativePath;
+  if (filePath[0] === sep) {
+    relativePath = `.${filePath}`;
+  } else if (filePath[0] === '.') {
+    relativePath = filePath;
+  } else {
+    relativePath = `.${sep}${filePath}`;
   }
+  return relativePath;
+}
 
+module.exports = async function appLoader(content) {
   const loaderOptions = getOptions(this);
-  const { entryPath, outputPath, platform, mode, disableCopyNpm, turnOffSourceMap, aliasEntries } = loaderOptions;
-  const rawContent = content;
+  const { entryPath, platform, mode, disableCopyNpm, turnOffSourceMap } = loaderOptions;
+  const appConfigPath = removeExt(this.resourcePath) + '.json';
+  const rawContent = readFileSync(this.resourcePath, 'utf-8');
+  const config = readJSONSync(appConfigPath);
 
-  if (!existsSync(outputPath)) mkdirpSync(outputPath);
+  const outputPath = this._compiler.outputPath;
+  if (!existsSync(outputPath)) mkdirSync(outputPath);
 
   const sourcePath = join(this.rootContext, entryPath);
-
-  const JSXCompilerPath = getHighestPriorityPackage('jsx-compiler', this.rootContext);
-  const compiler = require(JSXCompilerPath);
 
   const compilerOptions = Object.assign({}, compiler.baseOptions, {
     resourcePath: this.resourcePath,
@@ -48,10 +58,8 @@ module.exports = async function appLoader(content) {
     type: 'app',
     sourceFileName: this.resourcePath,
     disableCopyNpm,
-    turnOffSourceMap,
-    aliasEntries
+    turnOffSourceMap
   });
-
   const rawContentAfterDCE = eliminateDeadCode(rawContent);
 
   let transformed;
@@ -59,32 +67,34 @@ module.exports = async function appLoader(content) {
     transformed = compiler(rawContentAfterDCE, compilerOptions);
   } catch (e) {
     console.log(chalk.red(`\n[${platform.name}] Error occured when handling App ${this.resourcePath}`));
-    if (process.env.DEBUG === 'true') {
-      throw new Error(e);
-    } else {
-      const errMsg = e.node ? `${e.message}\nat ${this.resourcePath}` : `Unknown compile error! please check your code at ${this.resourcePath}`;
-      throw new Error(errMsg);
-    }
+    console.log(pe.render(e));
+    return '';
   }
 
   const { style, assets } = await processCSS(transformed.cssFiles, sourcePath);
   transformed.style = style;
   transformed.assets = assets;
 
+  this.addDependency(appConfigPath);
+
+  const transformedAppConfig = transformAppConfig(entryPath, config, platform.type);
+
   const outputContent = {
     code: transformed.code,
     map: transformed.map,
+    config: `module.exports = ${JSON.stringify(config, null, 2)}`,
     css: transformed.style ? defaultStyle + transformed.style : defaultStyle,
+    json: transformedAppConfig
   };
   const outputOption = {
     outputPath: {
-      code: join(outputPath, platform.type === QUICKAPP ? 'app.ux' : 'app.js'),
+      code: join(outputPath, 'app.js'),
+      json: join(outputPath, 'app.json'),
       css: join(outputPath, 'app' + platform.extension.css),
+      config: join(outputPath, 'app.config.js')
     },
     mode,
-    isTypescriptFile: isTypescriptFile(this.resourcePath),
-    type: 'app',
-    platform,
+    isTypescriptFile: isTypescriptFile(this.resourcePath)
   };
 
   output(outputContent, rawContent, outputOption);
@@ -94,3 +104,45 @@ module.exports = async function appLoader(content) {
     generateDependencies(transformed.imported),
   ].join('\n');
 };
+
+function transformAppConfig(entryPath, originalConfig, platform) {
+  const config = {};
+  for (let key in originalConfig) {
+    const value = originalConfig[key];
+
+    switch (key) {
+      case 'routes':
+        const pages = [];
+        if (Array.isArray(value)) {
+          // Only resolve first level of routes.
+          value.forEach(({ component, source, targets }) => {
+            // Compatible with old version definition of `component`.
+            if (!Array.isArray(targets)) {
+              pages.push(normalizeOutputFilePath(moduleResolve(entryPath, getRelativePath(source || component))));
+            }
+            if (Array.isArray(targets) && targets.indexOf('miniapp') > -1) {
+              pages.push(normalizeOutputFilePath(moduleResolve(entryPath, getRelativePath(source || component))));
+            }
+          });
+        }
+        config.pages = pages;
+        break;
+      case 'window':
+        adaptAppConfig(value, 'window', platform);
+        config[key] = value;
+        break;
+      case 'tabBar':
+        if (value.items) {
+          adaptAppConfig(value, 'items', platform, originalConfig);
+        }
+        adaptAppConfig(value, 'tabBar', platform);
+        config[key] = value;
+        break;
+      default:
+        config[key] = value;
+        break;
+    }
+  }
+
+  return config;
+}

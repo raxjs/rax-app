@@ -1,4 +1,4 @@
-const { extname, sep, join } = require('path');
+const { extname, sep } = require('path');
 
 function removeExt(path, platform) {
   const ext = extname(path);
@@ -92,26 +92,11 @@ function addRelativePathPrefix(filepath) {
   return filepath[0] !== '.' ? `./${filepath}` : filepath;
 }
 
-/**
- *  Some packages like jsx-compiler should be a dependency of jsx2mp-loader. But if the project has installed it, then it will take the priority.
- * @param {string} packageName
- * @param {string} rootDir
- */
-function getHighestPriorityPackage(packageName, rootDir) {
-  const resolvePaths = require.resolve.paths(packageName);
-  resolvePaths.unshift(join(rootDir, 'node_modules'));
-  const packagePath = require.resolve(packageName, {
-    paths: resolvePaths
-  });
-  return require.resolve(packagePath);
-}
-
 module.exports = {
   removeExt,
   isFromTargetDirs,
   replaceExtension,
   doubleBackslash,
   normalizeOutputFilePath,
-  addRelativePathPrefix,
-  getHighestPriorityPackage
+  addRelativePathPrefix
 };
