@@ -20,14 +20,14 @@ module.exports = (config, context, targets, currentTarget) => {
 
   config.entryPoints.clear();
 
-  entries.forEach(({ entryName, source }) => {
+  entries.forEach(({ entryName, source, ...otherOptions }) => {
     const entryConfig = config.entry(entryName);
     if (isDev && process.env.RAX_SSR !== 'true') {
       entryConfig.add(hmrClient);
     }
 
     const pageEntry = getDepPath(rootDir, source);
-    entryConfig.add(`${MulitPageLoader}?type=${currentTarget}!${pageEntry}`);
+    entryConfig.add(otherOptions.disableWrapperRender ? pageEntry : `${MulitPageLoader}?type=${currentTarget}&source=${source}!${pageEntry}`);
   });
 
   if (currentTarget === 'web') {
