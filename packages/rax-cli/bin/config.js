@@ -1,8 +1,16 @@
-const promptQuestion = [
-  {
+function getPromptQuestion(appTemplate) {
+  let promptQuestion = [{
     type: 'list',
     name: 'projectType',
     message: 'What\'s your project type?',
+    default: 'app',
+    when(answers) {
+      if (appTemplate) {
+        answers.projectType = 'app';
+        return false;
+      }
+      return true;
+    },
     choices: [
       {
         name: 'App (Build universal application)',
@@ -20,12 +28,11 @@ const promptQuestion = [
         name: 'Plugin (Build plugin for miniapp)',
         value: 'plugin'
       }
-    ],
-    default: 'app',
-  },
-  {
+    ]
+  }, {
     type: 'checkbox',
     name: 'projectTargets',
+    default: ['web'],
     validate(targets) {
       if (targets && targets.length > 0) return true;
       return 'Choose at least one of target.';
@@ -47,17 +54,14 @@ const promptQuestion = [
         targets = [{
           name: 'Web',
           value: 'web',
-        },
-        {
+        }].concat(targets).concat([{
           name: 'Kraken (Flutter)',
           value: 'kraken',
-        }].concat(targets);
+        }]);
       }
       return targets;
     },
-    default: ['web'],
-  },
-  {
+  }, {
     type: 'list',
     name: 'appType',
     message: 'What\'s your application type? (Only valid in target: Web/Kraken)',
@@ -76,11 +80,14 @@ const promptQuestion = [
       },
     ],
     default: 'spa',
-  },
-  {
+  }, {
     type: 'list',
     name: 'languageType',
     message: 'What type of language do you want to use?',
+    when(answers) {
+      // component/plugin/api not support js
+      return answers.projectType === 'app';
+    },
     choices: [
       {
         name: 'JavaScript',
@@ -92,9 +99,11 @@ const promptQuestion = [
       },
     ],
     default: 'ts',
-  },
-];
+  }];
+
+  return promptQuestion;
+}
 
 module.exports = {
-  promptQuestion,
+  getPromptQuestion,
 };
