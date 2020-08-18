@@ -68,7 +68,7 @@ function output(content, raw, options) {
       code = minifyJS(transformCode(code,
         mode,
         externalPlugins.concat([require('@babel/plugin-proposal-class-properties')]),
-        [['@babel/preset-env', {
+        [[require('@babel/preset-env'), {
           exclude: ['@babel/plugin-transform-regenerator']
         }]]
       ).code)
