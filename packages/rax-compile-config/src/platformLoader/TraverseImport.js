@@ -10,12 +10,12 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
   let hasPlatformSpecified = false;
 
   const platformMap = {
-    weex: 'isWeex',
-    web: 'isWeb',
-    kraken: 'isKraken',
-    node: 'isNode',
-    miniapp: 'isMiniApp',
-    'wechat-miniprogram': 'isWeChatMiniProgram',
+    weex: ['isWeex'],
+    web: ['isWeb'],
+    kraken: ['isKraken', 'isWeb'],
+    node: ['isNode'],
+    miniapp: ['isMiniApp'],
+    'wechat-miniprogram': ['isWeChatMiniProgram'],
   };
 
   /**
@@ -56,11 +56,21 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
   function objectExpressionMethod(platformName) {
     const properties = [];
 
+    const propertyMap = {};
     Object.keys(platformMap).forEach((p) => {
+      let keys = platformMap[p];
+      for (let key of keys) {
+        if (!propertyMap[key]) {
+          propertyMap[key] = p === platformName;
+        }
+      }
+    });
+
+    Object.keys(propertyMap).forEach((key) => {
       properties.push(
         types.objectProperty(
-          types.Identifier(platformMap[p]),
-          types.booleanLiteral(p === platformName),
+          types.Identifier(key),
+          types.booleanLiteral(propertyMap[key]),
         ),
       );
     });
@@ -133,7 +143,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       // change _universalEnv.isWeex to false
       const { node } = path;
       if (node.object.name === '_universalEnv') {
-        if (node.property.name === platformMap[options.platform]) {
+        if (platformMap[options.platform].indexOf(node.property.name) >= 0) {
           path.replaceWith(types.Identifier('true'));
         } else {
           path.replaceWith(types.Identifier('false'));
@@ -170,7 +180,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
                 ],
               ));
             } else {
-              const newNodeInit = specObj.imported === platformMap[options.platform];
+              const newNodeInit = platformMap[options.platform].indexOf(specObj.imported) >= 0;
               let newNode = variableDeclarationMethod(
                 specObj.imported,
                 newNodeInit,
