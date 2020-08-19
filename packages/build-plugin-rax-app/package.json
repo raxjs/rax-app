@@ -59,7 +59,7 @@
     "rax-miniapp-babel-plugins": "^0.1.0",
     "rax-miniapp-config-webpack-plugin": "^1.0.1",
     "rax-miniapp-runtime-webpack-plugin": "^1.0.0",
-    "rax-multi-pages-settings": "^0.1.0",
+    "rax-multi-pages-settings": "^0.1.1",
     "rax-quickapp-webpack-plugin": "^1.0.0",
     "rax-server-renderer": "^1.0.0",
     "rax-webpack-config": "^0.1.0",
