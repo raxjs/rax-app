@@ -8,15 +8,16 @@
         <%= `on${event}` %>="{{r.<%= event %>}}"
       <% });%>
     >
-        <% usingPlugins[pluginTag].children.forEach(function(child, index){%>
-          <% if(child.slot) {%>
-            <view slot="<%= child.slot %>">
-              <template is="element" data="{{r: r.children[<%= index %>]}}" />
-            </view>
-          <% } else { %>
-            <template is="element" data="{{r: r.children[<%= index %>]}}" />
-          <% } %>
-        <% });%>
+      <block a:for="{{r.children}}" a:key="nodeId">
+        <block a:if="{{item['slot']}}">
+          <view slot="{{item['slot']}}">
+            <template is="element" data="{{r: item}}" />
+          </view>
+        </block>
+        <block a:else>
+          <template is="element" data="{{r: item}}" />
+        </block>
+      </block>
     </<%=pluginTag%>>
   </template>
 <% }); %>

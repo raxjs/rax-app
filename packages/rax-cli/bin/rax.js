@@ -2,6 +2,7 @@
 
 const updateNotifier = require('update-notifier');
 const fs = require('fs');
+const fse = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
@@ -9,8 +10,10 @@ const semver = require('semver');
 const kebabCase = require('lodash.kebabcase');
 const { checkAliInternal } = require('ice-npm-utils');
 const argv = require('minimist')(process.argv.slice(2));
+const { downloadAndGenerateProject } = require('@iceworks/generate-project');
+const { generateMaterial, downloadMaterialTemplate } = require('@iceworks/generate-material');
 
-const generator = require('rax-generator');
+const config = require('./config');
 const pkg = require('../package.json');
 
 let projectName = '';
@@ -63,7 +66,7 @@ Options:
 
 Commands:
   init <app-name>                            generate project directory based on templates
-  
+
 Run rax <command> --help for detailed usage of given command.
 `);
 }
@@ -72,7 +75,7 @@ function printInitHelp() {
   console.log(`Usage: rax init [options] <app-name>
 
 Options:
-  -v, --verbose                               show project init details         
+  -v, --verbose                               show project init details
 `);
 }
 
@@ -117,12 +120,12 @@ async function init(name, verbose, template) {
     projectName = process.cwd().split(path.sep).pop();
   }
 
-  const answers = await askProjectInformaction();
+  const answers = await askProjectInformaction(template);
 
-  createProject(kebabCase(projectName), verbose, template, answers);
+  await createProject(kebabCase(projectName), verbose, template, answers);
 }
 
-function askProjectInformaction() {
+function askProjectInformaction(appTemplate) {
   const rootDir = path.resolve(projectName);
   const conflictFiles = ['src', 'build.json', 'package.json'];
 
@@ -135,7 +138,7 @@ function askProjectInformaction() {
     return conflictFiles.some(filename => fs.existsSync(path.join(targetDir, filename)));
   };
 
-  let prompts = generator.config.promptQuestion;
+  let prompts = config.getPromptQuestion(appTemplate);
   if (containConflictFile(rootDir)) {
     prompts = [
       {
@@ -170,7 +173,7 @@ function askProjectInformaction() {
   return inquirer.prompt(prompts);
 }
 
-function createProject(name, verbose, template, userAnswers) {
+async function createProject(name, verbose, template, userAnswers) {
   const projectName = name;
 
   let rootDir = process.cwd();
@@ -182,36 +185,63 @@ function createProject(name, verbose, template, userAnswers) {
     process.chdir(rootDir);
   }
 
+  const { projectType, projectTargets, appType, languageType } = userAnswers;
+  const registry = 'https://registry.npm.taobao.org';
+
   console.log(
     'Creating a new Rax project in',
     rootDir,
+    userAnswers,
   );
 
-  generator.init({
-    root: rootDir,
-    projectName,
-    verbose,
-    template,
-    ...userAnswers,
-  }).then(function(directory) {
-    console.log(chalk.white.bold('To run your app:'));
-    if (!createInCurrent) {
-      console.log(chalk.white(`   cd ${projectName}`));
-    }
-    checkAliInternal().then((isAliInternal) => {
-      let npmCommand = 'npm';
-      let explanation = '';
-      if (isAliInternal) {
-        npmCommand = 'tnpm';
-        explanation = 'Detected that you are an Alibaba user, DEF plugin has been installed!\n\n';
+  if (projectType === 'app') {
+    const appTemplate = template || (languageType === 'ts' ? '@rax-materials/scaffolds-app-ts' : '@rax-materials/scaffolds-app-js');
+    await downloadAndGenerateProject(
+      rootDir,
+      appTemplate,
+      null,
+      registry,
+      null,
+      {
+        targets: projectTargets,
+        mpa: appType === 'mpa'
       }
-      console.log(chalk.white(`   ${npmCommand} install`));
-      console.log(chalk.white(`   ${npmCommand} start`));
-      console.log(chalk.white(`${explanation}We have prepared develop toolkit for you. \nSee: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks`));
-    }).catch(() => {
-      console.log(chalk.white('   npm install'));
-      console.log(chalk.white('   npm start'));
-      console.log(chalk.white('We have prepared develop toolkit for you. \nSee: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks'));
+    );
+  } else {
+    const typeToTemplate = {
+      component: '@icedesign/template-rax',
+      api: '@icedesign/template-rax-api',
+      plugin: '@icedesign/template-rax-miniapp-plugin'
+    };
+
+    const tempDir = path.join(rootDir, '.tmp');
+    await downloadMaterialTemplate(tempDir, typeToTemplate[projectType], registry);
+    await generateMaterial({
+      rootDir,
+      materialTemplateDir: tempDir,
+      templateOptions: {
+        npmName: 'rax-example',
+        projectTargets,
+      },
+      materialType: 'component'
     });
-  });
+    await fse.remove(tempDir);
+  }
+
+  console.log(chalk.white.bold('To run your app:'));
+  if (!createInCurrent) {
+    console.log(chalk.white(`   cd ${projectName}`));
+  }
+
+  const isAliInternal = await checkAliInternal();
+  let npmCommand = 'npm';
+  let explanation = '';
+  if (isAliInternal) {
+    npmCommand = 'tnpm';
+    explanation = 'Detected that you are an Alibaba user, DEF plugin has been installed!\n\n';
+  }
+
+  console.log(chalk.white(`   ${npmCommand} install`));
+  console.log(chalk.white(`   ${npmCommand} start`));
+  console.log(chalk.white(`${explanation}We have prepared develop toolkit for you. \nSee: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks`));
 }
