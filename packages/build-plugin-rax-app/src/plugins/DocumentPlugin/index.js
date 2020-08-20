@@ -47,7 +47,7 @@ module.exports = class DocumentPlugin {
     // Get all entry point names for html file
     Object.keys(mainConfig.entry).map(entryName => {
       pages[entryName] = {
-        tempFile: `__${entryName.replace(/\//g, '_')}_doucment`,
+        tempFile: `__${entryName.replace(/\//g, '_')}_document`,
         fileName: `${outputFilePrefix}${entryName}.html`
       };
     });
