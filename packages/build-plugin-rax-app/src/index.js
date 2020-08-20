@@ -35,7 +35,7 @@ function enterCheck(api, options) {
 
   const firstPluginName = Array.isArray(plugins[0]) ? plugins[0][0] : plugins[0];
 
-  if (firstPluginName !== 'build-plugin-rax-app') {
+  if (!/build-plugin-rax-app/.test(firstPluginName)) {
     errMsg = 'build-plugin-rax-app must be the first plugin, please check the order of plugins';
     hasError = true;
   }
