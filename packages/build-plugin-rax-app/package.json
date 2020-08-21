@@ -73,6 +73,7 @@
     "webpack": "^4.27.1",
     "webpack-bundle-analyzer": "^3.4.1",
     "webpack-chain": "^6.0.0",
-    "webpack-sources": "^1.3.0"
+    "webpack-sources": "^1.3.0",
+    "miniapp-runtime-config": "^0.1.1"
   }
 }

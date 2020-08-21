@@ -35,24 +35,24 @@ module.exports = (config, userConfig, { context, target, babelRuleName = 'babel'
 
   ['jsx', 'tsx'].forEach(ruleName => {
     config.module.rule(ruleName)
-    .use(babelRuleName)
-    .tap(options => {
-      options.presets = [
-        ...options.presets,
-        {
-          plugins: getMiniAppBabelPlugins({
-            usingComponents,
-            nativeLifeCycleMap,
-            target,
-            rootDir,
-            usingPlugins,
-            runtimeDependencies: userConfig.runtimeDependencies,
-          })
-        }
-      ];
-      return options;
-    });
-  })
+      .use(babelRuleName)
+      .tap(options => {
+        options.presets = [
+          ...options.presets,
+          {
+            plugins: getMiniAppBabelPlugins({
+              usingComponents,
+              nativeLifeCycleMap,
+              target,
+              rootDir,
+              usingPlugins,
+              runtimeDependencies: userConfig.runtimeDependencies,
+            })
+          }
+        ];
+        return options;
+      });
+  });
 
   config.plugin('MiniAppConfigPlugin').use(MiniAppConfigPlugin, [
     {
@@ -80,9 +80,9 @@ module.exports = (config, userConfig, { context, target, babelRuleName = 'babel'
 
   if (needCopyList.length > 0) {
     config.plugin('copyWebpackPluginForRuntimeMiniapp')
-    .use(CopyWebpackPlugin, [{
-      patterns: needCopyList
-    }]);
+      .use(CopyWebpackPlugin, [{
+        patterns: needCopyList
+      }]);
   }
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
@@ -91,4 +91,4 @@ module.exports = (config, userConfig, { context, target, babelRuleName = 'babel'
   if (command === 'start') {
     config.devtool('inline-source-map');
   }
-}
+};
