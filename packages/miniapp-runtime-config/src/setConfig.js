@@ -11,8 +11,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
  * @param {object} options
  * @param {object} options.context - webpack context
  * @param {string} options.target - miniapp platform
+ * @param {string} options.babelRuleName - babel loader name in webpack chain
  */
-module.exports = (config, userConfig, { context, target }) => {
+module.exports = (config, userConfig, { context, target, babelRuleName = 'babel' }) => {
   const { rootDir, command } = context;
   // Get miniapp output path
   const outputPath = getOutputPath(context, target);
@@ -34,7 +35,7 @@ module.exports = (config, userConfig, { context, target }) => {
 
   ['jsx', 'tsx'].forEach(ruleName => {
     config.module.rule(ruleName)
-    .use('babel')
+    .use(babelRuleName)
     .tap(options => {
       options.presets = [
         ...options.presets,
