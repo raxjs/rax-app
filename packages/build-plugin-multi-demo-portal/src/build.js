@@ -2,6 +2,7 @@ const path = require('path');
 const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
+const modifyPkgHomePage = require('./config/modifyPkgHomePage');
 const getDistConfig = require('./config/getDistConfig');
 
 module.exports = (api, options = {}) => {
@@ -21,6 +22,8 @@ module.exports = (api, options = {}) => {
     if (!handleWebpackErr(err, stats)) {
       return;
     }
+    
+    modifyPkgHomePage(pkg, rootDir);
 
     console.log(chalk.green('Portal page has been built'));
     console.log();
