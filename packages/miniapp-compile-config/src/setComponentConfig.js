@@ -23,7 +23,7 @@ module.exports = (
   };
 
   config.entryPoints.clear();
-  config.entry("component").add(`./${entryPath}?role=component`);
+  config.entry('component').add(`./${entryPath}?role=component`);
 
   setBaseConfig(config, userConfig, {
     context,
@@ -32,7 +32,7 @@ module.exports = (
     outputPath,
     loaderParams,
     target
-  })
+  });
 
   return config;
 };

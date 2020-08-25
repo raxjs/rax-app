@@ -10,7 +10,7 @@ module.exports = (context, { target = MINIAPP, distDir = '' }) => {
   }
 
   if (command === 'build') {
-    getOutputPath(context, target, distDir)
+    getOutputPath(context, target, distDir);
   } else {
     return resolve(rootDir, 'demo', target, 'components', 'Target');
   }

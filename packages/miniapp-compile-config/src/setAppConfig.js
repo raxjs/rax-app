@@ -1,4 +1,4 @@
-const {  dirname } = require('path');
+const { dirname } = require('path');
 const {
   platformMap,
   filterNativePages,
@@ -48,10 +48,6 @@ module.exports = (
     outputPath,
   });
 
-  needCopyList.forEach((dirPatterns) =>
-    constantDirectories.push(dirPatterns.from)
-  );
-
   const pageLoaderParams = {
     ...loaderParams,
     entryPath,
@@ -73,6 +69,10 @@ module.exports = (
     target,
     outputPath,
   });
+
+  needCopyList.forEach((dirPatterns) =>
+    loaderParams.constantDir.push(dirPatterns.from)
+  );
 
   // Add app and page jsx2mp loader
   config.module
