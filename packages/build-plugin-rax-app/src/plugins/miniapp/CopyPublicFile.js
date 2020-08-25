@@ -1,4 +1,4 @@
-const { resolve, sep } = require('path');
+const { resolve } = require('path');
 const { copySync } = require('fs-extra');
 const chokidar = require('chokidar');
 const { isNativePage, removeExt } = require('../../config/pathHelper');
@@ -18,7 +18,7 @@ function copyPublicFile(constantDirectories, rootDir, outputPath, target, disabl
     const distPath = resolve(outputPath, srcDir.split('/').slice(1).join('/'));
     copySync(srcPath, distPath, {
       filter: (file) => {
-        if (disableCopyNpm) return true;  // If disableCopyNpm, all js files should be copied
+        if (disableCopyNpm) return true; // If disableCopyNpm, all js files should be copied
         if (/\.js$/.test(file)) {
           return isNativePage(removeExt(file), target);
         }
