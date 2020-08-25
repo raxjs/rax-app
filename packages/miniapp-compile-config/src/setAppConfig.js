@@ -1,17 +1,17 @@
-const { resolve, dirname } = require("path");
-const { existsSync } = require("fs-extra");
+const { resolve, dirname } = require('path');
+const { existsSync } = require('fs-extra');
 const {
   platformMap,
   filterNativePages,
   getAppConfig,
-} = require("miniapp-builder-shared");
+} = require('miniapp-builder-shared');
 
-const MiniAppConfigPlugin = require("rax-miniapp-config-webpack-plugin");
+const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
 
-const AppLoader = require.resolve("jsx2mp-loader/src/app-loader");
-const PageLoader = require.resolve("jsx2mp-loader/src/page-loader");
+const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
+const PageLoader = require.resolve('jsx2mp-loader/src/page-loader');
 
-const setBaseConfig = require("./setBaseConfig");
+const setBaseConfig = require('./setBaseConfig');
 const setEntry = require('./setEntry');
 
 module.exports = (
@@ -21,7 +21,7 @@ module.exports = (
 ) => {
   const platformInfo = platformMap[target];
   const {
-    mode = "build",
+    mode = 'build',
     disableCopyNpm = false,
     turnOffSourceMap = false,
     constantDir = [],
@@ -33,11 +33,11 @@ module.exports = (
   setEntry(config, appConfig.routes, { entryPath, rootDir, target });
 
   // `public` directory is the default static resource directory
-  const isPublicFileExist = existsSync(resolve(rootDir, "src/public"));
+  const isPublicFileExist = existsSync(resolve(rootDir, 'src/public'));
 
   // To make old `constantDir` param compatible
   const constantDirectories = isPublicFileExist
-    ? ["src/public"].concat(constantDir)
+    ? ['src/public'].concat(constantDir)
     : constantDir;
 
   // Need Copy files or dir
@@ -73,7 +73,7 @@ module.exports = (
     entryPath: dirname(entryPath),
   };
 
-  config.cache(true).mode("production").target("node");
+  config.cache(true).mode('production').target('node');
 
   // Set base jsx2mp config
   setBaseConfig(config, userConfig, {
@@ -87,19 +87,19 @@ module.exports = (
 
   // Add app and page jsx2mp loader
   config.module
-    .rule("withRoleJSX")
-    .use("app")
+    .rule('withRoleJSX')
+    .use('app')
     .loader(AppLoader)
     .options(appLoaderParams)
     .end()
-    .use("page")
+    .use('page')
     .loader(PageLoader)
     .options(pageLoaderParams)
     .end();
 
-  config.plugin("miniAppConfig").use(MiniAppConfigPlugin, [
+  config.plugin('miniAppConfig').use(MiniAppConfigPlugin, [
     {
-      type: "complie",
+      type: 'complie',
       appConfig,
       getAppConfig,
       outputPath,

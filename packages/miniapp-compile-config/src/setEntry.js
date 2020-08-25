@@ -1,14 +1,14 @@
-const { dirname } = require("path");
+const { dirname } = require('path');
 const {
   pathHelper: { absoluteModuleResolve, getDepPath },
-} = require("miniapp-builder-shared");
+} = require('miniapp-builder-shared');
 
 function getEntry(entryAppFilePath, routes, rootDir) {
   const sourcePath = dirname(entryAppFilePath);
   const entry = {};
 
   entry.app =
-    absoluteModuleResolve(rootDir, `./${entryAppFilePath}`) + "?role=app"; // Mark it as app file
+    absoluteModuleResolve(rootDir, `./${entryAppFilePath}`) + '?role=app'; // Mark it as app file
 
   if (Array.isArray(routes)) {
     routes.forEach(({ source: pageSource }) => {
