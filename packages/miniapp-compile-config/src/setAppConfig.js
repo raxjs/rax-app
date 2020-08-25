@@ -1,5 +1,4 @@
-const { resolve, dirname } = require('path');
-const { existsSync } = require('fs-extra');
+const {  dirname } = require('path');
 const {
   platformMap,
   filterNativePages,
@@ -24,21 +23,12 @@ module.exports = (
     mode = 'build',
     disableCopyNpm = false,
     turnOffSourceMap = false,
-    constantDir = [],
   } = userConfig;
   const { rootDir } = context;
 
   const appConfig = getAppConfig(rootDir, target);
 
   setEntry(config, appConfig.routes, { entryPath, rootDir, target });
-
-  // `public` directory is the default static resource directory
-  const isPublicFileExist = existsSync(resolve(rootDir, 'src/public'));
-
-  // To make old `constantDir` param compatible
-  const constantDirectories = isPublicFileExist
-    ? ['src/public'].concat(constantDir)
-    : constantDir;
 
   // Need Copy files or dir
   const needCopyList = [];
@@ -47,7 +37,6 @@ module.exports = (
     mode,
     entryPath,
     outputPath,
-    constantDir: constantDirectories,
     disableCopyNpm,
     turnOffSourceMap,
     platform: platformInfo,

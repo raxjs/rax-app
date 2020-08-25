@@ -1,99 +1,100 @@
-const webpack = require('webpack');
+const webpack = require("webpack");
 
-const ComponentLoader = require.resolve('jsx2mp-loader/src/component-loader');
-const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
-const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
+const ComponentLoader = require.resolve("jsx2mp-loader/src/component-loader");
+const ScriptLoader = require.resolve("jsx2mp-loader/src/script-loader");
+const FileLoader = require.resolve("jsx2mp-loader/src/file-loader");
 const {
   platformMap,
   pathHelper: { getPlatformExtensions },
-} = require('miniapp-builder-shared');
+} = require("miniapp-builder-shared");
 
-const ModifyOutputFileSystemPlugin = require('./plugins/ModifyOutputFileSystem');
-const CopyJsx2mpRuntimePlugin = require('./plugins/CopyJsx2mpRuntime');
-const CopyPublicFilePlugin = require('./plugins/CopyPublicFile');
+const ModifyOutputFileSystemPlugin = require("./plugins/ModifyOutputFileSystem");
+const CopyJsx2mpRuntimePlugin = require("./plugins/CopyJsx2mpRuntime");
+const CopyPublicFilePlugin = require("./plugins/CopyPublicFile");
 
 module.exports = (
   config,
   userConfig,
-  {
-    context,
-    onGetWebpackConfig,
-    entryPath,
-    outputPath,
-    loaderParams,
-    target,
-  }
+  { context, onGetWebpackConfig, entryPath, outputPath, loaderParams, target }
 ) => {
   const platformInfo = platformMap[target];
   const { rootDir } = context;
   const {
     platform = platformInfo.type,
-    mode = 'build',
+    mode = "build",
     disableCopyNpm = false,
+    constantDir = []
   } = userConfig;
+
+  // Set contantDir
+  // `public` directory is the default static resource directory
+  const isPublicFileExist = existsSync(resolve(rootDir, "src/public"));
+
+  // To make old `constantDir` param compatible
+  loaderParams.constantDir = isPublicFileExist
+    ? ["src/public"].concat(constantDir)
+    : constantDir;
 
   // Set alias
   config.resolve.alias.clear();
-  config.resolve.alias
-    .set('react', 'rax')
-    .set('react-dom', 'rax-dom');
+  config.resolve.alias.set("react", "rax").set("react-dom", "rax-dom");
   onGetWebpackConfig(target, (config) => {
     const aliasEntries = config.resolve.alias.entries();
     loaderParams.aliasEntries = aliasEntries;
   });
 
   // Clear prev rules
-  config.module.rule('jsx').uses.clear();
-  config.module.rule('tsx').uses.clear();
+  config.module.rule("jsx").uses.clear();
+  config.module.rule("tsx").uses.clear();
 
   config.module
-    .rule('tsx')
+    .rule("tsx")
     .test(/\.(tsx?)$/)
-    .use('ts')
-    .loader(require.resolve('ts-loader'))
+    .use("ts")
+    .loader(require.resolve("ts-loader"))
     .options({
       transpileOnly: true,
     });
 
   // Remove all app.json before it
-  config.module.rule('appJSON').uses.clear();
+  config.module.rule("appJSON").uses.clear();
 
   config.module
-    .rule('withRoleJSX')
+    .rule("withRoleJSX")
     .test(/\.t|jsx?$/)
-    .enforce('post')
+    .enforce("post")
     .exclude.add(/node_modules/)
     .end()
-    .use('component')
+    .use("component")
     .loader(ComponentLoader)
     .options({
       ...loaderParams,
-      entryPath
+      entryPath,
     })
     .end()
-    .use('platform')
-    .loader(require.resolve('rax-compile-config/src/platformLoader'))
+    .use("platform")
+    .loader(require.resolve("rax-compile-config/src/platformLoader"))
     .options({ platform: target })
     .end()
-    .use('script')
+    .use("script")
     .loader(ScriptLoader)
     .options(loaderParams)
     .end();
 
   config.module
-    .rule('npm')
+    .rule("npm")
     .test(/\.js$/)
     .include.add(/node_modules/)
     .end()
-    .use('script')
+    .use("script")
     .loader(ScriptLoader)
     .options(loaderParams)
     .end();
 
   config.module
-    .rule('staticFile')
+    .rule("staticFile")
     .test(/\.(bmp|webp|svg|png|webp|jpe?g|gif)$/i)
-    .use('file')
+    .use("file")
     .loader(FileLoader)
     .options({
       entryPath,
@@ -102,26 +103,26 @@ module.exports = (
 
   // Exclude app.json
   config.module
-    .rule('json')
+    .rule("json")
     .test(/\.json$/)
-    .use('script-loader')
+    .use("script-loader")
     .loader(ScriptLoader)
     .options(loaderParams)
     .end()
-    .use('json-loader')
-    .loader(require.resolve('json-loader'));
+    .use("json-loader")
+    .loader(require.resolve("json-loader"));
 
   // Distinguish end construction
   config.resolve.extensions
     .clear()
     .merge(
-      getPlatformExtensions(platform, ['.js', '.jsx', '.ts', '.tsx', '.json'])
+      getPlatformExtensions(platform, [".js", ".jsx", ".ts", ".tsx", ".json"])
     );
 
-  config.resolve.mainFields.add('main').add('module');
+  config.resolve.mainFields.add("main").add("module");
 
   config.externals([
-    function(ctx, request, callback) {
+    function (ctx, request, callback) {
       if (/\.(css|sass|scss|styl|less)$/.test(request)) {
         return callback(null, `commonjs2 ${request}`);
       }
@@ -129,31 +130,37 @@ module.exports = (
     },
   ]);
 
-  config.plugin('define').use(webpack.DefinePlugin, [
+  config.plugin("define").use(webpack.DefinePlugin, [
     {
-      'process.env': {
-        NODE_ENV: mode === 'build' ? '"production"' : '"development"',
+      "process.env": {
+        NODE_ENV: mode === "build" ? '"production"' : '"development"',
       },
     },
   ]);
 
   config
-    .plugin('watchIgnore')
+    .plugin("watchIgnore")
     .use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
 
-  config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
+  config.plugin("modifyOutputFileSystem").use(ModifyOutputFileSystemPlugin);
 
   if (loaderParams.constantDir.length > 0) {
     config
-      .plugin('copyPublicFile')
+      .plugin("copyPublicFile")
       .use(CopyPublicFilePlugin, [
-        { mode, outputPath, rootDir, constantDir: loaderParams.constantDir, target },
+        {
+          mode,
+          outputPath,
+          rootDir,
+          constantDir: loaderParams.constantDir,
+          target,
+        },
       ]);
   }
 
   if (!disableCopyNpm) {
     config
-      .plugin('runtime')
+      .plugin("runtime")
       .use(CopyJsx2mpRuntimePlugin, [{ platform, mode, outputPath, rootDir }]);
   }
 };
