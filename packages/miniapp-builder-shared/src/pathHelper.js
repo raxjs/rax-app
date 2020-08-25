@@ -77,11 +77,16 @@ function getRelativePath(filePath) {
   return relativePath;
 }
 
-function getDepPath(rootDir, componentFilePath) {
-  if (componentFilePath[0] === sep ) {
-    return join(rootDir, 'src', componentFilePath);
+/**
+ * ./pages/foo -> based on src, return original
+ * /pages/foo -> based on rootContext
+ * pages/foo -> based on src, add prefix: './' or '.\'
+ */
+function getDepPath(rootDir, source, sourcePath = 'src') {
+  if (source[0] === sep || source[0] === '.') {
+    return join(rootDir, sourcePath, source);
   } else {
-    return resolve(rootDir, 'src', componentFilePath);
+    return resolve(rootDir, sourcePath, source);
   }
 }
 

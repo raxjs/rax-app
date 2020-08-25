@@ -1,7 +1,7 @@
-const { resolve, sep } = require('path');
+const { resolve } = require('path');
 const { copySync } = require('fs-extra');
 const chokidar = require('chokidar');
-const { isNativePage, removeExt } = require('../../config/pathHelper');
+const { pathHelper: { isNativePage, removeExt } } = require('miniapp-builder-shared');
 
 /**
  * Copy directories from rootDir + `src/${dir}` to outputPath + `${dir}`

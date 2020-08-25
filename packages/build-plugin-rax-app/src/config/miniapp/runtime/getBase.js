@@ -15,11 +15,12 @@ module.exports = (context, target, options) => {
 
   config.resolve.extensions
     .clear()
-    .merge(getPlatformExtensions(platformMap[target].name, ['.js', '.jsx', '.ts', '.tsx', '.json']));
+    .merge(getPlatformExtensions(platformMap[target].type, ['.js', '.jsx', '.ts', '.tsx', '.json']));
 
   setConfig(config, options[target] || {}, {
     context, target
   });
+
   return config;
 };
 

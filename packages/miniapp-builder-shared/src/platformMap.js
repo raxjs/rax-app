@@ -2,19 +2,35 @@ const { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('.
 
 module.exports = {
   [MINIAPP]: {
-    name: 'ali',
-    tplExtension: '.axml'
+    type: 'ali',
+    name: 'Alibaba MiniApp',
+    extension: {
+      xml: '.axml',
+      css: '.acss',
+    }
   },
   [WECHAT_MINIPROGRAM]: {
-    name: 'wechat',
-    tplExtension: '.wxml'
+    type: 'wechat',
+    name: 'WeChat MiniProgram',
+    extension: {
+      xml: '.wxml',
+      css: '.wxss',
+    }
   },
   [BYTEDANCE_MICROAPP]: {
-    name: 'bytedance',
-    tplExtension: '.ttml'
+    type: 'bytedance',
+    name: 'ByteDance MicroApp',
+    extension: {
+      xml: '.ttml',
+      css: '.ttss'
+    }
   },
   [QUICKAPP]: {
-    name: 'quickapp',
-    tplExtension: '.ux'
-  }
+    type: 'quickapp',
+    name: 'QuickApp',
+    extension: {
+      xml: '.ux',
+      css: '.css',
+    }
+  },
 };

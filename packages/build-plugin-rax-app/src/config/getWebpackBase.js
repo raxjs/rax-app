@@ -29,11 +29,6 @@ module.exports = (context, options = {}, target) => {
       '.rml',
     ]);
 
-  config.resolve.alias
-    .set('@core/app', 'universal-app-runtime')
-    .set('@core/page', 'universal-app-runtime')
-    .set('@core/router', 'universal-app-runtime');
-
   // Process app.json file
   config.module.rule('appJSON')
     .type('javascript/auto')
