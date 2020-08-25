@@ -220,7 +220,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   ]);
 
   if (constantDirectories.length > 0) {
-    config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir, constantDirectories, target }]);
+    config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir, constantDirectories, target, disableCopyNpm }]);
   }
 
   if (!disableCopyNpm) {
