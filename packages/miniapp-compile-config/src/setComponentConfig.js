@@ -1,7 +1,7 @@
-const { platformMap } = require("miniapp-builder-shared");
-const { existsSync } = require("fs-extra");
-const { resolve } = require("path");
-const setBaseConfig = require("./setBaseConfig");
+const { platformMap } = require('miniapp-builder-shared');
+const { existsSync } = require('fs-extra');
+const { resolve } = require('path');
+const setBaseConfig = require('./setBaseConfig');
 
 module.exports = (
   config,
@@ -10,8 +10,8 @@ module.exports = (
 ) => {
   const platformInfo = platformMap[target];
   const {
-    mode = "build",
-    disableCopyNpm = mode === "build",
+    mode = 'build',
+    disableCopyNpm = mode === 'build',
     turnOffSourceMap = false,
     constantDir = []
   } = userConfig;
@@ -27,15 +27,15 @@ module.exports = (
   };
 
   config.entryPoints.clear();
-  config.entry("component").add(`./${entryPath}?role=component`);
+  config.entry('component').add(`./${entryPath}?role=component`);
 
   // Set constantDir
   // `public` directory is the default static resource directory
-  const isPublicFileExist = existsSync(resolve(rootDir, "src/public"));
+  const isPublicFileExist = existsSync(resolve(rootDir, 'src/public'));
 
   // To make old `constantDir` param compatible
   loaderParams.constantDir = isPublicFileExist
-    ? ["src/public"].concat(constantDir)
+    ? ['src/public'].concat(constantDir)
     : constantDir;
 
   setBaseConfig(config, userConfig, {
