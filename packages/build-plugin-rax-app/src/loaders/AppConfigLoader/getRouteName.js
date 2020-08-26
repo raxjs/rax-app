@@ -1,12 +1,13 @@
 const path = require('path');
 const fs = require('fs-extra');
+const { removeExt } = require('../../config/pathHelper');
 
 module.exports = (route, rootDir, entryPath) => {
   if (route.name) {
     return route.name;
   }
 
-  const appConfig = fs.readJsonSync(path.resolve(rootDir, `${entryPath}.json`));
+  const appConfig = fs.readJsonSync(path.resolve(rootDir, `${removeExt(entryPath)}.json`));
 
   const routeName = appConfig.routeName ? appConfig.routeName : 'path';
 
