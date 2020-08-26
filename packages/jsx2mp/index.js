@@ -5,7 +5,6 @@ const { DEFAULT_TYPE, DEFAULT_TARGET, DEFAULT_ENTRY, DEFAULT_RUNTIME_VERSION, DE
 
 async function baseProcess(command, options) {
   const { type, buildType, target, entry, distDir, constantDir, runtimeVersion, disableCopyNpm = false, turnOffSourceMap = false, afterCompiled, configWebpack, dualEngine } = options;
-  process.env.DISABLE_STATS = true; // Disable webpack output info which is not useful in miniapp build
   const usedPlugin = [];
   const pluginParam = {
     targets: [target],
