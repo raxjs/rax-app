@@ -8,7 +8,7 @@ const { QUICKAPP } = require('../../../constants');
 
 module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const entryPath = './src/app';
-  let outputPath = getOutputPath(context, { target });
+  let outputPath = getOutputPath(context, target);
   // Quickapp's output should be wrapped in src
   if (target === QUICKAPP) {
     outputPath = join(outputPath, 'src');

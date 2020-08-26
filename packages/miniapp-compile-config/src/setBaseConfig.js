@@ -1,6 +1,4 @@
 const webpack = require('webpack');
-const { resolve } = require('path');
-const { existsSync } = require('fs-extra');
 
 const ComponentLoader = require.resolve('jsx2mp-loader/src/component-loader');
 const ScriptLoader = require.resolve('jsx2mp-loader/src/script-loader');
@@ -23,19 +21,8 @@ module.exports = (
   const { rootDir } = context;
   const {
     platform = platformInfo.type,
-    mode = 'build',
-    disableCopyNpm = false,
-    constantDir = []
+    mode = 'build'
   } = userConfig;
-
-  // Set contantDir
-  // `public` directory is the default static resource directory
-  const isPublicFileExist = existsSync(resolve(rootDir, 'src/public'));
-
-  // To make old `constantDir` param compatible
-  loaderParams.constantDir = isPublicFileExist
-    ? ['src/public'].concat(constantDir)
-    : constantDir;
 
   // Set alias
   config.resolve.alias.clear();
@@ -60,6 +47,11 @@ module.exports = (
 
   // Remove all app.json before it
   config.module.rule('appJSON').uses.clear();
+
+  config
+    .cache(true)
+    .mode('production')
+    .target('node');
 
   config.module
     .rule('withRoleJSX')
@@ -128,6 +120,17 @@ module.exports = (
       if (/\.(css|sass|scss|styl|less)$/.test(request)) {
         return callback(null, `commonjs2 ${request}`);
       }
+      if (/^@weex-module\//.test(request)) {
+        return callback(null, `commonjs2 ${request}`);
+      }
+      // compatible with @system for quickapp
+      if (request.indexOf('@system') !== -1) {
+        return callback(null, `commonjs ${request}`);
+      }
+      // compatible with plugin with miniapp plugin
+      if (/^plugin\:\/\//.test(request)) {
+        return callback(null, `commonjs ${request}`);
+      }
       callback();
     },
   ]);
@@ -147,20 +150,18 @@ module.exports = (
   config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
 
   if (loaderParams.constantDir.length > 0) {
-    config
-      .plugin('copyPublicFile')
-      .use(CopyPublicFilePlugin, [
-        {
-          mode,
-          outputPath,
-          rootDir,
-          constantDir: loaderParams.constantDir,
-          target,
-        },
-      ]);
+    config.plugin('copyPublicFile').use(CopyPublicFilePlugin, [
+      {
+        mode,
+        outputPath,
+        rootDir,
+        constantDir: loaderParams.constantDir,
+        target,
+      },
+    ]);
   }
 
-  if (!disableCopyNpm) {
+  if (!loaderParams.disableCopyNpm) {
     config
       .plugin('runtime')
       .use(CopyJsx2mpRuntimePlugin, [{ platform, mode, outputPath, rootDir }]);

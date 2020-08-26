@@ -1,17 +1,18 @@
-const { dirname } = require('path');
+const { dirname, resolve } = require("path");
 const {
   platformMap,
   filterNativePages,
   getAppConfig,
-} = require('miniapp-builder-shared');
+} = require("miniapp-builder-shared");
+const { existsSync } = require("fs-extra");
 
-const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
+const MiniAppConfigPlugin = require("rax-miniapp-config-webpack-plugin");
 
-const AppLoader = require.resolve('jsx2mp-loader/src/app-loader');
-const PageLoader = require.resolve('jsx2mp-loader/src/page-loader');
+const AppLoader = require.resolve("jsx2mp-loader/src/app-loader");
+const PageLoader = require.resolve("jsx2mp-loader/src/page-loader");
 
-const setBaseConfig = require('./setBaseConfig');
-const setEntry = require('./setEntry');
+const setBaseConfig = require("./setBaseConfig");
+const setEntry = require("./setEntry");
 
 module.exports = (
   config,
@@ -20,9 +21,10 @@ module.exports = (
 ) => {
   const platformInfo = platformMap[target];
   const {
-    mode = 'build',
+    mode = "build",
     disableCopyNpm = false,
     turnOffSourceMap = false,
+    constantDir = []
   } = userConfig;
   const { rootDir } = context;
 
@@ -32,7 +34,6 @@ module.exports = (
 
   // Need Copy files or dir
   const needCopyList = [];
-
   const loaderParams = {
     mode,
     entryPath,
@@ -41,6 +42,15 @@ module.exports = (
     turnOffSourceMap,
     platform: platformInfo,
   };
+
+  // Set constantDir
+  // `public` directory is the default static resource directory
+  const isPublicFileExist = existsSync(resolve(rootDir, "src/public"));
+
+  // To make old `constantDir` param compatible
+  loaderParams.constantDir = isPublicFileExist
+    ? ["src/public"].concat(constantDir)
+    : constantDir;
 
   appConfig.routes = filterNativePages(appConfig.routes, needCopyList, {
     rootDir,
@@ -58,7 +68,7 @@ module.exports = (
     entryPath: dirname(entryPath),
   };
 
-  config.cache(true).mode('production').target('node');
+  config.cache(true).mode("production").target("node");
 
   // Set base jsx2mp config
   setBaseConfig(config, userConfig, {
@@ -76,19 +86,19 @@ module.exports = (
 
   // Add app and page jsx2mp loader
   config.module
-    .rule('withRoleJSX')
-    .use('app')
+    .rule("withRoleJSX")
+    .use("app")
     .loader(AppLoader)
     .options(appLoaderParams)
     .end()
-    .use('page')
+    .use("page")
     .loader(PageLoader)
     .options(pageLoaderParams)
     .end();
 
-  config.plugin('miniAppConfig').use(MiniAppConfigPlugin, [
+  config.plugin("miniAppConfig").use(MiniAppConfigPlugin, [
     {
-      type: 'complie',
+      type: "complie",
       appConfig,
       getAppConfig,
       outputPath,
@@ -96,6 +106,4 @@ module.exports = (
       nativeConfig: userConfig.nativeConfig,
     },
   ]);
-
-  return config;
 };

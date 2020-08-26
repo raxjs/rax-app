@@ -1,4 +1,4 @@
-const { absoluteModuleResolve } = require('../pathHelper');
+const { pathHelper: { absoluteModuleResolve } } = require('miniapp-builder-shared');
 
 module.exports = (config, context) => {
   const { rootDir } = context;
