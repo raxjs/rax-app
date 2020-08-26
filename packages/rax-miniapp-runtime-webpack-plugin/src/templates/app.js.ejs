@@ -1,5 +1,6 @@
 const render = require('./render');
+const config = require('./config');
 
 <%- init %>
 
-App(render.createAppConfig(init));
+App(render.createAppConfig(init, config));

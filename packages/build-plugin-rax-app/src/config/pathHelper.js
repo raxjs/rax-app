@@ -1,5 +1,5 @@
 const { join, relative, sep, resolve } = require('path');
-const { existsSync, statSync } = require('fs-extra');
+const { existsSync, statSync, readJSONSync } = require('fs-extra');
 const enhancedResolve = require('enhanced-resolve');
 const targetPlatformMap = require('../config/miniapp/targetPlatformMap');
 
@@ -113,7 +113,16 @@ function getPlatformExtensions(platform, extensions = []) {
  * @param {string} target
  */
 function isNativePage(filePath, target) {
-  return existsSync(filePath + targetPlatformMap[target].tplExtension);
+  if (existsSync(filePath + targetPlatformMap[target].tplExtension)) {
+    try {
+      const jsonContent = readJSONSync(`${filePath}.json`);
+      if (jsonContent.component === true) {
+        return false; // If json contains component: true, then it's a custom component
+      }
+    } catch (e) {}
+    return true; // If json file doesn't exist or not declare component: true, then it's a native page
+  }
+  return false;
 }
 
 /**
@@ -122,7 +131,7 @@ function isNativePage(filePath, target) {
  */
 function removeExt(filePath) {
   const lastDot = filePath.lastIndexOf('.');
-  return filePath.slice(0, lastDot);
+  return lastDot === -1 ? filePath : filePath.slice(0, lastDot);
 }
 
 module.exports = {

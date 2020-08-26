@@ -1,9 +1,11 @@
 const MiniAppRuntimePlugin = require('rax-miniapp-runtime-webpack-plugin');
 const MiniAppConfigPlugin = require('rax-miniapp-config-webpack-plugin');
 const getMiniAppBabelPlugins = require('rax-miniapp-babel-plugins');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
 const getWebpackBase = require('../../getWebpackBase');
 const getAppConfig = require('../getAppConfig');
-const setEntry = require('./setEntry');
+const setEntry = require('../../setEntry');
 const getMiniAppOutput = require('../getOutputPath');
 const filterNativePages = require('../filterNativePages');
 const targetPlatformMap = require('../targetPlatformMap');
@@ -11,6 +13,7 @@ const { getPlatformExtensions } = require('../../pathHelper');
 
 module.exports = (context, target, options) => {
   const { rootDir, command } = context;
+  const { runtimeDependencies = [] } = options[target] || {};
   const outputPath = getMiniAppOutput(context, { target });
 
   // Using components
@@ -29,27 +32,13 @@ module.exports = (context, target, options) => {
   }, target);
   const appConfig = getAppConfig(rootDir, target, nativeLifeCycleMap);
   appConfig.routes = filterNativePages(appConfig.routes, needCopyList, { rootDir, target, outputPath });
-  setEntry(config, context, appConfig.routes);
-
+  setEntry(config, context, target);
   config.resolve.extensions
     .clear()
     .merge(getPlatformExtensions(targetPlatformMap[target].name, ['.js', '.jsx', '.ts', '.tsx', '.json']));
 
-  // Remove all app.json before it
-  config.module.rule('appJSON').uses.clear();
-
-  config.module
-    .rule('json')
-    .test(/\.json$/)
-    .type('javascript/auto')
-    .use('json-loader')
-    .loader(require.resolve('json-loader'));
-
   config.output
-    .filename(`${target}/common/[name].js`)
-    .library('createApp')
-    .libraryExport('default')
-    .libraryTarget('window');
+    .filename(`${target}/common/[name].js`);
 
   config.module.rule('jsx')
     .use('babel')
@@ -62,27 +51,13 @@ module.exports = (context, target, options) => {
             nativeLifeCycleMap,
             target,
             rootDir,
-            usingPlugins
+            usingPlugins,
+            runtimeDependencies
           })
         }
       ];
       return options;
     });
-
-  // Split common chunks
-  config.optimization.splitChunks({
-    cacheGroups: {
-      commons: {
-        name: 'vendor',
-        chunks: 'all',
-        minChunks: 2
-      }
-    }
-  });
-  // 2MB
-  config.performance.maxEntrypointSize(2097152);
-  // 1.5MB
-  config.performance.maxAssetSize(1572864);
 
   config.plugin('MiniAppConfigPlugin').use(MiniAppConfigPlugin, [
     {
@@ -108,11 +83,8 @@ module.exports = (context, target, options) => {
     }
   ]);
 
-  config.plugin('copyWebpackPlugin')
-    .tap(args => {
-      args[0] = args[0].concat(needCopyList);
-      return args;
-    });
+  config.plugin('copyWebpackPluginForRuntimeMiniapp')
+    .use(CopyWebpackPlugin, [needCopyList]);
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
   if (command === 'start') {
