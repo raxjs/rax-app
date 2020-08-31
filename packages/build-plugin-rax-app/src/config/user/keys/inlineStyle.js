@@ -59,7 +59,7 @@ module.exports = {
       });
 
       // publicPath should not work in miniapp
-      const cssFilename = (taskName === MINIAPP || taskName === WECHAT_MINIPROGRAM || !publicPath.startsWith('.')) ? `${taskName}/[name].css` : '';
+      const cssFilename = taskName === MINIAPP || taskName === WECHAT_MINIPROGRAM || !publicPath.startsWith('.') ? `${taskName}/[name].css` : '';
       config.plugin('minicss')
         .use(MiniCssExtractPlugin, [{
           filename: cssFilename,
