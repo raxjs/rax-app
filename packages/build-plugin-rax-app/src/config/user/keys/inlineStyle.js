@@ -58,9 +58,11 @@ module.exports = {
           .loader(require.resolve('less-loader'));
       });
 
+      // publicPath should not work in miniapp
+      const cssFilename = (taskName === MINIAPP || taskName === WECHAT_MINIPROGRAM || !publicPath.startsWith('.')) ? `${taskName}/[name].css` : '';
       config.plugin('minicss')
         .use(MiniCssExtractPlugin, [{
-          filename: `${publicPath.startsWith('.') ? '' : `${taskName}/`}[name].css`,
+          filename: cssFilename,
           ignoreOrder: true
         }]);
     }

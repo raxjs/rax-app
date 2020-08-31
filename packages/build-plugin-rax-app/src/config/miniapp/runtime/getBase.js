@@ -11,7 +11,7 @@ const filterNativePages = require('../filterNativePages');
 const targetPlatformMap = require('../targetPlatformMap');
 const { getPlatformExtensions } = require('../../pathHelper');
 
-module.exports = (context, target, options) => {
+module.exports = (context, target, options, onGetWebpackConfig) => {
   const { rootDir, command } = context;
   const { runtimeDependencies = [] } = options[target] || {};
   const outputPath = getMiniAppOutput(context, { target });
@@ -90,6 +90,12 @@ module.exports = (context, target, options) => {
   if (command === 'start') {
     config.devtool('inline-source-map');
   }
+
+  // publicPath should not work in miniapp, just keep default value
+  onGetWebpackConfig(target, (config) => {
+    config.output.publicPath('/');
+  });
+
   return config;
 };
 
