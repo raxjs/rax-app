@@ -35,7 +35,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
     if ([MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP].includes(target)) {
       if (options[target] && options[target].buildType === 'runtime') {
         const getBase = require('./config/miniapp/runtime/getBase');
-        registerTask(target, getBase(context, target, options));
+        registerTask(target, getBase(context, target, options, onGetWebpackConfig));
       } else {
         const getBase = require('./config/miniapp/compile/getBase');
         registerTask(target, getBase(context, target, options, onGetWebpackConfig));

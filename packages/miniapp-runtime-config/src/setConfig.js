@@ -13,7 +13,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
  * @param {string} options.target - miniapp platform
  * @param {string} options.babelRuleName - babel loader name in webpack chain
  */
-module.exports = (config, userConfig, { context, target, babelRuleName = 'babel' }) => {
+module.exports = (config, userConfig, { context, target, babelRuleName = 'babel', onGetWebpackConfig }) => {
   const { rootDir, command } = context;
   // Get miniapp output path
   const outputPath = getOutputPath(context, target);
@@ -87,6 +87,11 @@ module.exports = (config, userConfig, { context, target, babelRuleName = 'babel'
 
   config.devServer.writeToDisk(true).noInfo(true).inline(false);
   config.devtool('none');
+
+  // publicPath should not work in miniapp, just keep default value
+  onGetWebpackConfig(target, (config) => {
+    config.output.publicPath('/');
+  });
 
   if (command === 'start') {
     config.devtool('inline-source-map');

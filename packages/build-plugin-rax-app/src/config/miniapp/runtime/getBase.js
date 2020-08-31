@@ -6,7 +6,7 @@ const setEntry = require('../../setEntry');
 
 const { getPlatformExtensions } = pathHelper;
 
-module.exports = (context, target, options) => {
+module.exports = (context, target, options, onGetWebpackConfig) => {
   const config = getWebpackBase(context, {
     disableRegenerator: true
   }, target);
@@ -18,7 +18,7 @@ module.exports = (context, target, options) => {
     .merge(getPlatformExtensions(platformMap[target].type, ['.js', '.jsx', '.ts', '.tsx', '.json']));
 
   setConfig(config, options[target] || {}, {
-    context, target
+    context, target, onGetWebpackConfig
   });
 
   return config;
