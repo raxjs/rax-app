@@ -10,7 +10,19 @@ module.exports = (target, config) => {
     config.output.publicPath(publicPath.endsWith('/') ? publicPath : `${publicPath}/`);
     // Update output path and filename
     config.output.path(path.resolve(config.output.get('path'), target));
-    config.output.filename('[name].js');
+    // `${target}/[name].js` to '[name].js'
+    config.output.filename(config.output.get('filename').replace(/^[a-zA-Z]+\//, ''));
+
+    // process css file
+    if (config.plugins.has('minicss')) {
+      config.plugin('minicss').tap((args) => {
+        if (args[0].filename) {
+          // `${target}/[name].css` to '[name].css'
+          args[0].filename = args[0].filename.replace(/^[a-zA-Z]+\//, '');
+        }
+        return args;
+      });
+    }
 
     // Update copy public output path, when outputPath is `xx/build/${target}`
     // { from: 'src/public', to: 'web/public' }  =>  { from: 'src/public', to: 'public' }
