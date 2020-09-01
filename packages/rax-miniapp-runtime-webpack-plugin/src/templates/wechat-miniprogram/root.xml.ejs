@@ -3,7 +3,7 @@
     <view
       wx:if="{{!isComp}}"
       style="{{r.style}}"
-      class="h5-{{r.tagName}} {{r.className}}"
+      class="h5-{{r.tagName}} {{r.class}}"
       id="{{r.id}}"
       animation="{{r.animation}}"
       data-private-node-id="{{r.nodeId}}"
@@ -31,7 +31,7 @@
     <view
       wx:if="{{!isComp}}"
       style="{{r.style}}"
-      class="h5-{{r.tagName}} {{r.className}}"
+      class="h5-{{r.tagName}} {{r.class}}"
       id="{{r.id}}"
       animation="{{r.animation}}"
       data-private-node-id="{{r.nodeId}}"
@@ -63,7 +63,7 @@
     <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
       <template is="{{item.miniappPluginName}}" data="{{r: item}}" />
     </block>
-    <block wx:elif="{{!item.behavior}}">
+    <block wx:elif="{{!item._behavior}}">
       <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item, isHTMLElement: true}}" />
       <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item, isHTMLElement: true}}" />
       <template wx:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item, isHTMLElement: true}}" />
@@ -72,7 +72,7 @@
       <element
         wx:else
         style="{{item.style}}"
-        class="h5-{{item.tagName}} {{item.className}}"
+        class="h5-{{item.tagName}} {{item.class}}"
         id="{{item.id}}"
         animation="{{item.animation}}"
         data-private-node-id="{{item.nodeId}}"
@@ -102,7 +102,7 @@
     <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
       <template is="{{item.miniappPluginName}}" data="{{r: item}}" />
     </block>
-    <block wx:elif="{{!item.behavior}}">
+    <block wx:elif="{{!item._behavior}}">
       <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item}}" />
       <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item}}" />
       <template wx:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item}}" />
@@ -111,7 +111,7 @@
       <element
         wx:else
         style="{{item.style}}"
-        class="h5-{{item.tagName}} {{item.className}}"
+        class="h5-{{item.tagName}} {{item.class}}"
         id="{{item.id}}"
         animation="{{item.animation}}"
         data-private-node-id="{{item.nodeId}}"
@@ -136,7 +136,7 @@
 <template name="view">
   <view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     id="{{r.id}}"
     hidden="{{r.hidden}}"
     animation="{{r.animation}}"
@@ -164,7 +164,7 @@
 <template name="swiper">
   <swiper
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -200,7 +200,7 @@
     <swiper-item
       wx:for="{{r.children}}"
       wx:key="nodeId"
-      class="{{item.className}}"
+      class="{{item.class}}"
       id="{{item.id}}"
       data-private-node-id="{{item.nodeId}}"
       data-private-page-id="{{item.pageId}}"
@@ -213,7 +213,7 @@
 <template name="scroll-view">
   <scroll-view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -252,7 +252,7 @@
 <template name="cover-view">
   <cover-view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     id="{{r.id}}"
     hidden="{{r.hidden}}"
     data-private-node-id="{{r.nodeId}}"
@@ -267,7 +267,7 @@
 <template name="cover-image">
   <cover-image
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -284,7 +284,7 @@
 <template name="moveable-view">
   <moveable-view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     animation="{{r.animation}}"
@@ -320,7 +320,7 @@
 <template name="moveable-view">
   <moveable-view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     animation="{{r.animation}}"
@@ -343,7 +343,7 @@
 <template name="text">
   <text
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     animation="{{r.animation}}"
@@ -368,7 +368,7 @@
 <template name="icon">
   <icon
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -390,7 +390,7 @@
 <template name="progress">
   <progress
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -421,7 +421,7 @@
 <template name="rich-text">
   <rich-text
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -443,7 +443,7 @@
 <template name="button">
   <button
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     animation="{{r.animation}}"
@@ -490,7 +490,7 @@
 <template name="form">
   <form
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     animation="{{r.animation}}"
@@ -516,7 +516,7 @@
 <template name="label">
   <label
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -537,7 +537,7 @@
 <template name="input">
   <input
     style="{{r.style}}"
-    class="{{isHTMLElement ? 'h5-input ' + r.className : r.className}}"
+    class="{{isHTMLElement ? 'h5-input ' + r.class : r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -574,7 +574,7 @@
 <template name="textarea">
   <textarea
     style="{{r.style}}"
-    class="{{isHTMLElement ? 'h5-textarea ' + r.className : r.className}}"
+    class="{{isHTMLElement ? 'h5-textarea ' + r.class : r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -611,7 +611,7 @@
 <template name="radio">
   <radio
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -631,7 +631,7 @@
 <template name="radio-group">
   <radio-group
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -649,7 +649,7 @@
 <template name="checkbox">
   <checkbox
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -669,7 +669,7 @@
 <template name="checkbox-group">
   <checkbox-group
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -687,7 +687,7 @@
 <template name="switch">
   <switch
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -708,7 +708,7 @@
 <template name="slider">
   <slider
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -738,7 +738,7 @@
 <template name="picker-view">
   <picker-view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -758,7 +758,7 @@
         wx:for="{{r.children}}"
         wx:key="nodeId"
         style="{{item.style}}"
-        class="{{item.className}}"
+        class="{{item.class}}"
         hidden="{{item.hidden}}"
         id="{{item.id}}"
         data-private-node-id="{{item.nodeId}}"
@@ -778,7 +778,7 @@
 <template name="picker">
   <picker
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -808,7 +808,7 @@
 <template name="navigator">
   <navigator
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -844,7 +844,7 @@
 <template name="image">
   <image
     style="{{r.style}}"
-    class="{{isHTMLElement ?  'h5-img ' + r.className : r.className}}"
+    class="{{isHTMLElement ?  'h5-img ' + r.class : r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -871,7 +871,7 @@
 <template name="video">
   <video
     style="{{r.style}}"
-    class="{{isHTMLElement ?  'h5-video ' + r.className : r.className}}"
+    class="{{isHTMLElement ?  'h5-video ' + r.class : r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -925,7 +925,7 @@
 <template name="map">
   <map
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -973,7 +973,7 @@
 <template name="canvas">
   <canvas
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -998,7 +998,7 @@
 <template name="web-view">
   <web-view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"

@@ -19,7 +19,7 @@ function generateElementJS(compilation,
 
 function generateElementTemplate(compilation,
   { usingPlugins, usingComponents, target, command, rootDir }) {
-  let content = '<template is="{{r.behavior || \'element\'}}" data="{{r: r, isComp: true}}" />';
+  let content = '<template is="{{r._behavior || \'element\'}}" data="{{r: r, isComp: true}}" />';
   if (target !== MINIAPP) {
     generateRootTmpl(compilation, { usingPlugins, usingComponents, target, command, rootDir });
     content = `<import src="./root.${adapter[target].xml}"/>` + content;
