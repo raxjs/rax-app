@@ -190,62 +190,51 @@
   </cover-image>
 </template>
 
-<template name="moveable-view">
-  <moveable-view
+<template name="moveable-area">
+  <moveable-area
     style="{{r.style}}"
     class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
-    animation="{{r.animation}}"
     data-private-node-id="{{r.nodeId}}"
     data-private-page-id="{{r.pageId}}"
-
-    onTap="onTap"
-    onTouchStart="onTouchStart"
-    onTouchMove="onTouchMove"
-    onTouchEnd="onTouchEnd"
-    onTouchCancel="onTouchCancel"
-
-    onChange="onMovableViewChange"
-    onScale="onMovableViewScale"
-
-    direction="{{r.direction}}"
-    inertia="{{r.inertia}}"
-    out-of-bounds="{{r['out-of-bounds']}}"
-    x="{{r.x}}"
-    y="{{r.y}}"
-    damping="{{r.damping}}"
-    friction="{{r.friction}}"
-    disabled="{{r.disabled}}"
-    scale="{{r.scale}}"
-    scale-min="{{r['scale-min']}}"
-    scale-max="{{r['scale-max']}}"
-    scale-value="{{r['scale-value']}}"
-  >
-    <template is="children" data="{{r: r.children}}" />
-  </moveable-view>
-</template>
-
-<template name="moveable-view">
-  <moveable-view
-    style="{{r.style}}"
-    class="{{r.class}}"
-    hidden="{{r.hidden}}"
-    id="{{r.id}}"
-    animation="{{r.animation}}"
-    data-private-node-id="{{r.nodeId}}"
-    data-private-page-id="{{r.pageId}}"
-
-    onTap="onTap"
-    onTouchStart="onTouchStart"
-    onTouchMove="onTouchMove"
-    onTouchEnd="onTouchEnd"
-    onTouchCancel="onTouchCancel"
 
     scale-area="{{r['scale-area']}}"
   >
-    <template is="children" data="{{r: r.children}}" />
-  </moveable-view>
+    <moveable-view
+      a:for="{{r.children}}"
+      a:key="nodeId"
+      a:if="{{item.nodeType !== 'comment'}}"
+      style="{{item.style}}"
+      class="{{item.class}}"
+      hidden="{{item.hidden}}"
+      id="{{item.id}}"
+      data-private-node-id="{{item.nodeId}}"
+      data-private-page-id="{{item.pageId}}"
+
+      onTap="onTap"
+      onTouchStart="onTouchStart"
+      onTouchMove="onTouchMove"
+      onTouchEnd="onTouchEnd"
+      onTouchCancel="onTouchCancel"
+
+      animation="{{r.animation !== undefined ? r.animation : true}}"
+      direction="{{item.direction || 'none'}}"
+      inertia="{{item.inertia}}"
+      out-of-bounds="{{item['out-of-bounds']}}"
+      x="{{item.x}}"
+      y="{{item.y}}"
+      damping="{{item.damping}}"
+      friction="{{item.friction}}"
+      disabled="{{item.disabled}}"
+      scale="{{item.scale}}"
+      scale-min="{{item['scale-min'] !== undefined ? item['scale-min'] : 0.5}}"
+      scale-max="{{item['scale-max'] !== undefined ? item['scale-max'] : 10}}"
+      scale-value="{{item['scale-value'] !== undefined ? item['scale-value'] : 1}}"
+    >
+      <template is="children" data="{{r: item.children}}" />
+    </moveable-view>
+  </moveable-area>
 </template>
 
 <!--Base content-->
@@ -290,7 +279,7 @@
     onTouchCancel="onTouchCancel"
 
     type="{{r.type}}"
-    size="{{r.size}}"
+    size="{{r.size !== undefined ? r.size : '23'}}"
     color="{{r.color}}"
   >
   </icon>
@@ -372,25 +361,25 @@
     onOpenSetting="onButtonOpenSetting"
     onLaunchApp="onButtonLaunchApp"
 
-    size="{{r.size}}"
-    type="{{r.type}}"
-    plain="{{r.plain}}"
-    disabled="{{r.disabled}}"
-    loading="{{r.loading}}"
-    form-type="{{r['form-type']}}"
-    open-type="{{r['open-type']}}"
-    hover-class="{{r['hover-class']}}"
-    hover-stop-propagation="{{r['hover-stop-propagation']}}"
-    hover-start-time="{{r['hover-start-time']}}"
-    hover-stay-time="{{r['hover-stay-time']}}"
-    lang="{{r.lang}}"
-    session-from="{{r['session-from']}}"
-    send-message-title="{{r['send-message-title']}}"
-    send-message-path="{{r['send-message-path']}}"
-    send-message-img="{{r['send-message-img']}}"
-    app-parameter="{{r['app-parameter']}}"
-    show-message-card="{{r['show-message-card']}}"
-    business-id="{{r['business-id']}}"
+    size="{{r.size || 'default'}}"
+    type="{{r.type || 'default'}}"
+    plain="{{r.plain || false}}"
+    disabled="{{r.disabled || false}}"
+    loading="{{r.loading || false}}"
+    form-type="{{r['form-type'] || ''}}"
+    open-type="{{r['open-type'] || ''}}"
+    hover-class="{{r['hover-class'] || 'button-hover'}}"
+    hover-stop-propagation="{{r['hover-stop-propagation'] || false}}"
+    hover-start-time="{{r['hover-start-time'] !== undefined ? r['hover-start-time'] : 20}}"
+    hover-stay-time="{{r['hover-stay-time'] !== undefined ? r['hover-stay-time'] : 70}}"
+    lang="{{r.lang || 'en'}}"
+    session-from="{{r['session-from'] || ''}}"
+    send-message-title="{{r['send-message-title'] || ''}}"
+    send-message-path="{{r['send-message-path'] || ''}}"
+    send-message-img="{{r['send-message-img'] || ''}}"
+    app-parameter="{{r['app-parameter'] || ''}}"
+    show-message-card="{{r['show-message-card'] || ''}}"
+    public-id="{{r['public-id'] || ''}}"
   >
     <template is="children" data="{{r: r.children}}" />
   </button>
@@ -402,7 +391,6 @@
     class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
-    animation="{{r.animation}}"
     data-private-node-id="{{r.nodeId}}"
     data-private-page-id="{{r.pageId}}"
 
@@ -416,7 +404,7 @@
     onReset="onFormReset"
 
     report-submit="{{r['report-submit']}}"
-    report-submit-timeout="{{r['report-submit-timeout']}}"
+    report-submit-timeout="{{r['report-submit-timeout'] || 0}}"
   >
     <template is="children" data="{{r: r.children}}" />
   </form>
@@ -437,7 +425,7 @@
     onTouchEnd="onTouchEnd"
     onTouchCancel="onTouchCancel"
 
-    for="{{r.for}}"
+    for="{{r.for || ''}}"
   >
     <template is="children" data="{{r: r.children}}" />
   </label>
@@ -569,7 +557,8 @@
     onTap="onTap"
     onChange="onCheckboxItemChange"
 
-    value="{{r.value}}"
+    name="{{r.name}}"
+    value="{{r.value || ''}}"
     disabled="{{r.disabled}}"
     checked="{{r.checked}}"
     color="{{r.color}}"
@@ -659,11 +648,11 @@
     onPickStart="onPickerViewPickstart"
     onPickEnd="onPickerViewPickend"
 
-    indicator-style="{{r['indicator-style']}}"
-    indicator-class="{{r['indicator-class']}}"
-    mask-style="{{r['mask-style']}}"
-    mask-class="{{r['mask-class']}}"
-    value="{{r.value}}"
+    indicator-style="{{r['indicator-style'] || ''}}"
+    indicator-class="{{r['indicator-class'] || ''}}"
+    mask-style="{{r['mask-style'] || ''}}"
+    mask-class="{{r['mask-class'] || ''}}"
+    value="{{r.value || []}}"
   >
     <picker-view-column
       a:for="{{r.children}}"
@@ -718,10 +707,9 @@
     onCancel="onPickerCancel"
 
     name="{{r.name}}"
-    mode="{{r.mode}}"
     disabled="{{r.disabled}}"
-    range="{{r.range}}"
-    range-key="{{r['range-key']}}"
+    range="{{r.range || []}}"
+    range-key="{{r['range-key'] || ''}}"
     value="{{r.value}}"
   >
     <view><template is="children" data="{{r: r.children}}" /></view>
@@ -747,18 +735,12 @@
     onFail="onNavigatorFail"
     onComplete="onNavigatorComplete"
 
-    target="{{r.target}}"
-    url="{{r.url}}"
-    open-type="{{r['open-type']}}"
-    delta="{{r.delta}}"
-    app-id="{{r['app-id']}}"
-    path="{{r.path}}"
-    extra-data="{{r['extra-data']}}"
-    version="{{r.version}}"
-    hover-class="{{r['hover-class']}}"
+    url="{{r.url || ''}}"
+    open-type="{{r['open-type'] || 'navigate'}}"
+    hover-class="{{r['hover-class'] || 'none'}}"
     hover-stop-propagation="{{r['hover-stop-propagation']}}"
-    hover-start-time="{{r['hover-start-time']}}"
-    hover-stay-time="{{r['hover-stay-time']}}"
+    hover-start-time="{{r['hover-start-time'] !== undefined ? r['hover-start-time'] : 50}}"
+    hover-stay-time="{{r['hover-stay-time'] !== undefined ? r['hover-stay-time'] : 600}}"
   >
     <template is="children" data="{{r: r.children}}" />
   </navigator>
@@ -784,9 +766,9 @@
 
     rendering-mode="{{r['rendering-mode']}}"
     src="{{r.src}}"
-    mode="{{r.mode}}"
+    mode="{{r.mode || 'scaleToFill'}}"
     lazy-load="{{r['lazy-load']}}"
-    show-menu-by-longpress="{{r['show-menu-by-longpress']}}"
+    default-source="{{r['default-source']}}"
   >
   </image>
 </template>
@@ -869,20 +851,20 @@
     onUpdated="onMapUpdated"
     onRegionChange="onMapRegionChange"
 
-    longitude="{{r.longitude}}"
-    latitude="{{r.latitude}}"
-    scale="{{r.scale}}"
-    markers="{{r.markers}}"
-    polyline="{{r.polyline}}"
-    circles="{{r.circles}}"
-    controls="{{r.controls}}"
-    include-points="{{r['include-points']}}"
+    longitude="{{r.longitude !== undefined ? r.longitude : 39.92}}"
+    latitude="{{r.latitude !== undefined ? r.latitude : 116.46}}"
+    scale="{{r.scale !== undefined ? r.scale : 16}}"
+    markers="{{r.markers !== undefined ? r.markers : []}}"
+    polyline="{{r.polyline !== undefined ? r.polyline : []}}"
+    circles="{{r.circles !== undefined ? r.circles : []}}"
+    controls="{{r.controls !== undefined ? r.controls : []}}"
+    include-points="{{r['include-points'] !== undefined ? r['include-points'] : []}}"
     show-location="{{r['show-location']}}"
-    polygons="{{r.polygons}}"
-    subkey="{{r.subkey}}"
-    layer-style="{{r['layer-style']}}"
-    rotate="{{r.rotate}}"
-    skew="{{r.skew}}"
+    polygons="{{r.polygons !== undefined ? r.polygons : []}}"
+    subkey="{{r.subkey || ''}}"
+    layer-style="{{r['layer-style'] !== undefined ? r['layer-style'] : 1}}"
+    rotate="{{r.rotate || 0}}"
+    skew="{{r.skew || 0}}"
     enable-3D="{{r['enable-3D']}}"
     show-compass="{{r['show-compass']}}"
     enable-overlooking="{{r['enable-overlooking']}}"
@@ -916,6 +898,8 @@
 
     id="{{r['canvas-id']}}"
     disable-scroll="{{r['disable-scroll']}}"
+    width="{{r['width']}}"
+    height="{{r['height']}}"
   >
   </canvas>
 </template>
