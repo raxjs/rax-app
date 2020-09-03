@@ -1,12 +1,12 @@
 const { join, resolve } = require('path');
 const { readJSONSync } = require('fs-extra');
-const { getRouteName } = require('rax-compile-config');
+const getRouteName = require('./utils/getRouteName');
 
 const {
   relativeModuleResolve,
   normalizeOutputFilePath,
   getRelativePath
-} = require('../pathHelper');
+} = require('./pathHelper');
 
 module.exports = (rootDir, target, nativeLifeCycleMap) => {
   const entryPath = join(rootDir, 'src');
