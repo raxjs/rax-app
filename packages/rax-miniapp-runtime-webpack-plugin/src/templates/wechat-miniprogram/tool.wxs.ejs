@@ -1,0 +1,25 @@
+var scrollValCache = {
+  'scroll-top': {},
+  'scroll-left': {}
+};
+
+module.exports = {
+  processVal: function(val, defaultVal) {
+    return val === undefined ? defaultVal : val;
+  },
+  processPlaceholderStyle: function(placeholderStyle, placeholderColor) {
+    var style = placeholderStyle || '';
+    if (placeholderColor) {
+      style = 'color:' + placeholderColor + ';' + style;
+    }
+    return style;
+  },
+  processScrollVal: function(r, type) {
+    const cacheVal = scrollValCache[type][r.nodeId];
+    if (cacheVal === r[type]) {
+      return '';
+    } else {
+      return scrollValCache[type][r.nodeId] = r[type];
+    }
+  }
+}

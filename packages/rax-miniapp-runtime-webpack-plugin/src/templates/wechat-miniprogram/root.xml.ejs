@@ -1,134 +1,10 @@
 <template name="element">
-  <block wx:if="{{r.tagName}}">
-    <view
-      wx:if="{{!isComp}}"
-      style="{{r.style}}"
-      class="h5-{{r.tagName}} {{r.class}}"
-      id="{{r.id}}"
-      animation="{{r.animation}}"
-      data-private-node-id="{{r.nodeId}}"
-      data-private-page-id="{{r.pageId}}"
-
-      bindtap="onTap"
-      bindtouchstart="onTouchStart"
-      bindtouchmove="onTouchMove"
-      bindtouchend="onTouchEnd"
-      bindtouchcancel="onTouchCancel"
-    >
-      <template is="children" data="{{r: r.children}}" />
-    </view>
-    <block wx:else>
-      <template is="children" data="{{r: r.children}}" />
-    </block>
-  </block>
-  <block wx:else>
-    <template is="children" data="{{r: r.children}}" />
-  </block>
-</template>
-
-<template name="element_1">
-  <block wx:if="{{r.tagName}}">
-    <view
-      wx:if="{{!isComp}}"
-      style="{{r.style}}"
-      class="h5-{{r.tagName}} {{r.class}}"
-      id="{{r.id}}"
-      animation="{{r.animation}}"
-      data-private-node-id="{{r.nodeId}}"
-      data-private-page-id="{{r.pageId}}"
-
-      bindtap="onTap"
-      bindtouchstart="onTouchStart"
-      bindtouchmove="onTouchMove"
-      bindtouchend="onTouchEnd"
-      bindtouchcancel="onTouchCancel"
-    >
-      <template is="children_1" data="{{r: r.children}}" />
-    </view>
-    <block wx:else>
-      <template is="children_1" data="{{r: r.children}}" />
-    </block>
-  </block>
-  <block wx:else>
-    <template is="children_1" data="{{r: r.children}}" />
-  </block>
+  <template is="{{r.nodeType}}" data="{{r: r}}" />
 </template>
 
 <template name="children">
   <block wx:for="{{r}}" wx:key="nodeId">
-    <block wx:if="{{item.nodeType === 'text'}}">{{item.content}}</block>
-    <block wx:elif="{{item.tagName === 'custom-component'}}">
-      <template is="{{item.customComponentName}}" data="{{r: item}}" />
-    </block>
-    <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
-      <template is="{{item.miniappPluginName}}" data="{{r: item}}" />
-    </block>
-    <block wx:elif="{{!item._behavior}}">
-      <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item, isHTMLElement: true}}" />
-      <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item, isHTMLElement: true}}" />
-      <template wx:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item, isHTMLElement: true}}" />
-      <template wx:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item, isHTMLElement: true}}" />
-      <template wx:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item, isHTMLElement: true}}" />
-      <element
-        wx:else
-        style="{{item.style}}"
-        class="h5-{{item.tagName}} {{item.class}}"
-        id="{{item.id}}"
-        animation="{{item.animation}}"
-        data-private-node-id="{{item.nodeId}}"
-        data-private-page-id="{{item.pageId}}"
-
-        bindtap="onTap"
-        bindtouchstart="onTouchStart"
-        bindtouchmove="onTouchMove"
-        bindtouchend="onTouchEnd"
-        bindtouchcancel="onTouchCancel"
-
-        r="{{item}}"
-      />
-    </block>
-    <block wx:else>
-      <element r="{{item}}" />
-    </block>
-  </block>
-</template>
-
-<template name="children_1">
-  <block wx:for="{{r}}" wx:key="nodeId">
-    <block wx:if="{{item.nodeType === 'text'}}">{{item.content}}</block>
-    <block wx:elif="{{item.tagName === 'custom-component'}}">
-      <template is="{{item.customComponentName}}" data="{{r: item}}" />
-    </block>
-    <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
-      <template is="{{item.miniappPluginName}}" data="{{r: item}}" />
-    </block>
-    <block wx:elif="{{!item._behavior}}">
-      <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item}}" />
-      <element
-        wx:else
-        style="{{item.style}}"
-        class="h5-{{item.tagName}} {{item.class}}"
-        id="{{item.id}}"
-        animation="{{item.animation}}"
-        data-private-node-id="{{item.nodeId}}"
-        data-private-page-id="{{item.pageId}}"
-
-        bindtap="onTap"
-        bindtouchstart="onTouchStart"
-        bindtouchmove="onTouchMove"
-        bindtouchend="onTouchEnd"
-        bindtouchcancel="onTouchCancel"
-
-        r="{{item}}"
-      />
-    </block>
-    <block wx:else>
-      <element r="{{item}}" />
-    </block>
+    <element r="{{item}}" />
   </block>
 </template>
 
@@ -305,11 +181,11 @@
       data-private-node-id="{{item.nodeId}}"
       data-private-page-id="{{item.pageId}}"
 
-      onTap="onTap"
-      onTouchStart="onTouchStart"
-      onTouchMove="onTouchMove"
-      onTouchEnd="onTouchEnd"
-      onTouchCancel="onTouchCancel"
+      bindtap="onTap"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+      bindtouchcancel="onTouchCancel"
 
       animation="{{r.animation !== undefined ? r.animation : true}}"
       direction="{{item.direction || 'none'}}"
@@ -328,6 +204,33 @@
       <template is="children" data="{{r: item.children}}" />
     </moveable-view>
   </moveable-area>
+</template>
+
+<!--HTML component -->
+<template name="h-text">
+  <block>{{r.content}}</block>
+</template>
+
+<template name="h-element">
+  <view
+    style="{{r.style}}"
+    class="{{r.class}}"
+    id="{{r.id}}"
+    animation="{{r.animation}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+  >
+    <template is="children" data="{{r: r.children}}" />
+  </view>
+</template>
+
+<template name="h-comment">
 </template>
 
 <!--Base content-->
@@ -528,7 +431,7 @@
 <template name="input">
   <input
     style="{{r.style}}"
-    class="{{isHTMLElement ? 'h5-input ' + r.class : r.class}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -565,7 +468,7 @@
 <template name="textarea">
   <textarea
     style="{{r.style}}"
-    class="{{isHTMLElement ? 'h5-textarea ' + r.class : r.class}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -854,7 +757,7 @@
     delta="{{r.delta !== undefined ? r.delta : 1}}"
     app-id="{{r['app-id'] || ''}}"
     path="{{r.path || ''}}"
-    extra-data="{{r['extra-data'] || {}}}"
+    extra-data="{{r['extra-data']}}"
     version="{{r.version || 'release'}}"
   >
     <template is="children" data="{{r: r.children}}" />
@@ -864,7 +767,7 @@
 <template name="image">
   <image
     style="{{r.style}}"
-    class="{{isHTMLElement ?  'h5-img ' + r.class : r.class}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -891,7 +794,7 @@
 <template name="video">
   <video
     style="{{r.style}}"
-    class="{{isHTMLElement ?  'h5-video ' + r.class : r.class}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"

@@ -36,14 +36,10 @@ function generatePageXML(
 ) {
   let pageXmlContent;
   if (target === MINIAPP && useComponent) {
-    pageXmlContent = `<view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
-    <element r="{{root}}"  />
-  </view>`;
+    pageXmlContent = `<element r="{{root}}"  />`;
   } else {
     pageXmlContent = `<import src="${getAssetPath('root.' + adapter[target].xml, pageRoute + adapter[target].xml)}"/>
-    <view class="miniprogram-root" data-private-node-id="e-body" data-private-page-id="{{pageId}}">
-    <template is="element" data="{{r: root}}"  />
-  </view>`;
+    <template is="element" data="{{r: root}}"  />`;
   }
 
   addFileToCompilation(compilation, {
