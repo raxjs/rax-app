@@ -1,16 +1,16 @@
-const { resolve, sep } = require('path');
+const { resolve } = require('path');
 const { copySync } = require('fs-extra');
 const chokidar = require('chokidar');
-const { isNativePage, removeExt } = require('../../config/pathHelper');
+const { pathHelper: { isNativePage, removeExt } } = require('miniapp-builder-shared');
 
 /**
  * Copy directories from rootDir + `src/${dir}` to outputPath + `${dir}`
- * @param {string[]} constantDirectories
+ * @param {string[]} constantDir
  * @param {string} rootDir
  * @param {string} outputPath
  */
-function copyPublicFile(constantDirectories, rootDir, outputPath, target) {
-  for (let srcDir of constantDirectories) {
+function copyPublicFile(constantDir, rootDir, outputPath, target) {
+  for (let srcDir of constantDir) {
     const srcPath = resolve(rootDir, srcDir);
     const distPath = resolve(outputPath, srcDir.split('/').slice(1).join('/'));
     copySync(srcPath, distPath, {
@@ -28,11 +28,11 @@ function copyPublicFile(constantDirectories, rootDir, outputPath, target) {
  * Copy public directories to dist
  */
 module.exports = class CopyPublicFilePlugin {
-  constructor({ mode = 'build', rootDir = '', outputPath = '', constantDirectories = [], target }) {
+  constructor({ mode = 'build', rootDir = '', outputPath = '', constantDir = [], target }) {
     this.mode = mode;
     this.rootDir = rootDir;
     this.outputPath = outputPath;
-    this.constantDirectories = constantDirectories;
+    this.constantDir = constantDir;
     this.target = target;
   }
 
@@ -41,12 +41,12 @@ module.exports = class CopyPublicFilePlugin {
       'CopyPublicFilePlugin',
       (compilation, callback) => {
         if (this.mode === 'build') {
-          copyPublicFile(this.constantDirectories, this.rootDir, this.outputPath, this.target);
+          copyPublicFile(this.constantDir, this.rootDir, this.outputPath, this.target);
         } else {
-          const constantDirectoryPaths = this.constantDirectories.map(dirPath => resolve(this.rootDir, dirPath));
+          const constantDirectoryPaths = this.constantDir.map(dirPath => resolve(this.rootDir, dirPath));
           const watcher = chokidar.watch(constantDirectoryPaths);
           watcher.on('all', () => {
-            copyPublicFile(this.constantDirectories, this.rootDir, this.outputPath, this.target);
+            copyPublicFile(this.constantDir, this.rootDir, this.outputPath, this.target);
           });
         }
 
