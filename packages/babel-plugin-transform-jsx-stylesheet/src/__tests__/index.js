@@ -1,16 +1,5 @@
-import jSXStylePlugin from '../index';
-import syntaxJSX from 'babel-plugin-syntax-jsx';
-import { transform } from 'babel-core';
 import { mergeStylesFunctionString, getClassNameFunctionString, getStyleFunctionString } from '../constants';
-
-function getTransfromCode(code, opts) {
-  return transform(code, {
-    plugins: [
-      [jSXStylePlugin, opts],
-      syntaxJSX
-    ]
-  }).code;
-}
+import getTransfromCode from '../getTransfromCode';
 
 describe('jsx style plugin', () => {
   it('transform only one className to style as member', () => {
