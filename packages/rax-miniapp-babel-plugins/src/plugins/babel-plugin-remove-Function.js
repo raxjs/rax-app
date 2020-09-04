@@ -14,7 +14,9 @@ module.exports = function visitor() {
         ) {
           // Remove `Function('r', 'regeneratorRuntime = r')(runtime)`
           // Because Alibaba Miniapp doesn't allow use `Function`
-          path.parentPath.remove();
+          try {
+            path.parentPath.remove();
+          } catch (err) {}
         }
       }
     }
