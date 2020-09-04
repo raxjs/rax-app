@@ -1,4 +1,4 @@
-const getTagName = require("./getTagName");
+const getTagName = require('./getTagName');
 
 function collectComponentAttr(components, t) {
   return (innerPath) => {
@@ -47,7 +47,7 @@ function collectUsings(
       // Insert a tag
       componentInfo.node.attributes.push(
         t.jsxAttribute(
-          t.jsxIdentifier("__native"),
+          t.jsxIdentifier('__native'),
           t.jsxExpressionContainer(t.booleanLiteral(true))
         )
       );
@@ -72,7 +72,7 @@ function collectUsings(
       componentsNameMap.set(tagName, replacedTagName);
       // Use const Custom = 'c90589c' replace import Custom from '../public/xxx or plugin://...'
       path.replaceWith(
-        t.VariableDeclaration("const", [
+        t.VariableDeclaration('const', [
           t.VariableDeclarator(
             t.identifier(tagName),
             t.stringLiteral(replacedTagName)

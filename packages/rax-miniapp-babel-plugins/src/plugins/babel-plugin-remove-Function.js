@@ -16,7 +16,7 @@ module.exports = function visitor() {
           // Because Alibaba Miniapp doesn't allow use `Function`
           try {
             path.parentPath.remove();
-          } catch(err) {}
+          } catch (err) {}
         }
       }
     }
