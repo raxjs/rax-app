@@ -12,8 +12,8 @@ export default function getTransfromCode(code, opts) {
 }
 
 describe('css module', () => {
-    it('should transform css module', () => {
-      expect(getTransfromCode(`
+  it('should transform css module', () => {
+    expect(getTransfromCode(`
   import { createElement, render } from 'rax';
   import styles from './app.css';
   
@@ -23,5 +23,5 @@ import { createElement, render } from 'rax';
 import styles from './app.css';
 
 render(<div style={styles.header} />);`);
-});
+  });
 });
