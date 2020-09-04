@@ -2,7 +2,7 @@ import syntaxJSX from 'babel-plugin-syntax-jsx';
 import { transform } from 'babel-core';
 import jSXStylePlugin from '../index';
 
-export default function getTransfromCode(code, opts) {
+export default function getTransformCode(code, opts) {
   return transform(code, {
     plugins: [
       [jSXStylePlugin, opts],
@@ -13,7 +13,7 @@ export default function getTransfromCode(code, opts) {
 
 describe('css module', () => {
   it('should transform css module', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
   import { createElement, render } from 'rax';
   import styles from './app.css';
   
