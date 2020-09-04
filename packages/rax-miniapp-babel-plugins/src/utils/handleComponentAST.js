@@ -1,4 +1,4 @@
-const getTagName = require('./getTagName');
+const getTagName = require("./getTagName");
 
 function collectComponentAttr(components, t) {
   return (innerPath) => {
@@ -8,7 +8,8 @@ function collectComponentAttr(components, t) {
       if (!components[tagName]) {
         components[tagName] = {
           props: [],
-          events: []
+          events: [],
+          node: innerNode,
         };
       }
       innerNode.attributes.forEach((attrNode) => {
@@ -30,26 +31,48 @@ function collectComponentAttr(components, t) {
   };
 }
 
-function collectUsings(path, components, componentsNameMap, usings, filePath, t) {
+function collectUsings(
+  path,
+  components,
+  componentsNameMap,
+  usings,
+  filePath,
+  t
+) {
   const { specifiers } = path.node;
   for (let specifier of specifiers) {
     const tagName = specifier.local.name;
     const componentInfo = components[tagName];
     if (componentInfo) {
+      // Insert a tag
+      componentInfo.node.attributes.push(
+        t.jsxAttribute(
+          t.jsxIdentifier("__native"),
+          t.jsxExpressionContainer(t.booleanLiteral(true))
+        )
+      );
       // Generate a random tag name
-      const replacedTagName = /[A-Z]/.test(tagName) ? getTagName(tagName) : tagName;
+      const replacedTagName = /[A-Z]/.test(tagName)
+        ? getTagName(tagName)
+        : tagName;
       if (!usings[replacedTagName]) {
-        usings[replacedTagName] = { props: [], events: []};
+        usings[replacedTagName] = { props: [], events: [] };
       }
       usings[replacedTagName] = {
         path: filePath,
-        props: [...new Set(componentInfo.props.concat(usings[replacedTagName].props))],
-        events: [...new Set(componentInfo.events.concat(usings[replacedTagName].events))]
+        props: [
+          ...new Set(componentInfo.props.concat(usings[replacedTagName].props)),
+        ],
+        events: [
+          ...new Set(
+            componentInfo.events.concat(usings[replacedTagName].events)
+          ),
+        ],
       };
       componentsNameMap.set(tagName, replacedTagName);
       // Use const Custom = 'c90589c' replace import Custom from '../public/xxx or plugin://...'
       path.replaceWith(
-        t.VariableDeclaration('const', [
+        t.VariableDeclaration("const", [
           t.VariableDeclarator(
             t.identifier(tagName),
             t.stringLiteral(replacedTagName)
