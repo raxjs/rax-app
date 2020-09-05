@@ -75,6 +75,7 @@
   >
     <swiper-item
       wx:for="{{r.children}}"
+      wx:if="{{item.nodeType !== 'comment'}}"
       wx:key="nodeId"
       class="{{item.class}}"
       id="{{item.id}}"
@@ -674,6 +675,7 @@
   >
       <picker-view-column
         wx:for="{{r.children}}"
+        wx:if="{{item.nodeType !== 'comment'}}"
         wx:key="nodeId"
         style="{{item.style}}"
         class="{{item.class}}"

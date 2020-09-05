@@ -1,7 +1,7 @@
 const { join, relative, sep, resolve } = require('path');
 const { existsSync, statSync, readJSONSync } = require('fs-extra');
 const enhancedResolve = require('enhanced-resolve');
-const targetPlatformMap = require('../config/miniapp/targetPlatformMap');
+const targetPlatformMap = require('./platformMap');
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -77,11 +77,16 @@ function getRelativePath(filePath) {
   return relativePath;
 }
 
-function getDepPath(rootDir, componentFilePath) {
-  if (componentFilePath[0] === sep ) {
-    return join(rootDir, 'src', componentFilePath);
+/**
+ * ./pages/foo -> based on src, return original
+ * /pages/foo -> based on rootContext
+ * pages/foo -> based on src, add prefix: './' or '.\'
+ */
+function getDepPath(rootDir, source, sourcePath = 'src') {
+  if (source[0] === sep || source[0] === '.') {
+    return join(rootDir, sourcePath, source);
   } else {
-    return resolve(rootDir, 'src', componentFilePath);
+    return resolve(rootDir, sourcePath, source);
   }
 }
 
@@ -116,11 +121,10 @@ function isNativePage(filePath, target) {
   if (existsSync(filePath + targetPlatformMap[target].tplExtension)) {
     try {
       const jsonContent = readJSONSync(`${filePath}.json`);
-      if (jsonContent.component === true) {
-        return false; // If json contains component: true, then it's a custom component
-      }
+      return jsonContent.component;
     } catch (e) {}
-    return true; // If json file doesn't exist or not declare component: true, then it's a native page
+    // If json file doesn't exist or not declare component: true, then it's a native page
+    return true;
   }
   return false;
 }

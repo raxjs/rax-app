@@ -82,6 +82,7 @@
   >
     <swiper-item
       a:for="{{r.children}}"
+      a:if="{{item.nodeType !== 'comment'}}"
       a:key="nodeId"
       style="{{item.style}}"
       class="{{item.class}}"
@@ -648,7 +649,7 @@
     <picker-view-column
       a:for="{{r.children}}"
       a:key="nodeId"
-
+      a:if="{{item.nodeType !== 'comment'}}"
       style="{{item.style}}"
       class="{{item.class}}"
       hidden="{{item.hidden}}"

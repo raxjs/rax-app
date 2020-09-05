@@ -5,7 +5,7 @@ const qrcode = require('qrcode-terminal');
 const { setConfig, setDevLog } = require('rax-multi-pages-settings');
 const { handleWebpackErr } = require('rax-compile-config');
 const checkQuickAppEnv = require('rax-quickapp-webpack-plugin');
-const getMiniAppOutput = require('./config/miniapp/getOutputPath');
+const { getOutputPath } = require('miniapp-builder-shared');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('./constants');
 
@@ -111,25 +111,25 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
 
     if (targets.includes(MINIAPP)) {
       console.log(chalk.green('[Ali Miniapp] Use ali miniapp developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMiniAppOutput(context)));
+      console.log('   ', chalk.underline.white(getOutputPath(context, MINIAPP)));
       console.log();
     }
 
     if (targets.includes(WECHAT_MINIPROGRAM)) {
       console.log(chalk.green('[WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: WECHAT_MINIPROGRAM })));
+      console.log('   ', chalk.underline.white(getOutputPath(context, WECHAT_MINIPROGRAM)));
       console.log();
     }
 
     if (targets.includes(BYTEDANCE_MICROAPP)) {
       console.log(chalk.green('[ByteDance MicroApp] Use bytedance microapp developer tools to open the following folder:'));
-      console.log('   ', chalk.underline.white(getMiniAppOutput(context, { target: BYTEDANCE_MICROAPP })));
+      console.log('   ', chalk.underline.white(getOutputPath(context, BYTEDANCE_MICROAPP)));
       console.log();
     }
 
     if (targets.includes(QUICKAPP)) {
       // Check for quick app's environment
-      const quickAppDist = getMiniAppOutput(context, { target: QUICKAPP });
+      const quickAppDist = getOutputPath(context, QUICKAPP);
       checkQuickAppEnv({
         workDirectory: process.cwd(),
         distDirectory: quickAppDist,

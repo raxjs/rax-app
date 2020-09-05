@@ -1,4 +1,4 @@
-const { absoluteModuleResolve } = require('./pathHelper');
+const { pathHelper: { absoluteModuleResolve } } = require('miniapp-builder-shared');
 
 const { hmrClient } = require('rax-compile-config');
 
