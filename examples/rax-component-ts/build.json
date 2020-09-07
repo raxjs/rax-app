@@ -4,7 +4,8 @@
       "../../packages/build-plugin-rax-component",
       {
         "type": "rax",
-        "targets": ["web"]
+        "targets": ["web"],
+        "disableUMD": true
       }
     ],
     "../../packages/build-plugin-multi-demo-portal"

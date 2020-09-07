@@ -16,7 +16,7 @@ const { WEB, WEEX, MINIAPP, WECHAT_MINIPROGRAM } = require('./constants');
 
 module.exports = (api, options = {}) => {
   const { registerTask, modifyUserConfig, context, onHook, onGetWebpackConfig, log } = api;
-  const { targets = [] } = options;
+  const { targets = [], disableUMD } = options;
   const { rootDir } = context;
   const libDir = 'lib';
   const distDir = 'dist';
@@ -31,7 +31,8 @@ module.exports = (api, options = {}) => {
   fse.removeSync(path.join(rootDir, 'es'));
 
   targets.forEach(target => {
-    if (target === WEEX || target === WEB) {
+    // build dist(umd)
+    if (!disableUMD && (target === WEEX || target === WEB)) {
       const config = getDistConfig(context, options);
       const umdConfig = getUMDConfig(context, options);
       const es6Config = getES6Config(context, options);
@@ -41,6 +42,7 @@ module.exports = (api, options = {}) => {
       registerTask(`component-build-${target}-umd`, umdConfig);
       registerTask(`component-build-${target}-es6`, es6Config);
     }
+
     if (target === MINIAPP || target === WECHAT_MINIPROGRAM) {
       options[target] = options[target] || {};
       addMiniappTargetParam(target, options[target]);
