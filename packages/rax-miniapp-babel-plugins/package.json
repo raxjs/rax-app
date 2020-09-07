@@ -1,6 +1,6 @@
 {
   "name": "rax-miniapp-babel-plugins",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "rax miniapp babel plugins",
   "main": "src/index.js",
   "repository": {
