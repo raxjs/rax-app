@@ -32,14 +32,18 @@ module.exports = (api, options = {}) => {
 
   targets.forEach(target => {
     // build dist(umd)
-    if (!disableUMD && (target === WEEX || target === WEB)) {
+    if (target === WEEX || target === WEB) {
       const config = getDistConfig(context, options);
       const umdConfig = getUMDConfig(context, options);
       const es6Config = getES6Config(context, options);
       // compress and minify all files
       modifyUserConfig('outputDir', distDir);
       registerTask(`component-build-${target}`, config);
-      registerTask(`component-build-${target}-umd`, umdConfig);
+
+      if (!disableUMD) {
+        registerTask(`component-build-${target}-umd`, umdConfig);
+      }
+
       registerTask(`component-build-${target}-es6`, es6Config);
     }
 
