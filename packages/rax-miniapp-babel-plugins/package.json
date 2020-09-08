@@ -20,7 +20,9 @@
   "homepage": "https://github.com/raxjs/rax-scripts#readme",
   "dependencies": {
     "@babel/code-frame": "^7.8.3",
+    "@babel/types": "^7.5.5",
     "fs-extra": "^9.0.1",
-    "md5": "^2.2.1"
+    "md5": "^2.2.1",
+    "nanoid": "^3.1.12"
   }
 }

@@ -1,5 +1,5 @@
-module.exports = function({ usingComponents, nativeLifeCycleMap, target, rootDir, usingPlugins, runtimeDependencies }) {
-  return [
+module.exports = function({ usingComponents, nativeLifeCycleMap, target, rootDir, usingPlugins, runtimeDependencies, staticTmpls }) {
+  const plugins = [
     require.resolve('./plugins/babel-plugin-remove-Function'),
     require.resolve('./plugins/babel-plugin-external-module'),
     [
@@ -23,6 +23,13 @@ module.exports = function({ usingComponents, nativeLifeCycleMap, target, rootDir
         usingPlugins
       }
     ],
-
+    [
+      require.resolve('./plugins/babel-plugin-static'),
+      {
+        staticTmpls
+      }
+    ]
   ];
+
+  return plugins;
 };

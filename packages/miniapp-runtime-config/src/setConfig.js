@@ -28,6 +28,8 @@ module.exports = (config, userConfig, { context, target, babelRuleName = 'babel'
   // Need Copy files or dir
   const needCopyList = [];
 
+  const staticTmpls = [];
+
   const appConfig = getAppConfig(rootDir, target, nativeLifeCycleMap);
   appConfig.routes = filterNativePages(appConfig.routes, needCopyList, { rootDir, target, outputPath });
 
@@ -46,6 +48,7 @@ module.exports = (config, userConfig, { context, target, babelRuleName = 'babel'
               target,
               rootDir,
               usingPlugins,
+              staticTmpls,
               runtimeDependencies: userConfig.runtimeDependencies,
             })
           }
@@ -74,7 +77,8 @@ module.exports = (config, userConfig, { context, target, babelRuleName = 'babel'
       rootDir,
       command,
       usingPlugins,
-      needCopyList
+      needCopyList,
+      staticTmpls
     }
   ]);
 
