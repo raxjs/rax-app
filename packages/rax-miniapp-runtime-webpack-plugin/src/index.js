@@ -30,7 +30,7 @@ class MiniAppRuntimePlugin {
     const rootDir = __dirname;
     const options = this.options;
     const target = this.target;
-    const { nativeLifeCycleMap, usingComponents = {}, usingPlugins = {}, routes = [], command } = options;
+    const { nativeLifeCycleMap, usingComponents = {}, usingPlugins = {}, routes = [], staticTmpls = [], command } = options;
     let isFirstRender = true;
     let lastUseComponentCount = 0; // Record native component and plugin component used count last time
 
@@ -197,6 +197,7 @@ class MiniAppRuntimePlugin {
             rootDir,
             usingPlugins,
             usingComponents,
+            staticTmpls,
           });
         }
       }
