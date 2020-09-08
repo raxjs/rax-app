@@ -36,7 +36,7 @@ function generatePageXML(
 ) {
   let pageXmlContent;
   if (target === MINIAPP && useComponent) {
-    pageXmlContent = `<element r="{{root}}"  />`;
+    pageXmlContent = '<element r="{{root}}"  />';
   } else {
     pageXmlContent = `<import src="${getAssetPath('root.' + adapter[target].xml, pageRoute + adapter[target].xml)}"/>
     <template is="element" data="{{r: root}}"  />`;
