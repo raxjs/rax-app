@@ -82,7 +82,7 @@
   >
     <swiper-item
       a:for="{{r.children}}"
-      a:if="{{item.nodeType !== 'comment'}}"
+      a:if="{{item.nodeType !== 'h-comment'}}"
       a:key="nodeId"
       style="{{item.style}}"
       class="{{item.class}}"
@@ -171,7 +171,7 @@
     <movable-view
       a:for="{{r.children}}"
       a:key="nodeId"
-      a:if="{{item.nodeType !== 'comment'}}"
+      a:if="{{item.nodeType !== 'h-comment'}}"
       style="{{item.style}}"
       class="{{item.class}}"
       hidden="{{item.hidden}}"
@@ -649,7 +649,7 @@
     <picker-view-column
       a:for="{{r.children}}"
       a:key="nodeId"
-      a:if="{{item.nodeType !== 'comment'}}"
+      a:if="{{item.nodeType !== 'h-comment'}}"
       style="{{item.style}}"
       class="{{item.class}}"
       hidden="{{item.hidden}}"

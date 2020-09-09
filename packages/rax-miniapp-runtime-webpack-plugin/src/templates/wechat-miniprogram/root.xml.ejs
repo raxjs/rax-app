@@ -4,7 +4,12 @@
 
 <template name="children">
   <block wx:for="{{r}}" wx:key="nodeId">
-    <element r="{{item}}" />
+    <block wx:if="{{item.nodeId}}">
+      <element r="{{item}}" />
+    </block>
+    <block wx:else>
+      {item.content}
+    </block>
   </block>
 </template>
 
@@ -75,7 +80,7 @@
   >
     <swiper-item
       wx:for="{{r.children}}"
-      wx:if="{{item.nodeType !== 'comment'}}"
+      wx:if="{{item.nodeType !== 'h-comment'}}"
       wx:key="nodeId"
       class="{{item.class}}"
       id="{{item.id}}"
@@ -174,7 +179,7 @@
     <moveable-view
       wx:for="{{r.children}}"
       wx:key="nodeId"
-      wx:if="{{item.nodeType !== 'comment'}}"
+      wx:if="{{item.nodeType !== 'h-comment'}}"
       style="{{item.style}}"
       class="{{item.class}}"
       hidden="{{item.hidden}}"
@@ -675,7 +680,7 @@
   >
       <picker-view-column
         wx:for="{{r.children}}"
-        wx:if="{{item.nodeType !== 'comment'}}"
+        wx:if="{{item.nodeType !== 'h-comment'}}"
         wx:key="nodeId"
         style="{{item.style}}"
         class="{{item.class}}"

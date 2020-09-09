@@ -13,11 +13,11 @@
       <block wx:for="{{r.children}}" wx:key="nodeId">
         <block wx:if="{{item['slot']}}">
           <view slot="{{item['slot']}}">
-            <template is="element_1" data="{{r: item}}" />
+            <template is="element" data="{{r: item}}" />
           </view>
         </block>
         <block wx:else>
-          <template is="element_1" data="{{r: item}}" />
+          <template is="element" data="{{r: item}}" />
         </block>
       </block>
     </<%=pluginTag%>>
