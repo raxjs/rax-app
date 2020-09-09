@@ -70,6 +70,11 @@ module.exports = (
 
   config.cache(true).mode('production').target('node');
 
+  onGetWebpackConfig(target, (config) => {
+    const aliasEntries = config.resolve.alias.entries();
+    pageLoaderParams.aliasEntries = appLoaderParams.aliasEntries = aliasEntries;
+  });
+
   // Set base jsx2mp config
   setBaseConfig(config, userConfig, {
     onGetWebpackConfig,
