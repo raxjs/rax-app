@@ -34,9 +34,15 @@ export default function({ types: t, template }, opts = {}) {
       // className
       // className=""
       return [];
-    } else if (value.type === 'JSXExpressionContainer' && value.expression && typeof value.expression.value !== 'string') {
+    } else if (value.type === 'JSXExpressionContainer' &&
+                                      value.expression &&
+                                      typeof value.expression.value !== 'string'
+    ) {
       // className={{ container: true }}
       // className={['container wrapper', { scroll: false }]}
+      if (value.expression.type === 'MemberExpression') {
+        return [value.expression];
+      }
       return [t.callExpression(t.identifier(GET_STYLE_FUNC_NAME), [value.expression])];
     } else {
       // className="container"
@@ -102,11 +108,6 @@ export default function({ types: t, template }, opts = {}) {
           convertImport = true, // default to true
         } = opts;
 
-        const cssFileCount = file.get('cssFileCount') || 0;
-        if (cssFileCount < 1 && convertImport !== false) {
-          return;
-        }
-
         // Check if has "style"
         let hasStyleAttribute = false;
         let styleAttribute;
@@ -129,6 +130,16 @@ export default function({ types: t, template }, opts = {}) {
           }
         }
 
+        // like className={ x.xxx }
+        const isCssModule = hasClassName && classNameAttribute.value &&
+          classNameAttribute.value.type === 'JSXExpressionContainer' &&
+          classNameAttribute.value.expression.type === 'MemberExpression';
+
+        const cssFileCount = file.get('cssFileCount') || 0;
+        if (!isCssModule && cssFileCount < 1 && convertImport !== false) {
+          return;
+        }
+
         if (hasClassName) {
           // Dont remove className
           if (!retainClassName) {
@@ -147,6 +158,11 @@ export default function({ types: t, template }, opts = {}) {
             typeof classNameAttribute.value.expression.value !== 'string' // not like className={'container'}
           ) {
             file.set('injectGetStyle', true);
+          }
+
+          if (isCssModule) {
+            classNameAttribute.name.name = 'style';
+            file.set('injectGetStyle', false);
           }
 
           const arrayExpression = getArrayExpression(classNameAttribute.value);
