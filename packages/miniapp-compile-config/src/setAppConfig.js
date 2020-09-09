@@ -70,11 +70,6 @@ module.exports = (
 
   config.cache(true).mode('production').target('node');
 
-  onGetWebpackConfig(target, (config) => {
-    const aliasEntries = config.resolve.alias.entries();
-    pageLoaderParams.aliasEntries = appLoaderParams.aliasEntries = aliasEntries;
-  });
-
   // Set base jsx2mp config
   setBaseConfig(config, userConfig, {
     onGetWebpackConfig,
@@ -111,4 +106,25 @@ module.exports = (
       nativeConfig: userConfig.nativeConfig,
     },
   ]);
+
+  onGetWebpackConfig(target, (config) => {
+    const aliasEntries = config.resolve.alias.entries();
+    config.module
+      .rule('withRoleJSX')
+      .use('app')
+      .tap(appLoaderParams => {
+        return {
+          ...appLoaderParams,
+          aliasEntries
+        }
+      })
+      .end()
+      .use('page')
+      .tap(pageLoaderParams => {
+        return {
+          ...pageLoaderParams,
+          aliasEntries
+        }
+      });
+  });
 };
