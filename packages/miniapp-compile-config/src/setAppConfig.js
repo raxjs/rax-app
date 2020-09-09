@@ -116,7 +116,7 @@ module.exports = (
         return {
           ...appLoaderParams,
           aliasEntries
-        }
+        };
       })
       .end()
       .use('page')
@@ -124,7 +124,7 @@ module.exports = (
         return {
           ...pageLoaderParams,
           aliasEntries
-        }
+        };
       });
   });
 };
