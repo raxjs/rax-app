@@ -3,6 +3,8 @@ var scrollValCache = {
   'scroll-left': {}
 };
 
+var inputRenderCache = {};
+
 export default {
   processVal: function(val, defaultVal) {
     return val === undefined ? defaultVal : val;
@@ -20,6 +22,14 @@ export default {
       return '';
     } else {
       return scrollValCache[type][r.nodeId] = r[type];
+    }
+  },
+  processInputFocusState: function(r) {
+    if (!inputRenderCache[r.nodeId]) {
+      inputRenderCache[r.nodeId] = true;
+      return r['focus-state'];
+    } else {
+      return r['focus-state'] === undefined || r['focus-state'];
     }
   }
 }

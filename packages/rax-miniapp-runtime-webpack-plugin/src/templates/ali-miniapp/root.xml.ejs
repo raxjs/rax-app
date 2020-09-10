@@ -7,7 +7,7 @@
 <template name="children">
   <block a:for="{{r}}" a:key="nodeId">
     <block a:if="{{item.nodeId}}">
-      <element r="{{item}}" />
+      <template is="element" data="{{r: item}}" />
     </block>
     <block a:else>
       <block>{{item.content}}</block>
@@ -449,7 +449,7 @@
     disabled="{{r.disabled}}"
     maxlength="{{r.maxlength}}"
     cursor-spacing="{{r['cursor-spacing']}}"
-    focus="{{r['focus-state']}}"
+    focus="{{tool.processInputFocusState(r)}}"
     controlled="{{r.controlled}}"
     confirm-type="{{r['confirm-type']}}"
     confirm-hold="{{r['confirm-hold']}}"
@@ -482,11 +482,11 @@
     value="{{tool.processVal(r.value, '')}}"
     name="{{tool.processVal(r.name, '')}}"
     placeholder="{{r.placeholder}}"
-    placeholder-style="{{processPlaceholderStyle(r['placeholder-style'], r.placeholderColor)}}"
+    placeholder-style="{{tool.processPlaceholderStyle(r['placeholder-style'], r.placeholderColor)}}"
     placeholder-class="{{r['placeholder-class']}}"
     disabled="{{r.disabled}}"
     maxlength="{{tool.processVal(r.maxlength, 140)}}"
-    focus="{{r['focus-state']}}"
+    focus="{{tool.processInputFocusState(r)}}"
     controlled="{{r.controlled}}"
     auto-height="{{r['auto-height']}}"
     fixed="{{r.fixed}}"
