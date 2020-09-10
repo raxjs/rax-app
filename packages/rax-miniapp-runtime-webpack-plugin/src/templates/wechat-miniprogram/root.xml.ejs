@@ -8,7 +8,7 @@
       <element r="{{item}}" />
     </block>
     <block wx:else>
-      {item.content}
+      <block>{{item.content}}</block>
     </block>
   </block>
 </template>
@@ -213,10 +213,6 @@
 </template>
 
 <!--HTML component -->
-<template name="h-text">
-  <block>{{r.content}}</block>
-</template>
-
 <template name="h-element">
   <view
     style="{{r.style}}"

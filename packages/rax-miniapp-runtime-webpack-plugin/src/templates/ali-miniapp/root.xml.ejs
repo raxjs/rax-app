@@ -6,7 +6,12 @@
 
 <template name="children">
   <block a:for="{{r}}" a:key="nodeId">
-    <template is="element" data="{{r: item}}" />
+    <block a:if="{{item.nodeId}}">
+      <element r="{{item}}" />
+    </block>
+    <block a:else>
+      <block>{{item.content}}</block>
+    </block>
   </block>
 </template>
 
@@ -205,10 +210,6 @@
 </template>
 
 <!--HTML component -->
-<template name="h-text">
-  <block>{{r.content}}</block>
-</template>
-
 <template name="h-element">
   <view
     style="{{r.style}}"
