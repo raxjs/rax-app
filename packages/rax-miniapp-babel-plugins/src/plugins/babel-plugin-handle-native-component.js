@@ -107,7 +107,7 @@ module.exports = function visitor(
         }
       },
       ImportDeclaration: {
-        enter(path, { filename, file: { code } }) {
+        enter(path, { filename }) {
           const { specifiers, source } = path.node;
           if (Array.isArray(specifiers) && t.isStringLiteral(source)) {
             const dirName = dirname(filename);
@@ -119,7 +119,7 @@ module.exports = function visitor(
                   JSXOpeningElement: collectComponentAttr(nativeComponents, t)
                 });
               }
-              collectUsings(path, nativeComponents, usingComponents, filePath, t, code);
+              collectUsings(path, nativeComponents, usingComponents, filePath, t);
             }
           }
         },
