@@ -1,7 +1,7 @@
 const {
   collectComponentAttr,
   collectUsings,
-} = require("../utils/handleComponentAST");
+} = require('../utils/handleComponentAST');
 
 const MINIAPP_PLUGIN_COMPONENTS_REG = /^plugin\:\/\//;
 
