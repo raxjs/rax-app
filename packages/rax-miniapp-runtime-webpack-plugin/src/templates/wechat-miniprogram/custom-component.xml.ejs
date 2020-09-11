@@ -17,7 +17,12 @@
           </view>
         </block>
         <block wx:else>
-          <template is="element" data="{{r: item}}" />
+          <block wx:if="{{item.nodeId}}">
+            <template is="element" data="{{r: item}}" />
+          </block>
+          <block wx:else>
+            <block>{{item.content}}</block>
+          </block>
         </block>
       </block>
     </<%=componentTag%>>
