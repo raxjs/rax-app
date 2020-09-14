@@ -33,10 +33,9 @@ module.exports = (api, options = {}) => {
   targets.forEach(target => {
     if (target === WEEX || target === WEB) {
       // always set forceInline to be true when target is Weex
-      const configOptions = target === WEEX ? {...options, forceInline: true} : options;
-      const config = getDistConfig(context, configOptions);
-      const umdConfig = getUMDConfig(context, configOptions);
-      const es6Config = getES6Config(context, configOptions);
+      const config = getDistConfig(context, target === WEEX ? {...options, forceInline: true} : options);
+      const umdConfig = getUMDConfig(context, options);
+      const es6Config = getES6Config(context, options);
       // compress and minify all files
       modifyUserConfig('outputDir', distDir);
       registerTask(`component-build-${target}`, config);
