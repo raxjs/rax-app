@@ -19,6 +19,5 @@ module.exports = {
           .set(key, CONFIG[key]);
       });
     }
-    config.optimization.minimize(false);
   },
 };
