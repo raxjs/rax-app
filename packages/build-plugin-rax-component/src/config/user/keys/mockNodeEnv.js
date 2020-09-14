@@ -1,6 +1,6 @@
 const CONFIG = {
-  "process": false,
-  "global": false
+  process: false,
+  global: false
 };
 
 /**
