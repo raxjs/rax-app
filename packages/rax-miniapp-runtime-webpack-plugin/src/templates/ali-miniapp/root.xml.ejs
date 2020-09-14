@@ -665,14 +665,11 @@
       onTap="onTap"
     >
       <view a:for="{{item.children}}" a:for-item="pickerColumnItem">
-        <block a:if="{{pickerColumnItem.nodeType === 'text'}}">
-          {{pickerColumnItem.content}}
-        </block>
-        <block a:elif="{{pickerColumnItem.tagName === 'custom-component'}}">
-          <template is="{{r.customComponentName}}" data="{{r: pickerColumnItem}}" />
+        <block a:if="{{pickerColumnItem.nodeId}}">
+          <template is="{{pickerColumnItem.nodeType}}" data="{{r: pickerColumnItem}}" />
         </block>
         <block a:else>
-          <template is="{{pickerColumnItem._behavior || 'element'}}" data="{{r: pickerColumnItem}}" />
+          <block>{{pickerColumnItem.content}}</block>
         </block>
       </view>
     </picker-view-column>
