@@ -1,0 +1,35 @@
+var scrollValCache = {
+  'scroll-top': {},
+  'scroll-left': {}
+};
+
+var inputRenderCache = {};
+
+export default {
+  processVal: function(val, defaultVal) {
+    return val === undefined ? defaultVal : val;
+  },
+  processPlaceholderStyle: function(placeholderStyle, placeholderColor) {
+    var style = placeholderStyle || '';
+    if (placeholderColor) {
+      style = 'color:' + placeholderColor + ';' + style;
+    }
+    return style;
+  },
+  processScrollVal: function(r, type) {
+    const cacheVal = scrollValCache[type][r.nodeId];
+    if (cacheVal === r[type]) {
+      return '';
+    } else {
+      return scrollValCache[type][r.nodeId] = r[type];
+    }
+  },
+  processInputFocusState: function(r) {
+    if (!inputRenderCache[r.nodeId]) {
+      inputRenderCache[r.nodeId] = true;
+      return r['focus-state'];
+    } else {
+      return r['focus-state'] === undefined || r['focus-state'];
+    }
+  }
+}

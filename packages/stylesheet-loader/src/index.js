@@ -153,7 +153,7 @@ const getMediaContent = (mediaRules, parsedQuery) => {
   if (window.matchMedia && window.matchMedia('${rule.key}').matches) {
     var ruleData = ${stringifyData(rule.data)};
     for(var key in ruleData) {
-      _styles[key] = Object.assign(_styles[key], ruleData[key]);
+      _styles[key] = Object.assign(_styles[key] || {}, ruleData[key]);
     }
   }
     `;
