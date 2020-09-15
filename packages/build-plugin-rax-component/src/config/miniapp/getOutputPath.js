@@ -1,19 +1,16 @@
-const fs = require('fs-extra');
 const { resolve } = require('path');
+const { getOutputPath } = require('miniapp-builder-shared');
 
 const { MINIAPP } = require('../../constants');
 
 module.exports = (context, { target = MINIAPP, distDir = '' }) => {
-  const { rootDir, userConfig, command } = context;
-  const { outputDir } = userConfig;
+  const { rootDir, command } = context;
   if (distDir) {
     return resolve(rootDir, distDir);
   }
 
   if (command === 'build') {
-    const output = resolve(rootDir, outputDir);
-    fs.ensureDirSync(output);
-    return resolve(output, target);
+    return getOutputPath(context, target);
   } else {
     return resolve(rootDir, 'demo', target, 'components', 'Target');
   }

@@ -1,0 +1,34 @@
+{
+  "name": "miniapp-runtime-config",
+  "version": "0.1.1",
+  "description": "miniapp runtime project config",
+  "author": "Rax Team",
+  "homepage": "https://github.com/alibaba/rax#readme",
+  "license": "BSD-3-Clause",
+  "main": "src/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-scripts.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/alibaba/rax/issues"
+  },
+  "peerDependencies": {
+    "webpack": "^4.0.0"
+  },
+  "dependencies": {
+    "copy-webpack-plugin": "^6.0.3",
+    "miniapp-builder-shared": "^0.1.0",
+    "rax-miniapp-babel-plugins": "^0.1.3",
+    "rax-miniapp-config-webpack-plugin": "^1.2.3",
+    "rax-miniapp-runtime-webpack-plugin": "^1.1.0",
+    "miniapp-render": "^1.2.2"
+  }
+}

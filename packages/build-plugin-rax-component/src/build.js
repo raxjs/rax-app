@@ -3,12 +3,12 @@ const path = require('path');
 const chalk = require('chalk');
 const consoleClear = require('console-clear');
 const { handleWebpackErr } = require('rax-compile-config');
+const { platformMap } = require('miniapp-builder-shared');
 
 const getDistConfig = require('./config/getDistConfig');
 const getUMDConfig = require('./config/getUMDConfig');
 const getES6Config = require('./config/getES6Config');
 const getMiniappConfig = require('./config/miniapp/getBase');
-const miniappPlatformConfig = require('./config/miniapp/platformConfig');
 const gulpCompile = require('./gulp/compile');
 const gulpParams = require('./gulp/params');
 
@@ -83,7 +83,7 @@ module.exports = (api, options = {}) => {
       console.log('   ', chalk.underline.white(path.resolve(rootDir, distDir)));
       console.log();
     }
-    Object.entries(miniappPlatformConfig).forEach(([platform, config]) => {
+    Object.entries(platformMap).forEach(([platform, config]) => {
       if (targets.includes(platform)) {
         console.log(chalk.green(`[${config.name}] Component lib at:`));
         const distDir = options[platform].distDir || `${libDir}/${platform}`;

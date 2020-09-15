@@ -3,9 +3,9 @@ const consoleClear = require('console-clear');
 const qrcode = require('qrcode-terminal');
 const chalk = require('chalk');
 const path = require('path');
+const { platformMap } = require('miniapp-builder-shared');
 const { handleWebpackErr } = require('rax-compile-config');
 const getDemos = require('./config/getDemos');
-const miniappPlatformConfig = require('./config/miniapp/platformConfig');
 
 const watchLib = require('./watchLib');
 
@@ -102,7 +102,7 @@ module.exports = (api, options = {}) => {
       });
     }
 
-    Object.entries(miniappPlatformConfig).forEach(([platform, config]) => {
+    Object.entries(platformMap).forEach(([platform, config]) => {
       if (targets.includes(platform)) {
         let outputPath = '';
         if (options[platform].distDir) {

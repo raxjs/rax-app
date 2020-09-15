@@ -1,9 +1,9 @@
-import jSXStylePlugin from '../index';
+import { mergeStylesFunctionString, getClassNameFunctionString, getStyleFunctionString } from '../constants';
 import syntaxJSX from 'babel-plugin-syntax-jsx';
 import { transform } from 'babel-core';
-import { mergeStylesFunctionString, getClassNameFunctionString, getStyleFunctionString } from '../constants';
+import jSXStylePlugin from '../index';
 
-function getTransfromCode(code, opts) {
+export default function getTransformCode(code, opts) {
   return transform(code, {
     plugins: [
       [jSXStylePlugin, opts],
@@ -14,7 +14,7 @@ function getTransfromCode(code, opts) {
 
 describe('jsx style plugin', () => {
   it('transform only one className to style as member', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, Component } from 'rax';
 import './app.css';
 
@@ -35,7 +35,7 @@ class App extends Component {
   });
 
   it('transform multiple classNames to style as array', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, Component } from 'rax';
 import './app.css';
 
@@ -56,7 +56,7 @@ class App extends Component {
   });
 
   it('transform array, object and expressions', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, Component } from 'rax';
 import './app.css';
 
@@ -92,7 +92,7 @@ class App extends Component {
   });
 
   it('combine one style and className', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, Component } from 'rax';
 import './app.css';
 import styles from './style.css';
@@ -115,7 +115,7 @@ class App extends Component {
   });
 
   it('combine inline style object and className', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, Component } from 'rax';
 import './app.css';
 
@@ -140,7 +140,7 @@ class App extends Component {
   });
 
   it('combine multiple styles and className', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, Component } from 'rax';
 import './app.css';
 import styles from './style.css';
@@ -172,11 +172,11 @@ class App extends Component {
   }
 }`;
 
-    expect(getTransfromCode(code)).toBe(code);
+    expect(getTransformCode(code)).toBe(code);
   });
 
   it('transform scss file', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, Component } from 'rax';
 import './app.scss';
 
@@ -197,7 +197,7 @@ class App extends Component {
   });
 
   it('transform constant elements in render', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, render } from 'rax';
 import './app.css';
 
@@ -211,7 +211,7 @@ render(<div style={_styleSheet["header"]} />);`);
   });
 
   it('dont remove className', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, render } from 'rax';
 import './app.css';
 
@@ -233,7 +233,7 @@ describe('test development env', () => {
   });
 
   it('transform constant element in development env', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, render } from 'rax';
 import './app.css';
 
@@ -253,7 +253,7 @@ render(<div __class="header" style={_styleSheet["header"]} />);`);
 
 describe('edge test', () => {
   it('transform class and style import same file', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, render } from 'rax';
 import './app.css';
 import styles from './app.css';
@@ -269,7 +269,7 @@ render(<div style={Object.assign({}, _styleSheet["header1"], styles.header)} />)
   });
 
   it('should transform two class files', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, render } from 'rax';
 import './app1.css';
 import './app2.css';
@@ -287,7 +287,7 @@ render(<div style={Object.assign({}, _styleSheet["header1"], _styleSheet["header
   });
 
   it('should delete className attr when empty string', () => {
-    expect(getTransfromCode(`
+    expect(getTransformCode(`
 import { createElement, render } from 'rax';
 import 'app.css'
 
