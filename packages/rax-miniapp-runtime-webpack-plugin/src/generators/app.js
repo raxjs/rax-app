@@ -55,7 +55,7 @@ function generateAppCSS(compilation, { target, command, rootDir }) {
 
   Object.keys(compilation.assets).forEach(asset => {
     if (asset.indexOf(`${target}/index`) > -1 && extname(asset) === '.css') {
-      content += `@import "./${relative(target, asset)}"`;
+      content += `@import "./${relative(target, asset)}";`;
       delete compilation.assets[asset];
     }
   });
