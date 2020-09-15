@@ -46,7 +46,7 @@
 ### 使用
 
 ```js
-const { setAppConfig, setComponentConfig } = require('miniapp-runtime-config');
+const { setAppConfig, setComponentConfig } = require('miniapp-compile-config');
 
 // 应用
 setAppConfig(config, userConfig, { context, target, onGetWebpackConfig, entryPath, outputPath });
