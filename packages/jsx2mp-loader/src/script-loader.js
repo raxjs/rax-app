@@ -92,10 +92,12 @@ module.exports = function scriptLoader(content) {
       mkdirpSync(target);
       copySync(source, target, {
         overwrite: false,
-        filter: filename => !/__(mocks|tests?)__/.test(filename)
-          && extname(filename) !== '.json' // JSON file will be written later because usingComponents may be modified
-          && extname(filename) !== '.ts' // .d.ts file in rax base components are useless
-      });
+        filter: filename => {
+          const ext = extname(filename);
+          return !/__(mocks|tests?)__/.test(filename)
+          && ext !== '.json' // JSON file will be written later because usingComponents may be modified
+          && ext !== '.ts' // .d.ts file in rax base components are useless
+      }});
     }
   };
 
