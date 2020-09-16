@@ -25,11 +25,12 @@ module.exports = {
     }
   },
   processInputFocusState: function(r) {
-    if (!inputRenderCache[r.nodeId]) {
-      inputRenderCache[r.nodeId] = true;
-      return r['focus-state'];
+    if (inputRenderCache[r.nodeId] === undefined) {
+      // First render
+      return inputRenderCache[r.nodeId] = r['focus-state'] || false; // Record
     } else {
-      return r['focus-state'] === undefined || r['focus-state'];
+      // Non-first render, r['focus-state'] may become undefined
+      return r['focus-state'] === undefined ? inputRenderCache[r.nodeId] : r['focus-state'];
     }
   }
 }
