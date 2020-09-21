@@ -11,7 +11,7 @@ module.exports = (api) => {
       if (configKey !== 'plugins') {
         newConfig[configKey] = Object.prototype.hasOwnProperty.call(userConfig, configKey)
           ? userConfig[configKey]
-          : defaultConfig[configKey]; ;
+          : defaultConfig[configKey];
         delete userConfig[configKey];
       }
     });

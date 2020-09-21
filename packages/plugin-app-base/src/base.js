@@ -1,4 +1,3 @@
-const path = require('path');
 const { getWebpackConfig } = require('build-scripts-config');
 const getBabelConfig = require('rax-babel-config');
 
