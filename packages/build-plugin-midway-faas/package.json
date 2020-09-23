@@ -7,10 +7,6 @@
   "license": "ISC",
   "dependencies": {
     "@midwayjs/faas-dev-pack": "^1.2.12",
-    "@midwayjs/fcli-command-core": "^0.2.2",
-    "@midwayjs/fcli-plugin-package": "^1.2.14",
-    "@midwayjs/serverless-meta-json": "^0.2.49",
-    "@midwayjs/serverless-spec-builder": "^0.2.10",
     "fs-extra": "^8.1.0"
   },
   "repository": {
