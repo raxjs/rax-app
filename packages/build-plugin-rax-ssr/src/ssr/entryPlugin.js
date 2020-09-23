@@ -40,7 +40,7 @@ class EntryPlugin {
 
       const query = {
         pagePath,
-        styles: isMultiPages && !isInlineStyle ? [`${publicPath}web/${name}.css`] : [],
+        styles: isInlineStyle ? [] : (isMultiPages ? [`${publicPath}web/${name}.css`] : [`${publicPath}web/index.css`]),
         scripts: isMultiPages ? [`${publicPath}web/${name}.js`] : [`${publicPath}web/index.js`],
         absoluteDocumentPath,
         absoluteShellPath,
