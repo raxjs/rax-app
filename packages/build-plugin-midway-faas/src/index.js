@@ -2,7 +2,7 @@ const path = require('path');
 const fse = require('fs-extra');
 const { useExpressDevPack } = require('@midwayjs/faas-dev-pack');
 
-module.exports = async ({
+module.exports = async({
   context,
   onGetWebpackConfig
 }) => {
