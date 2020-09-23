@@ -15,7 +15,6 @@ module.exports = (userOptions = {}) => {
     styleSheet,
     jsxPlus = true,
     jsxToHtml,
-    isNode,
     disableRegenerator = false,
     // preset-env modules options
     modules,
@@ -28,9 +27,7 @@ module.exports = (userOptions = {}) => {
       [
         require.resolve('@babel/preset-env'),
         {
-          targets: isNode ? {
-            node: '8',
-          } : isES6 ?
+          targets: isES6 ?
             ['last 1 chrome version', 'node 10'] : {
               chrome: '49',
               ios: '8',
@@ -39,7 +36,7 @@ module.exports = (userOptions = {}) => {
           modules,
           include: [
             'transform-computed-properties',
-          ],
+          ]
         },
       ],
       [
