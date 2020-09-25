@@ -85,8 +85,8 @@ function getPromptQuestion(appTemplate) {
     name: 'languageType',
     message: 'What type of language do you want to use?',
     when(answers) {
-      // component/plugin/api not support js
-      return answers.projectType === 'app';
+      // plugin/api not support js
+      return (answers.projectType === 'app' || answers.projectType === 'component') && !appTemplate;
     },
     choices: [
       {
