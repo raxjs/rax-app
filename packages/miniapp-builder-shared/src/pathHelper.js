@@ -118,10 +118,10 @@ function getPlatformExtensions(platform, extensions = []) {
  * @param {string} target
  */
 function isNativePage(filePath, target) {
-  if (existsSync(filePath + targetPlatformMap[target].tplExtension)) {
+  if (existsSync(filePath + targetPlatformMap[target].extension.xml)) {
     try {
       const jsonContent = readJSONSync(`${filePath}.json`);
-      return jsonContent.component;
+      return !jsonContent.component;
     } catch (e) {}
     // If json file doesn't exist or not declare component: true, then it's a native page
     return true;

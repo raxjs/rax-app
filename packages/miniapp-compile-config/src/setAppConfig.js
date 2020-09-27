@@ -106,4 +106,25 @@ module.exports = (
       nativeConfig: userConfig.nativeConfig,
     },
   ]);
+
+  onGetWebpackConfig(target, (config) => {
+    const aliasEntries = config.resolve.alias.entries();
+    config.module
+      .rule('withRoleJSX')
+      .use('app')
+      .tap(appLoaderParams => {
+        return {
+          ...appLoaderParams,
+          aliasEntries
+        };
+      })
+      .end()
+      .use('page')
+      .tap(pageLoaderParams => {
+        return {
+          ...pageLoaderParams,
+          aliasEntries
+        };
+      });
+  });
 };

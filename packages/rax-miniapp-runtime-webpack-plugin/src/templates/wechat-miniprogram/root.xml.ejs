@@ -1,133 +1,14 @@
 <template name="element">
-  <block wx:if="{{r.tagName}}">
-    <view
-      wx:if="{{!isComp}}"
-      style="{{r.style}}"
-      class="h5-{{r.tagName}} {{r.className}}"
-      id="{{r.id}}"
-      animation="{{r.animation}}"
-      data-private-node-id="{{r.nodeId}}"
-      data-private-page-id="{{r.pageId}}"
-
-      bindtap="onTap"
-      bindtouchstart="onTouchStart"
-      bindtouchmove="onTouchMove"
-      bindtouchend="onTouchEnd"
-      bindtouchcancel="onTouchCancel"
-    >
-      <template is="children" data="{{r: r.children}}" />
-    </view>
-    <block wx:else>
-      <template is="children" data="{{r: r.children}}" />
-    </block>
-  </block>
-  <block wx:else>
-    <template is="children" data="{{r: r.children}}" />
-  </block>
-</template>
-
-<template name="element_1">
-  <block wx:if="{{r.tagName}}">
-    <view
-      wx:if="{{!isComp}}"
-      style="{{r.style}}"
-      class="h5-{{r.tagName}} {{r.className}}"
-      id="{{r.id}}"
-      animation="{{r.animation}}"
-      data-private-node-id="{{r.nodeId}}"
-      data-private-page-id="{{r.pageId}}"
-
-      bindtap="onTap"
-      bindtouchstart="onTouchStart"
-      bindtouchmove="onTouchMove"
-      bindtouchend="onTouchEnd"
-      bindtouchcancel="onTouchCancel"
-    >
-      <template is="children_1" data="{{r: r.children}}" />
-    </view>
-    <block wx:else>
-      <template is="children_1" data="{{r: r.children}}" />
-    </block>
-  </block>
-  <block wx:else>
-    <template is="children_1" data="{{r: r.children}}" />
-  </block>
+  <template is="{{r.nodeType}}" data="{{r: r}}" />
 </template>
 
 <template name="children">
   <block wx:for="{{r}}" wx:key="nodeId">
-    <block wx:if="{{item.nodeType === 'text'}}">{{item.content}}</block>
-    <block wx:elif="{{item.tagName === 'custom-component'}}">
-      <template is="{{item.customComponentName}}" data="{{r: item}}" />
-    </block>
-    <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
-      <template is="{{item.miniappPluginName}}" data="{{r: item}}" />
-    </block>
-    <block wx:elif="{{!item.behavior}}">
-      <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item, isHTMLElement: true}}" />
-      <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item, isHTMLElement: true}}" />
-      <template wx:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item, isHTMLElement: true}}" />
-      <template wx:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item, isHTMLElement: true}}" />
-      <template wx:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item, isHTMLElement: true}}" />
-      <element
-        wx:else
-        style="{{item.style}}"
-        class="h5-{{item.tagName}} {{item.className}}"
-        id="{{item.id}}"
-        animation="{{item.animation}}"
-        data-private-node-id="{{item.nodeId}}"
-        data-private-page-id="{{item.pageId}}"
-
-        bindtap="onTap"
-        bindtouchstart="onTouchStart"
-        bindtouchmove="onTouchMove"
-        bindtouchend="onTouchEnd"
-        bindtouchcancel="onTouchCancel"
-
-        r="{{item}}"
-      />
-    </block>
-    <block wx:else>
+    <block wx:if="{{item.nodeId}}">
       <element r="{{item}}" />
     </block>
-  </block>
-</template>
-
-<template name="children_1">
-  <block wx:for="{{r}}" wx:key="nodeId">
-    <block wx:if="{{item.nodeType === 'text'}}">{{item.content}}</block>
-    <block wx:elif="{{item.tagName === 'custom-component'}}">
-      <template is="{{item.customComponentName}}" data="{{r: item}}" />
-    </block>
-    <block wx:elif="{{item.tagName === 'miniapp-plugin'}}">
-      <template is="{{item.miniappPluginName}}" data="{{r: item}}" />
-    </block>
-    <block wx:elif="{{!item.behavior}}">
-      <template wx:if="{{item.tagName === 'img'}}" is="image" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'input'}}" is="input" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'textarea'}}" is="textarea" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'video'}}" is="video" data="{{r: item}}" />
-      <template wx:elif="{{item.tagName === 'canvas'}}" is="canvas" data="{{r: item}}" />
-      <element
-        wx:else
-        style="{{item.style}}"
-        class="h5-{{item.tagName}} {{item.className}}"
-        id="{{item.id}}"
-        animation="{{item.animation}}"
-        data-private-node-id="{{item.nodeId}}"
-        data-private-page-id="{{item.pageId}}"
-
-        bindtap="onTap"
-        bindtouchstart="onTouchStart"
-        bindtouchmove="onTouchMove"
-        bindtouchend="onTouchEnd"
-        bindtouchcancel="onTouchCancel"
-
-        r="{{item}}"
-      />
-    </block>
     <block wx:else>
-      <element r="{{item}}" />
+      <block>{{item.content}}</block>
     </block>
   </block>
 </template>
@@ -136,7 +17,7 @@
 <template name="view">
   <view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     id="{{r.id}}"
     hidden="{{r.hidden}}"
     animation="{{r.animation}}"
@@ -164,7 +45,7 @@
 <template name="swiper">
   <swiper
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -199,9 +80,9 @@
   >
     <swiper-item
       wx:for="{{r.children}}"
-      wx:if="{{item.nodeType !== 'comment'}}"
+      wx:if="{{item.nodeType !== 'h-comment'}}"
       wx:key="nodeId"
-      class="{{item.className}}"
+      class="{{item.class}}"
       id="{{item.id}}"
       data-private-node-id="{{item.nodeId}}"
       data-private-page-id="{{item.pageId}}"
@@ -214,7 +95,7 @@
 <template name="scroll-view">
   <scroll-view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -253,13 +134,15 @@
 <template name="cover-view">
   <cover-view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     id="{{r.id}}"
     hidden="{{r.hidden}}"
     data-private-node-id="{{r.nodeId}}"
     data-private-page-id="{{r.pageId}}"
 
     bindtap="onTap"
+
+    scroll-top="{{r['scroll-top']}}"
   >
     <template is="children" data="{{r: r.children}}" />
   </cover-view>
@@ -268,7 +151,7 @@
 <template name="cover-image">
   <cover-image
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -282,69 +165,81 @@
   </cover-image>
 </template>
 
-<template name="moveable-view">
-  <moveable-view
+<template name="moveable-area">
+  <moveable-area
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
-    animation="{{r.animation}}"
     data-private-node-id="{{r.nodeId}}"
     data-private-page-id="{{r.pageId}}"
-
-    bindtap="onTap"
-    bindtouchstart="onTouchStart"
-    bindtouchmove="onTouchMove"
-    bindtouchend="onTouchEnd"
-    bindtouchcancel="onTouchCancel"
-
-    bindchange="onMovableViewChange"
-    bindscale="onMovableViewScale"
-
-    direction="{{r.direction}}"
-    inertia="{{r.inertia}}"
-    out-of-bounds="{{r['out-of-bounds']}}"
-    x="{{r.x}}"
-    y="{{r.y}}"
-    damping="{{r.damping}}"
-    friction="{{r.friction}}"
-    disabled="{{r.disabled}}"
-    scale="{{r.scale}}"
-    scale-min="{{r['scale-min']}}"
-    scale-max="{{r['scale-max']}}"
-    scale-value="{{r['scale-value']}}"
-  >
-    <template is="children" data="{{r: r.children}}" />
-  </moveable-view>
-</template>
-
-<template name="moveable-view">
-  <moveable-view
-    style="{{r.style}}"
-    class="{{r.className}}"
-    hidden="{{r.hidden}}"
-    id="{{r.id}}"
-    animation="{{r.animation}}"
-    data-private-node-id="{{r.nodeId}}"
-    data-private-page-id="{{r.pageId}}"
-
-    bindtap="onTap"
-    bindtouchstart="onTouchStart"
-    bindtouchmove="onTouchMove"
-    bindtouchend="onTouchEnd"
-    bindtouchcancel="onTouchCancel"
 
     scale-area="{{r['scale-area']}}"
   >
+    <moveable-view
+      wx:for="{{r.children}}"
+      wx:key="nodeId"
+      wx:if="{{item.nodeType !== 'h-comment'}}"
+      style="{{item.style}}"
+      class="{{item.class}}"
+      hidden="{{item.hidden}}"
+      id="{{item.id}}"
+      data-private-node-id="{{item.nodeId}}"
+      data-private-page-id="{{item.pageId}}"
+
+      bindtap="onTap"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+      bindtouchcancel="onTouchCancel"
+
+      animation="{{r.animation !== undefined ? r.animation : true}}"
+      direction="{{item.direction || 'none'}}"
+      inertia="{{item.inertia}}"
+      out-of-bounds="{{item['out-of-bounds']}}"
+      x="{{item.x}}"
+      y="{{item.y}}"
+      damping="{{item.damping}}"
+      friction="{{item.friction}}"
+      disabled="{{item.disabled}}"
+      scale="{{item.scale}}"
+      scale-min="{{item['scale-min'] !== undefined ? item['scale-min'] : 0.5}}"
+      scale-max="{{item['scale-max'] !== undefined ? item['scale-max'] : 10}}"
+      scale-value="{{item['scale-value'] !== undefined ? item['scale-value'] : 1}}"
+    >
+      <template is="children" data="{{r: item.children}}" />
+    </moveable-view>
+  </moveable-area>
+</template>
+
+<!--HTML component -->
+<template name="h-element">
+  <view
+    style="{{r.style}}"
+    class="{{r.class}}"
+    id="{{r.id}}"
+    animation="{{r.animation}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindtap="onTap"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel"
+  >
     <template is="children" data="{{r: r.children}}" />
-  </moveable-view>
+  </view>
+</template>
+
+<template name="h-comment">
 </template>
 
 <!--Base content-->
 <template name="text">
   <text
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     animation="{{r.animation}}"
@@ -369,7 +264,7 @@
 <template name="icon">
   <icon
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -382,7 +277,7 @@
     bindtouchcancel="onTouchCancel"
 
     type="{{r.type}}"
-    size="{{r.size}}"
+    size="{{r.size !== undefined ? r.size : '23'}}"
     color="{{r.color}}"
   >
   </icon>
@@ -391,7 +286,7 @@
 <template name="progress">
   <progress
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -422,7 +317,7 @@
 <template name="rich-text">
   <rich-text
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -444,7 +339,7 @@
 <template name="button">
   <button
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     animation="{{r.animation}}"
@@ -464,25 +359,25 @@
     bindopensetting="onButtonOpenSetting"
     bindlaunchapp="onButtonLaunchApp"
 
-    size="{{r.size}}"
-    type="{{r.type}}"
-    plain="{{r.plain}}"
-    disabled="{{r.disabled}}"
-    loading="{{r.loading}}"
-    form-type="{{r['form-type']}}"
-    open-type="{{r['open-type']}}"
-    hover-class="{{r['hover-class']}}"
-    hover-stop-propagation="{{r['hover-stop-propagation']}}"
-    hover-start-time="{{r['hover-start-time']}}"
-    hover-stay-time="{{r['hover-stay-time']}}"
-    lang="{{r.lang}}"
-    session-from="{{r['session-from']}}"
-    send-message-title="{{r['send-message-title']}}"
-    send-message-path="{{r['send-message-path']}}"
-    send-message-img="{{r['send-message-img']}}"
-    app-parameter="{{r['app-parameter']}}"
-    show-message-card="{{r['show-message-card']}}"
-    business-id="{{r['business-id']}}"
+    size="{{r.size || 'default'}}"
+    type="{{r.type || 'default'}}"
+    plain="{{r.plain || false}}"
+    disabled="{{r.disabled || false}}"
+    loading="{{r.loading || false}}"
+    form-type="{{r['form-type'] || ''}}"
+    open-type="{{r['open-type'] || ''}}"
+    hover-class="{{r['hover-class'] || 'button-hover'}}"
+    hover-stop-propagation="{{r['hover-stop-propagation'] || false}}"
+    hover-start-time="{{r['hover-start-time'] !== undefined ? r['hover-start-time'] : 20}}"
+    hover-stay-time="{{r['hover-stay-time'] !== undefined ? r['hover-stay-time'] : 70}}"
+    lang="{{r.lang || 'en'}}"
+    session-from="{{r['session-from'] || ''}}"
+    send-message-title="{{r['send-message-title'] || ''}}"
+    send-message-path="{{r['send-message-path'] || ''}}"
+    send-message-img="{{r['send-message-img'] || ''}}"
+    app-parameter="{{r['app-parameter'] || ''}}"
+    show-message-card="{{r['show-message-card'] || ''}}"
+    business-id="{{r['business-id'] || ''}}"
   >
     <template is="children" data="{{r: r.children}}" />
   </button>
@@ -491,7 +386,7 @@
 <template name="form">
   <form
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     animation="{{r.animation}}"
@@ -508,7 +403,7 @@
     bindreset="onFormReset"
 
     report-submit="{{r['report-submit']}}"
-    report-submit-timeout="{{r['report-submit-timeout']}}"
+    report-submit-timeout="{{r['report-submit-timeout'] || 0}}"
   >
     <template is="children" data="{{r: r.children}}" />
   </form>
@@ -517,7 +412,7 @@
 <template name="label">
   <label
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -538,7 +433,7 @@
 <template name="input">
   <input
     style="{{r.style}}"
-    class="{{isHTMLElement ? 'h5-input ' + r.className : r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -561,7 +456,7 @@
     disabled="{{r.disabled}}"
     maxlength="{{r.maxlength}}"
     cursor-spacing="{{r['cursor-spacing']}}"
-    focus="{{r['focus-state']}}"
+    focus="{{tool.processInputFocusState(r)}}"
     confirm-type="{{r['confirm-type']}}"
     confirm-hold="{{r['confirm-hold']}}"
     cursor="{{r.cursor}}"
@@ -575,7 +470,7 @@
 <template name="textarea">
   <textarea
     style="{{r.style}}"
-    class="{{isHTMLElement ? 'h5-textarea ' + r.className : r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -596,7 +491,7 @@
     placeholder-class="{{r['placeholder-class']}}"
     disabled="{{r.disabled}}"
     maxlength="{{r.maxlength}}"
-    focus="{{r['focus-state']}}"
+    focus="{{tool.processInputFocusState(r)}}"
     auto-height="{{r['auto-height']}}"
     fixed="{{r.fixed}}"
     cursor-spacing="{{r['cursor-spacing']}}"
@@ -612,7 +507,7 @@
 <template name="radio">
   <radio
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -632,7 +527,7 @@
 <template name="radio-group">
   <radio-group
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -650,7 +545,7 @@
 <template name="checkbox">
   <checkbox
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -659,7 +554,8 @@
     bindtap="onTap"
     bindchange="onCheckboxItemChange"
 
-    value="{{r.value}}"
+    name="{{r.name}}"
+    value="{{r.value || ''}}"
     disabled="{{r.disabled}}"
     checked="{{r.checked}}"
     color="{{r.color}}"
@@ -670,7 +566,7 @@
 <template name="checkbox-group">
   <checkbox-group
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -688,7 +584,7 @@
 <template name="switch">
   <switch
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -706,10 +602,33 @@
   </switch>
 </template>
 
+<template name="editor">
+  <editor
+    style="{{r.style}}"
+    class="{{r.class}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    bindready="onEditorReady"
+    bindfocus="onEditorFocus"
+    bindblur="onEditorBlur"
+    bindinput="onEditorInput"
+    bindstatuschange="onEditorStatusChange"
+
+    read-only="{{r['read-only']}}"
+    placeholder="{{r['placeholder'] || ''}}"
+    show-img-size="{{r['show-img-size']}}"
+    show-img-toolbar="{{r['show-img-toolbar']}}"
+    show-img-resize="{{r['show-img-resize']}}"
+  />
+</template>
+
 <template name="slider">
   <slider
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -739,7 +658,7 @@
 <template name="picker-view">
   <picker-view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -753,14 +672,14 @@
     indicator-class="{{r['indicator-class']}}"
     mask-style="{{r['mask-style']}}"
     mask-class="{{r['mask-class']}}"
-    value="{{value}}"
+    value="{{r.value || []}}"
   >
       <picker-view-column
         wx:for="{{r.children}}"
-        wx:if="{{item.nodeType !== 'comment'}}"
+        wx:if="{{item.nodeType !== 'h-comment'}}"
         wx:key="nodeId"
         style="{{item.style}}"
-        class="{{item.className}}"
+        class="{{item.class}}"
         hidden="{{item.hidden}}"
         id="{{item.id}}"
         data-private-node-id="{{item.nodeId}}"
@@ -780,7 +699,7 @@
 <template name="picker">
   <picker
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -796,13 +715,18 @@
     bindcolumnchange="onPickerColumnChange"
     bindcancel="onPickerCancel"
 
-    name="{{r.name}}"
-    mode="{{r.mode}}"
+    name="{{r.name || ''}}"
+    mode="{{r.mode || 'selector'}}"
     disabled="{{r.disabled}}"
-    range="{{r.range}}"
-    range-key="{{r['range-key']}}"
+    range="{{r.range || []}}"
+    range-key="{{r['range-key'] || ''}}"
     value="{{r.value}}"
+    start="{{r.start || ''}}"
+    end="{{r.end || ''}}"
+    fields="{{r.fields || 'day'}}"
+    customItem="{{r['custom-item'] || ''}}"
   >
+    <!--Todo value 需要处理下-->
     <template is="children" data="{{r: r.children}}" />
   </picker>
 </template>
@@ -810,7 +734,7 @@
 <template name="navigator">
   <navigator
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -826,18 +750,18 @@
     bindfail="onNavigatorFail"
     bindcomplete="onNavigatorComplete"
 
-    target="{{r.target}}"
-    url="{{r.url}}"
-    open-type="{{r['open-type']}}"
-    delta="{{r.delta}}"
-    app-id="{{r['app-id']}}"
-    path="{{r.path}}"
-    extra-data="{{r['extra-data']}}"
-    version="{{r.version}}"
-    hover-class="{{r['hover-class']}}"
+    url="{{r.url || ''}}"
+    open-type="{{r['open-type'] || 'navigate'}}"
+    hover-class="{{r['hover-class'] || 'none'}}"
     hover-stop-propagation="{{r['hover-stop-propagation']}}"
-    hover-start-time="{{r['hover-start-time']}}"
-    hover-stay-time="{{r['hover-stay-time']}}"
+    hover-start-time="{{r['hover-start-time'] !== undefined ? r['hover-start-time'] : 50}}"
+    hover-stay-time="{{r['hover-stay-time'] !== undefined ? r['hover-stay-time'] : 600}}"
+    target="{{r.target || 'self'}}"
+    delta="{{r.delta !== undefined ? r.delta : 1}}"
+    app-id="{{r['app-id'] || ''}}"
+    path="{{r.path || ''}}"
+    extra-data="{{r['extra-data']}}"
+    version="{{r.version || 'release'}}"
   >
     <template is="children" data="{{r: r.children}}" />
   </navigator>
@@ -846,7 +770,7 @@
 <template name="image">
   <image
     style="{{r.style}}"
-    class="{{isHTMLElement ?  'h5-img ' + r.className : r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -861,9 +785,9 @@
     bindload="onImageLoad"
     binderror="onImageError"
 
-    rendering-mode="{{r['rendering-mode']}}"
+    webp="{{r.webp}}"
     src="{{r.src}}"
-    mode="{{r.mode}}"
+    mode="{{r.mode || 'scaleToFill'}}"
     lazy-load="{{r['lazy-load']}}"
     show-menu-by-longpress="{{r['show-menu-by-longpress']}}"
   >
@@ -873,7 +797,7 @@
 <template name="video">
   <video
     style="{{r.style}}"
-    class="{{isHTMLElement ?  'h5-video ' + r.className : r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -924,10 +848,28 @@
   </video>
 </template>
 
+<template name="camera">
+  <camera
+    style="{{r.style}}"
+    hidden="{{r.hidden}}"
+    id="{{r.id}}"
+    data-private-node-id="{{r.nodeId}}"
+    data-private-page-id="{{r.pageId}}"
+
+    mode="{{r.mode || 'normal'}}"
+    device-position="{{r['device-position'] || 'back'}}"
+
+    bindstop="onCameraStop"
+    binderror="onCameraError"
+    bindinitdone="onCameraInitDone"
+    bindscancode="onCameraScanCode"
+ />
+</template>
+
 <template name="map">
   <map
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -945,20 +887,20 @@
     bindupdated="onMapUpdated"
     bindregibindchange="onMapRegionChange"
 
-    longitude="{{r.longitude}}"
-    latitude="{{r.latitude}}"
-    scale="{{r.scale}}"
-    markers="{{r.markers}}"
-    polyline="{{r.polyline}}"
-    circles="{{r.circles}}"
-    controls="{{r.controls}}"
-    include-points="{{r['include-points']}}"
+    longitude="{{r.longitude !== undefined ? r.longitude : 39.92}}"
+    latitude="{{r.latitude !== undefined ? r.latitude : 116.46}}"
+    scale="{{r.scale !== undefined ? r.scale : 16}}"
+    markers="{{r.markers !== undefined ? r.markers : []}}"
+    polyline="{{r.polyline !== undefined ? r.polyline : []}}"
+    circles="{{r.circles !== undefined ? r.circles : []}}"
+    controls="{{r.controls !== undefined ? r.controls : []}}"
+    include-points="{{r['include-points'] !== undefined ? r['include-points'] : []}}"
     show-location="{{r['show-location']}}"
-    polygons="{{r.polygons}}"
-    subkey="{{r.subkey}}"
-    layer-style="{{r['layer-style']}}"
-    rotate="{{r.rotate}}"
-    skew="{{r.skew}}"
+    polygons="{{r.polygons !== undefined ? r.polygons : []}}"
+    subkey="{{r.subkey || ''}}"
+    layer-style="{{r['layer-style'] !== undefined ? r['layer-style'] : 1}}"
+    rotate="{{r.rotate || 0}}"
+    skew="{{r.skew || 0}}"
     enable-3D="{{r['enable-3D']}}"
     show-compass="{{r['show-compass']}}"
     enable-overlooking="{{r['enable-overlooking']}}"
@@ -975,7 +917,7 @@
 <template name="canvas">
   <canvas
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"
@@ -1000,7 +942,7 @@
 <template name="web-view">
   <web-view
     style="{{r.style}}"
-    class="{{r.className}}"
+    class="{{r.class}}"
     hidden="{{r.hidden}}"
     id="{{r.id}}"
     data-private-node-id="{{r.nodeId}}"

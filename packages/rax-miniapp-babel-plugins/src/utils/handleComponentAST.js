@@ -34,7 +34,6 @@ function collectComponentAttr(components, t) {
 function collectUsings(
   path,
   components,
-  componentsNameMap,
   usings,
   filePath,
   t
@@ -51,10 +50,9 @@ function collectUsings(
           t.jsxExpressionContainer(t.booleanLiteral(true))
         )
       );
+
       // Generate a random tag name
-      const replacedTagName = /[A-Z]/.test(tagName)
-        ? getTagName(tagName)
-        : tagName;
+      const replacedTagName = getTagName(tagName);
       if (!usings[replacedTagName]) {
         usings[replacedTagName] = { props: [], events: [] };
       }
@@ -69,7 +67,6 @@ function collectUsings(
           ),
         ],
       };
-      componentsNameMap.set(tagName, replacedTagName);
       // Use const Custom = 'c90589c' replace import Custom from '../public/xxx or plugin://...'
       path.replaceWith(
         t.VariableDeclaration('const', [

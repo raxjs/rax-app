@@ -1,4 +1,4 @@
-const { resolve, relative } = require('path');
+const { resolve, relative, extname } = require('path');
 const { readFileSync } = require('fs-extra');
 const ejs = require('ejs');
 const adapter = require('../adapter');
@@ -53,10 +53,12 @@ function generateAppCSS(compilation, { target, command, rootDir }) {
 
   let content = '@import "./default";';
 
-  if (compilation.assets[`${target}/index.css`]) {
-    content += '@import "./index.css";';
-    delete compilation.assets[`${target}/index.css`];
-  }
+  Object.keys(compilation.assets).forEach(asset => {
+    if (asset.indexOf(`${target}/index`) > -1 && extname(asset) === '.css') {
+      content += `@import "./${relative(target, asset)}";`;
+      delete compilation.assets[asset];
+    }
+  });
 
   addFileToCompilation(compilation, {
     filename: `app.${adapter[target].css}`,
