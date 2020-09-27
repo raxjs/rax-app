@@ -22,7 +22,7 @@ module.exports = {
 
       if (config.plugins.has('minicss')) {
         config.plugin('minicss').tap((args) => {
-          args[0].filename = path.join(outputPath, `[name].[${hashStr}].css`);
+          args[0].filename = args[0].filename.replace('[name]', `[name].[${hashStr}]`);
           return args;
         });
       }

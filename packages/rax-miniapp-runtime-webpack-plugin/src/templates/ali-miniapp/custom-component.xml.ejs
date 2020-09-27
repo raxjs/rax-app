@@ -15,7 +15,12 @@
           </view>
         </block>
         <block a:else>
-          <template is="element" data="{{r: item}}" />
+          <block a:if="{{item.nodeId}}">
+            <template is="element" data="{{r: item}}" />
+          </block>
+          <block a:else>
+            <block>{{item.content}}</block>
+          </block>
         </block>
       </block>
     </<%=componentTag%>>

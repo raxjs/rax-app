@@ -208,13 +208,18 @@ async function createProject(name, verbose, template, userAnswers) {
     );
   } else {
     const typeToTemplate = {
-      component: '@icedesign/template-rax',
+      component: {
+        ts: '@icedesign/template-rax',
+        js: '@icedesign/template-rax',
+      },
       api: '@icedesign/template-rax-api',
       plugin: '@icedesign/template-rax-miniapp-plugin'
     };
 
     const tempDir = path.join(rootDir, '.tmp');
-    await downloadMaterialTemplate(tempDir, typeToTemplate[projectType], registry);
+    const materialTemplate = typeToTemplate[projectType][languageType] ? typeToTemplate[projectType][languageType] : typeToTemplate[projectType];
+
+    await downloadMaterialTemplate(tempDir, materialTemplate, registry);
     await generateMaterial({
       rootDir,
       materialTemplateDir: tempDir,

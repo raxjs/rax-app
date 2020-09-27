@@ -20,6 +20,12 @@ function generateRootTmpl(
     target,
     command,
   });
+  addFileToCompilation(compilation, {
+    filename: `tool.${adapter[target].script}`,
+    content: ejs.render(getTemplate(rootDir, `tool.${adapter[target].script}`, target)),
+    target,
+    command,
+  });
 }
 
 module.exports = {

@@ -19,7 +19,7 @@ function generateElementJS(compilation,
 
 function generateElementTemplate(compilation,
   { usingPlugins, usingComponents, target, command, rootDir }) {
-  let content = '<template is="{{r.behavior || \'element\'}}" data="{{r: r, isComp: true}}" />';
+  let content = '<template is="{{r.nodeType || \'h-element\'}}" data="{{r: r}}" />';
   if (target !== MINIAPP) {
     generateRootTmpl(compilation, { usingPlugins, usingComponents, target, command, rootDir });
     content = `<import src="./root.${adapter[target].xml}"/>` + content;
@@ -39,6 +39,12 @@ function generateElementTemplate(compilation,
   addFileToCompilation(compilation, {
     filename: `comp.${adapter[target].xml}`,
     content,
+    target,
+    command,
+  });
+  addFileToCompilation(compilation, {
+    filename: `tool.${adapter[target].script}`,
+    content: ejs.render(getTemplate(rootDir, `tool.${adapter[target].script}`, target)),
     target,
     command,
   });
