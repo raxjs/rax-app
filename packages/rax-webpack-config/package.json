@@ -40,6 +40,7 @@
     "webpack-filter-warnings-plugin": "^1.2.1",
     "webpack-node-externals": "^1.7.2",
     "webpack-simple-progress-plugin": "^0.0.4",
-    "webpack-sources": "^1.4.3"
+    "webpack-sources": "^1.4.3",
+    "mini-css-extract-plugin": "^0.11.2"
   }
 }

@@ -1,6 +1,6 @@
 const path = require('path');
 const deepClone = require('lodash.clonedeep');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const URL_LOADER_LIMIT = 8192;
 const EXCLUDE_REGX = /node_modules/;
@@ -28,7 +28,7 @@ const configCSSRule = (config, style, mode, loaders = [], target) => {
     } else {
       rule = config.module.rule(style)
         .test(styleReg)
-          .exclude.add(cssModuleReg).end();
+        .exclude.add(cssModuleReg).end();
     }
 
     if (mode === 'development' && target === 'web') {
@@ -43,15 +43,15 @@ const configCSSRule = (config, style, mode, loaders = [], target) => {
     }
     rule
       .use('MiniCssExtractPlugin.loader')
-        .loader(MiniCssExtractPlugin.loader)
-        .end()
+      .loader(MiniCssExtractPlugin.loader)
+      .end()
       .use('css-loader')
-        .loader(require.resolve('css-loader'))
-        .options(ruleKey === 'module' ? cssModuleLoaderOpts : cssLoaderOpts)
-        .end()
+      .loader(require.resolve('css-loader'))
+      .options(ruleKey === 'module' ? cssModuleLoaderOpts : cssLoaderOpts)
+      .end()
       .use('postcss-loader')
-        .loader(require.resolve('postcss-loader'))
-        .options({ ...cssLoaderOpts });
+      .loader(require.resolve('postcss-loader'))
+      .options({ ...cssLoaderOpts });
 
     loaders.forEach((loader) => {
       const [loaderName, loaderPath, loaderOpts = {}] = loader;
@@ -124,25 +124,25 @@ module.exports = (config, { rootDir, mode, babelConfig, target }) => {
   config.module.rule('jsx')
     .test(/\.jsx?$/)
     .exclude
-      .add(EXCLUDE_REGX)
-      .end()
+    .add(EXCLUDE_REGX)
+    .end()
     .use('babel-loader')
-      .loader(babelLoader)
-      .options({ ...deepClone(babelConfig), cacheDirectory: true });
+    .loader(babelLoader)
+    .options({ ...deepClone(babelConfig), cacheDirectory: true });
 
   // ts loader
   config.module.rule('tsx')
     .test(/\.tsx?$/)
     .exclude
-      .add(EXCLUDE_REGX)
-      .end()
+    .add(EXCLUDE_REGX)
+    .end()
     .use('babel-loader')
-      .loader(babelLoader)
-      .options({ ...deepClone(babelConfig), cacheDirectory: true })
-      .end()
+    .loader(babelLoader)
+    .options({ ...deepClone(babelConfig), cacheDirectory: true })
+    .end()
     .use('ts-loader')
-      .loader(require.resolve('ts-loader'))
-      .options({ transpileOnly: true });
+    .loader(require.resolve('ts-loader'))
+    .options({ transpileOnly: true });
 
   return config;
 };

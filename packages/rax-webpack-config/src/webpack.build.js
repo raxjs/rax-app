@@ -9,32 +9,32 @@ module.exports = (config) => {
   // uglify js file
   config.optimization
     .minimizer('TerserPlugin')
-      .use(TerserPlugin, [{
-        sourceMap: false,
-        cache: true,
-        parallel: true,
-        extractComments: false,
-        terserOptions: {
-          compress: {
-            unused: false,
-          },
-          output: {
-            ascii_only: true,
-            comments: 'some',
-            beautify: false,
-          },
-          mangle: true,
+    .use(TerserPlugin, [{
+      sourceMap: false,
+      cache: true,
+      parallel: true,
+      extractComments: false,
+      terserOptions: {
+        compress: {
+          unused: false,
         },
-      }]);
+        output: {
+          ascii_only: true,
+          comments: 'some',
+          beautify: false,
+        },
+        mangle: true,
+      },
+    }]);
 
   // optimize css file
   config.optimization
     .minimizer('OptimizeCSSAssetsPlugin')
-      .use(OptimizeCSSAssetsPlugin, [{
-        cssProcessorOptions: {
-          cssDeclarationSorter: false,
-          reduceIdents: false,
-          parser: safeParser,
-        },
-      }]);
+    .use(OptimizeCSSAssetsPlugin, [{
+      cssProcessorOptions: {
+        cssDeclarationSorter: false,
+        reduceIdents: false,
+        parser: safeParser,
+      },
+    }]);
 };
