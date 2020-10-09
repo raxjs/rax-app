@@ -15,14 +15,10 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
 
   setEntry(config, context, target);
   onGetWebpackConfig(target, config => {
-<<<<<<< HEAD
-    config.output.path(join(rootDir, 'build', target));
-=======
     const { userConfig = {} } = context;
     const { outputDir = 'build' } = userConfig;
     config.output.path(join(rootDir, outputDir, target));
     config.devServer.contentBase(join(rootDir, outputDir));
->>>>>>> master
     config.resolve.extensions
       .clear()
       .merge(getPlatformExtensions(platformMap[target].type, ['.js', '.jsx', '.ts', '.tsx', '.json']));
