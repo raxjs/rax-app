@@ -5,7 +5,7 @@ const qrcode = require('qrcode-terminal');
 const { setConfig, setDevLog } = require('rax-multi-pages-settings');
 const { handleWebpackErr } = require('rax-compile-config');
 const checkQuickAppEnv = require('rax-quickapp-webpack-plugin');
-const { getOutputPath } = require('miniapp-builder-shared');
+const { resolve } = require('path');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('./constants');
 
@@ -155,4 +155,10 @@ function getConfig(target, options = {}) {
     }
   }
   return [require(`./config/${target}/getBase`), require(`./config/${target}/setDev`)];
+}
+
+function getOutputPath(context, target) {
+  const { rootDir, userConfig } = context;
+  const { outputDir = 'build' } = userConfig;
+  return resolve(rootDir, outputDir, target);
 }

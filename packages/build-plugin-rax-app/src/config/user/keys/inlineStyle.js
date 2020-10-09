@@ -58,9 +58,21 @@ module.exports = {
           .loader(require.resolve('less-loader'));
       });
 
+      let filename = `${taskName}/[name].css`;
+
+      if (miniappStandardList.includes(taskName)) {
+        filename = '[name].css';
+      }
+
+      if (publicPath.startsWith('.')) {
+        filename = '';
+      }
+
+      console.log('filename', filename);
+
       config.plugin('minicss')
         .use(MiniCssExtractPlugin, [{
-          filename: `${publicPath.startsWith('.') ? '' : `${taskName}/`}[name].css`,
+          filename,
           ignoreOrder: true
         }]);
     }

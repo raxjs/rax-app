@@ -5,7 +5,6 @@ const { handleWebpackErr } = require('rax-compile-config');
 const checkQuickAppEnv = require('rax-quickapp-webpack-plugin');
 const { setConfig } = require('rax-multi-pages-settings');
 
-const { getOutputPath } = require('miniapp-builder-shared');
 const processRelativePublicPath = require('./config/processRelativePublicPath');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('./constants');
@@ -111,4 +110,11 @@ function logBuildResult(targets = [], context = {}) {
     console.log('   ', chalk.underline.white(quickAppDist));
     console.log();
   }
+}
+
+
+function getOutputPath(context, target) {
+  const { rootDir, userConfig } = context;
+  const { outputDir = 'build' } = userConfig;
+  return path.resolve(rootDir, outputDir, target);
 }

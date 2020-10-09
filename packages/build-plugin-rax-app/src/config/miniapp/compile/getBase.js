@@ -1,6 +1,6 @@
 const { join } = require('path');
 const { setAppConfig } = require('miniapp-compile-config');
-const { getOutputPath, platformMap } = require('miniapp-builder-shared');
+const { platformMap } = require('miniapp-builder-shared');
 
 const getWebpackBase = require('../../getWebpackBase');
 
@@ -8,7 +8,9 @@ const { QUICKAPP } = require('../../../constants');
 
 module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const entryPath = './src/app';
-  let outputPath = getOutputPath(context, target);
+  const { rootDir, userConfig = {} } = context;
+  const { outputDir = 'build' } = userConfig;
+  let outputPath = join(rootDir, outputDir, target);
   // Quickapp's output should be wrapped in src
   if (target === QUICKAPP) {
     outputPath = join(outputPath, 'src');
