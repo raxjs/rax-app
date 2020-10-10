@@ -68,11 +68,11 @@ module.exports = (context, options = {}, target) => {
     .use('platform')
     .loader(require.resolve('rax-compile-config/src/platformLoader'));
 
-   const copyWebpackPluginPatterns = [];
+  const copyWebpackPluginPatterns = [];
   if ([MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP].includes(target)) {
-    copyWebpackPluginPatterns.push({ from: 'src/public', to: `public` })
+    copyWebpackPluginPatterns.push({ from: 'src/public', to: 'public' });
   } else {
-    copyWebpackPluginPatterns.push({ from: 'src/public', to: `${target}/public` })
+    copyWebpackPluginPatterns.push({ from: 'src/public', to: `${target}/public` });
 
     if (command === 'start') {
       // MiniApp usually use `./public/xxx.png` as file src.
