@@ -68,8 +68,6 @@ module.exports = {
         filename = '';
       }
 
-      console.log('filename', filename);
-
       config.plugin('minicss')
         .use(MiniCssExtractPlugin, [{
           filename,
