@@ -69,16 +69,12 @@ module.exports = (context, options = {}, target) => {
     .loader(require.resolve('rax-compile-config/src/platformLoader'));
 
   const copyWebpackPluginPatterns = [];
-  if ([MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP].includes(target)) {
+  if ([MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP].includes(target) || command === 'start') {
+    // MiniApp usually use `./public/xxx.png` as file src.
+    // Dev Server start with '/'. if you want to use './public/xxx.png', should copy public to the root.
     copyWebpackPluginPatterns.push({ from: 'src/public', to: 'public' });
   } else {
     copyWebpackPluginPatterns.push({ from: 'src/public', to: `${target}/public` });
-
-    if (command === 'start') {
-      // MiniApp usually use `./public/xxx.png` as file src.
-      // Dev Server start with '/'. if you want to use './public/xxx.png', should copy public to the root.
-      copyWebpackPluginPatterns.push({ from: 'src/public', to: 'public' });
-    }
   }
 
   if (target && fs.existsSync(path.resolve(rootDir, 'src/public'))) {
