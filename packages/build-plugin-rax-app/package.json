@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-app",
-  "version": "5.2.9",
+  "version": "5.2.10",
   "description": "rax app base plugins",
   "main": "src/index.js",
   "scripts": {

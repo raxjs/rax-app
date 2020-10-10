@@ -3,13 +3,15 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const getWebpackBase = require('rax-webpack-config');
 const getBabelConfig = require('rax-babel-config');
+const { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP } = require('../constants');
 
 module.exports = (context, options = {}, target) => {
-  const { rootDir, command } = context;
+  const { rootDir, command, userConfig = {} } = context;
   const { processBar } = options;
+  const { inlineStyle = true } = userConfig;
 
   const babelConfig = getBabelConfig({
-    styleSheet: true,
+    styleSheet: inlineStyle,
     ...options,
   });
 
@@ -66,13 +68,17 @@ module.exports = (context, options = {}, target) => {
     .use('platform')
     .loader(require.resolve('rax-compile-config/src/platformLoader'));
 
+   const copyWebpackPluginPatterns = [];
+  if ([MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP].includes(target)) {
+    copyWebpackPluginPatterns.push({ from: 'src/public', to: `public` })
+  } else {
+    copyWebpackPluginPatterns.push({ from: 'src/public', to: `${target}/public` })
 
-  const copyWebpackPluginPatterns = [{ from: 'src/public', to: `${target}/public` }];
-
-  if (command === 'start') {
-    // MiniApp usually use `./public/xxx.png` as file src.
-    // Dev Server start with '/'. if you want to use './public/xxx.png', should copy public to the root.
-    copyWebpackPluginPatterns.push({ from: 'src/public', to: 'public' });
+    if (command === 'start') {
+      // MiniApp usually use `./public/xxx.png` as file src.
+      // Dev Server start with '/'. if you want to use './public/xxx.png', should copy public to the root.
+      copyWebpackPluginPatterns.push({ from: 'src/public', to: 'public' });
+    }
   }
 
   if (target && fs.existsSync(path.resolve(rootDir, 'src/public'))) {
