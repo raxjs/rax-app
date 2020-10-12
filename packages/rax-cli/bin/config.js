@@ -64,10 +64,10 @@ function getPromptQuestion(appTemplate) {
   }, {
     type: 'list',
     name: 'appType',
-    message: 'What\'s your application type? (Only valid in target: Web/Kraken)',
+    message: 'What\'s your application type? (Only valid in target: Web)',
     when(answers) {
-      // app and targets not include miniapp/wechat-miniprogram
-      return answers.projectType === 'app' && !(answers.projectTargets.includes('miniapp') && answers.projectTargets.includes('wechat-miniprogram'));
+      // app and targets include web/weex
+      return answers.projectType === 'app' && (answers.projectTargets.includes('web') || answers.projectTargets.includes('weex'));
     },
     choices: [
       {
@@ -85,7 +85,6 @@ function getPromptQuestion(appTemplate) {
     name: 'languageType',
     message: 'What type of language do you want to use?',
     when(answers) {
-      // plugin/api not support js
       return (answers.projectType === 'app' || answers.projectType === 'component') && !appTemplate;
     },
     choices: [
