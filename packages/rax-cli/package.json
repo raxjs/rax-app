@@ -1,6 +1,6 @@
 {
   "name": "rax-cli",
-  "version": "3.3.0",
+  "version": "3.2.6",
   "license": "BSD-3-Clause",
   "description": "Command line interface for Rax",
   "repository": {
