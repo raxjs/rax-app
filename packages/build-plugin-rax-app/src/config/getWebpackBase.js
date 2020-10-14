@@ -3,7 +3,11 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const getWebpackBase = require('rax-webpack-config');
 const getBabelConfig = require('rax-babel-config');
-const { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP } = require('../constants');
+const { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX, KRAKEN } = require('../constants');
+
+const inlineStandardList = [
+  WEEX, KRAKEN,
+];
 
 module.exports = (context, options = {}, target) => {
   const { rootDir, command, userConfig = {} } = context;
@@ -11,7 +15,7 @@ module.exports = (context, options = {}, target) => {
   const { inlineStyle = true } = userConfig;
 
   const babelConfig = getBabelConfig({
-    styleSheet: inlineStyle,
+    styleSheet: inlineStandardList.includes(target) || inlineStyle,
     ...options,
   });
 
