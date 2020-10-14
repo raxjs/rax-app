@@ -60,12 +60,8 @@ module.exports = {
 
       let filename = `${taskName}/[name].css`;
 
-      if (miniappStandardList.includes(taskName)) {
+      if (miniappStandardList.includes(taskName) || publicPath.startsWith('.')) {
         filename = '[name].css';
-      }
-
-      if (publicPath.startsWith('.')) {
-        filename = '';
       }
 
       config.plugin('minicss')
