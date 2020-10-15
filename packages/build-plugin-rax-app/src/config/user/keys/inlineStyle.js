@@ -58,14 +58,15 @@ module.exports = {
           .loader(require.resolve('less-loader'));
       });
 
+      // In web/weex/kraken outputPath is build, filename is ${taskName}/[name].css
       let filename = `${taskName}/[name].css`;
 
-      if (miniappStandardList.includes(taskName)) {
+      /**
+       * In MiniApp outputPath is build/miniapp, filename is [name].css
+       * if user set relative public path, filename should be [name].css
+       */
+      if (miniappStandardList.includes(taskName) || publicPath.startsWith('.')) {
         filename = '[name].css';
-      }
-
-      if (publicPath.startsWith('.')) {
-        filename = '';
       }
 
       config.plugin('minicss')
