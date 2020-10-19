@@ -10,7 +10,8 @@ module.exports = async({
 
   const hasAPI = fse.existsSync(path.join(rootDir, 'src/apis'));
 
-  const target = process.env.RAX_SSR ? 'ssr' : 'web';
+  // Compatible with build-plugin-rax-ssr
+  const target = (process.env.RAX_SSR || process.env.__IS_SERVER__) ? 'ssr' : 'web';
 
   // Register FaaS Dev Server for API
   onGetWebpackConfig(target, (config) => {
