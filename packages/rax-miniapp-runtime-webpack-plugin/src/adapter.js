@@ -8,6 +8,7 @@ module.exports = {
     fileName: 'ali',
     css: 'acss',
     xml: 'axml',
+    script: 'sjs',
     directive: {
       prefix: 'a',
       if: 'a:if',
@@ -22,6 +23,7 @@ module.exports = {
     fileName: 'wechat',
     css: 'wxss',
     xml: 'wxml',
+    script: 'wxs',
     directive: {
       prefix: 'wx',
       if: 'wx:if',

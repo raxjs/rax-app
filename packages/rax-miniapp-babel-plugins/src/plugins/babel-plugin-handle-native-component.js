@@ -96,13 +96,16 @@ module.exports = function visitor(
   { usingComponents, target, rootDir, runtimeDependencies }
 ) {
   // Collect imported dependencies
-  const nativeComponents = {};
-  const nativeComponentsNameMap = new Map();
-
+  let nativeComponents = {};
   const scanedPageMap = {};
-
   return {
     visitor: {
+      Program: {
+        exit(path, { filename }) {
+          scanedPageMap[filename] = false;
+          nativeComponents = {};
+        }
+      },
       ImportDeclaration: {
         enter(path, { filename }) {
           const { specifiers, source } = path.node;
@@ -116,7 +119,7 @@ module.exports = function visitor(
                   JSXOpeningElement: collectComponentAttr(nativeComponents, t)
                 });
               }
-              collectUsings(path, nativeComponents, nativeComponentsNameMap, usingComponents, filePath, t);
+              collectUsings(path, nativeComponents, usingComponents, filePath, t);
             }
           }
         },
