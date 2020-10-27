@@ -242,7 +242,7 @@ async function createProject(name, verbose, template, userAnswers) {
   let explanation = '';
   if (isAliInternal) {
     npmCommand = 'tnpm';
-    explanation = 'Detected that you are an Alibaba user, DEF plugin has been installed!\n\n';
+    explanation = 'Detected that you are an Alibaba user, DEF plugin has been added!\n\n';
   }
 
   console.log(chalk.white(`   ${npmCommand} install`));
