@@ -16,7 +16,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     outputPath = join(outputPath, 'src');
   }
 
-  const config = getWebpackBase(
+  const chainConfig = getWebpackBase(
     context,
     {
       disableRegenerator: true,
@@ -27,14 +27,17 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     target
   );
 
+  // For src/config/processRelativePublicPath.js, it need get output.filename
+  chainConfig.output.filename('[name].js');
 
-  setAppConfig(config, options[target], {
-    entryPath,
-    outputPath,
-    onGetWebpackConfig,
-    context,
-    target
-  });
+  onGetWebpackConfig(target, config => {
+    setAppConfig(config, options[target], {
+      entryPath,
+      outputPath,
+      context,
+      target
+    });
+  })
 
-  return config;
+  return chainConfig;
 };
