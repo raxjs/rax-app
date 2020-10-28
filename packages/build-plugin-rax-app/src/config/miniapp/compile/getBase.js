@@ -37,7 +37,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
       context,
       target
     });
-  })
+  });
 
   return chainConfig;
 };
