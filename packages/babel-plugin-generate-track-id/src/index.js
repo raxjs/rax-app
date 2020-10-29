@@ -9,7 +9,7 @@ const t = require('@babel/types');
 const hashFilename = name => {
   const result = crypto
     .createHash('md4')
-		.update(name)
+    .update(name)
     .digest('hex');
 
   return result.slice(0, 8);
@@ -24,7 +24,7 @@ const trackIdCache = {};
  */
 function getTrackId(filePath, rootPath) {
   if (trackIdCache[filePath]) {
-     const fileInfo = trackIdCache[filePath];
+    const fileInfo = trackIdCache[filePath];
 
     fileInfo.uid ++;
 
