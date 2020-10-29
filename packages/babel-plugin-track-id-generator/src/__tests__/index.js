@@ -1,4 +1,4 @@
-const trackerPlugin = require('../index');
+const trackIdPlugin = require('../index');
 const { transform } = require('@babel/core');
 const syntaxJSX = require('babel-plugin-syntax-jsx');
 
@@ -7,7 +7,7 @@ export default function getTransformCode(code, opts) {
     filename: './',
     configFile: false,
     plugins: [
-      trackerPlugin,
+      trackIdPlugin,
       syntaxJSX
     ]
   }).code;

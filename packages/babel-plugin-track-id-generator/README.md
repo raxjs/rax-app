@@ -1,11 +1,11 @@
-# babel-plugin-generate-track-id
+# babel-plugin-track-id-generator
 
 > Generate track id for auto tracker.
 
 ## Installation
 
 ```sh
-npm install --save-dev babel-plugin-generate-track-id
+npm install --save-dev babel-plugin-track-id-generator
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ npm install --save-dev babel-plugin-generate-track-id
 ```json
 {
   "plugins": [
-    "babel-plugin-generate-track-id"
+    "babel-plugin-track-id-generator"
   ]
 }
 ```
