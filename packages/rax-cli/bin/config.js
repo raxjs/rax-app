@@ -66,8 +66,10 @@ function getPromptQuestion(appTemplate) {
     name: 'appType',
     message: 'What\'s your application type? (Only valid in target: Web)',
     when(answers) {
-      // app and targets include web/weex/kraken
-      return answers.projectType === 'app' && ['web', 'weex', 'kraken'].some(target => answers.projectTargets.includes(target));
+      // app and targets include web/weex/kraken and targets not include miniapp/wechat-miniprogram/bytedance-microapp
+      return answers.projectType === 'app'
+        && !checkTargetExist(['miniapp', 'wechat-miniprogram', 'bytedance-microapp'], answers.projectTargets)
+        && checkTargetExist(['web', 'weex', 'kraken'], answers.projectTargets);
     },
     choices: [
       {
@@ -101,6 +103,10 @@ function getPromptQuestion(appTemplate) {
   }];
 
   return promptQuestion;
+}
+
+function checkTargetExist(allTargets, projectTargets) {
+  return allTargets.some(target => projectTargets.includes(target));
 }
 
 module.exports = {
