@@ -66,8 +66,8 @@ function getPromptQuestion(appTemplate) {
     name: 'appType',
     message: 'What\'s your application type? (Only valid in target: Web)',
     when(answers) {
-      // app and targets include web/weex
-      return answers.projectType === 'app' && ['web', 'weex'].some(target => answers.projectTargets.includes(target));
+      // app and targets include web/weex/kraken
+      return answers.projectType === 'app' && ['web', 'weex', 'kraken'].some(target => answers.projectTargets.includes(target));
     },
     choices: [
       {
