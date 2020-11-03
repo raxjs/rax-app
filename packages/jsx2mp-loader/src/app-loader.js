@@ -68,7 +68,7 @@ module.exports = async function appLoader(content) {
   } catch (e) {
     console.log(chalk.red(`\n[${platform.name}] Error occured when handling App ${this.resourcePath}`));
     console.log(pe.render(e));
-    return '';
+    throw new Error(e);
   }
 
   const { style, assets } = await processCSS(transformed.cssFiles, sourcePath);

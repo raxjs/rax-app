@@ -50,7 +50,7 @@ module.exports = async function componentLoader(content) {
   } catch (e) {
     console.log(chalk.red(`\n[${platform.name}] Error occured when handling Component ${this.resourcePath}`));
     console.log(pe.render(e));
-    return '';
+    throw new Error(e);
   }
 
   const { style, assets } = await processCSS(transformed.cssFiles, sourcePath);
