@@ -1,4 +1,4 @@
-const path = require('path');
+const { relative } = require('path');
 const crypto = require('crypto');
 const t = require('@babel/types');
 
@@ -15,35 +15,11 @@ const hashFilename = name => {
   return result.slice(0, 8);
 };
 
-const trackIdCache = {};
-
-/**
- * generate trackId by filePath
- * @param {*} filePath absolute file path
- * @param {*} rootPath
- */
-function getTrackId(filePath, rootPath) {
-  if (trackIdCache[filePath]) {
-    const fileInfo = trackIdCache[filePath];
-
-    fileInfo.uid ++;
-
-    return `${fileInfo.hash}${fileInfo.uid.toString(16)}`;
-  }
-
-  const fileName = path.relative(rootPath, filePath);
-  const fileHash = hashFilename(fileName);
-
-  trackIdCache[filePath] = {
-    hash: fileHash,
-    uid: 0
-  };
-
-  return `${fileHash}0`;
-}
-
 module.exports = function() {
   return {
+    pre(state) {
+      this.cache = {};
+    },
     visitor: {
       JSXOpeningElement(path, { file, opts }) {
         const { container } = path;
@@ -73,7 +49,28 @@ module.exports = function() {
         }
 
         if (hasEvent && !hasTrackId) {
-          const trackId = getTrackId(file.opts.filename, file.opts.root);
+          const filePath = file.opts.filename;
+          const rootPath = file.opts.root;
+
+          let trackId;
+
+          if (this.cache[filePath]) {
+            const fileInfo = this.cache[filePath];
+        
+            fileInfo.uid ++;
+        
+            trackId = `${fileInfo.hash}${fileInfo.uid.toString(16)}`;
+          } else {
+            const fileName = relative(rootPath, filePath);
+            const fileHash = hashFilename(fileName);
+          
+            this.cache[filePath] = {
+              hash: fileHash,
+              uid: 0
+            };
+          
+            trackId = `${fileHash}0`;
+          }
 
           attributes.push(t.jSXAttribute(t.jSXIdentifier('track-id'), t.StringLiteral(trackId)));
         }

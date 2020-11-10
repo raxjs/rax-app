@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-track-id-generator",
-  "version": "0.1.0",
+  "version": "0.1.0-0",
   "description": "Transform JSX to HTML.",
   "license": "BSD-3-Clause",
   "main": "src/index.js",
