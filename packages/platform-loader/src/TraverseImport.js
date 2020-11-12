@@ -112,8 +112,8 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       // remove trailing "(LINE:COLUMN)" acorn message and add in esprima syntax error message start
       console.log(`Line ${err.lineNumber}: ${err.message.replace(/ \((\d+):(\d+)\)$/, '')
       // add codeframe
-    }\n\n${
-      codeFrameColumns(inputSource, location, { highlightCode: true })}`);
+      }\n\n${
+        codeFrameColumns(inputSource, location, { highlightCode: true })}`);
     } else {
       console.log(err);
     }
