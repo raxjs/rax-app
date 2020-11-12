@@ -3,7 +3,7 @@ const babelParser = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const types = require('@babel/types');
 const generate = require('@babel/generator').default;
-const codeFrame = require('@babel/code-frame').default;
+const { codeFrameColumns } = require('@babel/code-frame').default;
 
 module.exports = function traverseImport(options, inputSource, sourceMapOption) {
   let specified; // Collector import specifiers
@@ -102,17 +102,21 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
     });
   } catch (err) {
     if (err instanceof SyntaxError) {
-      err.lineNumber = err.loc.line;
-      err.column = err.loc.column + 1;
+      const location = {
+        start: {
+          line: err.loc.line,
+          column: err.loc.column + 1
+        }
+      };
 
       // remove trailing "(LINE:COLUMN)" acorn message and add in esprima syntax error message start
-      err.message = `Line ${err.lineNumber}: ${err.message.replace(/ \((\d+):(\d+)\)$/, '')
-        // add codeframe
+      console.log(`Line ${err.lineNumber}: ${err.message.replace(/ \((\d+):(\d+)\)$/, '')
+      // add codeframe
       }\n\n${
-        codeFrame(inputSource, err.lineNumber, err.column, { highlightCode: true })}`;
+        codeFrameColumns(inputSource, location, { highlightCode: true })}`);
+    } else {
+      console.log(err);
     }
-
-    throw err;
   }
 
   traverse(ast, {
