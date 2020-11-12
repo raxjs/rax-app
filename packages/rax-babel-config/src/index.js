@@ -4,7 +4,7 @@ const babelMerge = require('babel-merge');
 const defaultOptions = {
   jsxPlus: !process.env.DISABLE_JSX_PLUS,
   styleSheet: false,
-  modules: 'auto',
+  modules: false,
 };
 
 let logOnce = true;
@@ -17,8 +17,7 @@ module.exports = (userOptions = {}) => {
     jsxToHtml,
     disableRegenerator = false,
     // preset-env modules options
-    modules,
-    isES6 = false
+    modules
   } = options;
 
   const baseConfig = {
@@ -27,16 +26,12 @@ module.exports = (userOptions = {}) => {
       [
         require.resolve('@babel/preset-env'),
         {
-          targets: isES6 ?
-            ['last 1 chrome version', 'node 10'] : {
-              chrome: '49',
-              ios: '8',
-            },
           loose: true,
           modules,
           include: [
             'transform-computed-properties',
-          ]
+          ],
+          exclude: disableRegenerator ? ['transform-regenerator'] : []
         },
       ],
       [
@@ -48,15 +43,6 @@ module.exports = (userOptions = {}) => {
       ],
     ],
     plugins: [
-      [
-        require.resolve('@babel/plugin-transform-runtime'),
-        {
-          'corejs': false,
-          'helpers': false,
-          'regenerator': !disableRegenerator,
-          'useESModules': false,
-        },
-      ],
       require.resolve('@babel/plugin-syntax-dynamic-import'),
       // Stage 0
       require.resolve('@babel/plugin-proposal-function-bind'),
