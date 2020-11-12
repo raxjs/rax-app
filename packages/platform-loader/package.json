@@ -1,0 +1,24 @@
+{
+  "name": "rax-platform-loader",
+  "version": "1.0.0",
+  "description": "rax platform loader for helping remove other platform code",
+  "license": "BSD-3-Clause",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-scripts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-scripts/issues"
+  },
+  "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/platform-loader#readme",
+  "dependencies": {
+    "@babel/code-frame": "^7.5.5",
+    "@babel/generator": "^7.6.4",
+    "@babel/parser": "^7.6.4",
+    "@babel/traverse": "^7.6.3",
+    "@babel/types": "^7.6.3",
+    "loader-utils": "^1.1.0",
+    "source-map": "^0.7.3"
+  }
+}
