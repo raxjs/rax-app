@@ -1,5 +1,7 @@
 # Rax Scripts
 
+[![Join the chat at https://gitter.im/rax-scripts/rax-scripts](https://badges.gitter.im/rax-scripts/rax-scripts.svg)](https://gitter.im/rax-scripts/rax-scripts?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Rax official engineering tools use `@alib/build-scripts` . `@alib/build-scripts` is based on webpack, supports various scenarios through the plugin system, and provides flexible webpack configuration capabilities based on `webpack-chain`. Users can realize engineering requirements by combining various plugins.
 
 ## Quick start
