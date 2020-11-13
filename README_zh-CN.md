@@ -12,23 +12,23 @@
 
 ## 特性
 
-- 🐂**多端**：支持 Web、小程序、Kraken 等容器运行
+- 🐂  **多端**：支持 Web、小程序、Kraken 等容器运行
 
-- 🐴 **完整的应用生命周期**：提供 usePageShow、usePageHide 等钩子
+- 🐴  **完整的应用生命周期**：提供 usePageShow、usePageHide 等钩子
 
-- 🐒 **工程**：开箱即用的工程配置，支持 ES6+、TypeScript、样式方案（Less/Sass/CSS Modules）等
+- 🐒  **工程**：开箱即用的工程配置，支持 ES6+、TypeScript、样式方案（Less/Sass/CSS Modules）等
 
-- 🦊 **路由**：默认使用配置式路由，同时支持约定式路由
+- 🦊  **路由**：默认使用配置式路由，同时支持约定式路由
 
-- 🐯 **数据流**：内置集成 icestore，基于 React Hooks 的轻量级状态管理方案
+- 🐯  **数据流**：内置集成 icestore，基于 React Hooks 的轻量级状态管理方案
 
-- 🐦 **环境配置**：内置集成 config， 支持多环境变量的配置
+- 🐦  **环境配置**：内置集成 config， 支持多环境变量的配置
 
-- 🦁 **应用配置**：提供强大的和可扩展的应用程序配置
+- 🦁  **应用配置**：提供强大的和可扩展的应用程序配置
 
-- 🐌 **插件体系**：提供插件机制，可以扩展框架的核心功能
+- 🐌  **插件体系**：提供插件机制，可以扩展框架的核心功能
 
-- 🐘 **TypeScript**：默认使用 TypeScript 
+- 🐘  **TypeScript**：默认使用 TypeScript 
 
   
 
@@ -82,21 +82,25 @@ $ npm run start # running on http://localhost:3333.
 
 [rax]: https://github.com/alibaba/rax
 [rax-app]: https://github.com/raxjs/rax-scripts
+[miniapp]: https://github.com/raxjs/miniapp
 [icestore]: https://github.com/ice-lab/icestore
 [iceworks]: https://github.com/ice-lab/iceworks
 
 [rax]: https://img.shields.io/npm/v/rax.svg
 [rax-app]: https://img.shields.io/npm/v/rax-app.svg
+[miniapp]: https://img.shields.io/npm/v/miniapp-render.svg
 [icestore-status]: https://img.shields.io/npm/v/@ice/store.svg
 [iceworks-status]: https://vsmarketplacebadge.apphb.com/version/iceworks-team.iceworks.svg
 
 [rax-package]: https://npmjs.com/package/rax
 [rax-app-package]: https://npmjs.com/package/rax-app
+[miniapp]: https://npmjs.com/package/miniapp-render
 [icestore-package]: https://npmjs.com/package/@ice/store
 [iceworks-package]: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks
 
 [rax-docs]: https://rax.js.org/docs/guide/about
-[rax-app-docs]: https://rax.js.org/docs/guide/about
+[rax-app-docs]: https://rax.js.org/docs/guide/directory-structure
+[miniapp]: https://rax.js.org/miniapp
 [icestore-docs]: https://github.com/ice-lab/icestore#icestore
 [iceworks-docs]: https://ice.work/docs/iceworks/about
 

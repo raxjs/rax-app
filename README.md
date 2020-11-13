@@ -12,14 +12,14 @@ English | [简体中文](./README_zh-CN.md)
 
 ## Features
 
-- 🐂**Universal**：Support Web/MiniApp/Kraken
-- 🐴 **App lifecycle**：Provide usePageShow、usePageHide etc.
-- 🐒 **Engineering**：Out of the box support for ES6+、TypeScript、Less、Sass、 CSS Modules，etc
-- 🦊 **Routing**：Powerful Routing System, supports configured routing and conventions routing
-- 🐯 **State management**：Built-in icestore, lightweight state management solution based on React Hooks
-- 🐦 **Config**：Modes and Environment Variables configuration in the config file
-- 🦁 **Application configuration**：Provide powerful and extensible application configuration
-- 🐌 **Plugin system**：The plugin system provides rich features and allow the community to build reusable solutions
+- 🐂  **Universal**：Support Web/MiniApp/Kraken
+- 🐴  **App lifecycle**：Provide usePageShow、usePageHide etc.
+- 🐒  **Engineering**：Out of the box support for ES6+、TypeScript、Less、Sass、 CSS Modules，etc
+- 🦊  **Routing**：Powerful Routing System, supports configured routing and conventions routing
+- 🐯  **State management**：Built-in icestore, lightweight state management solution based on React Hooks
+- 🐦  **Config**：Modes and Environment Variables configuration in the config file
+- 🦁  **Application configuration**：Provide powerful and extensible application configuration
+- 🐌  **Plugin system**：The plugin system provides rich features and allow the community to build reusable solutions
 - 🐘 **TypeScript**：Support TypeScript
 
 ## Quick start
