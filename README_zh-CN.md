@@ -112,5 +112,5 @@ $ npm run start # running on http://localhost:3333.
 | <a href="https://img.alicdn.com/tfs/TB1xmE8p7T2gK0jSZPcXXcKkpXa-387-505.png"><img src="https://img.alicdn.com/tfs/TB1xmE8p7T2gK0jSZPcXXcKkpXa-387-505.png" width="150" /></a> | [issues]     | [gitter]|
 
 [issues]: https://github.com/raxjs/rax-scripts/issues
-[gitter]: https://gitter.im/alibaba/rax-scripts
+[gitter]: https://gitter.im/rax-scripts/rax-scripts
 
