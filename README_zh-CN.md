@@ -100,7 +100,7 @@ $ npm run start # running on http://localhost:3333.
 
 [rax-docs]: https://rax.js.org/docs/guide/about
 [rax-app-docs]: https://rax.js.org/docs/guide/directory-structure
-[miniapp-package]: https://rax.js.org/miniapp
+[miniapp-docs]: https://rax.js.org/miniapp
 [icestore-docs]: https://github.com/ice-lab/icestore#icestore
 [iceworks-docs]: https://ice.work/docs/iceworks/about
 
