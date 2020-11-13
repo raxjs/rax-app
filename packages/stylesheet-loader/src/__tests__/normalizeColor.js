@@ -1,5 +1,4 @@
 
-
 import normalizeColor from '../normalizeColor';
 
 describe('normalizeColor', () => {

@@ -1,5 +1,4 @@
 
-
 import { isPrefersColorScheme, processPrefersColorScheme } from '../processPrefersColorScheme';
 
 describe('prefersColorScheme', () => {

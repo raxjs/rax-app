@@ -1,5 +1,4 @@
 
-
 import particular from '../particular';
 
 describe('particular', () => {

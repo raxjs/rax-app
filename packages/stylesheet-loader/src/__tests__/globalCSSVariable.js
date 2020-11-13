@@ -1,5 +1,4 @@
 
-
 import loader from '../index';
 import globalCSSVariable from '../globalCSSVariable';
 
@@ -31,7 +30,7 @@ const mockStyleString = `let __globalObject = typeof window === 'object' ? windo
       ? window.__RootCSSVariable[name]
       : "";
   }
-  
+
   var _styles = {
   "__CSSVariables": {
     "colorName": "blue"
@@ -40,9 +39,9 @@ const mockStyleString = `let __globalObject = typeof window === 'object' ? windo
     get color(){return __getValue("colorName")}
   }
 };
-  
-  
-  
+
+
+
   module.exports = _styles;
   `;
 

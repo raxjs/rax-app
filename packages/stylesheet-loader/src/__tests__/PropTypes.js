@@ -1,5 +1,3 @@
-
-
 import PropTypes from '../PropTypes';
 
 describe('PropTypes', () => {

@@ -1,6 +1,4 @@
-
-
-import css from 'css';
+import * as css from 'css';
 import transformer from '../transformer';
 
 describe('transformer', () => {

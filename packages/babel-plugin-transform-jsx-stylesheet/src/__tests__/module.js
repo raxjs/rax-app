@@ -16,7 +16,7 @@ describe('css module', () => {
     expect(getTransformCode(`
   import { createElement, render } from 'rax';
   import styles from './app.css';
-  
+
   render(<div className={styles.header} />);
   `)).toBe(`
 import { createElement, render } from 'rax';
