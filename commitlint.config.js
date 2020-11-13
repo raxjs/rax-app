@@ -1,3 +1,5 @@
-const { commitlint } = require('@iceworks/spec');
+// .commitlintrc.js
+const { getCommitlintConfig } = require('@iceworks/spec');
 
-module.exports = commitlint;
+// getCommitlintConfig(rule: 'rax'|'react', customConfig?);
+module.exports = getCommitlintConfig('rax');
