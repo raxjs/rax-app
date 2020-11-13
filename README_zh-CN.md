@@ -86,21 +86,21 @@ $ npm run start # running on http://localhost:3333.
 [icestore]: https://github.com/ice-lab/icestore
 [iceworks]: https://github.com/ice-lab/iceworks
 
-[rax]: https://img.shields.io/npm/v/rax.svg
-[rax-app]: https://img.shields.io/npm/v/rax-app.svg
-[miniapp]: https://img.shields.io/npm/v/miniapp-render.svg
+[rax-status]: https://img.shields.io/npm/v/rax.svg
+[rax-app-status]: https://img.shields.io/npm/v/rax-app.svg
+[miniapp-status]: https://img.shields.io/npm/v/miniapp-render.svg
 [icestore-status]: https://img.shields.io/npm/v/@ice/store.svg
 [iceworks-status]: https://vsmarketplacebadge.apphb.com/version/iceworks-team.iceworks.svg
 
 [rax-package]: https://npmjs.com/package/rax
 [rax-app-package]: https://npmjs.com/package/rax-app
-[miniapp]: https://npmjs.com/package/miniapp-render
+[miniapp-package]: https://npmjs.com/package/miniapp-render
 [icestore-package]: https://npmjs.com/package/@ice/store
 [iceworks-package]: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks
 
 [rax-docs]: https://rax.js.org/docs/guide/about
 [rax-app-docs]: https://rax.js.org/docs/guide/directory-structure
-[miniapp]: https://rax.js.org/miniapp
+[miniapp-package]: https://rax.js.org/miniapp
 [icestore-docs]: https://github.com/ice-lab/icestore#icestore
 [iceworks-docs]: https://ice.work/docs/iceworks/about
 
