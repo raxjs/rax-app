@@ -1,0 +1,47 @@
+{
+  "name": "rax-babel-config",
+  "version": "1.0.1",
+  "description": "rax base babel config",
+  "license": "BSD-3-Clause",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-scripts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-scripts/issues"
+  },
+  "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-babel-config#readme",
+  "dependencies": {
+    "@babel/code-frame": "^7.5.5",
+    "@babel/core": "^7.9.6",
+    "@babel/generator": "^7.6.4",
+    "@babel/parser": "^7.6.4",
+    "@babel/plugin-proposal-class-properties": "^7.2.0",
+    "@babel/plugin-proposal-decorators": "^7.2.0",
+    "@babel/plugin-proposal-export-default-from": "^7.2.0",
+    "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
+    "@babel/plugin-proposal-function-bind": "^7.2.0",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.0.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.0.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/runtime": "^7.2.0",
+    "@babel/traverse": "^7.6.3",
+    "@babel/types": "^7.6.3",
+    "babel-merge": "^3.0.0",
+    "babel-plugin-minify-dead-code-elimination-while-loop-fixed": "^0.3.0",
+    "babel-plugin-transform-jsx-class": "^0.1.2",
+    "babel-plugin-transform-jsx-condition": "^0.1.0",
+    "babel-plugin-transform-jsx-fragment": "^0.1.1",
+    "babel-plugin-transform-jsx-list": "^0.1.0",
+    "babel-plugin-transform-jsx-memo": "^0.1.2",
+    "babel-plugin-transform-jsx-slot": "^0.1.1",
+    "babel-plugin-transform-jsx-stylesheet": "^0.6.8",
+    "babel-plugin-transform-jsx-to-html": "^0.1.0",
+    "chalk": "^2.4.2"
+  }
+}

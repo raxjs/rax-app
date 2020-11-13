@@ -1,0 +1,20 @@
+{
+  "name": "build-plugin-rax-pha",
+  "version": "0.0.1",
+  "description": "Rax PHA plugins",
+  "license": "BSD-3-Clause",
+  "main": "src/index.js",
+  "dependencies": {
+    "@babel/core": "^7.8.6",
+    "fs-extra": "^8.1.0",
+    "html-minifier": "^4.0.0",
+    "humps": "^2.0.1",
+    "klaw-sync": "^6.0.0",
+    "lodash.template": "^4.5.0",
+    "qs": "^6.9.1",
+    "rax-babel-config": "^0.1.0",
+    "rax-compile-config": "^0.2.11",
+    "rax-webpack-config": "^0.0.1",
+    "webpack-sources": "^1.4.3"
+  }
+}
