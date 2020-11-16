@@ -1,1 +1,0 @@
-exports.setConfig = require('./setConfig');

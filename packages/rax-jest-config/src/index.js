@@ -1,4 +1,4 @@
-module.exports = ({rootDir = process.cwd(), moduleNameMapper = {}} = {}) => {
+module.exports = ({ rootDir = process.cwd(), moduleNameMapper = {} } = {}) => {
   return {
     rootDir,
     collectCoverage: true,

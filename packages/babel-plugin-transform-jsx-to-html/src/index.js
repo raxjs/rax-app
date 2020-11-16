@@ -5,7 +5,7 @@ const KEY_FOR_HTML = '__html';
 const KEY_FOR_ATTRS = '__attrs';
 const TEMP_KEY_PREFIX = '__key_';
 
-module.exports = function() {
+module.exports = function () {
   let keyIndex = 0;
 
   return {
@@ -20,16 +20,16 @@ module.exports = function() {
             // This plugin may transform a normal child to be an array, which cause key validation in createElement failed.
             // So add a key for each child in non production env, to prevent key validation warning.
             if (process.env.NODE_ENV !== 'production') {
-              const keyAttr = t.jsxAttribute(t.jsxIdentifier('key'), t.stringLiteral(TEMP_KEY_PREFIX + keyIndex ++));
+              const keyAttr = t.jsxAttribute(t.jsxIdentifier('key'), t.stringLiteral(TEMP_KEY_PREFIX + keyIndex++));
               openingPath.node.attributes.unshift(keyAttr);
             }
 
             return;
           }
 
-          let result = [];
+          const result = [];
 
-          let html = '<' + tagName;
+          let html = `<${ tagName}`;
 
           let attrs = openingPath.node.attributes;
           if (attrs.length) {
@@ -41,11 +41,11 @@ module.exports = function() {
           const {
             staticAttrs,
             dynamicAttrs,
-            innerHTML
+            innerHTML,
           } = attrs;
 
           if (staticAttrs) {
-            html = html + staticAttrs;
+            html += staticAttrs;
           }
 
           if (dynamicAttrs) {
@@ -54,7 +54,7 @@ module.exports = function() {
             html = '';
           }
 
-          html = html + (openingPath.node.selfClosing && !innerHTML ? '/>' : '>');
+          html += (openingPath.node.selfClosing && !innerHTML ? '/>' : '>');
           result.push(buildObject(KEY_FOR_HTML, t.stringLiteral(html)));
           html = '';
 
@@ -68,22 +68,22 @@ module.exports = function() {
           }
 
           if (path.node.closingElement || innerHTML) {
-            pushResult(t.stringLiteral('</' + tagName + '>'), result);
+            pushResult(t.stringLiteral(`</${ tagName }>`), result);
           }
 
           if (result && result.length) {
             path.replaceWith(t.arrayExpression(result));
           }
-        }
-      }
-    }
+        },
+      },
+    },
   };
 };
 
 // flatten and push children to result
 function flattenChildren(children, result) {
-  for (var i = 0, l = children.length; i < l; i++) {
-    let child = children[i];
+  for (let i = 0, l = children.length; i < l; i++) {
+    const child = children[i];
     if (t.isArrayExpression(child)) {
       flattenChildren(child.elements, result);
     } else if (Array.isArray(child)) {
@@ -128,9 +128,10 @@ function isStringObject(obj) {
   && obj.properties[0]
   && obj.properties[0].key.name === '__html'
   && t.isStringLiteral(obj.properties[0].value);
-};
+}
 
 function updateStringObject(obj, value, isTextNode) {
+  // eslint-disable-next-line operator-assignment
   obj.properties[0].value.value = obj.properties[0].value.value + value;
 
   const textIdentifier = obj.properties.find((prop) => {
@@ -139,14 +140,14 @@ function updateStringObject(obj, value, isTextNode) {
 
   // If merger a text node, should update the state of __isEndWithTextNode
   if (textIdentifier) {
-    textIdentifier.value.value = isTextNode ? true : false;
+    textIdentifier.value.value = !!isTextNode;
   } else if (isTextNode) {
     obj.properties.push(t.objectProperty(t.identifier('__isEndWithTextNode'), t.booleanLiteral(true)));
   }
 }
 
 function buildObject(name, value, isTextNode) {
-  let obj = t.objectProperty(t.identifier(name), value);
+  const obj = t.objectProperty(t.identifier(name), value);
   const properties = [obj];
 
   // Add text node identifier for server renderer to add split between sidbling text node
@@ -190,17 +191,15 @@ function buildOpeningElementAttributes(attribs, file) {
     } else if (t.isJSXSpreadAttribute(prop)) {
       _props = pushProps(_props, objs);
       objs.push(prop.argument);
-    } else {
-      if (t.isStringLiteral(prop.value)) {
-        let name = prop.name.name;
-        if (name === 'className') {
-          name = 'class';
-        }
-        const value = prop.value.value.replace(/\n\s+/g, ' ');
-        staticAttrs = staticAttrs + ' ' + name + '="' + value + '"';
-      } else {
-        _props.push(convertAttribute(prop));
+    } else if (t.isStringLiteral(prop.value)) {
+      let { name } = prop.name;
+      if (name === 'className') {
+        name = 'class';
       }
+      const value = prop.value.value.replace(/\n\s+/g, ' ');
+      staticAttrs = `${staticAttrs } ${ name }="${ value }"`;
+    } else {
+      _props.push(convertAttribute(prop));
     }
   }
 
@@ -226,9 +225,9 @@ function buildOpeningElementAttributes(attribs, file) {
   }
 
   return {
-    staticAttrs: staticAttrs,
-    dynamicAttrs: dynamicAttrs,
-    innerHTML: innerHTML
+    staticAttrs,
+    dynamicAttrs,
+    innerHTML,
   };
 }
 
@@ -261,7 +260,7 @@ function convertAttribute(node) {
 
   if (t.isJSXNamespacedName(node.name)) {
     node.name = t.stringLiteral(
-      node.name.namespace.name + ':' + node.name.name.name,
+      `${node.name.namespace.name }:${ node.name.name.name}`,
     );
   } else if (esutils.keyword.isIdentifierNameES6(node.name.name)) {
     node.name.type = 'Identifier';

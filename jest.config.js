@@ -1,15 +1,16 @@
-// jest.config.js
-
 module.exports = {
-  'collectCoverage': true,
-  'verbose': true,
-  'testPathIgnorePatterns': [
+  coverageDirectory: './coverage/',
+  testEnvironment: 'node',
+  collectCoverage: true,
+  coveragePathIgnorePatterns: [
+    '<rootDir>/node_modules/',
+  ],
+  roots: [
+    '<rootDir>/packages',
+  ],
+  testPathIgnorePatterns: [
     '/node_modules/',
-    '/fixtures/',
-    '/__modules__/',
-    '/__files__/',
     '/lib/',
-    '/dist/',
-    '/es/',
-  ]
+  ],
+  preset: 'ts-jest',
 };
