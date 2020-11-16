@@ -77,13 +77,14 @@ module.exports = (api) => {
           // If miniapp-compiled dir exists, register a new task
           const compiledComponentsPath = path.resolve(rootDir, 'src', MINIAPP_COMPILED_DIR);
           if (fs.existsSync(compiledComponentsPath)) {
+            const compiledComponentsTaskName = `rax-compiled-components-${target}`;
             const compiledComponentsChainConfig = getWebpackBase(api, {
-              target: 'rax-compiled-components',
+              target: compiledComponentsTaskName,
               babelConfigOptions: { styleSheet: inlineStyle, disableRegenerator: true },
             });
             compiledComponentsChainConfig.plugins.delete('ProgressPlugin');
-            compiledComponentsChainConfig.name('rax-compiled-components');
-            compiledComponentsChainConfig.taskName = 'rax-compiled-components';
+            compiledComponentsChainConfig.name(compiledComponentsTaskName);
+            compiledComponentsChainConfig.taskName = compiledComponentsTaskName;
 
             setComponentCompileConfig(
               compiledComponentsChainConfig,
@@ -95,7 +96,7 @@ module.exports = (api) => {
                 entryPath: path.join('src', MINIAPP_COMPILED_DIR, 'index'),
               },
             );
-            registerTask('rax-compiled-components', compiledComponentsChainConfig);
+            registerTask(compiledComponentsTaskName, compiledComponentsChainConfig);
           }
         }
       });
