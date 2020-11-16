@@ -44,6 +44,9 @@ const configCSSRule = (config, style, mode, loaders = [], target) => {
     rule
       .use('MiniCssExtractPlugin.loader')
       .loader(MiniCssExtractPlugin.loader)
+      .options({
+        esModule: false
+      })
       .end()
       .use('css-loader')
       .loader(require.resolve('css-loader'))
