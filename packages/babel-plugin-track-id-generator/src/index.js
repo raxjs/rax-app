@@ -6,7 +6,7 @@ const t = require('@babel/types');
  * @param {string} name a filename to hash
  * @returns {string} hashed filename
  */
-const hashFilename = name => {
+const hashFilename = (name) => {
   const result = crypto
     .createHash('md4')
     .update(name)
