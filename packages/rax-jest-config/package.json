@@ -2,7 +2,7 @@
   "name": "rax-jest-config",
   "version": "1.0.0",
   "description": "rax jest config",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",

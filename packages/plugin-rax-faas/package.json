@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "description": "Rax FaaS plugins",
   "license": "BSD-3-Clause",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "dependencies": {
     "fs-extra": "^8.1.0",
     "js-yaml": "^3.13.1",

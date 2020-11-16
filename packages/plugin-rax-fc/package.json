@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Rax Aliyun Function Compute Plugin",
   "license": "BSD-3-Clause",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "dependencies": {
     "address": "^1.1.2",
     "fs-extra": "^8.1.0",

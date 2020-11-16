@@ -2,7 +2,7 @@
   "name": "build-plugin-midway-faas",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "author": "",
   "license": "ISC",
   "dependencies": {

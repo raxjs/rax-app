@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"description": "rax app base plugins",
 	"license": "BSD-3-Clause",
-	"main": "src/index.js",
+	"main": "lib/index.js",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/raxjs/rax-scripts.git"
