@@ -34,7 +34,7 @@ async function parse(error, bundleContent) {
 }
 
 function print(message, stackFrame) {
-  const stackMessage = stackFrame.map(frame => {
+  const stackMessage = stackFrame.map((frame) => {
     if (frame.fromSourceMap) {
       return `    at ${frame.functionName} (${frame.source}:${frame.lineNumber}:${frame.columnNumber})`;
     }
@@ -70,6 +70,7 @@ function getSourceMap(bundleContent) {
     return;
   }
 
+  // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
   const base64 = rawSourceMap.substr(base64Start + base64KeyWord.length);
   const sourceMapString = Buffer.from(base64, 'base64').toString('utf-8');
   return JSON.parse(sourceMapString);

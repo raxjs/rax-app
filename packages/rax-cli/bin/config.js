@@ -1,5 +1,5 @@
 function getPromptQuestion(appTemplate) {
-  let promptQuestion = [{
+  const promptQuestion = [{
     type: 'list',
     name: 'projectType',
     message: 'What\'s your project type?',
@@ -26,9 +26,9 @@ function getPromptQuestion(appTemplate) {
       },
       {
         name: 'Plugin (Build plugin for miniapp)',
-        value: 'plugin'
-      }
-    ]
+        value: 'plugin',
+      },
+    ],
   }, {
     type: 'checkbox',
     name: 'projectTargets',
@@ -38,7 +38,7 @@ function getPromptQuestion(appTemplate) {
       return 'Choose at least one of target.';
     },
     message: 'Choose targets your project want to run?',
-    choices: function(answers) {
+    choices(answers) {
       let targets =
       [
         {
@@ -48,7 +48,7 @@ function getPromptQuestion(appTemplate) {
         {
           name: 'WeChat MiniProgram',
           value: 'wechat-miniprogram',
-        }
+        },
       ];
       if (answers.projectType !== 'plugin') {
         targets = [{
@@ -106,7 +106,7 @@ function getPromptQuestion(appTemplate) {
 }
 
 function checkTargetExist(allTargets, projectTargets) {
-  return allTargets.some(target => projectTargets.includes(target));
+  return allTargets.some((target) => projectTargets.includes(target));
 }
 
 module.exports = {

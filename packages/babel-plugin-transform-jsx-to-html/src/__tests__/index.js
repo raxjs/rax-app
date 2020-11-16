@@ -1,26 +1,26 @@
-const jsxToHtmlPlugin = require('../index');
 const { transformSync } = require('@babel/core');
+const jsxToHtmlPlugin = require('../index');
 
-function getTransfromCode(code, opts) {
+function getTransfromCode(code) {
   return transformSync(code, {
     filename: './',
     presets: [
       [require.resolve('@babel/preset-env'), {
         loose: true,
-        modules: false
+        modules: false,
       }],
       require.resolve('@babel/preset-react'),
     ],
     plugins: [
       [jsxToHtmlPlugin, {
-        useBuiltIns: true
+        useBuiltIns: true,
       }],
       [require.resolve('@babel/plugin-transform-react-jsx'), {
-        pragma: 'createElement'
+        pragma: 'createElement',
       }],
       [require.resolve('@babel/plugin-transform-modules-commonjs'), {
-        strictMode: false
-      }]
+        strictMode: false,
+      }],
     ],
   }).code;
 }

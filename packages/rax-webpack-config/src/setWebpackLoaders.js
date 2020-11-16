@@ -45,7 +45,7 @@ const configCSSRule = (config, style, mode, loaders = [], target) => {
       .use('MiniCssExtractPlugin.loader')
       .loader(MiniCssExtractPlugin.loader)
       .options({
-        esModule: false
+        esModule: false,
       })
       .end()
       .use('css-loader')
@@ -84,7 +84,7 @@ module.exports = (config, { rootDir, mode, babelConfig, target }) => {
   config.target('web');
   config.context(rootDir);
   config.externals([
-    function(ctx, request, callback) {
+    function (ctx, request, callback) {
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, `commonjs ${request}`);
       }

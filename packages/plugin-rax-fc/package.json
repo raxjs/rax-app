@@ -1,0 +1,13 @@
+{
+  "name": "build-plugin-rax-fc",
+  "version": "1.0.0",
+  "description": "Rax Aliyun Function Compute Plugin",
+  "license": "BSD-3-Clause",
+  "main": "lib/index.js",
+  "dependencies": {
+    "address": "^1.1.2",
+    "fs-extra": "^8.1.0",
+    "js-yaml": "^3.13.1",
+    "shelljs": "^0.8.3"
+  }
+}
