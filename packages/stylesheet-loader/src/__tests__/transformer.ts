@@ -55,7 +55,7 @@ describe('transformer', () => {
         border: '1 solid red';
       }
     `;
-    const data = parse(source);
+    const data: any = parse(source);
 
     expect(data.container.width).toEqual(750);
     expect(data.container.height).toEqual(800);
@@ -80,7 +80,7 @@ describe('transformer', () => {
   });
 
   it('should be returned the value of css variable', () => {
-    const style = transformer.convert({
+    const style: any = transformer.convert({
       type: 'rule',
       selectors: [':root'],
       declarations: [

@@ -14,7 +14,7 @@ const VAR_KEY_VAL_REG = /"(.*?)"\s*:\s*"var\((.*)\)"/g;
 const GLOBAL_CSS_VAR = '__CSSVariables';
 const CSS_VAR_NAME = ':root';
 
-module.exports = function (source) {
+export default function (source) {
   const self = typeof this === 'object' ? this : {};
   self.cacheable && self.cacheable();
 
@@ -35,7 +35,7 @@ module.exports = function (source) {
   const parsedData = parse(parsedQuery, stylesheet);
 
   return genStyleContent(parsedData, parsedQuery);
-};
+}
 
 const parse = (parsedQuery, stylesheet) => {
   const styles = {};
@@ -109,12 +109,11 @@ const genStyleContent = (parsedData, parsedQuery) => {
   const mediaContent = getMediaContent(mediaRules, parsedQuery);
   const warnMessageOutput = parsedQuery.log ? getWarnMessageOutput() : '';
   resetMessage();
-
   return `${parsedQuery.theme ? globalCSSVariable({ styles, globalCSSVarName: GLOBAL_CSS_VAR }) : ''}
   var _styles = ${stringifyData(styles, parsedQuery.theme)};
-  ${fontFaceContent}
-  ${mediaContent}
-  ${warnMessageOutput}
+${fontFaceContent}
+${mediaContent}
+${warnMessageOutput}
   module.exports = _styles;
   `;
 };

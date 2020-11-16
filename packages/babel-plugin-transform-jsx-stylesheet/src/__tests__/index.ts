@@ -1,9 +1,9 @@
-import syntaxJSX from 'babel-plugin-syntax-jsx';
+import * as syntaxJSX from 'babel-plugin-syntax-jsx';
 import { transform } from 'babel-core';
 import { mergeStylesFunctionString, getClassNameFunctionString, getStyleFunctionString } from '../constants';
 import jSXStylePlugin from '../index';
-
-export default function getTransformCode(code, opts) {
+console.log('syntaxJSX', syntaxJSX);
+export default function getTransformCode(code, opts?) {
   return transform(code, {
     plugins: [
       [jSXStylePlugin, opts],

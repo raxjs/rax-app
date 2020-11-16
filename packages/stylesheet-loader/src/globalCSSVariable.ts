@@ -26,7 +26,6 @@ export default function getGlobalCSSVariable(config) {
     return (typeof __globalObject.__RootCSSVariable === "object")
       ? window.__RootCSSVariable[name]
       : "";
-  }
-  `;
+  }`;
   return globalCSSVariable;
 }

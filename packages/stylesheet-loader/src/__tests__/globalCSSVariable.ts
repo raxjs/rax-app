@@ -19,8 +19,7 @@ const mockStyleHeaderString = `let __globalObject = typeof window === 'object' ?
     return (typeof __globalObject.__RootCSSVariable === "object")
       ? window.__RootCSSVariable[name]
       : "";
-  }
-  `;
+  }`;
 
 const mockStyleString = `let __globalObject = typeof window === 'object' ? window : typeof global === 'object' ? global : {};
   if (typeof __globalObject === "object") {
@@ -30,7 +29,6 @@ const mockStyleString = `let __globalObject = typeof window === 'object' ? windo
       ? window.__RootCSSVariable[name]
       : "";
   }
-
   var _styles = {
   "__CSSVariables": {
     "colorName": "blue"
@@ -46,7 +44,7 @@ const mockStyleString = `let __globalObject = typeof window === 'object' ? windo
   `;
 
 describe('globalCSSVariable', () => {
-  it('shoule build code to create writes and reads to runtime global css variables', () => {
+  it('should build code to create writes and reads to runtime global css variables', () => {
     const styleString = ':root { --color-name: blue; }.text1 { color: var(--color-name); }';
     const createdString = loader(styleString);
 

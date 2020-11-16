@@ -1,8 +1,6 @@
 
 
-import manifestHelpers from '../manifestHelpers';
-
-const { transformAppConfig, getPageManifestByPath } = manifestHelpers;
+const { transformAppConfig, getPageManifestByPath } = require('../manifestHelpers')
 
 describe('transformAppConfig', () => {
   it('should transform dataPrefetches', () => {

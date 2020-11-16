@@ -1,7 +1,7 @@
 const { transformSync } = require('@babel/core');
 const jsxToHtmlPlugin = require('../index');
 
-function getTransfromCode(code, opts) {
+function getTransfromCode(code) {
   return transformSync(code, {
     filename: './',
     presets: [
