@@ -15,13 +15,13 @@ const hashFilename = name => {
   return result.slice(0, 8);
 };
 
-module.exports = function() {
+module.exports = function () {
   return {
-    pre(state) {
+    pre() {
       this.cache = {};
     },
     visitor: {
-      JSXOpeningElement(path, { file, opts }) {
+      JSXOpeningElement(path, { file }) {
         const { container } = path;
 
         let hasEvent = false;
@@ -57,7 +57,7 @@ module.exports = function() {
           if (this.cache[filePath]) {
             const fileInfo = this.cache[filePath];
 
-            fileInfo.uid ++;
+            fileInfo.uid++;
 
             trackId = `${fileInfo.hash}${fileInfo.uid.toString(16)}`;
           } else {
@@ -66,7 +66,7 @@ module.exports = function() {
 
             this.cache[filePath] = {
               hash: fileHash,
-              uid: 0
+              uid: 0,
             };
 
             trackId = `${fileHash}0`;
@@ -74,7 +74,7 @@ module.exports = function() {
 
           attributes.push(t.jSXAttribute(t.jSXIdentifier('track-id'), t.StringLiteral(trackId)));
         }
-      }
-    }
+      },
+    },
   };
 };
