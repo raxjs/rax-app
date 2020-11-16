@@ -58,8 +58,8 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
 
     const propertyMap = {};
     Object.keys(platformMap).forEach((p) => {
-      let keys = platformMap[p];
-      for (let key of keys) {
+      const keys = platformMap[p];
+      for (const key of keys) {
         if (!propertyMap[key]) {
           propertyMap[key] = p === platformName;
         }
@@ -105,8 +105,8 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       const location = {
         start: {
           line: err.loc.line,
-          column: err.loc.column + 1
-        }
+          column: err.loc.column + 1,
+        },
       };
 
       // remove trailing "(LINE:COLUMN)" acorn message and add in esprima syntax error message start
@@ -158,7 +158,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       const { node } = path;
 
       if (options.name.indexOf(node.source.value) !== -1) {
-        node.specifiers.forEach(spec => {
+        node.specifiers.forEach((spec) => {
           if (spec.type === 'ImportNamespaceSpecifier') {
             specified.push({
               local: spec.local.name,
@@ -173,7 +173,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
         });
 
         if (hasPlatformSpecified) {
-          specified.forEach(specObj => {
+          specified.forEach((specObj) => {
             if (specObj.imported === '*') {
               path.insertAfter(types.VariableDeclaration(
                 'const', [

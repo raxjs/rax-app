@@ -9,11 +9,11 @@ const defaults = {
   unitPrecision: 5,
 };
 
-module.exports = postcss.plugin('postcss-rpx2vw', function(options) {
+module.exports = postcss.plugin('postcss-rpx2vw', (options) => {
   const opts = Object.assign({}, defaults, options);
 
-  return function(root) {
-    root.walkDecls(function(decl, i) {
+  return function (root) {
+    root.walkDecls((decl) => {
       // This should be the fastest test and will remove most declarations
       if (decl.value.indexOf('rpx') === -1) return;
 
@@ -21,7 +21,7 @@ module.exports = postcss.plugin('postcss-rpx2vw', function(options) {
       decl.value = decl.value.replace(rpxRegex, createRpxReplace(opts, unit, opts.viewportWidth));
     });
 
-    root.walkAtRules('media', function(rule) {
+    root.walkAtRules('media', (rule) => {
       if (rule.params.indexOf('rpx') === -1) return;
 
       rule.params = rule.params.replace(rpxRegex, createRpxReplace(opts, opts.viewportUnit, opts.viewportWidth));
@@ -38,7 +38,7 @@ function toFixed(number, precision) {
 
 // transform rpx to vw
 function createRpxReplace(opts, viewportUnit, viewportSize) {
-  return function(m, $1) {
+  return function (m, $1) {
     if (!$1) return m;
     const pixels = parseFloat($1);
     const parsedVal = toFixed(pixels / viewportSize * 100, opts.unitPrecision);

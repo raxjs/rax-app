@@ -61,7 +61,7 @@ describe('postcssRpxToVw', () => {
     const output = '.box { width: 10vw; height: 20vw; }';
 
     const processed = postcss(postcssRpxToVw({
-      viewportWidth: 1000
+      viewportWidth: 1000,
     })).process(input).css;
     expect(processed).toBe(output);
   });
@@ -71,7 +71,7 @@ describe('postcssRpxToVw', () => {
     const output = '.box { width: 13.33vw; height: 26.67vw; }';
 
     const processed = postcss(postcssRpxToVw({
-      unitPrecision: 2
+      unitPrecision: 2,
     })).process(input).css;
     expect(processed).toBe(output);
   });

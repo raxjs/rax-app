@@ -1,92 +1,107 @@
-# Rax Scripts
+English | [简体中文](./README_zh-CN.md)
 
-Rax official engineering tools use `@alib/build-scripts` . `@alib/build-scripts` is based on webpack, supports various scenarios through the plugin system, and provides flexible webpack configuration capabilities based on `webpack-chain`. Users can realize engineering requirements by combining various plugins.
+<p align="center">
+  <a href="https://www.npmjs.com/package/rax-app"><img src="https://badgen.net/npm/dm/rax-app" alt="Downloads"></a>
+  <a href="https://www.npmjs.com/package/rax-app"><img src="https://badgen.net/npm/v/rax-app" alt="Version"></a>
+  <a href="/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="GitHub license" /></a>
+  <a href="https://github.com/raxjs/rax-scripts/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
+  <a href="https://gitter.im/raxjs/rax-scripts"><img src="https://badges.gitter.im/raxjs/rax-scripts.svg" alt="Gitter" /></a>
+</p>
+
+> An universal framework based on Rax
+
+## Features
+
+- 🐂  **Universal**：Support Web/MiniApp/Kraken
+- 🐴  **App lifecycle**：Provide usePageShow、usePageHide etc.
+- 🐒  **Engineering**：Out of the box support for ES6+、TypeScript、Less、Sass、 CSS Modules，etc
+- 🦊  **Routing**：Powerful Routing System, supports configured routing and conventions routing
+- 🐯  **State management**：Built-in icestore, lightweight state management solution based on React Hooks
+- 🐦  **Config**：Modes and Environment Variables configuration in the config file
+- 🦁  **Application configuration**：Provide powerful and extensible application configuration
+- 🐌  **Plugin system**：The plugin system provides rich features and allow the community to build reusable solutions
+- 🐘 **TypeScript**：Support TypeScript
 
 ## Quick start
 
-Install the latest version and initialize the project
+### Setup by Iceworks
+
+We recommend creating a new icejs app using [Iceworks](https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks):
+
+![demo](https://img.alicdn.com/tfs/TB13Wk.11H2gK0jSZJnXXaT1FXa-1478-984.png)
+
+> See [Quick start by Iceworks](https://ice.work/docs/iceworks/quick-start) for more details.
+
+### Setup by CLI
+
+We recommend creating a new icejs app using create-ice, which sets up everything automatically for you. To create a project, run:
 
 ```bash
-$ npm init rax my-app
+$ npm init ice <project-name>
 ```
 
-## Use by installation
+`npm init <initializer>` is available in npm 6+
+
+Start local server to launch project:
 
 ```bash
-$ npm install @alib/build-scripts --save-dev
-```
-Configuration `build.json`
-
-```json
-{
-  "plugins": [
-    ["build-plugin-rax-app", { "targets": ["web"]}]
-  ]
-}
+$ cd <project-name>
+$ npm install
+$ npm run start # running on http://localhost:3333.
 ```
 
-## How to Write Plugin
+It's as simple as that!
 
 
-`@alib/build-scripts` Itself will not perform any operations, but according plugins configured in build.json to execute engineering commands, for example, an ordinary webapp project configuration is as follows
+## Examples
 
-The plugin needs to export a function. The function will receive two parameters. The first is the pluginAPI provided by build scripts, and the second is the user-defined parameter passed to the plugin
+- [with-rax](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax)
+- [with-rax-mpa](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax-mpa)
+- [with-rax-store](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax-store)
+- [with-rax-miniapp-compile](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax-miniapp-compile)
 
-```js
-module.exports = (pluginAPI, options) => {
-  const { 
-    context,
-    log,
-    onHook 
-  } = pluginAPI;
-};
-```
 
-### pluginAPI
+## Ecosystem
 
-* `context`: environment information (command、commandArgs、rootDir、userConfig、pkg)
-* `onGetWebpackConfig`: You can modify the weback configuration in the form of weback chain
-* `onHook`: Listening for command runtime events with `onHook`
-* `log`: use npmlog
-* `registerTask`: register webpack task
-* `registerUserConfig`: Register the top-level configuration field in build.json for user field verification
-* `registerCliOption`: cli config
-* `setValue` & `getValue` Used to register variables in context for communication between plug-ins
+|    Project         |    Version                                 |     Docs    |   Description       |
+|----------------|-----------------------------------------|--------------|-----------|
+| [rax]| [![rax-status]][rax-package] | [docs][rax-docs] | Progressive React framework for building universal application|
+| [rax-app] | [![rax-app-status]][rax-app-package] | [docs][rax-app-docs] | An universal framework based on rax.js |
+| [miniapp] | [![miniapp-status]][miniapp-package] | [docs][miniapp-docs] | An mordern and high performance miniapp solution based on rax-app |
+| [icestore] | [![icestore-status]][icestore-package] | [docs][icestore-docs] |Simple and friendly state for React like |
+| [iceworks]| [![iceworks-status]][iceworks-package] | [docs][iceworks-docs] |Visual Intelligent Development Assistant|
 
-### lifecycle
 
-start
+[rax]: https://github.com/alibaba/rax
+[rax-app]: https://github.com/raxjs/rax-scripts
+[miniapp]: https://github.com/raxjs/miniapp
+[icestore]: https://github.com/ice-lab/icestore
+[iceworks]: https://github.com/ice-lab/iceworks
 
-* `before.start.load`	Before getting the webpack configuration
-* `before.start.run`	Before webpack execution
-* `after.start.compile`	After compilation, every recompilation will be executed
-* `before.start.devServer` After the middleware is loaded, before the webpack dev server is started
-* `after.start.devServer`	After the webpack dev server is started
+[rax-status]: https://img.shields.io/npm/v/rax.svg
+[rax-app-status]: https://img.shields.io/npm/v/rax-app.svg
+[miniapp-status]: https://img.shields.io/npm/v/miniapp-render.svg
+[icestore-status]: https://img.shields.io/npm/v/@ice/store.svg
+[iceworks-status]: https://vsmarketplacebadge.apphb.com/version/iceworks-team.iceworks.svg
 
-build
+[rax-package]: https://npmjs.com/package/rax
+[rax-app-package]: https://npmjs.com/package/rax-app
+[miniapp-package]: https://npmjs.com/package/miniapp-render
+[icestore-package]: https://npmjs.com/package/@ice/store
+[iceworks-package]: https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks
 
-* `before.build.load`	Before getting the webpack configuration
-* `before.build.run` Before webpack execution
-* `after.build.compile`	End of build
+[rax-docs]: https://rax.js.org/docs/guide/about
+[rax-app-docs]: https://rax.js.org/docs/guide/directory-structure
+[miniapp-docs]: https://rax.js.org/miniapp
+[icestore-docs]: https://github.com/ice-lab/icestore#icestore
+[iceworks-docs]: https://ice.work/docs/iceworks/about
 
-## Plugin List
+## Community
 
-### build-plugin-rax-app
+| DingTalk community                               | GitHub issues |  Gitter |
+|-------------------------------------|--------------|---------|
+| <a href="https://img.alicdn.com/tfs/TB1xmE8p7T2gK0jSZPcXXcKkpXa-387-505.png"><img src="https://img.alicdn.com/tfs/TB1xmE8p7T2gK0jSZPcXXcKkpXa-387-505.png" width="150" /></a> | [issues]     | [gitter]|
 
-Build Single-page application (SPA)
+[issues]: https://github.com/raxjs/rax-scripts/issues
+[gitter]: https://gitter.im/rax-scripts/rax-scripts
 
-### build-plugin-rax-multi-pages
-
-Build Multi-page application (MPA)
-
-### build-plugin-rax-component
-
-Build universal component or universal API library
-
-### build-plugin-rax-pwa
-
-Build Progressive web application
-
-### build-plugin-rax-ssr
-
-Build  Server-side rendering application (SSR)

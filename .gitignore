@@ -1,30 +1,40 @@
+# https://github.com/github/gitignore/blob/master/Node.gitignore
+# Dependencies
 node_modules
-.DS_Store
-lerna-debug.log
-npm-debug.log
-mochawesome-report
-.happypack
+jspm_packages
+
+# Only keep yarn.lock in the root
 package-lock.json
-yarn.lock
-yarn-error.log
-tempDir
-coverage/
+*/**/yarn.lock
 
-.eslintcache
-databases
-build
-.vscode/
-.tmp/
-
-npmrc
-
-*~
-*.swp
-.DS_Store
-npm-debug.log
-lerna-debug.log
+# Logs
+logs
+*.log
 npm-debug.log*
-lib/
-es/
-dist/
-.idea/
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+
+# Others
+.npm
+.eslintcache
+.idea
+.DS_Store
+.happypack
+.vscode
+.tmp
+*.swp
+*.dia~
+*.temp.json
+
+# Packages
+packages/*/lib/
+
+# temp folder .ice
+examples/*/.rax
+
+build

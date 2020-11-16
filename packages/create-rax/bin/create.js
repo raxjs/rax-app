@@ -10,7 +10,7 @@ const DEFAULT_REGISTRY = 'https://registry.npmjs.org';
 function pingUrl(url) {
   return new Promise((resolve, reject) => {
     https
-      .get(url, res => {
+      .get(url, (res) => {
         const { statusCode } = res;
         if (statusCode === 200) {
           resolve(url);
@@ -18,7 +18,7 @@ function pingUrl(url) {
           reject(new Error(`Http status is ${statusCode}`));
         }
       })
-      .on('error', err => {
+      .on('error', (err) => {
         reject(err);
       });
   });
@@ -29,7 +29,7 @@ function checkRegistry() {
 }
 
 checkRegistry()
-  .then(registry => {
+  .then((registry) => {
     console.log('Current registry: ', registry);
 
     // Install rax-cli manually through fastest registry
@@ -42,6 +42,6 @@ checkRegistry()
       stdio: 'inherit',
     });
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
   });

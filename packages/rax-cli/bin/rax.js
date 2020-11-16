@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+/* eslint-disable */
 const updateNotifier = require('update-notifier');
 const fs = require('fs');
 const fse = require('fs-extra');
@@ -139,7 +139,7 @@ function askProjectInformaction(appTemplate) {
    * @return {Boolean}
    */
   const containConflictFile = (targetDir) => {
-    return conflictFiles.some(filename => fs.existsSync(path.join(targetDir, filename)));
+    return conflictFiles.some((filename) => fs.existsSync(path.join(targetDir, filename)));
   };
 
   let prompts = config.getPromptQuestion(appTemplate);
@@ -149,7 +149,7 @@ function askProjectInformaction(appTemplate) {
         type: 'confirm',
         name: 'shouldInputNewProjectName',
         message: `The directory ${projectName} contains files that could conflict:\n\n${conflictFiles.join('\n')}\n\nEither try using a new directory name, or still use the directory ${projectName}.`,
-        default: true
+        default: true,
       },
       {
         type: 'input',
@@ -169,8 +169,8 @@ function askProjectInformaction(appTemplate) {
           }
           projectName = newName;
           return true;
-        }
-      }
+        },
+      },
     ].concat(prompts);
   }
 
@@ -194,7 +194,7 @@ async function createProject(name, verbose, template, userAnswers) {
 
   console.log(
     'Creating a new Rax project in',
-    rootDir
+    rootDir,
   );
 
   if (projectType === 'app') {
@@ -207,8 +207,8 @@ async function createProject(name, verbose, template, userAnswers) {
       null,
       {
         targets: projectTargets,
-        mpa: appType === 'mpa'
-      }
+        mpa: appType === 'mpa',
+      },
     );
   } else {
     const typeToTemplate = {
@@ -217,7 +217,7 @@ async function createProject(name, verbose, template, userAnswers) {
         js: '@icedesign/template-rax',
       },
       api: '@icedesign/template-rax-api',
-      plugin: '@icedesign/template-rax-miniapp-plugin'
+      plugin: '@icedesign/template-rax-miniapp-plugin',
     };
 
     const tempDir = path.join(rootDir, '.tmp');
@@ -231,7 +231,7 @@ async function createProject(name, verbose, template, userAnswers) {
         npmName: 'rax-example',
         projectTargets,
       },
-      materialType: 'component'
+      materialType: 'component',
     });
     await fse.remove(tempDir);
   }

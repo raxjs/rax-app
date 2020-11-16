@@ -1,0 +1,7 @@
+{
+  "name": "build-plugin-rax-compat-react",
+  "version": "0.1.1",
+  "description": "A React compatibility plugin for Rax",
+  "license": "BSD-3-Clause",
+  "main": "lib/index.js"
+}

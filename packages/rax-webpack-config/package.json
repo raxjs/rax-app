@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "rax base webpack config",
   "license": "BSD-3-Clause",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/raxjs/rax-scripts.git"
@@ -22,7 +22,6 @@
     "css-loader": "^3.0.0",
     "file-loader": "^5.0.2",
     "identity-obj-proxy": "^3.0.0",
-    "image-source-loader": "^0.6.5",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
     "lodash.clonedeep": "^4.5.0",

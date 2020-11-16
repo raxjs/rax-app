@@ -17,7 +17,7 @@ module.exports = (userOptions = {}) => {
     jsxToHtml,
     disableRegenerator = false,
     // preset-env modules options
-    modules
+    modules,
   } = options;
 
   const baseConfig = {
@@ -31,14 +31,14 @@ module.exports = (userOptions = {}) => {
           include: [
             'transform-computed-properties',
           ],
-          exclude: disableRegenerator ? ['transform-regenerator'] : []
+          exclude: disableRegenerator ? ['transform-regenerator'] : [],
         },
       ],
       [
         require.resolve('@babel/preset-react'), {
-          'pragma': 'createElement',
-          'pragmaFrag': 'Fragment',
-          'throwIfNamespace': false,
+          pragma: 'createElement',
+          pragmaFrag: 'Fragment',
+          throwIfNamespace: false,
         },
       ],
     ],
