@@ -21,7 +21,7 @@ describe('generate track-id', () => {
 
   it('generate track-id for tag with href', () => {
     expect(getTransformCode('<a href="/">Link</a>'))
-      .toBe('<a href="/" track-id="31d6cfe01">Link</a>;');
+      .toBe('<a href="/" track-id="31d6cfe00">Link</a>;');
   });
 
   it('should not generate track-id for tag already have track-id', () => {
