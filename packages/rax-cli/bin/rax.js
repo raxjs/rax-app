@@ -99,7 +99,7 @@ switch (commands[0]) {
       process.exit();
     }
 
-    init(commands[1], argv.v || argv.verbose, argv.t || argv.template);
+    init(commands[1], argv.v || argv.verbose, argv.t || argv.template, argv.s || argv['skip-ask']);
     break;
   default:
     console.error(
@@ -113,14 +113,18 @@ switch (commands[0]) {
 /**
  * rax init
  */
-async function init(name, verbose, template) {
+async function init(name, verbose, template, skipAsk) {
   projectName = name;
   createInCurrent = !projectName;
   if (!projectName) {
     projectName = process.cwd().split(path.sep).pop();
   }
 
-  const answers = await askProjectInformaction(template);
+  let answers = {};
+
+  if (!skipAsk) {
+    answers = await askProjectInformaction(template);
+  }
 
   await createProject(kebabCase(projectName), verbose, template, answers);
 }
@@ -185,7 +189,7 @@ async function createProject(name, verbose, template, userAnswers) {
     process.chdir(rootDir);
   }
 
-  const { projectType, projectTargets, appType, languageType } = userAnswers;
+  const { projectType = 'app', projectTargets, appType, languageType } = userAnswers;
   const registry = 'https://registry.npm.taobao.org';
 
   console.log(
