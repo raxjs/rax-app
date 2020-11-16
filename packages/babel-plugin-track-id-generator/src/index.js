@@ -56,19 +56,19 @@ module.exports = function() {
 
           if (this.cache[filePath]) {
             const fileInfo = this.cache[filePath];
-        
+
             fileInfo.uid ++;
-        
+
             trackId = `${fileInfo.hash}${fileInfo.uid.toString(16)}`;
           } else {
             const fileName = relative(rootPath, filePath);
             const fileHash = hashFilename(fileName);
-          
+
             this.cache[filePath] = {
               hash: fileHash,
               uid: 0
             };
-          
+
             trackId = `${fileHash}0`;
           }
 
