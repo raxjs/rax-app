@@ -22,7 +22,6 @@ module.exports = (api) => {
   });
 
   onHook('after.build.compile', ({ stats }) => {
-    console.log('===============after compile', api.context.userConfig);
     const { userConfig } = context;
     const statsJson = stats.toJson({
       all: false,
