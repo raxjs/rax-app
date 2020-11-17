@@ -37,7 +37,8 @@ module.exports = (api) => {
       });
 
       onGetWebpackConfig(target, (config) => {
-        const { rootDir } = context;
+        // eslint-disable-next-line no-shadow
+        const { rootDir, userConfig } = context;
         const { outputDir = 'build' } = userConfig;
         // Set output dir
         const outputPath = path.resolve(rootDir, outputDir, target);
@@ -72,6 +73,7 @@ module.exports = (api) => {
             target,
             babelRuleName: 'babel-loader',
             modernMode: true,
+            outputPath,
           });
 
           // If miniapp-compiled dir exists, register a new task
