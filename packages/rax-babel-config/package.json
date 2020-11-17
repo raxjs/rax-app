@@ -40,7 +40,7 @@
     "babel-plugin-transform-jsx-list": "^0.1.0",
     "babel-plugin-transform-jsx-memo": "^0.1.2",
     "babel-plugin-transform-jsx-slot": "^0.1.1",
-    "babel-plugin-transform-jsx-stylesheet": "^1.0.0",
+    "babel-plugin-transform-jsx-stylesheet": "^0.6.8",
     "babel-plugin-transform-jsx-to-html": "^0.1.0",
     "chalk": "^2.4.2"
   }

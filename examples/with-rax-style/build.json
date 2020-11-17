@@ -1,8 +1,8 @@
 {
   "inlineStyle": false,
   "targets": [
-    // "web",
-    // "weex",
+    "web",
+    "weex",
     "miniapp"
   ],
   "miniapp": {

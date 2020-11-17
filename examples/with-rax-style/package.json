@@ -13,5 +13,6 @@
     "rax-view": "^1.0.0"
   },
   "devDependencies": {
+    "miniapp-render": "^1.3.0"
   }
 }
