@@ -4,13 +4,10 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [10.x]
-
     steps:
     - uses: actions/checkout@v2
     - name: Set branch name
@@ -22,12 +19,13 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         registry-url: https://registry.npmjs.org/
-    - run: npm install
-    - run: npm run lint
-    - run: npm run test
-    - run: npm run coverage
-      env:
-        CI: true
-    - run: npm run publish:packages
-      env:
-        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm run setup
+      - run: npm run dependency:check
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run version:check
+      - run: npm run coverage
+        env:
+          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+          ACCESS_KEY_SECRET: ${{ secrets.ACCESS_KEY_SECRET }}
+          CI: true
