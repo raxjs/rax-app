@@ -1,0 +1,5 @@
+{
+  "targets": ["web", "miniapp"],
+  "compileDependencies": [],
+  "outputDir": "build/dist"
+}

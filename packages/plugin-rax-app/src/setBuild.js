@@ -15,13 +15,14 @@ const { logWebpackConfig } = require('./utils');
 
 module.exports = (api) => {
   const { context, onHook } = api;
-  const { rootDir, userConfig } = context;
+  const { rootDir } = context;
 
   onHook('before.build.run', ({ config: configs }) => {
     logWebpackConfig(configs);
   });
 
   onHook('after.build.compile', ({ stats }) => {
+    const { userConfig } = context;
     const statsJson = stats.toJson({
       all: false,
       errors: true,
@@ -32,7 +33,6 @@ module.exports = (api) => {
     // Do not print localUrl and assets information when containing an error
     const isSuccessful = !messages.errors.length;
     const { outputDir = 'build', targets } = userConfig;
-
     if (isSuccessful) {
       console.log(highlightPrint('Build finished:'));
       console.log();
