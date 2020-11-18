@@ -38,7 +38,7 @@ module.exports = [
   {
     name: 'inlineStyle',
     defaultValue: false,
-    configWebpack: require('./userConfig/inlineStyle'),
+    configWebpack: require('../userConfig/inlineStyle'),
     validation: 'boolean',
   },
   {
