@@ -26,7 +26,7 @@ English | [简体中文](./README_zh-CN.md)
 
 ### Setup by Iceworks
 
-We recommend creating a new icejs app using [Iceworks](https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks):
+We recommend creating a new rax app using [Iceworks](https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks):
 
 ![demo](https://img.alicdn.com/tfs/TB13Wk.11H2gK0jSZJnXXaT1FXa-1478-984.png)
 
