@@ -26,7 +26,7 @@ English | [简体中文](./README_zh-CN.md)
 
 ### Setup by Iceworks
 
-We recommend creating a new icejs app using [Iceworks](https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks):
+We recommend creating a new rax app using [Iceworks](https://marketplace.visualstudio.com/items?itemName=iceworks-team.iceworks):
 
 ![demo](https://img.alicdn.com/tfs/TB13Wk.11H2gK0jSZJnXXaT1FXa-1478-984.png)
 
@@ -34,10 +34,10 @@ We recommend creating a new icejs app using [Iceworks](https://marketplace.visua
 
 ### Setup by CLI
 
-We recommend creating a new icejs app using create-ice, which sets up everything automatically for you. To create a project, run:
+We recommend creating a new rax app using create-ice, which sets up everything automatically for you. To create a project, run:
 
 ```bash
-$ npm init ice <project-name>
+$ npm init rax <project-name>
 ```
 
 `npm init <initializer>` is available in npm 6+
