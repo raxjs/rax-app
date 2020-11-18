@@ -1,0 +1,11 @@
+{
+  "inlineStyle": false,
+  "targets": [
+    "web",
+    "weex",
+    "miniapp"
+  ],
+  "miniapp": {
+    "buildType": "compile"
+  }
+}
