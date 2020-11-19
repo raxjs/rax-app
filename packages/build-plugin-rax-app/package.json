@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-app",
-  "version": "5.2.15",
+  "version": "5.2.16",
   "description": "rax app base plugins",
   "main": "src/index.js",
   "scripts": {
@@ -44,7 +44,7 @@
     "mini-css-extract-plugin": "^0.9.0",
     "miniapp-builder-shared": "^0.1.8",
     "miniapp-compile-config": "0.1.6",
-    "miniapp-runtime-config": "0.1.4",
+    "miniapp-runtime-config": "0.1.5",
     "null-loader": "^3.0.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss": "^7.0.17",
