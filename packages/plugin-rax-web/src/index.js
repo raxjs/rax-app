@@ -10,6 +10,7 @@ module.exports = (api) => {
   const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, registerCliOption } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
+  const tempDir = getValue('TEMP_PATH');
   const target = 'web';
   const { userConfig = {} } = context;
   const chainConfig = getWebpackBase(api, {
@@ -71,12 +72,15 @@ module.exports = (api) => {
         name: 'mpa-entry',
         commands: ['start'],
       });
-      setMPAConfig.default(config, { context,
+      setMPAConfig.default(config, {
+        context,
         type: 'web',
+        targetDir: tempDir,
         entries: getMpaEntries(api, {
           target,
           appJsonPath: path.join(rootDir, 'src/app.json'),
-        }) });
+        }),
+      });
     }
   });
 };
