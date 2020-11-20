@@ -1,8 +1,8 @@
 {
   "name": "rax-app",
-  "version": "3.0.9-8",
+  "version": "3.0.9-9",
   "description": "command line interface and builtin plugin for rax app",
-  "author": "ice-admin@alibaba-inc.com",
+  "author": "Rax Team",
   "homepage": "https://github.com/alibaba/ice#readme",
   "license": "MIT",
   "main": "lib/index.js",
@@ -15,12 +15,12 @@
   },
   "dependencies": {
     "@alib/build-scripts": "^0.1.24",
-    "build-plugin-app-core": "0.1.23",
-    "build-plugin-rax-app": "6.0.2-2",
-    "build-plugin-ice-store": "1.7.9-beta.2",
-    "build-plugin-rax-web": "1.0.6",
-    "build-plugin-rax-weex": "1.0.6",
-    "build-plugin-rax-kraken": "1.0.6",
+    "build-plugin-app-core": "0.1.24-beta.4",
+    "build-plugin-rax-app": "6.0.2-3",
+    "build-plugin-ice-store": "1.7.9-beta.3",
+    "build-plugin-rax-web": "1.0.7-0",
+    "build-plugin-rax-weex": "1.0.7-0",
+    "build-plugin-rax-kraken": "1.0.7-0",
     "build-plugin-rax-miniapp": "1.1.1-4",
     "build-plugin-ssr": "1.0.6",
     "chokidar": "^3.3.1",
@@ -36,13 +36,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alibaba/ice.git"
+    "url": "git+https://github.com/raxjs/rax-app.git"
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
-    "url": "https://github.com/alibaba/ice/issues"
+    "url": "https://github.com/raxjs/rax-app/issues"
   },
   "engines": {
     "node": ">=10.13.0",
