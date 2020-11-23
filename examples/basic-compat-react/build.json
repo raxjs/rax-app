@@ -1,0 +1,5 @@
+{
+  "targets": ["web"],
+  "plugins": ["build-plugin-rax-compat-react"],
+  "store": false
+}

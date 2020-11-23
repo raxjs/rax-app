@@ -66,7 +66,7 @@ module.exports = function (api) {
     const { outputDir = 'build' } = userConfig;
 
     if (isSuccessful) {
-      if (commandArgs.disableAssets === false) {
+      if (commandArgs.enableAssets) {
         console.log(
           // eslint-disable-next-line @iceworks/best-practices/recommend-polyfill
           stats.toString({

@@ -10,6 +10,7 @@ module.exports = (api) => {
   const { userConfig, rootDir, command } = context;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
+  const tempDir = getValue('TEMP_PATH');
   const target = 'weex';
   const chainConfig = getWebpackBase(api, {
     target: 'weex',
@@ -35,12 +36,15 @@ module.exports = (api) => {
     const { outputDir = 'build', weex = {} } = userConfig;
     // set mpa config
     if (weex.mpa) {
-      setMPAConfig.default(config, { context,
+      setMPAConfig.default(config, {
+        context,
+        targetDir: tempDir,
         type: 'weex',
         entries: getMpaEntries(api, {
           target,
           appJsonPath: path.join(rootDir, 'src/app.json'),
-        }) });
+        }),
+      });
     }
 
     let outputPath;

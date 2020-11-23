@@ -4,8 +4,8 @@ English | [简体中文](./README_zh-CN.md)
   <a href="https://www.npmjs.com/package/rax-app"><img src="https://badgen.net/npm/dm/rax-app" alt="Downloads"></a>
   <a href="https://www.npmjs.com/package/rax-app"><img src="https://badgen.net/npm/v/rax-app" alt="Version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="GitHub license" /></a>
-  <a href="https://github.com/raxjs/rax-scripts/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
-  <a href="https://gitter.im/raxjs/rax-scripts"><img src="https://badges.gitter.im/raxjs/rax-scripts.svg" alt="Gitter" /></a>
+  <a href="https://github.com/raxjs/rax-app/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
+  <a href="https://gitter.im/raxjs/rax-app"><img src="https://badges.gitter.im/raxjs/rax-app.svg" alt="Gitter" /></a>
 </p>
 
 > An universal framework based on Rax
@@ -13,9 +13,9 @@ English | [简体中文](./README_zh-CN.md)
 ## Features
 
 - 🐂  **Universal**：Support Web/MiniApp/Kraken
-- 🐴  **App lifecycle**：Provide usePageShow、usePageHide etc.
-- 🐒  **Engineering**：Out of the box support for ES6+、TypeScript、Less、Sass、 CSS Modules，etc
-- 🦊  **Routing**：Powerful Routing System, supports configured routing and conventions routing
+- 🐴  **App lifecycle**：Provide useS6+、TypeScript、Less、Sass、 CSS Modules，etc
+- 🦊  **Routing**：Powerful Routing System, supporPageShow、usePageHide etc.
+- 🐒  **Engineering**：Out of the box support for Ets configured routing and conventions routing
 - 🐯  **State management**：Built-in icestore, lightweight state management solution based on React Hooks
 - 🐦  **Config**：Modes and Environment Variables configuration in the config file
 - 🦁  **Application configuration**：Provide powerful and extensible application configuration
@@ -34,7 +34,7 @@ We recommend creating a new rax app using [Iceworks](https://marketplace.visuals
 
 ### Setup by CLI
 
-We recommend creating a new rax app using create-ice, which sets up everything automatically for you. To create a project, run:
+Use npm init:
 
 ```bash
 $ npm init rax <project-name>
@@ -52,14 +52,12 @@ $ npm run start # running on http://localhost:3333.
 
 It's as simple as that!
 
-
 ## Examples
 
 - [with-rax](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax)
 - [with-rax-mpa](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax-mpa)
 - [with-rax-store](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax-store)
 - [with-rax-miniapp-compile](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax-miniapp-compile)
-
 
 ## Ecosystem
 
@@ -98,10 +96,8 @@ It's as simple as that!
 
 ## Community
 
-| DingTalk community                               | GitHub issues |  Gitter |
-|-------------------------------------|--------------|---------|
-| <a href="https://img.alicdn.com/tfs/TB1xmE8p7T2gK0jSZPcXXcKkpXa-387-505.png"><img src="https://img.alicdn.com/tfs/TB1xmE8p7T2gK0jSZPcXXcKkpXa-387-505.png" width="150" /></a> | [issues]     | [gitter]|
+| DingTalk community                  | GitHub issues |
+|-------------------------------------|--------------|
+| <a href="https://img.alicdn.com/tfs/TB1xmE8p7T2gK0jSZPcXXcKkpXa-387-505.png"><img src="https://img.alicdn.com/tfs/TB1xmE8p7T2gK0jSZPcXXcKkpXa-387-505.png" width="150" /></a> | [issues] |
 
-[issues]: https://github.com/raxjs/rax-scripts/issues
-[gitter]: https://gitter.im/rax-scripts/rax-scripts
-
+[issues]: https://github.com/raxjs/rax-app/issues

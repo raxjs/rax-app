@@ -13,24 +13,14 @@
 ## 特性
 
 - 🐂  **多端**：支持 Web、小程序、Kraken 等容器运行
-
 - 🐴  **完整的应用生命周期**：提供 usePageShow、usePageHide 等钩子
-
 - 🐒  **工程**：开箱即用的工程配置，支持 ES6+、TypeScript、样式方案（Less/Sass/CSS Modules）等
-
 - 🦊  **路由**：默认使用配置式路由，同时支持约定式路由
-
 - 🐯  **数据流**：内置集成 icestore，基于 React Hooks 的轻量级状态管理方案
-
 - 🐦  **环境配置**：内置集成 config， 支持多环境变量的配置
-
 - 🦁  **应用配置**：提供强大的和可扩展的应用程序配置
-
 - 🐌  **插件体系**：提供插件机制，可以扩展框架的核心功能
-
 - 🐘  **TypeScript**：默认使用 TypeScript 
-
-  
 
 ## 快速开始
 
@@ -77,8 +67,6 @@ $ npm run start # running on http://localhost:3333.
 | [miniapp] | [![miniapp-status]][miniapp-package] | [docs][miniapp-docs] | 基于 Rax 的小程序双引擎方案 |
 | [icestore] | [![icestore-status]][icestore-package] | [docs][icestore-docs] | 简单友好的轻量级状态管理方案 |
 | [iceworks]| [![iceworks-status]][iceworks-package] | [docs][iceworks-docs] | 可视化智能开发助手 |
-
-
 
 [rax]: https://github.com/alibaba/rax
 [rax-app]: https://github.com/raxjs/rax-scripts

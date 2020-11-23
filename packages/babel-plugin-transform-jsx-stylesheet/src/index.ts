@@ -1,5 +1,5 @@
 import * as path from 'path';
-import camelcase from 'camelcase';
+import * as camelcase from 'camelcase';
 import {
   GET_STYLE_FUNC_NAME,
   MERGE_STYLES_FUNC_NAME,

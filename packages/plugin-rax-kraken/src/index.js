@@ -8,6 +8,7 @@ module.exports = (api) => {
   const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
+  const tempDir = getValue('TEMP_PATH');
   const target = 'kraken';
   const chainConfig = getWebpackBase(api, {
     target,
@@ -34,12 +35,15 @@ module.exports = (api) => {
     const krakenConfig = userConfig.kraken || {};
 
     if (krakenConfig.mpa) {
-      setMPAConfig.default(config, { context,
+      setMPAConfig.default(config, {
+        context,
         type: 'kraken',
+        targetDir: tempDir,
         entries: getMpaEntries(api, {
           target,
           appJsonPath: path.join(rootDir, 'src/app.json'),
-        }) });
+        }),
+      });
     }
 
     let outputPath;

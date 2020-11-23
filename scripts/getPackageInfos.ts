@@ -18,11 +18,15 @@ export interface IPackageInfo {
 }
 
 function checkBuildSuccess(directory: string, mainFile: string): boolean {
-  const isExist = existsSync(join(directory, mainFile));
-  if (!isExist) {
-    throw new Error(`build failed directory ${directory} do not exist main file`);
+  // For create-rax that not exist main field
+  if (mainFile) {
+    const isExist = existsSync(join(directory, mainFile));
+    if (!isExist) {
+      throw new Error(`build failed directory ${directory} do not exist main file`);
+    }
+    return isExist;
   }
-  return isExist;
+  return true;
 }
 
 function checkVersionExists(pkg: string, version: string): Promise<boolean> {
