@@ -1,6 +1,6 @@
 ## Changelog
 
-### 3.0.9 (November 13, 2020)
+### 3.0.9 (November 23, 2020)
 - Feat: support CSS Modules.([#488](https://github.com/raxjs/rax-app/pull/488)) 
 - Refactor: change mpa entry to `.rax` temp dir.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3825))
 - Fix: user couldn't custom `outputDir`.([#494](https://github.com/raxjs/rax-app/pull/494))
