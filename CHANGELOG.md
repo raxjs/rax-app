@@ -1,13 +1,13 @@
 ## Changelog
 
 ### 3.0.9 (November 13, 2020)
-- [x] Feat: support CSS Modules.([#488](https://github.com/raxjs/rax-app/pull/488)) 
-- [x] Refactor: change mpa entry to `.rax` temp dir.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3825))
-- [x] Fix: user couldn't custom `outputDir`.([#494](https://github.com/raxjs/rax-app/pull/494))
-- [x] Feat: support config `sourceMap` and `minify` when dev mode.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3835) (raxjs/miniapp)[https://github.com/raxjs/miniapp/pull/45])
-- [x] Feat: support dashed page name.([alibaba/ice#3824](https://github.com/alibaba/ice/pull/3824))
-- [x] Fix:  duplicated taskname when both ali and wechat are compiled.([#487](https://github.com/raxjs/rax-app/pull/487))
-- [x] Fix: compact react plugin targets is undefined.([#490](https://github.com/raxjs/rax-app/pull/490))
+- Feat: support CSS Modules.([#488](https://github.com/raxjs/rax-app/pull/488)) 
+- Refactor: change mpa entry to `.rax` temp dir.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3825))
+- Fix: user couldn't custom `outputDir`.([#494](https://github.com/raxjs/rax-app/pull/494))
+- Feat: support config `sourceMap` and `minify` when dev mode.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3835) [raxjs/miniapp](https://github.com/raxjs/miniapp/pull/45))
+- Feat: support dashed page name.([alibaba/ice#3824](https://github.com/alibaba/ice/pull/3824))
+- Fix:  duplicated taskname when both ali and wechat are compiled.([#487](https://github.com/raxjs/rax-app/pull/487))
+- Fix: compact react plugin targets is undefined.([#490](https://github.com/raxjs/rax-app/pull/490))
 
 ### 3.0.8 (November 13, 2020)
 - Fix: mpa restart logic.([#3817](https://github.com/alibaba/ice/pull/3817))
