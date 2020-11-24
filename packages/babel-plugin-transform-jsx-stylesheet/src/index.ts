@@ -103,7 +103,7 @@ export default function ({ types: t, template }, opts = {}) {
           }
         },
       },
-      // eslint-disable-next-line no-shadow
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       JSXOpeningElement({ container }, { file, opts }) {
         const {
           retainClassName = false,
@@ -210,7 +210,7 @@ export default function ({ types: t, template }, opts = {}) {
           }
         }
       },
-      // eslint-disable-next-line no-shadow
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       ImportDeclaration({ node }, { file, opts }) {
         // Convert style import is disabled.
         const { convertImport = true } = opts;
