@@ -27,10 +27,10 @@ module.exports = function () {
         let hasEvent = false;
         let hasTrackId = false;
 
-        const attributes = container.openingElement.attributes;
+        const { attributes } = container.openingElement;
 
         for (let i = 0; i < attributes.length; i++) {
-          const name = attributes[i].name;
+          const { name } = attributes[i];
           if (name) {
             if (!hasEvent) {
               if (name.name === 'onClick') {

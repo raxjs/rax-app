@@ -37,7 +37,7 @@ module.exports = (api) => {
       });
 
       onGetWebpackConfig(target, (config) => {
-        // eslint-disable-next-line no-shadow
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         const { rootDir, userConfig } = context;
         const { outputDir = 'build' } = userConfig;
         // Set output dir
