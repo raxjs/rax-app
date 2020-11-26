@@ -17,14 +17,16 @@ module.exports = (context, target, options, onGetWebpackConfig) => {
   onGetWebpackConfig(target, config => {
     const { userConfig = {} } = context;
     const { outputDir = 'build' } = userConfig;
-    config.output.path(join(rootDir, outputDir, target));
+
+    const outputPath = join(rootDir, outputDir, target);
+    config.output.path(outputPath);
     config.devServer.contentBase(join(rootDir, outputDir));
     config.resolve.extensions
       .clear()
       .merge(getPlatformExtensions(platformMap[target].type, ['.js', '.jsx', '.ts', '.tsx', '.json']));
 
     setConfig(config, options[target] || {}, {
-      context, target
+      context, target, outputPath
     });
   });
 
