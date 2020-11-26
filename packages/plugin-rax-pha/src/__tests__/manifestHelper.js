@@ -129,8 +129,6 @@ describe('getPageManifestByPath', () => {
       decamelizeAppConfig: config,
       nsr: true,
     });
-
-    expect(manifest.nsr_script).toBe('/web/index.nsr.js');
   });
 
   it('should delete fields when frame page', () => {
@@ -146,15 +144,5 @@ describe('getPageManifestByPath', () => {
 
     expect(manifest.pages.length).toBe(2);
     expect(manifest.tab_bar).toMatchObject({ background_color: '#ff0000' });
-  });
-
-  it('should get second page', () => {
-    const manifest = getPageManifestByPath({
-      decamelizeAppConfig: config,
-      path: '/home1',
-      nsr: true,
-    });
-
-    expect(manifest.nsr_script).toBe('/web/home1/index.nsr.js');
   });
 });

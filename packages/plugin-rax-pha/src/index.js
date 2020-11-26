@@ -1,18 +1,13 @@
 const path = require('path');
 const fs = require('fs-extra');
-const { RawSource } = require('webpack-sources');
-const address = require('address');
-
-const manifestHelpers = require('./manifestHelpers');
-
-const { transformAppConfig, setRealUrlToManifest } = manifestHelpers;
+const setEntry = require('./setEntry');
 
 const pluginDir = path.join(__dirname, './plugins');
 const pluginList = fs.readdirSync(pluginDir);
+
 module.exports = (api, option) => {
   const { onGetWebpackConfig, context, registerTask, registerUserConfig, getValue } = api;
-  const { userConfig, command, rootDir, commandArgs } = context;
-  const { outputDir = 'build' } = userConfig;
+  const { command } = context;
 
   const getWebpackBase = getValue('getRaxAppWebpackConfig');
   const target = 'PHA';
@@ -28,27 +23,8 @@ module.exports = (api, option) => {
   });
 
   onGetWebpackConfig(target, (config) => {
-    function setEntry(type) {
-      const appWorkerPath = path.resolve(rootDir, 'src/pha-worker' + (type === 'ts' ? '.ts' : '.js'));
-      if (fs.pathExistsSync(appWorkerPath)) {
-        config
-          .entry('pha-worker')
-          .add(appWorkerPath)
-          .end()
-          .output
-          .path(path.resolve(rootDir, outputDir, 'web'))
-          .filename('[name].js')
-          .libraryTarget('umd')
-          .globalObject('this')
-          .end()
-          .devServer
-          .inline(false)
-          .hot(false);
-      }
-    }
-
-    setEntry('ts');
-    setEntry('js');
+    setEntry(context, config, 'ts');
+    setEntry(context, config, 'js');
 
     // do not copy public
     if (config.plugins.has('CopyWebpackPlugin')) {
@@ -71,39 +47,5 @@ module.exports = (api, option) => {
           }]);
       }
     });
-
-    // app.json to manifest.json
-    config.plugin('ManifestJSONPlugin')
-      .use(class ManifestJSONPlugin {
-        apply(compiler) {
-          compiler.hooks.compilation.tap('ManifestJSONPlugin', (compilation) => {
-            compiler.hooks.emit.intercept({
-              name: 'ManifestJSONPlugin',
-              context: true,
-              call: () => {
-                const appConfig = fs.readJsonSync(path.resolve(rootDir, 'src/app.json'));
-                let manifestJSON = transformAppConfig(appConfig);
-
-                const appWorkerJSPath = path.resolve(rootDir, 'src/pha-worker.js');
-                const appWorkerTSPath = path.resolve(rootDir, 'src/pha-worker.ts');
-
-                if (fs.pathExistsSync(appWorkerJSPath) || fs.pathExistsSync(appWorkerTSPath)) {
-                  manifestJSON.app_worker = manifestJSON.app_worker || {};
-
-                  if (!manifestJSON.app_worker.url) {
-                    manifestJSON.app_worker.url = 'pha-worker.js';
-                  }
-                }
-
-                if (command === 'start') {
-                  const urlPrefix = 'http://' + address.ip() + ':' + commandArgs.port + '/';
-                  manifestJSON = setRealUrlToManifest(urlPrefix, manifestJSON);
-                }
-                compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON));
-              },
-            });
-          });
-        }
-      });
   });
 };
