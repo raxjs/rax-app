@@ -23,8 +23,10 @@ module.exports = (api, option) => {
   });
 
   onGetWebpackConfig(target, (config) => {
-    setEntry(context, config, 'ts');
-    setEntry(context, config, 'js');
+    setEntry({
+      context,
+      config,
+    });
 
     // do not copy public
     if (config.plugins.has('CopyWebpackPlugin')) {
