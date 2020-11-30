@@ -3,7 +3,11 @@
 const HTMLAssetPath = 'index.html';
 
 module.exports = (config) => {
+  const devServerBeforeHook = config.devServer.get('before');
   config.devServer.set('before', (app, devServer) => {
+    if (typeof devServerBeforeHook === 'function') {
+      devServerBeforeHook(app, devServer);
+    }
     // Get web compiler for intercept AppHistoryFallback
     const compiler = devServer.compiler.compilers[0];
     const httpResponseQueue = [];
