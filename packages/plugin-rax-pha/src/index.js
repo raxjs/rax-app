@@ -1,20 +1,42 @@
 const path = require('path');
-const { readdirSync } = require('fs');
-const setManifestToDocument = require('./setManifestToDocument');
-
-const getNSRBase = require('./nsr/getBase');
+const fs = require('fs-extra');
+const setEntry = require('./setEntry');
 
 const pluginDir = path.join(__dirname, './plugins');
-const pluginList = readdirSync(pluginDir);
-module.exports = ({ onGetWebpackConfig, context, registerTask }, option) => {
-  const { nsr } = option;
+const pluginList = fs.readdirSync(pluginDir);
+
+module.exports = (api, option) => {
+  const { onGetWebpackConfig, context, registerTask, registerUserConfig, getValue } = api;
   const { command } = context;
 
-  // register nsr plugin
-  if (nsr) {
-    const nsrConfig = getNSRBase(context);
-    registerTask('nsr', nsrConfig);
-  }
+  const getWebpackBase = getValue('getRaxAppWebpackConfig');
+  const target = 'PHA';
+  const chainConfig = getWebpackBase(api, {
+    target,
+  });
+  chainConfig.name(target);
+
+  registerTask(target, chainConfig);
+  registerUserConfig({
+    name: target,
+    validation: 'object',
+  });
+
+  onGetWebpackConfig(target, (config) => {
+    setEntry({
+      context,
+      config,
+    });
+
+    // do not copy public
+    if (config.plugins.has('CopyWebpackPlugin')) {
+      config.plugin('CopyWebpackPlugin').tap(() => {
+        return [
+          [],
+        ];
+      });
+    }
+  });
 
   onGetWebpackConfig('web', (config) => {
     pluginList.forEach((plugin) => {
@@ -26,12 +48,6 @@ module.exports = ({ onGetWebpackConfig, context, registerTask }, option) => {
             command,
           }]);
       }
-    });
-
-    setManifestToDocument({
-      ...option,
-      context,
-      config,
     });
   });
 };

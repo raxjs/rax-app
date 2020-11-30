@@ -29,6 +29,7 @@ module.exports = function (api) {
   let weexMpa = false;
   let krakenMpa = false;
   let isFirstCompile = true;
+  let pha = false;
   const getWebpackEntry = (configs, configName) => {
     const taskConfig = configs.find((webpackConfig) => webpackConfig.name === configName);
     if (!taskConfig || !taskConfig.entry) {
@@ -43,6 +44,7 @@ module.exports = function (api) {
     webMpa = userConfig.web && userConfig.web.mpa;
     weexMpa = userConfig.weex && userConfig.weex.mpa;
     krakenMpa = userConfig.kraken && userConfig.kraken.mpa;
+    pha = userConfig.web && userConfig.web.pha;
 
     // Remove outputDir when start devServer
     const { outputDir = 'build' } = userConfig;
@@ -178,6 +180,16 @@ module.exports = function (api) {
           qrcode.generate(weexUrl, { small: true });
           console.log();
         });
+      }
+
+      if (pha) {
+        // Use PHA App to scan ip address (mobile phone can't visit localhost).
+        console.log(highlightPrint('  [PHA] Development server at: '));
+        const manifestUrl = `${urls.lanUrlForBrowser}manifest.json?pha=true`;
+        console.log(`  ${chalk.underline.white(manifestUrl)}`);
+        console.log();
+        qrcode.generate(manifestUrl, { small: true });
+        console.log();
       }
     }
   });

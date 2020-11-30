@@ -66,7 +66,7 @@ module.exports = (api) => {
         webpackConfig,
       },
     ]);
-    if (webConfig.mpa) {
+    if (webConfig.mpa || webConfig.pha) {
       // support --mpa-entry to specify mpa entry
       registerCliOption({
         name: 'mpa-entry',

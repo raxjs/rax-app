@@ -53,7 +53,7 @@ function transformAppConfig(appConfig, isRoot = true) {
 
 // get every page manifest
 function getPageManifestByPath(options) {
-  const { nsr, path = '/', decamelizeAppConfig = {}, publicPath = '/' } = options;
+  const { path = '/', decamelizeAppConfig = {} } = options;
   let manifestData = {};
   const { pages = [] } = decamelizeAppConfig;
   const page = pages.find((item) => {
@@ -69,10 +69,6 @@ function getPageManifestByPath(options) {
     ...page,
   };
 
-  // inject nsr_script
-  if (nsr) {
-    manifestData.nsr_script = `${publicPath}web${path === '/' ? '' : path}/index.nsr.js`;
-  }
   // if current page is not frame page
   // delete tabbar/tabHeader/pages
   if (!page.frame) {
@@ -85,7 +81,54 @@ function getPageManifestByPath(options) {
   return manifestData;
 }
 
+function getEntryName(string) {
+  return string.charAt(0).toLowerCase() + string.slice(1);
+}
+
+function changePageUrl(urlPrefix, page) {
+  if (page.path.startsWith('http')) {
+    return page;
+  }
+  const { source } = page;
+  if (source && source.length > 0) {
+    const match = source.match(/pages\/(.+)\//);
+
+    if (match && match[1]) {
+      page.path = urlPrefix + getEntryName(match[1]) + '.html';
+    }
+    delete page.source;
+  }
+
+  return page;
+}
+
+function setRealUrlToManifest(urlPrefix, manifest) {
+  if (!urlPrefix) {
+    return manifest;
+  }
+
+  if (manifest.app_worker && manifest.app_worker.url) {
+    manifest.app_worker.url = urlPrefix + manifest.app_worker.url;
+  }
+
+  if (manifest.pages && manifest.pages.length > 0) {
+    manifest.pages = manifest.pages.map((page) => {
+      // has frames
+      if (page.frames && page.frames.length > 0) {
+        page.frames = page.frames.map((frame) => {
+          return changePageUrl(urlPrefix, frame);
+        });
+      }
+
+      return changePageUrl(urlPrefix, page);
+    });
+  }
+
+  return manifest;
+}
+
 module.exports = {
   transformAppConfig,
   getPageManifestByPath,
+  setRealUrlToManifest,
 };

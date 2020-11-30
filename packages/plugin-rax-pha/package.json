@@ -1,11 +1,12 @@
 {
   "name": "build-plugin-rax-pha",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Rax PHA plugins",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
   "dependencies": {
     "@babel/core": "^7.8.6",
+    "address": "^1.1.2",
     "fs-extra": "^8.1.0",
     "html-minifier": "^4.0.0",
     "humps": "^2.0.1",
