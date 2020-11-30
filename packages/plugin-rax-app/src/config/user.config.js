@@ -49,4 +49,9 @@ module.exports = [
     name: 'compileDependencies',
     defaultValue: [''],
   },
+  {
+    name: 'vendor',
+    defaultValue: true,
+    configWebpack: require('../userConfig/vendor'),
+  },
 ];
