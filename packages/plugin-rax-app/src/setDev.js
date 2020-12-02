@@ -14,6 +14,7 @@ const {
   WEEX,
   KRAKEN,
 } = require('./constants');
+const generateTempFile = require('./utils/generateTempFile');
 
 const highlightPrint = chalk.hex('#F4AF3D');
 
@@ -30,17 +31,30 @@ module.exports = function (api) {
   let krakenMpa = false;
   let isFirstCompile = true;
   let pha = false;
-  const getWebpackEntry = (configs, configName) => {
+  const getWebpackInfo = (configs, configName) => {
     const taskConfig = configs.find((webpackConfig) => webpackConfig.name === configName);
-    if (!taskConfig || !taskConfig.entry) {
+    if (!taskConfig) {
       return {};
     }
-    return taskConfig.entry;
+    return {
+      entry: taskConfig.entry || {},
+      publicPath: taskConfig.output.publicPath,
+    };
+  };
+  const devInfo = {
+    urls: {},
   };
   onHook('before.start.run', ({ config: configs }) => {
-    webEntryKeys = Object.keys(getWebpackEntry(configs, 'web'));
-    weexEntryKeys = Object.keys(getWebpackEntry(configs, 'weex'));
-    krakenEntryKeys = Object.keys(getWebpackEntry(configs, 'kraken'));
+    const webWebpackInfo = getWebpackInfo(configs, 'web');
+    const weexWebpackInfo = getWebpackInfo(configs, 'weex');
+    const krakenWebpackInfo = getWebpackInfo(configs, 'kraken');
+
+    devInfo.publicPath = webWebpackInfo.publicPath;
+
+    webEntryKeys = Object.keys(webWebpackInfo.entry);
+    weexEntryKeys = Object.keys(weexWebpackInfo.entry);
+    krakenEntryKeys = Object.keys(krakenWebpackInfo.entry);
+
     webMpa = userConfig.web && userConfig.web.mpa;
     weexMpa = userConfig.weex && userConfig.weex.mpa;
     krakenMpa = userConfig.kraken && userConfig.kraken.mpa;
@@ -85,6 +99,8 @@ module.exports = function (api) {
       }
 
       if (targets.includes(MINIAPP)) {
+        const miniappOutputPath = path.resolve(rootDir, outputDir, MINIAPP);
+        devInfo.urls.miniapp = [miniappOutputPath];
         console.log(
           highlightPrint(
             '  [Alibaba Miniapp] Use ali miniapp developer tools to open the following folder:',
@@ -92,12 +108,14 @@ module.exports = function (api) {
         );
         console.log(
           '   ',
-          chalk.underline.white(path.resolve(rootDir, outputDir, MINIAPP)),
+          chalk.underline.white(miniappOutputPath),
         );
         console.log();
       }
 
       if (targets.includes(WECHAT_MINIPROGRAM)) {
+        const wechatOutputPath = path.resolve(rootDir, outputDir, WECHAT_MINIPROGRAM);
+        devInfo.urls.wechat = [wechatOutputPath];
         console.log(
           highlightPrint(
             '  [WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:',
@@ -105,12 +123,14 @@ module.exports = function (api) {
         );
         console.log(
           '   ',
-          chalk.underline.white(path.resolve(rootDir, outputDir, WECHAT_MINIPROGRAM)),
+          chalk.underline.white(wechatOutputPath),
         );
         console.log();
       }
 
       if (targets.includes(BYTEDANCE_MICROAPP)) {
+        const bytedanceOutputPath = path.resolve(rootDir, outputDir, BYTEDANCE_MICROAPP);
+        devInfo.urls.bytedance = [bytedanceOutputPath];
         console.log(
           highlightPrint(
             '  [Bytedance Microapp] Use bytedance microapp developer tools to open the following folder:',
@@ -118,11 +138,12 @@ module.exports = function (api) {
         );
         console.log(
           '   ',
-          chalk.underline.white(path.resolve(rootDir, outputDir, BYTEDANCE_MICROAPP)),
+          chalk.underline.white(bytedanceOutputPath),
         );
         console.log();
       }
       if (targets.includes(WEB)) {
+        devInfo.urls.web = [];
         console.log(highlightPrint('  [Web] Development server at: '));
         // do not open browser when restart dev
         const shouldOpenBrowser = !commandArgs.disableOpen && !process.env.RESTART_DEV && isFirstCompile;
@@ -136,14 +157,17 @@ module.exports = function (api) {
           }
           webEntryKeys.forEach((entryKey) => {
             const entryPath = webMpa ? `${entryKey}.html` : '';
+            const lanUrl = `${urls.lanUrlForBrowser}${entryPath}`;
+            devInfo.urls.web.push(lanUrl);
             console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}${entryPath}`)}`);
-            console.log(`  ${chalk.underline.white(`${urls.lanUrlForBrowser}${entryPath}`)}`);
+            console.log(`  ${chalk.underline.white(lanUrl)}`);
             console.log();
             if (shouldOpenBrowser && openEntries.includes(entryKey)) {
               openBrowser(`${urls.localUrlForBrowser}${entryPath}`);
             }
           });
         } else {
+          devInfo.urls.web.push(urls.lanUrlForBrowser);
           console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}`)}`);
           console.log(`  ${chalk.underline.white(`${urls.lanUrlForBrowser}`)}`);
           console.log();
@@ -155,9 +179,11 @@ module.exports = function (api) {
       }
 
       if (targets.includes(KRAKEN)) {
+        devInfo.urls.kraken = [];
         console.log(highlightPrint('  [Kraken] Development server at: '));
         krakenEntryKeys.forEach((entryKey) => {
           const krakenURL = `${urls.lanUrlForBrowser}kraken/${krakenMpa ? entryKey : 'index'}.js`;
+          devInfo.urls.kraken.push(krakenURL);
           console.log(`  ${chalk.underline.white(krakenURL)}`);
           console.log();
         });
@@ -165,16 +191,19 @@ module.exports = function (api) {
         console.log(highlightPrint('  [Kraken] Run Kraken Playground App: '));
         krakenEntryKeys.forEach((entryKey) => {
           const krakenURL = `${urls.lanUrlForBrowser}kraken/${krakenMpa ? entryKey : 'index'}.js`;
+          devInfo.urls.kraken.push(krakenURL);
           console.log(`  ${chalk.underline.white(`kraken -u ${krakenURL}`)}`);
           console.log();
         });
       }
 
       if (targets.includes(WEEX)) {
+        devInfo.urls.weex = [];
         // Use Weex App to scan ip address (mobile phone can't visit localhost).
         console.log(highlightPrint('  [Weex] Development server at: '));
         weexEntryKeys.forEach((entryKey) => {
           const weexUrl = `${urls.lanUrlForBrowser}weex/${weexMpa ? entryKey : 'index'}.js?wh_weex=true`;
+          devInfo.urls.weex.push(weexUrl);
           console.log(`  ${chalk.underline.white(weexUrl)}`);
           console.log();
           qrcode.generate(weexUrl, { small: true });
@@ -186,11 +215,14 @@ module.exports = function (api) {
         // Use PHA App to scan ip address (mobile phone can't visit localhost).
         console.log(highlightPrint('  [PHA] Development server at: '));
         const manifestUrl = `${urls.lanUrlForBrowser}manifest.json?pha=true`;
+        devInfo.urls.pha = [manifestUrl];
         console.log(`  ${chalk.underline.white(manifestUrl)}`);
         console.log();
         qrcode.generate(manifestUrl, { small: true });
         console.log();
       }
+
+      generateTempFile('dev.json', JSON.stringify(devInfo), { rootDir });
     }
   });
 };
