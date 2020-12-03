@@ -3,7 +3,7 @@ module.exports = {
     module: false,
     commands: ['start'],
   },
-  targets: {
+  'dev-targets': {
     module: false,
     commands: ['start'],
   },

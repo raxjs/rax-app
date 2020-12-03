@@ -25,9 +25,9 @@ module.exports = (api) => {
   const {
     userConfig: { targets: originalTargets },
   } = context;
-  const targetsInCommand = context.commandArgs.targets;
-  if (targetsInCommand) {
-    const targets = targetsInCommand.split(',');
+  const { devTargets } = context.commandArgs;
+  if (devTargets) {
+    const targets = devTargets.split(',');
     modifyUserConfig(() => {
       context.userConfig.targets = targets;
       return context.userConfig;
