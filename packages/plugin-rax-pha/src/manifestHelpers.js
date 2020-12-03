@@ -94,7 +94,7 @@ function changePageUrl(urlPrefix, page) {
     const match = source.match(/pages\/(.+)\//);
 
     if (match && match[1]) {
-      page.path = urlPrefix + getEntryName(match[1]) + '.html';
+      page.path = `${urlPrefix + getEntryName(match[1]) }.html`;
     }
     delete page.source;
   }

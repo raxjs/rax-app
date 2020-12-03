@@ -3,4 +3,8 @@ module.exports = {
     module: false,
     commands: ['start'],
   },
+  'dev-targets': {
+    module: false,
+    commands: ['start'],
+  },
 };

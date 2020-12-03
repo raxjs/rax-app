@@ -39,7 +39,7 @@ module.exports = class AppToManifestPlugin {
           }
 
           if (command === 'start') {
-            const urlPrefix = 'http://' + address.ip() + ':' + commandArgs.port + '/';
+            const urlPrefix = `https://${ address.ip() }:${ commandArgs.port }/`;
             manifestJSON = setRealUrlToManifest(urlPrefix, manifestJSON);
           }
           compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON));

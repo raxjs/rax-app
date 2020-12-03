@@ -21,8 +21,7 @@ const highlightPrint = chalk.hex('#F4AF3D');
 module.exports = function (api) {
   // eslint-disable-next-line global-require
   const { context, onHook } = api;
-  const { commandArgs, userConfig, rootDir } = context;
-  const { targets } = userConfig;
+  const { commandArgs, rootDir } = context;
   let webEntryKeys = [];
   let weexEntryKeys = [];
   let krakenEntryKeys = [];
@@ -34,7 +33,9 @@ module.exports = function (api) {
   const getWebpackInfo = (configs, configName) => {
     const taskConfig = configs.find((webpackConfig) => webpackConfig.name === configName);
     if (!taskConfig) {
-      return {};
+      return {
+        entry: {},
+      };
     }
     return {
       entry: taskConfig.entry || {},
@@ -45,6 +46,7 @@ module.exports = function (api) {
     urls: {},
   };
   onHook('before.start.run', ({ config: configs }) => {
+    const { userConfig } = context;
     const webWebpackInfo = getWebpackInfo(configs, 'web');
     const weexWebpackInfo = getWebpackInfo(configs, 'weex');
     const krakenWebpackInfo = getWebpackInfo(configs, 'kraken');
@@ -79,7 +81,8 @@ module.exports = function (api) {
     const messages = formatWebpackMessages(statsJson);
     // Do not print localUrl and assets information when containing an error
     const isSuccessful = !messages.errors.length;
-    const { outputDir = 'build' } = userConfig;
+    const { userConfig } = context;
+    const { outputDir = 'build', targets } = userConfig;
 
     if (isSuccessful) {
       if (commandArgs.enableAssets) {
