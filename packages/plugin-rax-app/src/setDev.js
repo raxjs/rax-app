@@ -225,6 +225,7 @@ module.exports = function (api) {
         console.log();
       }
 
+      devInfo.compiledTime = Date.now();
       generateTempFile('dev.json', JSON.stringify(devInfo), { rootDir });
     }
   });
