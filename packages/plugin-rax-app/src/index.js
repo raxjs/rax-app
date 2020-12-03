@@ -7,6 +7,7 @@ const setDev = require('./setDev');
 const setBuild = require('./setBuild');
 const customConfigs = require('./config/user.config');
 const customOptionConfig = require('./config/options.config');
+const modifyTargets = require('./utils/modifyTargets');
 
 module.exports = (api) => {
   const { onGetWebpackConfig, context, setValue } = api;
@@ -17,6 +18,9 @@ module.exports = (api) => {
 
   // register user config
   applyUserConfig(api, { customConfigs });
+
+  // modity targets
+  modifyTargets(api);
 
   // set webpack config
   onGetWebpackConfig((chainConfig) => {

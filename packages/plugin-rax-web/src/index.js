@@ -50,7 +50,14 @@ module.exports = (api) => {
 
     webpackConfig.output.libraryTarget = 'commonjs2';
     // do not generate vendor.js when compile document
-    webpackConfig.optimization.splitChunks.cacheGroups = {};
+    // deep copy webpackConfig optimization, because the toConfig method is shallow copy
+    webpackConfig.optimization = {
+      ...webpackConfig.optimization,
+      splitChunks: {
+        ...webpackConfig.optimization.splitChunks,
+        cacheGroups: {},
+      },
+    };
 
     config.plugin('document').use(DocumentPlugin, [
       {
@@ -66,7 +73,7 @@ module.exports = (api) => {
         webpackConfig,
       },
     ]);
-    if (webConfig.mpa) {
+    if (webConfig.mpa || webConfig.pha) {
       // support --mpa-entry to specify mpa entry
       registerCliOption({
         name: 'mpa-entry',

@@ -1,0 +1,7 @@
+{
+  "targets": ["web"],
+  "web": {
+    "pha": true
+  },
+  "inlineStyle": true
+}

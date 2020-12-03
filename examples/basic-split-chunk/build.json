@@ -1,0 +1,6 @@
+{
+  "targets": [
+    "web"
+  ],
+  "minify": false
+}
