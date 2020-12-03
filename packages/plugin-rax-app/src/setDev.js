@@ -33,7 +33,9 @@ module.exports = function (api) {
   const getWebpackInfo = (configs, configName) => {
     const taskConfig = configs.find((webpackConfig) => webpackConfig.name === configName);
     if (!taskConfig) {
-      return {};
+      return {
+        entry: {},
+      };
     }
     return {
       entry: taskConfig.entry || {},

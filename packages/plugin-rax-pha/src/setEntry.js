@@ -7,7 +7,7 @@ module.exports = ({ context, config }) => {
   const fileExtensions = ['.js', '.ts'];
 
   fileExtensions.forEach((fileExtension) => {
-    const appWorkerPath = path.resolve(rootDir, 'src/pha-worker' + fileExtension);
+    const appWorkerPath = path.resolve(rootDir, `src/pha-worker${ fileExtension}`);
     if (fs.pathExistsSync(appWorkerPath)) {
       config
         .entry('pha-worker')
