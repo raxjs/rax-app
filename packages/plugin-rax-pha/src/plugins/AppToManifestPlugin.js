@@ -10,7 +10,7 @@ const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers
 
 const PLUGIN_NAME = 'PHA_AppToManifestPlugin';
 
-module.exports = class AppToManifestPlugin {
+module.exports = class {
   constructor(options) {
     this.options = options;
   }
@@ -39,7 +39,8 @@ module.exports = class AppToManifestPlugin {
           }
 
           if (command === 'start') {
-            const urlPrefix = `https://${ address.ip() }:${ commandArgs.port }/`;
+            const protocol = commandArgs.https ? 'https' : 'http';
+            const urlPrefix = `${protocol}://${ address.ip() }:${ commandArgs.port }/`;
             manifestJSON = setRealUrlToManifest(urlPrefix, manifestJSON);
           }
           compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON));

@@ -7,7 +7,7 @@ const DocumentPlugin = require('./DocumentPlugin');
 const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
 
 module.exports = (api) => {
-  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, registerCliOption } = api;
+  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, registerCliOption, modifyUserConfig } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
@@ -31,8 +31,16 @@ module.exports = (api) => {
   setEntry(chainConfig, context);
   registerTask(target, chainConfig);
 
+  // Modify mpa config
+  modifyUserConfig(() => {
+    if (!context.userConfig.web) context.userConfig.web = {};
+    context.userConfig.web.mpa = true;
+    return context.userConfig;
+  });
+
   onGetWebpackConfig(target, (config) => {
-    const { rootDir, command } = context;
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const { rootDir, command, userConfig } = context;
     const { outputDir } = userConfig;
     const webConfig = userConfig.web || {};
 

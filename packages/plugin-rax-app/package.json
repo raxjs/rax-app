@@ -26,7 +26,7 @@
     "mkcert": "^1.2.0",
     "path-exists": "^4.0.0",
     "react-dev-utils": "^10.2.1",
-    "webpackbar": "^4.0.0",
+    "webpackbar": "^5.0.0-3",
     "qrcode-terminal": "^0.12.0",
     "mini-css-extract-plugin": "^1.2.1",
     "copy-webpack-plugin": "^5.0.4",
