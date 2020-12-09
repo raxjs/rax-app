@@ -1,5 +1,5 @@
 const { join } = require('path');
-const { copySync, writeFileSync, ensureFileSync, readJSONSync, readFileSync } = require('fs-extra');
+const { copySync, existsSync, writeFileSync, readJSONSync, readFileSync } = require('fs-extra');
 const { minify } = require('terser');
 
 /**
@@ -42,18 +42,17 @@ module.exports = class JSX2MPRuntimePlugin {
           runtimePackageJSON = readJSONSync(runtimePackageJSONPath);
           runtimePackagePath = join(runtimePackageJSONPath, '..');
         }
-
-        const runtimeTargetPath = runtimePackageJSON.miniprogram && runtimePackageJSON.miniprogram[this.platform]
-          ? runtimePackageJSON.miniprogram[this.platform]
-          : runtimePackageJSON.main || 'index.js';
+        const runtimeTargetPath = `dist/jsx2mp-runtime.${this.platform}.esm.js`;
         const sourceFile = require.resolve(join(runtimePackagePath, runtimeTargetPath));
         const targetFile = join(this.outputPath, 'npm', runtime + '.js');
-        ensureFileSync(targetFile);
+
         if (this.mode === 'build') {
           const sourceCode = minify(readFileSync(sourceFile, 'utf-8')).code;
           writeFileSync(targetFile, sourceCode);
         } else {
-          copySync(sourceFile, targetFile);
+          if (!existsSync(targetFile)) {
+            copySync(sourceFile, targetFile);
+          }
         }
 
         callback();
