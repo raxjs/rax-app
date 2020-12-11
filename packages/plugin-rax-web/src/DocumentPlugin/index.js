@@ -48,6 +48,7 @@ module.exports = class DocumentPlugin {
 
     // Merge the page info from options
     if (options.pages) {
+      console.log('options.pages', options.pages);
       options.pages.forEach((page) => {
         const pageInfo = pages[page.entryName];
         if (pageInfo) {
@@ -73,12 +74,19 @@ module.exports = class DocumentPlugin {
       const pageInfo = pages[entryName];
       const { tempFile, source, pagePath } = pageInfo;
 
-      const absolutePagePath = options.staticExport && source ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '';
+      const absolutePagePath =
+        options.staticExport && source ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '';
+
+      const targetPage = source && options.staticConfig.routes.find((route) => route.source === source);
+      const htmlInfo = {
+        ...options.htmlInfo,
+        title: (targetPage && targetPage.window && targetPage.window.title) || options.htmlInfo.title,
+      };
       const query = {
         absoluteDocumentPath,
         absolutePagePath,
         pagePath,
-        doctype: options.doctype,
+        htmlInfo,
       };
 
       if (manifestString) {
@@ -212,7 +220,7 @@ async function generateHtml(compilation, options) {
 function getPathInfoFromFileName(fileName) {
   const paths = fileName.split('/');
   paths.pop();
-  return paths.length ? `${paths.join('/') }/` : '';
+  return paths.length ? `${paths.join('/')}/` : '';
 }
 
 /**

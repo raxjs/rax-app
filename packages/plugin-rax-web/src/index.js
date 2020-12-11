@@ -35,6 +35,7 @@ module.exports = (api) => {
     const { rootDir, command } = context;
     const { outputDir } = userConfig;
     const webConfig = userConfig.web || {};
+    const staticConfig = getValue('staticConfig');
 
     // Set output dir
     const outputPath = path.resolve(rootDir, outputDir, target);
@@ -68,9 +69,13 @@ module.exports = (api) => {
             path: '/',
           },
         ],
-        doctype: webConfig.doctype,
         staticExport: webConfig.staticExport,
         webpackConfig,
+        staticConfig,
+        htmlInfo: {
+          title: staticConfig.window && staticConfig.window.title,
+          doctype: webConfig.doctype,
+        },
       },
     ]);
     if (webConfig.mpa || webConfig.pha) {

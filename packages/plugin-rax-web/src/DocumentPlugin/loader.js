@@ -20,17 +20,15 @@ module.exports = function () {
   const query = typeof this.query === 'string' ? qs.parse(this.query.substr(1)) : this.query;
   const {
     absoluteDocumentPath,
-    absoluteShellPath,
     absolutePagePath,
     pagePath,
-    doctype,
+    htmlInfo,
     manifests,
   } = query;
+  const { doctype, title } = htmlInfo;
 
-  const formatedShellPath = absoluteShellPath ? formatPath(absoluteShellPath) : null;
   const formatedPagePath = absolutePagePath ? formatPath(absolutePagePath) : null;
 
-  const shellStr = formatedShellPath && fs.existsSync(formatedShellPath) ? `import Shell from '${formatedShellPath}';` : 'const Shell = null;';
   const pageStr = formatedPagePath && fs.existsSync(formatedPagePath) ? `import Page from '${formatedPagePath}';` : 'const Page = null;';
   const doctypeStr = doctype === null || doctype === '' ? '' : `${doctype || '<!DOCTYPE html>'}`;
 
@@ -38,19 +36,11 @@ module.exports = function () {
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
     import Document from '${formatPath(absoluteDocumentPath)}';
-    ${shellStr}
     ${pageStr}
 
     function renderToHTML(assets) {
       let contentElement;
-
-      if (Shell) {
-        if (Page) {
-          contentElement = createElement(Shell, {}, createElement(Page, {}));
-        } else {
-          contentElement = createElement(Shell, {});
-        }
-      } else if (Page) {
+      if (Page) {
         contentElement = createElement(Page, {})
       }
 
@@ -71,7 +61,9 @@ module.exports = function () {
       };
 
       DocumentContextProvider.prototype.render = function() {
-        return createElement(Document, {});
+        return createElement(Document, {
+          title: '${title}'
+        });
       };
 
       const DocumentContextProviderElement = createElement(DocumentContextProvider);
