@@ -4,6 +4,7 @@
     { "path": "packages/stylesheet-loader" },
     { "path": "packages/babel-plugin-transform-jsx-stylesheet" },
     { "path": "packages/rax-app-renderer" },
+    { "path": "packages/plugin-rax-web" },
     { "path": "packages/rax-app" }
   ]
 }

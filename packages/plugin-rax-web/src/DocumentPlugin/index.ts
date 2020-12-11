@@ -1,13 +1,16 @@
-const qs = require('qs');
-const path = require('path');
-const fs = require('fs-extra');
-const webpack = require('webpack');
-const { RawSource } = require('webpack-sources');
-const { parse, print } = require('error-stack-tracey');
+import * as qs from 'qs';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as webpack from 'webpack';
+import * as webpackSources from 'webpack-sources';
+import * as errorStackTracey from 'error-stack-tracey';
 
+const { parse, print } = errorStackTracey;
+const { RawSource } = webpackSources;
 const PLUGIN_NAME = 'DocumentPlugin';
 
-module.exports = class DocumentPlugin {
+export default class DocumentPlugin {
+  options: any;
   constructor(options) {
     /**
      * An plugin which generate HTML files
@@ -48,7 +51,6 @@ module.exports = class DocumentPlugin {
 
     // Merge the page info from options
     if (options.pages) {
-      console.log('options.pages', options.pages);
       options.pages.forEach((page) => {
         const pageInfo = pages[page.entryName];
         if (pageInfo) {
@@ -82,7 +84,7 @@ module.exports = class DocumentPlugin {
         ...options.htmlInfo,
         title: (targetPage && targetPage.window && targetPage.window.title) || options.htmlInfo.title,
       };
-      const query = {
+      const query: any = {
         absoluteDocumentPath,
         absolutePagePath,
         pagePath,
@@ -162,7 +164,7 @@ module.exports = class DocumentPlugin {
       callback();
     });
   }
-};
+}
 
 async function generateHtml(compilation, options) {
   const { pages, publicPath } = options;
@@ -182,7 +184,7 @@ async function generateHtml(compilation, options) {
     let pageSource;
 
     try {
-      const Document = loadDocument(documentContent);
+      const Document: any = loadDocument(documentContent);
       pageSource = Document.renderToHTML(assets);
     } catch (error) {
       // eslint-disable-next-line no-await-in-loop

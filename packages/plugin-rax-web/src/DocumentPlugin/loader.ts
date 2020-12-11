@@ -1,6 +1,6 @@
-const qs = require('qs');
-const fs = require('fs');
-const path = require('path');
+import * as qs from 'qs';
+import * as path from 'path';
+import * as fs from 'fs';
 
 const isWin = process.platform === 'win32';
 
@@ -16,7 +16,7 @@ const formatPath = (p) => {
 /**
  * loader for wrap document and pages to be server render function, which can render page to html
  */
-module.exports = function () {
+export default function () {
   const query = typeof this.query === 'string' ? qs.parse(this.query.substr(1)) : this.query;
   const {
     absoluteDocumentPath,
@@ -82,4 +82,4 @@ module.exports = function () {
   `;
 
   return source;
-};
+}

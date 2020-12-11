@@ -1,12 +1,13 @@
-const path = require('path');
-const setMPAConfig = require('@builder/mpa-config');
-const { getMpaEntries } = require('@builder/app-helpers');
-const setDev = require('./setDev');
-const setEntry = require('./setEntry');
-const DocumentPlugin = require('./DocumentPlugin');
-const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
+import * as path from 'path';
+import setMPAConfig from '@builder/mpa-config';
+import setDev from './setDev';
+import setEntry from './setEntry';
+import DocumentPlugin from './DocumentPlugin';
+import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
+import * as appHelpers from '@builder/app-helpers';
 
-module.exports = (api) => {
+const { getMpaEntries } = appHelpers;
+export default (api) => {
   const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, registerCliOption } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
@@ -84,9 +85,10 @@ module.exports = (api) => {
         name: 'mpa-entry',
         commands: ['start'],
       });
-      setMPAConfig.default(config, {
+      setMPAConfig(config, {
         context,
         type: 'web',
+        framework: 'rax',
         targetDir: tempDir,
         entries: getMpaEntries(api, {
           target,
