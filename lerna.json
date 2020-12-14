@@ -1,6 +1,6 @@
 {
   "version": "1.7.0",
-  "npmClient": "yarn",
+  "npmClient": "ayarn",
   "useWorkspaces": true,
   "command": {
     "bootstrap": {

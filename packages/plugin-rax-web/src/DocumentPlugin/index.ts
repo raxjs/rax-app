@@ -188,7 +188,7 @@ async function generateHtml(compilation, options) {
       pageSource = Document.renderToHTML(assets);
     } catch (error) {
       // eslint-disable-next-line no-await-in-loop
-      const errorStack = await parse(error, documentContent);
+      const errorStack: any = await parse(error, documentContent);
       // Prevent print duplicate error info
       if (!hasPrintError) {
         print(error.message, errorStack);
