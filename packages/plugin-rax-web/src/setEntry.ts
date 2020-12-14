@@ -1,7 +1,7 @@
-const path = require('path');
-const fs = require('fs-extra');
+import * as path from 'path';
+import * as fs from 'fs';
 
-module.exports = (config, context) => {
+export default (config, context) => {
   const { rootDir, command } = context;
   const isDev = command === 'start';
 

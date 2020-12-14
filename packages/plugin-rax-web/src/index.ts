@@ -1,22 +1,14 @@
-const path = require('path');
-const setMPAConfig = require('@builder/mpa-config');
-const { getMpaEntries } = require('@builder/app-helpers');
-const setDev = require('./setDev');
-const setEntry = require('./setEntry');
-const DocumentPlugin = require('./DocumentPlugin');
-const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
-const SnapshotPlugin = require('./SnapshotPlugin');
+import * as path from 'path';
+import setMPAConfig from '@builder/mpa-config';
+import setDev from './setDev';
+import setEntry from './setEntry';
+import DocumentPlugin from './DocumentPlugin';
+import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
+import * as appHelpers from '@builder/app-helpers';
 
-module.exports = (api) => {
-  const {
-    onGetWebpackConfig,
-    getValue,
-    context,
-    registerTask,
-    registerUserConfig,
-    registerCliOption,
-    modifyUserConfig,
-  } = api;
+const { getMpaEntries } = appHelpers;
+export default (api) => {
+  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, registerCliOption, modifyUserConfig } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
@@ -54,6 +46,7 @@ module.exports = (api) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     const { rootDir, command, userConfig } = context;
     const { outputDir } = userConfig;
+    const staticConfig = getValue('staticConfig');
 
     // Set output dir
     const outputPath = path.resolve(rootDir, outputDir, target);
@@ -87,9 +80,13 @@ module.exports = (api) => {
             path: '/',
           },
         ],
-        doctype: webConfig.doctype,
         staticExport: webConfig.staticExport,
         webpackConfig,
+        staticConfig,
+        htmlInfo: {
+          title: staticConfig.window && staticConfig.window.title,
+          doctype: webConfig.doctype,
+        },
       },
     ]);
     if (webConfig.snapshot) {
@@ -106,9 +103,9 @@ module.exports = (api) => {
         name: 'mpa-entry',
         commands: ['start'],
       });
-      setMPAConfig.default(api, config, {
-        context,
+      setMPAConfig(api, config, {
         type: 'web',
+        framework: 'rax',
         targetDir: tempDir,
         entries: getMpaEntries(api, {
           target,
