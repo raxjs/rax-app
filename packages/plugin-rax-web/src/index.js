@@ -5,14 +5,24 @@ const setDev = require('./setDev');
 const setEntry = require('./setEntry');
 const DocumentPlugin = require('./DocumentPlugin');
 const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
+const SnapshotPlugin = require('./SnapshotPlugin');
 
 module.exports = (api) => {
-  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, registerCliOption, modifyUserConfig } = api;
+  const {
+    onGetWebpackConfig,
+    getValue,
+    context,
+    registerTask,
+    registerUserConfig,
+    registerCliOption,
+    modifyUserConfig,
+  } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
   const target = 'web';
   const { userConfig = {} } = context;
+  const webConfig = userConfig.web || {};
   const chainConfig = getWebpackBase(api, {
     target,
     babelConfigOptions: { styleSheet: userConfig.inlineStyle },
@@ -31,18 +41,19 @@ module.exports = (api) => {
   setEntry(chainConfig, context);
   registerTask(target, chainConfig);
 
-  // Modify mpa config
-  modifyUserConfig(() => {
-    if (!context.userConfig.web) context.userConfig.web = {};
-    context.userConfig.web.mpa = true;
-    return context.userConfig;
-  });
+  if (webConfig.pha) {
+    // Modify mpa config
+    modifyUserConfig(() => {
+      if (!context.userConfig.web) context.userConfig.web = {};
+      context.userConfig.web.mpa = true;
+      return context.userConfig;
+    });
+  }
 
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     const { rootDir, command, userConfig } = context;
     const { outputDir } = userConfig;
-    const webConfig = userConfig.web || {};
 
     // Set output dir
     const outputPath = path.resolve(rootDir, outputDir, target);
@@ -81,13 +92,21 @@ module.exports = (api) => {
         webpackConfig,
       },
     ]);
+    if (webConfig.snapshot) {
+      config.plugin('SnapshotPlugin').use(SnapshotPlugin, [
+        {
+          withSSR: webConfig.ssr,
+        },
+      ]);
+    }
+
     if (webConfig.mpa || webConfig.pha) {
       // support --mpa-entry to specify mpa entry
       registerCliOption({
         name: 'mpa-entry',
         commands: ['start'],
       });
-      setMPAConfig.default(config, {
+      setMPAConfig.default(api, config, {
         context,
         type: 'web',
         targetDir: tempDir,
