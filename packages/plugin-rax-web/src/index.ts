@@ -8,12 +8,13 @@ import * as appHelpers from '@builder/app-helpers';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
-  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, registerCliOption } = api;
+  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, registerCliOption, modifyUserConfig } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
   const target = 'web';
   const { userConfig = {} } = context;
+  const webConfig = userConfig.web || {};
   const chainConfig = getWebpackBase(api, {
     target,
     babelConfigOptions: { styleSheet: userConfig.inlineStyle },
@@ -32,10 +33,19 @@ export default (api) => {
   setEntry(chainConfig, context);
   registerTask(target, chainConfig);
 
+  if (webConfig.pha) {
+    // Modify mpa config
+    modifyUserConfig(() => {
+      if (!context.userConfig.web) context.userConfig.web = {};
+      context.userConfig.web.mpa = true;
+      return context.userConfig;
+    });
+  }
+
   onGetWebpackConfig(target, (config) => {
-    const { rootDir, command } = context;
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const { rootDir, command, userConfig } = context;
     const { outputDir } = userConfig;
-    const webConfig = userConfig.web || {};
     const staticConfig = getValue('staticConfig');
 
     // Set output dir
@@ -79,14 +89,21 @@ export default (api) => {
         },
       },
     ]);
+    if (webConfig.snapshot) {
+      config.plugin('SnapshotPlugin').use(SnapshotPlugin, [
+        {
+          withSSR: webConfig.ssr,
+        },
+      ]);
+    }
+
     if (webConfig.mpa || webConfig.pha) {
       // support --mpa-entry to specify mpa entry
       registerCliOption({
         name: 'mpa-entry',
         commands: ['start'],
       });
-      setMPAConfig(config, {
-        context,
+      setMPAConfig(api, config, {
         type: 'web',
         framework: 'rax',
         targetDir: tempDir,

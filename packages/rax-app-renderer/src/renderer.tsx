@@ -90,6 +90,7 @@ async function raxAppRenderer(options) {
 function _renderApp(context, options) {
   const {
     appConfig,
+    buildConfig,
     createBaseApp,
     emitLifeCycles,
     pathRedirect,
@@ -161,11 +162,11 @@ function _renderApp(context, options) {
 
       const rootEl = isWeex || isKraken ? null : document.getElementById(rootId);
       if (isWeb && rootId === null) console.warn('Error: Can not find #root element, please check which exists in DOM.');
-      const isSSR = typeof window !== 'undefined' ? (window as any).__INITIAL_DATA__ && (window as any).__INITIAL_DATA__.__SSR_ENABLED__ : false;
+      const webConfig = buildConfig.web || {};
       return render(
         appInstance,
         rootEl,
-        { driver, hydrate: isSSR },
+        { driver, hydrate: webConfig.snapshot || webConfig.ssr },
       );
     });
 }

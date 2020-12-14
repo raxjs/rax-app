@@ -11,6 +11,7 @@
     "humps": "^2.0.1",
     "klaw-sync": "^6.0.0",
     "lodash.template": "^4.5.0",
-    "webpack-sources": "^1.4.3"
+    "webpack-sources": "^1.4.3",
+    "@builder/app-helpers": "^1.0.2"
   }
 }

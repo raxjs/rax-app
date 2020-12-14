@@ -21,7 +21,7 @@ module.exports = (api) => {
   // register user config
   applyUserConfig(api, { customConfigs });
 
-  // modity targets
+  // modify targets
   modifyTargets(api);
 
   // set webpack config
