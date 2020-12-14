@@ -36,7 +36,7 @@ module.exports = (api) => {
     const { outputDir = 'build', weex = {} } = userConfig;
     // set mpa config
     if (weex.mpa) {
-      setMPAConfig.default(config, {
+      setMPAConfig.default(api, config, {
         context,
         targetDir: tempDir,
         type: 'weex',

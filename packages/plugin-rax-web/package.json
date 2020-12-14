@@ -27,6 +27,7 @@
     "webpack": "^4.0.0",
     "@builder/app-helpers": "^1.0.0",
     "react-dev-utils": "^10.0.0",
-    "chalk": "^4.1.0"
+    "chalk": "^4.1.0",
+    "html-minifier": "^4.0.0"
   }
 }

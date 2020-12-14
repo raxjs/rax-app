@@ -1,26 +1,20 @@
-const path = require('path');
-const fs = require('fs-extra');
 const setEntry = require('./setEntry');
+const AppToManifestPlugin = require('./plugins/AppToManifestPlugin');
 
-const pluginDir = path.join(__dirname, './plugins');
-const pluginList = fs.readdirSync(pluginDir);
-
-module.exports = (api, option) => {
-  const { onGetWebpackConfig, context, registerTask, registerUserConfig, getValue } = api;
-  const { command } = context;
+module.exports = (api) => {
+  const { onGetWebpackConfig, context, registerTask, getValue } = api;
 
   const getWebpackBase = getValue('getRaxAppWebpackConfig');
   const target = 'PHA';
   const chainConfig = getWebpackBase(api, {
     target,
+    progressOptions: {
+      name: target,
+    },
   });
   chainConfig.name(target);
 
   registerTask(target, chainConfig);
-  registerUserConfig({
-    name: target,
-    validation: 'object',
-  });
 
   onGetWebpackConfig(target, (config) => {
     setEntry({
@@ -31,23 +25,16 @@ module.exports = (api, option) => {
     // do not copy public
     if (config.plugins.has('CopyWebpackPlugin')) {
       config.plugin('CopyWebpackPlugin').tap(() => {
-        return [
-          [],
-        ];
+        return [[]];
       });
     }
   });
 
   onGetWebpackConfig('web', (config) => {
-    pluginList.forEach((plugin) => {
-      if (/\.js$/.test(plugin)) {
-        config.plugin(plugin.replace(/\.js$/, ''))
-          .use(require(`${pluginDir}/${plugin}`), [{
-            ...option,
-            context,
-            command,
-          }]);
-      }
-    });
+    config.plugin('AppToManifestPlugin').use(AppToManifestPlugin, [
+      {
+        context,
+      },
+    ]);
   });
 };
