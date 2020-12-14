@@ -1,6 +1,6 @@
 {
   "name": "error-stack-tracey",
-  "version": "0.1.4-0",
+  "version": "0.1.4",
   "description": "Trace error stack with sourcemap",
   "main": "lib/index.js",
   "license": "BSD-3-Clause",
