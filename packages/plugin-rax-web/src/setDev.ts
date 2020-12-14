@@ -2,7 +2,7 @@
 // It is determined by webpack configuration, but not vary based on the operating system.
 const HTMLAssetPath = 'index.html';
 
-module.exports = (config) => {
+export default (config) => {
   const devServerBeforeHook = config.devServer.get('before');
   config.devServer.set('before', (app, devServer) => {
     if (typeof devServerBeforeHook === 'function') {

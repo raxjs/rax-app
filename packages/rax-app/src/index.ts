@@ -11,6 +11,7 @@ const getBuiltInPlugins = (userConfig) => {
       },
     ],
     ['build-plugin-rax-app'],
+    'build-plugin-ice-config',
   ];
 
   if (store) {

@@ -8,18 +8,20 @@ const setBuild = require('./setBuild');
 const customConfigs = require('./config/user.config');
 const customOptionConfig = require('./config/options.config');
 const modifyTargets = require('./utils/modifyTargets');
+const setStaicConfig = require('./utils/setStaticConfig');
 
 module.exports = (api) => {
   const { onGetWebpackConfig, context, setValue } = api;
   const { command, rootDir } = context;
   setValue(GET_RAX_APP_WEBPACK_CONFIG, getBase);
+  setStaicConfig(api);
   // register cli option
   applyCliOption(api, { customOptionConfig });
 
   // register user config
   applyUserConfig(api, { customConfigs });
 
-  // modity targets
+  // modify targets
   modifyTargets(api);
 
   // set webpack config
