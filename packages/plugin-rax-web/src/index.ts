@@ -5,6 +5,7 @@ import setEntry from './setEntry';
 import DocumentPlugin from './DocumentPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import * as appHelpers from '@builder/app-helpers';
+import SnapshotPlugin from './SnapshotPlugin';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
