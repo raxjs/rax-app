@@ -9,13 +9,14 @@
  * 2. innerHTML the snapshot when the page has its snapshot
  */
 
-const { RawSource } = require('webpack-sources');
-const { minify } = require('html-minifier');
+import * as webpackSource from 'webpack-sources';
+import * as htmlMinifier from 'html-minifier';
 
 const PLUGIN_NAME = 'SnapshotPlugin';
-
-
-module.exports = class SnapshotPlugin {
+const { RawSource } = webpackSource;
+const { minify } = htmlMinifier;
+export default class SnapshotPlugin {
+  options: { withSSR: any };
   constructor(options) {
     this.options = options;
   }
@@ -51,4 +52,4 @@ module.exports = class SnapshotPlugin {
       callback();
     });
   }
-};
+}
