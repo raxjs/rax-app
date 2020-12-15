@@ -1,5 +1,13 @@
 ## Changelog
 
+### 3.1.1 (December 14 2020)
+- Feat: support build pha app.([#507](https://github.com/raxjs/rax-app/pull/507))
+- Feat: support use `--dev-targets` specified build targets in development.([#508](https://github.com/raxjs/rax-app/pull/508))
+- Feat: support http request mock.([#506](https://github.com/raxjs/rax-app/pull/506))
+- Fix: emit error when eslint-loader found lint problems.([alibaba/ice#3860](https://github.com/alibaba/ice/pull/3860))
+- Fix: types and `APP_MODE` export.([alibaba/ice#3863](https://github.com/alibaba/ice/pull/3863) [alibaba/ice#3886](https://github.com/alibaba/ice/pull/3886))
+- Fix: `withPageLifeCycle` makes `componentWillUnmount` invalid and `runApp({ app: { onShareAppMessage() {} } })` is invalid.([alibaba/ice#3880](https://github.com/alibaba/ice/pull/3880) [alibaba/ice#3890](https://github.com/alibaba/ice/pull/3890))
+
 ### 3.1.0 (December 04 2020)
 - Feat: support build pha app.([#507](https://github.com/raxjs/rax-app/pull/507))
 - Feat: support use `--dev-targets` specified build targets in development.([#508](https://github.com/raxjs/rax-app/pull/508))
