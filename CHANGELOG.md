@@ -1,4 +1,11 @@
 ## Changelog
+### 3.1.2 & 3.1.3 (December 15 2020)
+For v3.1.1 patch version.
+### 3.1.1 (December 14 2020)
+- Feat: support use name specifies MPA page name and output path.([alibaba/ice#3906](https://github.com/alibaba/ice/pull/3906))
+- Feat: support set html info by app.json.([#525](https://github.com/raxjs/rax-app/pull/525))
+- Feat: support snapshot in Web and optimize build PHA.([#516](https://github.com/raxjs/rax-app/pull/516))
+
 ### 3.1.0 (December 04 2020)
 - Feat: support build pha app.([#507](https://github.com/raxjs/rax-app/pull/507))
 - Feat: support use `--dev-targets` specified build targets in development.([#508](https://github.com/raxjs/rax-app/pull/508))
