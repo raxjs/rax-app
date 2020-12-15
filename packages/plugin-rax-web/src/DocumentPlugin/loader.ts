@@ -22,7 +22,7 @@ export default function () {
     absoluteDocumentPath,
     absolutePagePath,
     pagePath,
-    htmlInfo,
+    htmlInfo = {},
     manifests,
   } = query;
   const { doctype, title } = htmlInfo;
