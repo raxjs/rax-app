@@ -6,7 +6,10 @@
     },
     {
       "path": "/about",
-      "source": "pages/About/index"
+      "source": "pages/About/index",
+      "window": {
+        "title": "About Page"
+      }
     }
   ],
   "window": {

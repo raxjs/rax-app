@@ -3,7 +3,7 @@ const babelParser = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const types = require('@babel/types');
 const generate = require('@babel/generator').default;
-const { codeFrameColumns } = require('@babel/code-frame').default;
+const { codeFrameColumns } = require('@babel/code-frame');
 
 module.exports = function traverseImport(options, inputSource, sourceMapOption) {
   let specified; // Collector import specifiers

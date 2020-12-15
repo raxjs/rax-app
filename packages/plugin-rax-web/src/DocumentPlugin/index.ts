@@ -1,13 +1,16 @@
-const qs = require('qs');
-const path = require('path');
-const fs = require('fs-extra');
-const webpack = require('webpack');
-const { RawSource } = require('webpack-sources');
-const { parse, print } = require('error-stack-tracey');
+import * as qs from 'qs';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as webpack from 'webpack';
+import * as webpackSources from 'webpack-sources';
+import * as errorStackTracey from 'error-stack-tracey';
 
+const { parse, print } = errorStackTracey;
+const { RawSource } = webpackSources;
 const PLUGIN_NAME = 'DocumentPlugin';
 
-module.exports = class DocumentPlugin {
+export default class DocumentPlugin {
+  options: any;
   constructor(options) {
     /**
      * An plugin which generate HTML files
@@ -73,12 +76,19 @@ module.exports = class DocumentPlugin {
       const pageInfo = pages[entryName];
       const { tempFile, source, pagePath } = pageInfo;
 
-      const absolutePagePath = options.staticExport && source ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '';
-      const query = {
+      const absolutePagePath =
+        options.staticExport && source ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '';
+
+      const targetPage = source && options.staticConfig.routes.find((route) => route.source === source);
+      const htmlInfo = {
+        ...options.htmlInfo,
+        title: (targetPage && targetPage.window && targetPage.window.title) || options.htmlInfo.title,
+      };
+      const query: any = {
         absoluteDocumentPath,
         absolutePagePath,
         pagePath,
-        doctype: options.doctype,
+        htmlInfo,
       };
 
       if (manifestString) {
@@ -154,7 +164,7 @@ module.exports = class DocumentPlugin {
       callback();
     });
   }
-};
+}
 
 async function generateHtml(compilation, options) {
   const { pages, publicPath } = options;
@@ -174,11 +184,11 @@ async function generateHtml(compilation, options) {
     let pageSource;
 
     try {
-      const Document = loadDocument(documentContent);
+      const Document: any = loadDocument(documentContent);
       pageSource = Document.renderToHTML(assets);
     } catch (error) {
       // eslint-disable-next-line no-await-in-loop
-      const errorStack = await parse(error, documentContent);
+      const errorStack: any = await parse(error, documentContent);
       // Prevent print duplicate error info
       if (!hasPrintError) {
         print(error.message, errorStack);
@@ -212,7 +222,7 @@ async function generateHtml(compilation, options) {
 function getPathInfoFromFileName(fileName) {
   const paths = fileName.split('/');
   paths.pop();
-  return paths.length ? `${paths.join('/') }/` : '';
+  return paths.length ? `${paths.join('/')}/` : '';
 }
 
 /**

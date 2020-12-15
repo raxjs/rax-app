@@ -1,18 +1,21 @@
-const path = require('path');
-const setMPAConfig = require('@builder/mpa-config');
-const { getMpaEntries } = require('@builder/app-helpers');
-const setDev = require('./setDev');
-const setEntry = require('./setEntry');
-const DocumentPlugin = require('./DocumentPlugin');
-const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
+import * as path from 'path';
+import setMPAConfig from '@builder/mpa-config';
+import setDev from './setDev';
+import setEntry from './setEntry';
+import DocumentPlugin from './DocumentPlugin';
+import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
+import * as appHelpers from '@builder/app-helpers';
+import SnapshotPlugin from './SnapshotPlugin';
 
-module.exports = (api) => {
-  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, registerCliOption } = api;
+const { getMpaEntries } = appHelpers;
+export default (api) => {
+  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, registerCliOption, modifyUserConfig } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
   const target = 'web';
   const { userConfig = {} } = context;
+  const webConfig = userConfig.web || {};
   const chainConfig = getWebpackBase(api, {
     target,
     babelConfigOptions: { styleSheet: userConfig.inlineStyle },
@@ -31,10 +34,20 @@ module.exports = (api) => {
   setEntry(chainConfig, context);
   registerTask(target, chainConfig);
 
+  if (webConfig.pha) {
+    // Modify mpa config
+    modifyUserConfig(() => {
+      if (!context.userConfig.web) context.userConfig.web = {};
+      context.userConfig.web.mpa = true;
+      return context.userConfig;
+    });
+  }
+
   onGetWebpackConfig(target, (config) => {
-    const { rootDir, command } = context;
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const { rootDir, command, userConfig } = context;
     const { outputDir } = userConfig;
-    const webConfig = userConfig.web || {};
+    const staticConfig = getValue('staticConfig');
 
     // Set output dir
     const outputPath = path.resolve(rootDir, outputDir, target);
@@ -68,20 +81,32 @@ module.exports = (api) => {
             path: '/',
           },
         ],
-        doctype: webConfig.doctype,
         staticExport: webConfig.staticExport,
         webpackConfig,
+        staticConfig,
+        htmlInfo: {
+          title: staticConfig.window && staticConfig.window.title,
+          doctype: webConfig.doctype,
+        },
       },
     ]);
+    if (webConfig.snapshot) {
+      config.plugin('SnapshotPlugin').use(SnapshotPlugin, [
+        {
+          withSSR: webConfig.ssr,
+        },
+      ]);
+    }
+
     if (webConfig.mpa || webConfig.pha) {
       // support --mpa-entry to specify mpa entry
       registerCliOption({
         name: 'mpa-entry',
         commands: ['start'],
       });
-      setMPAConfig.default(config, {
-        context,
+      setMPAConfig(api, config, {
         type: 'web',
+        framework: 'rax',
         targetDir: tempDir,
         entries: getMpaEntries(api, {
           target,

@@ -1,5 +1,4 @@
 ## Changelog
-
 ### 3.1.0 (December 04 2020)
 - Feat: support build pha app.([#507](https://github.com/raxjs/rax-app/pull/507))
 - Feat: support use `--dev-targets` specified build targets in development.([#508](https://github.com/raxjs/rax-app/pull/508))
