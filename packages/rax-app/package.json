@@ -1,6 +1,6 @@
 {
   "name": "rax-app",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "command line interface and builtin plugin for rax app",
   "author": "Rax Team",
   "homepage": "https://github.com/alibaba/ice#readme",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@alib/build-scripts": "^0.1.24",
-    "build-plugin-app-core": "1.0.0",
+    "build-plugin-app-core": "1.0.1",
     "build-plugin-ice-config": "1.7.2",
     "build-plugin-ice-store": "1.7.11",
     "build-plugin-rax-app": "6.1.1",
