@@ -4,6 +4,9 @@ import * as fs from 'fs';
 import * as webpack from 'webpack';
 import * as webpackSources from 'webpack-sources';
 import * as errorStackTracey from 'error-stack-tracey';
+import { formatPath } from '@builder/app-helpers';
+import { getBuiltInHtmlTpl, generateHtmlStructure, insertCommonElements } from '../utils/htmlStructure';
+import { IHtmlInfo, IBuiltInDocumentQuery, ICustomDocumentQuery } from '../types';
 
 const { parse, print } = errorStackTracey;
 const { RawSource } = webpackSources;
@@ -11,6 +14,7 @@ const PLUGIN_NAME = 'DocumentPlugin';
 
 export default class DocumentPlugin {
   options: any;
+  documentPath: string | undefined;
   constructor(options) {
     /**
      * An plugin which generate HTML files
@@ -26,6 +30,10 @@ export default class DocumentPlugin {
      * @param {function} [options.configWebpack] custom webpack config for document
      */
     this.options = options;
+    const {
+      context: { rootDir },
+    } = options;
+    this.documentPath = getAbsoluteFilePath(rootDir, 'src/document/index');
   }
 
   apply(compiler) {
@@ -63,12 +71,8 @@ export default class DocumentPlugin {
     }
 
     // Support custom loader
-    const loaderForDocument = options.loader || require.resolve('./loader');
-
-    // Document path is specified
-    const absoluteDocumentPath = getAbsoluteFilePath(rootDir, 'src/document/index');
-
-    const manifestString = options.manifests ? JSON.stringify(options.manifests) : null;
+    const loaderForDocument =
+      options.loader || (this.documentPath ? require.resolve('./customLoader') : require('./builtInLoader'));
 
     delete webpackConfig.entry.index;
     // Add ssr loader for each entry
@@ -76,29 +80,38 @@ export default class DocumentPlugin {
       const pageInfo = pages[entryName];
       const { tempFile, source, pagePath } = pageInfo;
 
-      const absolutePagePath =
-        options.staticExport && source ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '';
-
-      const targetPage = source && options.staticConfig.routes.find((route) => route.source === source);
-      const htmlInfo = {
-        ...options.htmlInfo,
-        title: (targetPage && targetPage.window && targetPage.window.title) || options.htmlInfo.title,
-      };
-      const query: any = {
-        absoluteDocumentPath,
-        absolutePagePath,
-        pagePath,
-        htmlInfo,
-      };
-
-      if (manifestString) {
-        query.manifests = manifestString;
-      }
-
       if (!webpackConfig.entry[tempFile]) {
         webpackConfig.entry[tempFile] = [];
       }
-      webpackConfig.entry[tempFile].push(`${loaderForDocument}?${qs.stringify(query)}!${absoluteDocumentPath}`);
+
+      const staticExportPagePath: string =
+        options.staticExport && source ? getAbsoluteFilePath(rootDir, path.join('src', source)) : '';
+
+      const targetPage = source && options.staticConfig.routes.find((route) => route.source === source);
+      const htmlInfo: IHtmlInfo = {
+        ...options.htmlInfo,
+        title: (targetPage && targetPage.window && targetPage.window.title) || options.htmlInfo.title,
+      };
+
+      if (this.documentPath) {
+        const query: ICustomDocumentQuery = {
+          documentPath: this.documentPath,
+          staticExportPagePath,
+          pagePath,
+          htmlInfo,
+        };
+
+        webpackConfig.entry[tempFile].push(`${loaderForDocument}?${qs.stringify(query)}!${this.documentPath}`);
+      } else {
+        const builtInDocumentTpl = getBuiltInHtmlTpl(htmlInfo);
+        const query: IBuiltInDocumentQuery = {
+          staticExportPagePath,
+          builtInDocumentTpl,
+        };
+        // Insert elements which define in app.json
+        insertCommonElements(options.staticConfig);
+        webpackConfig.entry[tempFile].push(`${loaderForDocument}?${qs.stringify(query)}`);
+      }
     });
 
     let cachedHTML = {};
@@ -185,7 +198,16 @@ async function generateHtml(compilation, options) {
 
     try {
       const Document: any = loadDocument(documentContent);
-      pageSource = Document.renderToHTML(assets);
+      if (this.documentPath) {
+        pageSource = Document.renderToHTML(assets);
+      } else {
+        const initialHTML = Document.renderInitialHTML();
+        const builtInDocumentTpl = Document.getHTML();
+        const $ = generateHtmlStructure(builtInDocumentTpl);
+        const root = $('#root');
+        root.html(initialHTML);
+        pageSource = $.html();
+      }
     } catch (error) {
       // eslint-disable-next-line no-await-in-loop
       const errorStack: any = await parse(error, documentContent);
@@ -268,5 +290,7 @@ function getAbsoluteFilePath(rootDir, filePath) {
     return `${path.join(rootDir, filePath)}${ext}`;
   });
 
-  return files.find((f) => fs.existsSync(f));
+  const targetFile = files.find((f) => fs.existsSync(f));
+
+  return targetFile ? formatPath(targetFile) : null;
 }
