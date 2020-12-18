@@ -12,15 +12,15 @@ export default function () {
 
   const formatedPagePath = staticExportPagePath ? formatPath(staticExportPagePath) : null;
   const needStaicExport = formatedPagePath && fs.existsSync(formatedPagePath);
-
+  let source;
 
   if (needStaicExport) {
-    return `
+    source = `
   import { createElement } from 'rax';
   import renderer from 'rax-server-renderer';
   import Page from '${formatedPagePath}';
 
-  function renderInitialHTML(assets) {
+  export function renderInitialHTML(assets) {
     const contentElement = createElement(Page, {});
 
     const initialHtml = contentElement ? renderer.renderToString(contentElement, {
@@ -29,24 +29,12 @@ export default function () {
 
     return initialHtml;
   }
-
-  export {
-    renderInitialHTML,
-    getHTML() {
-      return ${builtInDocumentTpl};
-    }
-  };
 `;
   } else {
-    return `
-      export {
-        renderInitialHTML() {
-          return '';
-        },
-        getHTML() {
-          return ${builtInDocumentTpl};
-        }
-      }
+    source = `
+    export const renderInitialHTML = () => '';
     `;
   }
+  source += `\n export const html = \`${builtInDocumentTpl}\`;`;
+  return source;
 }

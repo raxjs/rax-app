@@ -37,7 +37,7 @@ export function insertCommonElements(staticConfig) {
 export function generateHtmlStructure(htmlStr) {
   const $ = cherrio.load(htmlStr);
   const root = $('#root');
-  const title = $('title')[0];
+  const title = $('title');
   title.before(metas);
   title.after(links);
   root.after(scripts);
@@ -48,10 +48,10 @@ export function insertScripts(customScripts) {
   scripts = [...scripts, customScripts];
 }
 
-export function insertLinks($, customLinks) {
+export function insertLinks(customLinks) {
   links = [...links, customLinks];
 }
 
-export function insertMetas($, customMetas) {
+export function insertMetas(customMetas) {
   metas = [...metas, customMetas];
 }

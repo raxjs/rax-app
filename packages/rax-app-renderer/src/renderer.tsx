@@ -62,6 +62,10 @@ function App(props) {
 }
 
 async function raxAppRenderer(options) {
+  if (!options.appConfig) {
+    options.appConfig = {};
+  }
+
   const { appConfig, setAppConfig } = options || {};
 
   setAppConfig(appConfig);

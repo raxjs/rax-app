@@ -1,11 +1,17 @@
 import * as qs from 'qs';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as webpack from 'webpack';
 import * as webpackSources from 'webpack-sources';
 import * as errorStackTracey from 'error-stack-tracey';
 import { formatPath } from '@builder/app-helpers';
-import { getBuiltInHtmlTpl, generateHtmlStructure, insertCommonElements } from '../utils/htmlStructure';
+import {
+  getBuiltInHtmlTpl,
+  generateHtmlStructure,
+  insertCommonElements,
+  insertLinks,
+  insertScripts,
+} from '../utils/htmlStructure';
 import { IHtmlInfo, IBuiltInDocumentQuery, ICustomDocumentQuery } from '../types';
 
 const { parse, print } = errorStackTracey;
@@ -72,7 +78,7 @@ export default class DocumentPlugin {
 
     // Support custom loader
     const loaderForDocument =
-      options.loader || (this.documentPath ? require.resolve('./customLoader') : require('./builtInLoader'));
+      options.loader || (this.documentPath ? require.resolve('./customLoader') : require.resolve('./builtInLoader'));
 
     delete webpackConfig.entry.index;
     // Add ssr loader for each entry
@@ -108,9 +114,12 @@ export default class DocumentPlugin {
           staticExportPagePath,
           builtInDocumentTpl,
         };
+        // Generate temp entry file
+        const tempEntryPath = path.join(__dirname, 'tempEntry.js');
+        fs.ensureFileSync(tempEntryPath);
         // Insert elements which define in app.json
         insertCommonElements(options.staticConfig);
-        webpackConfig.entry[tempFile].push(`${loaderForDocument}?${qs.stringify(query)}`);
+        webpackConfig.entry[tempFile].push(`${loaderForDocument}?${qs.stringify(query)}!${tempEntryPath}`);
       }
     });
 
@@ -166,6 +175,7 @@ export default class DocumentPlugin {
         cachedHTML = await generateHtml(compilation, {
           pages,
           publicPath,
+          existDocument: !!this.documentPath,
         });
       }
 
@@ -193,16 +203,17 @@ async function generateHtml(compilation, options) {
     const files = compilation.entrypoints.get(entryName).getFiles();
     const assets = getAssetsForPage(files, publicPath);
     const documentContent = compilation.assets[`${tempFile}.js`].source();
-
     let pageSource;
 
     try {
       const Document: any = loadDocument(documentContent);
-      if (this.documentPath) {
+      if (options.existDocument) {
         pageSource = Document.renderToHTML(assets);
       } else {
         const initialHTML = Document.renderInitialHTML();
-        const builtInDocumentTpl = Document.getHTML();
+        const builtInDocumentTpl = Document.html;
+        insertLinks(assets.styles.map((style) => `<link rel="stylesheet" href="${style}" />`));
+        insertScripts(assets.scripts.map((script) => `<script src="${script}" />`));
         const $ = generateHtmlStructure(builtInDocumentTpl);
         const root = $('#root');
         root.html(initialHTML);
