@@ -13,6 +13,7 @@ const {
   BYTEDANCE_MICROAPP,
   WEEX,
   KRAKEN,
+  DEV_URL_PREFIX,
 } = require('./constants');
 const generateTempFile = require('./utils/generateTempFile');
 
@@ -20,7 +21,7 @@ const highlightPrint = chalk.hex('#F4AF3D');
 
 module.exports = function (api) {
   // eslint-disable-next-line global-require
-  const { context, onHook } = api;
+  const { context, onHook, getValue } = api;
   const { commandArgs, rootDir } = context;
   let webEntryKeys = [];
   let weexEntryKeys = [];
@@ -83,6 +84,8 @@ module.exports = function (api) {
     const isSuccessful = !messages.errors.length;
     const { userConfig } = context;
     const { outputDir = 'build', targets } = userConfig;
+    const urlPrefix = getValue(DEV_URL_PREFIX);
+    const showLocalUrl = !process.env.CLOUDIDE_ENV;
 
     if (isSuccessful) {
       if (commandArgs.enableAssets) {
@@ -149,7 +152,7 @@ module.exports = function (api) {
         devInfo.urls.web = [];
         console.log(highlightPrint('  [Web] Development server at: '));
         // do not open browser when restart dev
-        const shouldOpenBrowser = !commandArgs.disableOpen && !process.env.RESTART_DEV && isFirstCompile;
+        const shouldOpenBrowser = !commandArgs.disableOpen && !process.env.RESTART_DEV && isFirstCompile && showLocalUrl;
         isFirstCompile = false;
         if (webEntryKeys.length > 0) {
           let openEntries = [];
@@ -160,9 +163,9 @@ module.exports = function (api) {
           }
           webEntryKeys.forEach((entryKey) => {
             const entryPath = webMpa ? `${entryKey}.html` : '';
-            const lanUrl = `${urls.lanUrlForBrowser}${entryPath}`;
+            const lanUrl = `${urlPrefix}/${entryPath}`;
             devInfo.urls.web.push(lanUrl);
-            console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}${entryPath}`)}`);
+            showLocalUrl && console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}${entryPath}`)}`);
             console.log(`  ${chalk.underline.white(lanUrl)}`);
             console.log();
             if (shouldOpenBrowser && openEntries.includes(entryKey)) {
@@ -170,9 +173,9 @@ module.exports = function (api) {
             }
           });
         } else {
-          devInfo.urls.web.push(urls.lanUrlForBrowser);
+          devInfo.urls.web.push(`${urlPrefix}/`);
           console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}`)}`);
-          console.log(`  ${chalk.underline.white(`${urls.lanUrlForBrowser}`)}`);
+          console.log(`  ${chalk.underline.white(`${urlPrefix}/`)}`);
           console.log();
 
           if (shouldOpenBrowser) {
@@ -185,7 +188,7 @@ module.exports = function (api) {
         devInfo.urls.kraken = [];
         console.log(highlightPrint('  [Kraken] Development server at: '));
         krakenEntryKeys.forEach((entryKey) => {
-          const krakenURL = `${urls.lanUrlForBrowser}kraken/${krakenMpa ? entryKey : 'index'}.js`;
+          const krakenURL = `${urlPrefix}/kraken/${krakenMpa ? entryKey : 'index'}.js`;
           devInfo.urls.kraken.push(krakenURL);
           console.log(`  ${chalk.underline.white(krakenURL)}`);
           console.log();
@@ -193,7 +196,7 @@ module.exports = function (api) {
 
         console.log(highlightPrint('  [Kraken] Run Kraken Playground App: '));
         krakenEntryKeys.forEach((entryKey) => {
-          const krakenURL = `${urls.lanUrlForBrowser}kraken/${krakenMpa ? entryKey : 'index'}.js`;
+          const krakenURL = `${urlPrefix}/kraken/${krakenMpa ? entryKey : 'index'}.js`;
           devInfo.urls.kraken.push(krakenURL);
           console.log(`  ${chalk.underline.white(`kraken -u ${krakenURL}`)}`);
           console.log();
@@ -205,7 +208,7 @@ module.exports = function (api) {
         // Use Weex App to scan ip address (mobile phone can't visit localhost).
         console.log(highlightPrint('  [Weex] Development server at: '));
         weexEntryKeys.forEach((entryKey) => {
-          const weexUrl = `${urls.lanUrlForBrowser}weex/${weexMpa ? entryKey : 'index'}.js?wh_weex=true`;
+          const weexUrl = `${urlPrefix}/weex/${weexMpa ? entryKey : 'index'}.js?wh_weex=true`;
           devInfo.urls.weex.push(weexUrl);
           console.log(`  ${chalk.underline.white(weexUrl)}`);
           console.log();
@@ -217,7 +220,7 @@ module.exports = function (api) {
       if (pha) {
         // Use PHA App to scan ip address (mobile phone can't visit localhost).
         console.log(highlightPrint('  [PHA] Development server at: '));
-        const manifestUrl = `${urls.lanUrlForBrowser}manifest.json?pha=true`;
+        const manifestUrl = `${urlPrefix}/manifest.json?pha=true`;
         devInfo.urls.pha = [manifestUrl];
         console.log(`  ${chalk.underline.white(manifestUrl)}`);
         console.log();
