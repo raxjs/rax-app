@@ -35,8 +35,7 @@ module.exports = (api) => {
     const krakenConfig = userConfig.kraken || {};
 
     if (krakenConfig.mpa) {
-      setMPAConfig.default(config, {
-        context,
+      setMPAConfig.default(api, config, {
         type: 'kraken',
         targetDir: tempDir,
         entries: getMpaEntries(api, {
