@@ -1,9 +1,3 @@
 {
-  "targets": ["web", "weex", "kraken", "miniapp", "wechat-miniprogram"],
-  "web": {
-    "mpa": true
-  },
-  "weex": {
-    "mpa": true
-  }
+  "targets": ["web", "weex", "kraken", "miniapp", "wechat-miniprogram"]
 }
