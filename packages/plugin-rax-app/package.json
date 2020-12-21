@@ -32,7 +32,8 @@
     "copy-webpack-plugin": "^5.0.4",
     "postcss-import": "^12.0.1",
     "postcss-preset-env": "^6.7.0",
-    "null-loader": "^4.0.1"
+    "null-loader": "^4.0.1",
+    "address": "^1.1.2"
   },
   "devDependencies": {
     "webpack": "^4.41.1"

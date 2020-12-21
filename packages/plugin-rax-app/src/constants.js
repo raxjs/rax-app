@@ -9,4 +9,5 @@ module.exports = {
   BYTEDANCE_MICROAPP: 'bytedance-microapp',
   QUICKAPP: 'quickapp',
   GET_RAX_APP_WEBPACK_CONFIG: 'getRaxAppWebpackConfig',
+  DEV_URL_PREFIX: 'devUrlPrefix',
 };
