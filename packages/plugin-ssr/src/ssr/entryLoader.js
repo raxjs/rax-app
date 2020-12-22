@@ -25,9 +25,9 @@ module.exports = function () {
   } = query;
 
   const renderHtmlFnc = `
-    async function renderComponentToHTML(Component, ctx) {
-      const pageData = await getInitialProps(Component, ctx);
-      const initialData = appConfig.app && appConfig.app.getInitialData ? await appConfig.app.getInitialData() : {};
+    async function renderComponentToHTML(Component, initialContext) {
+      const pageData = await getInitialProps(Component, initialContext);
+      const initialData = appConfig.app && appConfig.app.getInitialData ? await appConfig.app.getInitialData(initialContext) : {};
 
       const data = {
         __SSR_ENABLED__: true,
@@ -72,11 +72,14 @@ module.exports = function () {
   const source = `
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
+    import * as queryString from 'query-string';
 
     import '${formatPath(absoluteAppPath)}';
     import { getAppConfig } from '${formatPath(absoluteAppConfigPath)}'
     import Page from '${formatPath(absolutePagePath)}';
     import Document from '${formatPath(absoluteDocumentPath)}';
+
+    const parseurl = require('parseurl');
 
     const appConfig = getAppConfig() || {};
 
@@ -90,10 +93,17 @@ module.exports = function () {
     }
 
     async function renderToHTML(req, res) {
-      const html = await renderComponentToHTML(Page, {
+      const { search, hash, path, pathname } = parseurl(req);
+      const parsedQuery = queryString.parse(search);
+      const initialContext = {
         req,
-        res
-      });
+        res,
+        pathname,
+        query: parsedQuery,
+        path,
+        location: { pathname, search, hash, state: null }
+      };
+      const html = await renderComponentToHTML(Page, initialContext);
       return html;
     }
 
@@ -113,10 +123,10 @@ module.exports = function () {
 
     export default render;
 
-    async function getInitialProps(Component, ctx) {
+    async function getInitialProps(Component, initialContext) {
       if (!Component.getInitialProps) return null;
 
-      const props = await Component.getInitialProps(ctx);
+      const props = await Component.getInitialProps(initialContext);
 
       if (!props || typeof props !== 'object') {
         const message = '"getInitialProps()" should resolve to an object. But found "' + props + '" instead.';
