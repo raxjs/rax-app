@@ -14,5 +14,6 @@
   ],
   "window": {
     "title": "Rax App"
-  }
+  },
+  "metas": ["<meta name=\"description\" content=\"150 words\" />"]
 }

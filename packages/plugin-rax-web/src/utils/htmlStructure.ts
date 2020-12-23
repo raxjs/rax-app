@@ -1,4 +1,4 @@
-import * as cherrio from 'cheerio';
+import * as cheerio from 'cheerio';
 
 let scripts = [];
 let links = [];
@@ -35,7 +35,7 @@ export function insertCommonElements(staticConfig) {
 }
 
 export function generateHtmlStructure(htmlStr) {
-  const $ = cherrio.load(htmlStr);
+  const $ = cheerio.load(htmlStr);
   const root = $('#root');
   const title = $('title');
   title.before(metas);
@@ -54,4 +54,37 @@ export function insertLinks(customLinks) {
 
 export function insertMetas(customMetas) {
   metas = [...metas, customMetas];
+}
+
+export function insertScriptsByInfo(customScripts) {
+  insertScripts(
+    customScripts.map((scriptInfo) => {
+      const attrStr = Object.keys(scriptInfo).reduce((curr, next) => `${curr} ${next}=${scriptInfo[next]} `, '');
+      return `<script${attrStr} />`;
+    }),
+  );
+}
+
+export function injectHTML(tagName, value) {
+  switch (tagName) {
+    case 'script':
+      insertScripts(value);
+      break;
+    case 'link':
+      insertLinks(value);
+      break;
+    case 'meta':
+      insertMetas(value);
+      break;
+    default:
+      throw new Error(`Not support inject ${tagName}`);
+  }
+}
+
+export function getInjectedHTML() {
+  return {
+    scripts: [...scripts],
+    links: [...links],
+    metas: [...metas],
+  };
 }

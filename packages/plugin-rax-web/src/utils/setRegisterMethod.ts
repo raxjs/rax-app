@@ -1,7 +1,8 @@
-import { insertLinks, insertMetas, insertScripts } from './htmlStructure';
+import { injectHTML, insertScriptsByInfo, getInjectedHTML } from './htmlStructure';
+
 export default (api) => {
   const { registerMethod } = api;
-  registerMethod('ininsertLinks', insertLinks);
-  registerMethod('insertMetas', insertMetas);
-  registerMethod('insertScripts', insertScripts);
+  registerMethod('injectHTML', injectHTML);
+  registerMethod('insertScriptsByInfo', insertScriptsByInfo);
+  registerMethod('getInjectedHTML', getInjectedHTML);
 };

@@ -1,39 +1,43 @@
-const path = require('path');
-const Module = require('module');
-const fs = require('fs-extra');
-const { parse, print } = require('error-stack-tracey');
-const getEntryName = require('./getEntryName');
-const getMpaRoutes = require('./getMpaRoutes');
+import * as path from 'path';
+import * as Module from 'module';
+import * as fs from 'fs';
+import * as errorStackTracey from 'error-stack-tracey';
+import { getMpaEntries } from '@builder/app-helpers';
+import getEntryName from './getEntryName';
+
+const { parse, print } = errorStackTracey;
 
 function exec(code, filename, filePath) {
-  const module = new Module(filename, this);
-  module.paths = Module._nodeModulePaths(filePath);
+  const module: any = new Module(filename, this);
+  module.paths = (Module as any)._nodeModulePaths(filePath);
   module.filename = filename;
   module._compile(code, filename);
   return module.exports;
 }
 
-module.exports = (config, context) => {
+export default (config, api) => {
+  const { context, getValue } = api;
   const { rootDir, userConfig } = context;
-  const { web: webConfig = {} } = userConfig;
+  const { web: webConfig = {}, outputDir } = userConfig;
+  const distDir = path.join(rootDir, outputDir, 'node');
 
   config.mode('development');
-
-  let routes = [];
+  const staticConfig = getValue('staticConfig');
+  const { routes } = staticConfig;
 
   if (webConfig.mpa) {
-    routes = getMpaRoutes(config);
+    const entries = getMpaEntries(api, { target: 'web', appJsonContent: staticConfig });
+    routes.forEach((route) => {
+      const { entryName } = entries.find(({ source }) => source === route.source);
+      route.path = `/${entryName}.html`;
+      route.entryName = entryName;
+      route.componentPath = path.join(distDir, `${entryName}.js`);
+    });
   } else {
-    const absoluteAppJSONPath = path.join(rootDir, 'src/app.json');
-    const distDir = config.output.get('path');
-    const filename = config.output.get('filename');
-    // eslint-disable-next-line
-    routes = require(absoluteAppJSONPath).routes;
-
     routes.forEach((route) => {
       const entryName = getEntryName(route.path);
       route.entryName = entryName;
-      route.componentPath = path.join(distDir, filename.replace('[name]', entryName));
+      route.componentPath = path.join(distDir, `${entryName}.js`);
     });
   }
 
@@ -41,16 +45,20 @@ module.exports = (config, context) => {
   config.devtool('eval-cheap-source-map');
 
   config.devServer.hot(false);
+  const originalBeforeDevFunc = config.devServer.get('before');
 
   // There can only be one `before` config, this config will overwrite `before` config in web plugin.
   config.devServer.set('before', (app, devServer) => {
+    if (originalBeforeDevFunc) {
+      originalBeforeDevFunc(app, devServer);
+    }
     // outputFileSystem in devServer is MemoryFileSystem by defalut, but it can also be custom with other file systems.
     const outputFs = devServer.compiler.compilers[0].outputFileSystem;
     routes.forEach((route) => {
       app.get(route.path, async (req, res) => {
         const bundleContent = outputFs.readFileSync(route.componentPath, 'utf8');
 
-        process.once('unhandledRejection', async (error) => {
+        process.once('unhandledRejection', async (error: Error) => {
           const errorStack = await parse(error, bundleContent);
           print(error.message, errorStack);
         });

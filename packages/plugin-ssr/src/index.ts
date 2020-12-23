@@ -1,12 +1,12 @@
-const path = require('path');
-const chalk = require('chalk');
-const getSSRBase = require('./ssr/getBase');
-const setSSRBuild = require('./ssr/setBuild');
-const setSSRDev = require('./ssr/setDev');
-const setWebDev = require('./web/setDev');
+import setWebDev from './web/setDev';
+import * as path from 'path';
+import chalk from 'chalk';
+import getSSRBase from './ssr/getBase';
+import setSSRBuild from './ssr/setBuild';
+import setSSRDev from './ssr/setDev';
 
 // can‘t clone webpack chain object
-module.exports = (api) => {
+export default (api) => {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;
   const { command, rootDir, userConfig = {} } = context;
   const { outputDir } = userConfig;
@@ -19,7 +19,7 @@ module.exports = (api) => {
   if (isDev) {
     onGetWebpackConfig('web', (config) => {
       config.optimization.splitChunks({ cacheGroups: {} });
-      setWebDev(config, context);
+      setWebDev(config);
     });
   }
 
@@ -36,9 +36,9 @@ module.exports = (api) => {
       .libraryTarget('commonjs2');
 
     if (isDev) {
-      setSSRDev(config, context);
+      setSSRDev(config, api);
     } else {
-      setSSRBuild(config, context);
+      setSSRBuild(config);
     }
 
     config

@@ -2,7 +2,7 @@
  * Generate entryname by route.path
  * Example: '/about/' -> 'about/index'
  */
-module.exports = (path) => {
+export default (path) => {
   let entryName = 'index';
 
   if (path && path !== '/') {

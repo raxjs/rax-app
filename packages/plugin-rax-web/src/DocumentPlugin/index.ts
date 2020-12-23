@@ -208,7 +208,8 @@ async function generateHtml(compilation, options) {
     try {
       const Document: any = loadDocument(documentContent);
       if (options.existDocument) {
-        pageSource = Document.renderToHTML(assets);
+        const $ = generateHtmlStructure(Document.renderToHTML(assets));
+        pageSource = $.html();
       } else {
         const initialHTML = Document.renderInitialHTML();
         const builtInDocumentTpl = Document.html;
