@@ -170,7 +170,7 @@ function _renderApp(context, options) {
       return render(
         appInstance,
         rootEl,
-        { driver, hydrate: webConfig.snapshot || webConfig.ssr },
+        { driver, hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr },
       );
     });
 }
