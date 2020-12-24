@@ -1,0 +1,19 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "source": "module/index",
+      "window": {
+        "title": "about/module/index"
+      }
+    },
+    {
+      "path": "/",
+      "source": "miniapp-native/native-page/index",
+      "window": {
+        "title": "这是 about 包的 native 页面"
+      },
+      "targets": ["miniapp"]
+    }
+  ]
+}

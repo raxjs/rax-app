@@ -1,0 +1,11 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "source": "module/index",
+      "window": {
+        "title": "profile/module/index"
+      }
+    }
+  ]
+}
