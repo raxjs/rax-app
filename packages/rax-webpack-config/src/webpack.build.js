@@ -15,9 +15,6 @@ module.exports = (config) => {
       parallel: true,
       extractComments: false,
       terserOptions: {
-        compress: {
-          unused: false,
-        },
         output: {
           ascii_only: true,
           comments: 'some',
