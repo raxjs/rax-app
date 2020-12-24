@@ -62,6 +62,10 @@ function App(props) {
 }
 
 async function raxAppRenderer(options) {
+  if (!options.appConfig) {
+    options.appConfig = {};
+  }
+
   const { appConfig, setAppConfig } = options || {};
 
   setAppConfig(appConfig);
@@ -166,7 +170,7 @@ function _renderApp(context, options) {
       return render(
         appInstance,
         rootEl,
-        { driver, hydrate: webConfig.snapshot || webConfig.ssr },
+        { driver, hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr },
       );
     });
 }

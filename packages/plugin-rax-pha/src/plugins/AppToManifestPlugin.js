@@ -16,8 +16,9 @@ module.exports = class {
   }
 
   apply(compiler) {
-    const { context } = this.options;
-    const { command, rootDir, commandArgs } = context;
+    const { api } = this.options;
+    const { context, getValue } = api;
+    const { command, rootDir } = context;
 
     compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
       compiler.hooks.emit.intercept({
@@ -39,8 +40,7 @@ module.exports = class {
           }
 
           if (command === 'start') {
-            const protocol = commandArgs.https ? 'https' : 'http';
-            const urlPrefix = `${protocol}://${ address.ip() }:${ commandArgs.port }/`;
+            const urlPrefix = `${getValue('devUrlPrefix')}/`;
             manifestJSON = setRealUrlToManifest(urlPrefix, manifestJSON);
           }
           compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON));

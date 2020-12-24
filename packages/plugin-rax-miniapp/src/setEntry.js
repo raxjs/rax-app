@@ -1,14 +1,27 @@
 const fs = require('fs-extra');
 const path = require('path');
+const { getAppConfig, pathHelper: { getBundlePath } } = require('miniapp-builder-shared');
 
-module.exports = (config, context) => {
-  const { rootDir } = context;
+module.exports = (config, context, target) => {
+  const { rootDir, userConfig } = context;
+  const { subPackages = false } = userConfig[target] || {};
 
-  // SPA
-  const appEntry = moduleResolve(formatPath(path.join(rootDir, './src/app')));
-  const entryConfig = config.entry('index');
+  const appConfig = getAppConfig(rootDir, target);
 
-  entryConfig.add(appEntry);
+  if (subPackages) {
+    appConfig.routes.forEach((app) => {
+      const subAppRoot = path.dirname(app.source);
+      const subAppEntry = moduleResolve(formatPath(path.join(rootDir, 'src', subAppRoot, 'app')));
+      const subAppEntryConfig = config.entry(getBundlePath(subAppRoot));
+      subAppEntryConfig.add(subAppEntry);
+    });
+  } else {
+    // SPA
+    const appEntry = moduleResolve(formatPath(path.join(rootDir, './src/app')));
+    const entryConfig = config.entry(getBundlePath());
+
+    entryConfig.add(appEntry);
+  }
 };
 
 function moduleResolve(filePath) {

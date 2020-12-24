@@ -1,41 +1,25 @@
 import * as qs from 'qs';
-import * as path from 'path';
 import * as fs from 'fs';
-
-const isWin = process.platform === 'win32';
-
-/**
- * Transform Windows-style paths, such as 'C:\Windows\system32' to 'C:/Windows/system32'.
- * Because 'C:\Windows\system32' will be escaped to 'C:Windowssystem32'
- * @param {*} p
- */
-const formatPath = (p) => {
-  return isWin ? p.split(path.sep).join('/') : p;
-};
+import { ICustomDocumentQuery } from '../types';
 
 /**
  * loader for wrap document and pages to be server render function, which can render page to html
  */
 export default function () {
-  const query = typeof this.query === 'string' ? qs.parse(this.query.substr(1)) : this.query;
-  const {
-    absoluteDocumentPath,
-    absolutePagePath,
-    pagePath,
-    htmlInfo = {},
-    manifests,
-  } = query;
+  const query: ICustomDocumentQuery = typeof this.query === 'string' ? qs.parse(this.query.substr(1)) : this.query;
+  const { documentPath, staticExportPagePath, pagePath, htmlInfo = {} } = query;
   const { doctype, title } = htmlInfo;
 
-  const formatedPagePath = absolutePagePath ? formatPath(absolutePagePath) : null;
-
-  const pageStr = formatedPagePath && fs.existsSync(formatedPagePath) ? `import Page from '${formatedPagePath}';` : 'const Page = null;';
+  const pageStr =
+    staticExportPagePath && fs.existsSync(staticExportPagePath)
+      ? `import Page from '${staticExportPagePath}';`
+      : 'const Page = null;';
   const doctypeStr = doctype === null || doctype === '' ? '' : `${doctype || '<!DOCTYPE html>'}`;
 
   const source = `
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
-    import Document from '${formatPath(absoluteDocumentPath)}';
+    import Document from '${documentPath}';
     ${pageStr}
 
     function renderToHTML(assets) {
@@ -55,8 +39,7 @@ export default function () {
           __initialHtml: initialHtml,
           __pagePath: '${pagePath}',
           __styles: assets.styles,
-          __scripts: assets.scripts,
-          __manifests: ${manifests}
+          __scripts: assets.scripts
         };
       };
 
