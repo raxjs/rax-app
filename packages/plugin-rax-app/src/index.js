@@ -9,11 +9,14 @@ const customConfigs = require('./config/user.config');
 const customOptionConfig = require('./config/options.config');
 const modifyTargets = require('./utils/modifyTargets');
 const setStaicConfig = require('./utils/setStaticConfig');
+const setDevUrlPrefix = require('./utils/setDevUrlPrefix');
 
 module.exports = (api) => {
   const { onGetWebpackConfig, context, setValue } = api;
   const { command, rootDir } = context;
   setValue(GET_RAX_APP_WEBPACK_CONFIG, getBase);
+  // Set dev url prefix
+  setDevUrlPrefix(api);
   setStaicConfig(api);
   // register cli option
   applyCliOption(api, { customOptionConfig });

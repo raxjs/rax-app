@@ -33,7 +33,7 @@ module.exports = (api) => {
   onGetWebpackConfig('web', (config) => {
     config.plugin('AppToManifestPlugin').use(AppToManifestPlugin, [
       {
-        context,
+        api,
       },
     ]);
   });
