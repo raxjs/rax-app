@@ -1,0 +1,20 @@
+{
+  "routes": [
+    {
+      "path": "pages/Home",
+      "source": "pages/Home/app",
+      "miniappMain": true
+    },
+    {
+      "path": "pages/About",
+      "source": "pages/About/app"
+    },
+    {
+      "path": "pages/Profile",
+      "source": "pages/Profile/app"
+    }
+  ],
+  "window": {
+    "title": "Rax App"
+  }
+}

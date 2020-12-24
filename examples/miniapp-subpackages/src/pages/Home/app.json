@@ -1,0 +1,27 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "source": "module/index",
+      "window": {
+        "title": "home/module/index"
+      }
+    },
+    {
+      "path": "/",
+      "source": "native-page/index",
+      "window": {
+        "title": "home/native-page/index"
+      },
+      "targets": ["miniapp"]
+    },
+    {
+      "path": "/",
+      "source": "miniapp-native/Webview/index",
+      "window": {
+        "title": "miniapp-native/Webview/index"
+      },
+      "targets": ["miniapp"]
+    }
+  ]
+}
