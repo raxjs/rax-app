@@ -56,7 +56,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
     }
 
     config.plugin('DefinePlugin').tap((args) => [
-      Object.assign(...args, {
+      Object.assign({}, ...args, {
         'process.env.PUBLIC_URL': JSON.stringify(publicUrl),
       }),
     ]);

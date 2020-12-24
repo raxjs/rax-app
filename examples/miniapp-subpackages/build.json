@@ -1,0 +1,17 @@
+{
+  "targets": [
+    "miniapp",
+    "wechat-miniprogram"
+  ],
+  "miniapp": {
+    "buildType": "runtime",
+    "subPackages": true
+  },
+  "wechat-miniprogram": {
+    "buildType": "runtime",
+    "subPackages": true
+  },
+  "plugins": [
+    "@ali/build-plugin-rax-app-def"
+  ]
+}
