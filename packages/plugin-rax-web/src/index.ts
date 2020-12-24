@@ -1,11 +1,12 @@
 import * as path from 'path';
 import setMPAConfig from '@builder/mpa-config';
+import * as appHelpers from '@builder/app-helpers';
 import setDev from './setDev';
 import setEntry from './setEntry';
 import DocumentPlugin from './DocumentPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
-import * as appHelpers from '@builder/app-helpers';
 import SnapshotPlugin from './SnapshotPlugin';
+import setRegisterMethod from './utils/setRegisterMethod';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
@@ -33,6 +34,8 @@ export default (api) => {
   // Set Entry
   setEntry(chainConfig, context);
   registerTask(target, chainConfig);
+  // Set global methods
+  setRegisterMethod(api);
 
   if (webConfig.pha) {
     // Modify mpa config

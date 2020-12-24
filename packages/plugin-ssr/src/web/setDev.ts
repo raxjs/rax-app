@@ -1,4 +1,4 @@
-module.exports = (config) => {
+export default (config) => {
   const allEntries = config.entryPoints.entries();
   // eslint-disable-next-line
   for (const entryName in allEntries) {
