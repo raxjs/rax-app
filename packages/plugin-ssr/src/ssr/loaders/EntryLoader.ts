@@ -1,5 +1,3 @@
-import { formatPath } from '@builder/app-helpers';
-
 export default class {
   source = '';
   absoluteAppConfigPath: string;
@@ -13,9 +11,12 @@ export default class {
     this.source += `
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
+    import * as queryString from 'query-string';
 
     import { getAppConfig } from '${this.absoluteAppConfigPath}'
     import Page from '${this.entryPath}';
+
+    const parseurl = require('parseurl');
     `;
     return this;
   }
@@ -40,10 +41,17 @@ export default class {
   addRenderToHTML() {
     this.source += `
     async function renderToHTML(req, res) {
-      const html = await renderComponentToHTML(Page, {
+      const { search, hash, path, pathname } = parseurl(req);
+      const parsedQuery = queryString.parse(search);
+      const initialContext = {
         req,
-        res
-      });
+        res,
+        pathname,
+        query: parsedQuery,
+        path,
+        location: { pathname, search, hash, state: null }
+      }
+      const html = await renderComponentToHTML(Page, initialContext);
       return html;
     }`;
     return this;

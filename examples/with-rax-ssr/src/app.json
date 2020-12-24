@@ -3,7 +3,12 @@
     {
       "path": "/",
       "source": "pages/Home/index"
+    },
+    {
+      "path": "/about",
+      "source": "pages/About/index"
     }
+
   ],
   "window": {
     "title": "Rax App"

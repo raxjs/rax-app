@@ -5,19 +5,20 @@ import Text from 'rax-text';
 import styles from './index.module.css';
 import Logo from '../../components/Logo';
 
-function Home({ title, info, link }) {
+function Home({ title, info, link, history }) {
   return (
     <View className={styles.homeContainer}>
       <Logo uri="//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png" />
       <Text className={styles.homeTitle}>{title}</Text>
       <Text className={styles.homeInfo}>{info}</Text>
       <Text className={styles.homeInfo}>{link}</Text>
+      <Text className={styles.homeInfo} onClick={() => history.push('/about')}>Go About</Text>
     </View>
   );
 }
 
 Home.getInitialProps = (ctx) => {
-  // console.log('getInitialProps ==>', ctx);
+  console.log('Home getInitialProps ==>', ctx);
   return {
     title: 'Welcome to Your Rax App',
     info: 'More information about Rax',
