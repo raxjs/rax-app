@@ -4,6 +4,7 @@ import { createNavigation, createTabBar } from 'create-app-container';
 import { createUseRouter } from 'create-use-router';
 import { isWeb, isWeex, isKraken } from 'universal-env';
 import UniversalDriver from 'driver-universal';
+import * as queryString from 'query-string';
 
 const useRouter = createUseRouter({ useState, useLayoutEffect });
 
@@ -36,21 +37,33 @@ function _matchInitialComponent(fullpath, routes) {
 }
 
 function App(props) {
-  const { staticConfig, history, routes, InitialComponent, context } = props;
-  const { component: PageComponent } = useRouter(() => ({ history, routes, InitialComponent }));
+  const { staticConfig, history, routes, InitialComponent, context: { initialContext } } = props;
 
+  const { component: PageComponent } = useRouter(() => ({ history, routes, InitialComponent }));
+  const [data, setData] = useState((window as any).__INITIAL_DATA__.pageData);
+
+  useEffect(() => {
+    if ((window as any).__INITIAL_DATA__.pageData) {
+      (window as any).__INITIAL_DATA__.pageData = null;
+    } else if (PageComponent.getInitialProps) {
+      void async function() {
+        const result = await PageComponent.getInitialProps(initialContext);
+        setData(result);
+      }()
+    }
+  }, [history.location]);
   // Return null directly if not matched
   if (_isNullableComponent(PageComponent)) return null;
 
   if (isWeb) {
     const navigationProps = Object.assign(
       { staticConfig, component: PageComponent, history, location: history.location, routes, InitialComponent },
-      { ...context.pageInitialProps },
+      { ...data },
     );
     return <AppNavigation {...navigationProps} />;
   }
 
-  const pageProps = Object.assign({ history, location: history.location, routes, InitialComponent }, { ...context.pageInitialProps });
+  const pageProps = Object.assign({ history, location: history.location, routes, InitialComponent }, { ...data });
 
   const tabBarProps = { history, config: staticConfig.tabBar };
   return (
@@ -75,6 +88,17 @@ async function raxAppRenderer(options) {
   let initialData = {};
   let pageInitialProps = {};
 
+  const { href, origin, pathname, search } = window.location;
+  const path = href.replace(origin, '');
+  const query = queryString.parse(search);
+
+  const initialContext = {
+    pathname,
+    path,
+    query,
+    // ssrError TODO:
+  };
+
   // ssr enabled and the server has returned data
   if ((window as any).__INITIAL_DATA__) {
     initialData = (window as any).__INITIAL_DATA__.initialData;
@@ -83,11 +107,11 @@ async function raxAppRenderer(options) {
     // ssr not enabled, or SSR is enabled but the server does not return data
     // eslint-disable-next-line
     if (appConfig.app && appConfig.app.getInitialData) {
-      initialData = await appConfig.app.getInitialData();
+      initialData = await appConfig.app.getInitialData(initialContext);
     }
   }
 
-  const context = { initialData, pageInitialProps };
+  const context = { initialData, pageInitialProps, initialContext };
   _renderApp(context, options);
 }
 
@@ -153,9 +177,11 @@ function _renderApp(context, options) {
         const Root = <RootComponent />;
 
         if (errorBoundary) {
-          appInstance = (<ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHander}>
-            {Root}
-                         </ErrorBoundary>);
+          appInstance = (
+            <ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHander}>
+              {Root}
+            </ErrorBoundary>
+          );
         } else {
           appInstance = Root;
         }

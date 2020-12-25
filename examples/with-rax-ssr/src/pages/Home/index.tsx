@@ -5,7 +5,10 @@ import Text from 'rax-text';
 import styles from './index.module.css';
 import Logo from '../../components/Logo';
 
-function Home({ title, info, link, history }) {
+function Home(props) {
+  console.log('Home props===>', props);
+
+  const { title, info, link, history } = props;
   return (
     <View className={styles.homeContainer}>
       <Logo uri="//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png" />
@@ -18,7 +21,7 @@ function Home({ title, info, link, history }) {
 }
 
 Home.getInitialProps = (ctx) => {
-  console.log('Home getInitialProps ==>', ctx);
+  // console.log('Home getInitialProps ==>', ctx);
   return {
     title: 'Welcome to Your Rax App',
     info: 'More information about Rax',

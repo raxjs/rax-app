@@ -30,17 +30,25 @@ export default class {
 
   addRender() {
     this.source += `
-    async function render(req, res) {
-      const html = await renderToHTML(req, res);
+    async function render(...args) {
+      let params;
+      if (args.length === 1) {
+        params = { ...args[0] }
+      } else {
+        const [req, res] = args;
+        params = { ctx: { req, res } }
+      }
+      const html = await renderToHTML(params);
 
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(html);
+      params.ctx.res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      params.ctx.res.send(html);
     }`;
     return this;
   }
   addRenderToHTML() {
     this.source += `
-    async function renderToHTML(req, res) {
+    async function renderToHTML({ ctx, initialData }) {
+      const { req, res } = ctx;
       const { search, hash, path, pathname } = parseurl(req);
       const parsedQuery = queryString.parse(search);
       const initialContext = {

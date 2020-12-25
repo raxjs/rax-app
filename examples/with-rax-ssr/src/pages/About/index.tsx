@@ -5,7 +5,10 @@ import Text from 'rax-text';
 import styles from './index.module.css';
 import Logo from '../../components/Logo';
 
-function About({ title, info, history }) {
+function About(props) {
+  console.log('About props==>', props);
+
+  const { title, info, history } = props;
   return (
     <View className={styles.container}>
       <Logo uri="//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png" />
