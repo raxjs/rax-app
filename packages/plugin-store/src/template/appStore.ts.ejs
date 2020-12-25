@@ -1,0 +1,19 @@
+<% if (importStr) { %>
+  import { createStore, Models } from '@ice/store';
+  <%- importStr %>
+  interface AppModel extends Models {
+    <% modelsStr.split(',').forEach(function(model){ %>
+      <% if (model) { %>
+        <%- model %>: typeof <%- model %>;
+      <% } %>
+    <% }); %>
+  }
+  const appModel: AppModel = { <%- modelsStr %> };
+  const store = createStore(appModel);
+
+  export default store
+  export { appModel } 
+<% } else { %>
+  export default {};
+  export {};
+<% } %>

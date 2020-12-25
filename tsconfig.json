@@ -6,6 +6,7 @@
     { "path": "packages/rax-app-renderer" },
     { "path": "packages/plugin-rax-web" },
     { "path": "packages/plugin-ssr" },
+    { "path": "packages/plugin-store" },
     { "path": "packages/rax-app" }
   ]
 }

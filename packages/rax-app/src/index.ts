@@ -15,7 +15,7 @@ const getBuiltInPlugins = (userConfig) => {
   ];
 
   if (store) {
-    builtInPlugins.push(['build-plugin-ice-store']);
+    builtInPlugins.push(['build-plugin-rax-store']);
   }
 
   if (targets.includes('web')) {
