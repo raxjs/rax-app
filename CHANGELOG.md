@@ -2,6 +2,7 @@
 
 ### 3.2.1 (December 25 2020)
 - Chore: `compileDependencies` default value is `['']`. 
+
 ### 3.2.0 (December 24 2020)
 - Feat: config store runtime automatically. ([alibaba/ice#3932](https://github.com/alibaba/ice/pull/3932))
 - Feat: support config hydrate in rax-app. ([alibaba/ice#3918](https://github.com/alibaba/ice/pull/3918) [#548](https://github.com/raxjs/rax-app/pull/548))
