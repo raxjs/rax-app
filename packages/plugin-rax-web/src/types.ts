@@ -1,6 +1,10 @@
 export interface IHtmlInfo {
   title?: string;
   doctype?: string;
+
+  links?: string[];
+  scripts?: string[];
+  metas?: string[];
 }
 
 export interface IBuiltInDocumentQuery {
