@@ -115,7 +115,7 @@ export default class Generator {
     });
   }
 
-  private getPageModels(pageName: string, pageModelsDir: string, pageModelFile: string) {
+  private getPageModels(pageModelsDir: string, pageModelFile: string) {
     if (fse.pathExistsSync(pageModelsDir)) {
       const pageModels = recursiveReaddir(pageModelsDir)
         .filter((pageModel) => matchRegex.test(pageModel))
@@ -201,7 +201,7 @@ export default class Generator {
       const targetPath = path.join(this.targetPath, 'pages', pageName, `${sourceFilename}.ts`);
 
       const pageModelFilePath = path.join(pageNameDir, 'model');
-      const renderData = this.getPageModels(pageName, pageModelsDir, pageModelFilePath);
+      const renderData = this.getPageModels(pageModelsDir, pageModelFilePath);
       this.applyMethod('addRenderFile', this.pageStoreTemplatePath, targetPath, renderData);
 
       this.applyMethod('removePageExport', pageName, exportName);

@@ -4,7 +4,6 @@ import Generator from './generator';
 import checkStoreAndModelExists from './utils/checkStoreAndModelExists';
 import { getAppStorePath } from './utils/getPath';
 
-
 const { name: pluginName } = require('../package.json');
 
 export default async (api) => {
@@ -36,7 +35,7 @@ export default async (api) => {
     applyMethod('addAppConfigTypes', { source: './store/types', specifier: '{ IStore }', exportName: 'store?: IStore' });
   }
 
-  onGetWebpackConfig(config => {
+  onGetWebpackConfig((config) => {
     config.module.rule('appJSON')
       .test(/app\.json$/)
       .use('page-source-loader')
