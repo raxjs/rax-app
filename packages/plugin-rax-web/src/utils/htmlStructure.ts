@@ -1,4 +1,3 @@
-import { formatPath } from '@builder/app-helpers';
 import * as cheerio from 'cheerio';
 import { IHtmlInfo } from '../types';
 
@@ -24,15 +23,15 @@ export function getBuiltInHtmlTpl(htmlInfo) {
 }
 
 export function insertCommonElements(staticConfig) {
-  const { metas: customMetas, links: customLinks, scripts: customScripts } = staticConfig;
+  const { metas: customMetas = [], links: customLinks = [], scripts: customScripts = [] } = staticConfig;
   if (customMetas) {
-    metas = [...metas, customMetas];
+    metas = [...metas, ...customMetas];
   }
   if (customLinks) {
-    links = [...links, customLinks];
+    links = [...links, ...customLinks];
   }
   if (customScripts) {
-    scripts = [...scripts, customScripts];
+    scripts = [...scripts, ...customScripts];
   }
 }
 
