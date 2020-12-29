@@ -1,9 +1,9 @@
-const extractImport = require('./config/extract-import');
+const setImport = require('./config/set-import');
 
 module.exports = (api) => {
   const { onGetWebpackConfig } = api;
 
   onGetWebpackConfig((config) => {
-    extractImport(config);
+    setImport(config);
   });
 };

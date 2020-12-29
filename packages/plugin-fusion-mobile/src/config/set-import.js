@@ -8,7 +8,7 @@ module.exports = function (config) {
     require.resolve('babel-plugin-import'),
     {
       libraryName: '@alifd/meet',
-      libraryDirectory: 'lib',
+      libraryDirectory: 'es',
     },
   ];
 
