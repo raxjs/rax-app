@@ -1,9 +1,9 @@
 {
   "name": "build-plugin-fusion-mobile",
-  "version": "1.0.0-0",
+  "version": "1.0.0",
   "description": "app plugin for Fusion Mobile",
   "license": "BSD-3-Clause",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git"
   },
