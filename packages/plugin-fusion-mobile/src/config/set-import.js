@@ -12,21 +12,14 @@ module.exports = function (config) {
     },
   ];
 
-  config.module
-    .rule('tsx')
-    .use('babel-loader')
-    .tap((opts) => {
-      return merge(opts, {
-        plugins: [importConfig],
+  ['tsx', 'jsx'].forEach(rule=>{
+    config.module
+      .rule(rule)
+      .use('babel-loader')
+      .tap((opts) => {
+        return merge(opts, {
+          plugins: [importConfig],
+        });
       });
-    });
-
-  config.module
-    .rule('jsx')
-    .use('babel-loader')
-    .tap((opts) => {
-      return merge(opts, {
-        plugins: [importConfig],
-      });
-    });
+  });
 };
