@@ -1,5 +1,8 @@
 ## Changelog
 
+### 3.2.2 (December 29 2020)
+- Fix: mpa insert all page bundle into html.
+
 ### 3.2.1 (December 25 2020)
 - Chore: `compileDependencies` default value is `['']`. 
 

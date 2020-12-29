@@ -11,7 +11,7 @@ class BuiltInHTMLLoader extends EntryLoader {
   builtInHTML: string;
   constructor(options) {
     super(options);
-    this.injectedHTML = options.injectedHTML;
+    this.injectedHTML = options.injectedHTML || {};
     this.styles = options.styles || [];
     this.scripts = options.scripts;
     this.assetsProcessor = options.assetsProcessor;
