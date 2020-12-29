@@ -1,4 +1,6 @@
+import { formatPath } from '@builder/app-helpers';
 import * as cheerio from 'cheerio';
+import { IHtmlInfo } from '../types';
 
 let scripts = [];
 let links = [];
@@ -34,13 +36,14 @@ export function insertCommonElements(staticConfig) {
   }
 }
 
-export function generateHtmlStructure(htmlStr) {
+export function generateHtmlStructure(htmlStr, htmlInfo?: IHtmlInfo) {
   const $ = cheerio.load(htmlStr);
   const root = $('#root');
   const title = $('title');
-  title.before(metas);
-  title.after(links);
-  root.after(scripts);
+  const { metas: pageMetas = [], links: pageLinks = [], scripts: pageScripts = [] } = htmlInfo || {};
+  title.before([...metas, ...pageMetas]);
+  title.after([...scripts, ...pageLinks]);
+  root.after([...scripts, ...pageScripts]);
   return $;
 }
 

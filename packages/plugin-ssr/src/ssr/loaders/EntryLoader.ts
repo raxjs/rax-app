@@ -1,5 +1,3 @@
-import { formatPath } from '@builder/app-helpers';
-
 export default class {
   source = '';
   absoluteAppConfigPath: string;
