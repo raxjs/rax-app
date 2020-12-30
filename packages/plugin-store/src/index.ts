@@ -12,11 +12,6 @@ export default async (api) => {
 
   const srcDir = 'src';
   const targetPath = getValue('TEMP_PATH');
-  const templatePath = path.join(__dirname, 'template');
-  const appStoreTemplatePath = path.join(templatePath, 'appStore.ts.ejs');
-  const pageStoreTemplatePath = path.join(templatePath, 'pageStore.ts.ejs');
-  const pageStoresTemplatePath = path.join(templatePath, 'pageStores.ts.ejs');
-  const typesTemplatePath = path.join(templatePath, 'types.ts.ejs');
   const projectType = getValue('PROJECT_TYPE');
 
   const storeAndModelExists = checkStoreAndModelExists({ rootDir, srcDir, projectType });
@@ -25,15 +20,10 @@ export default async (api) => {
     return;
   }
 
-  const appStoreFile = applyMethod('formatPath', getAppStorePath({ rootDir, srcDir, projectType }));
-  const existsAppStoreFile = fse.pathExistsSync(appStoreFile);
+  const appStoreFilePath = applyMethod('formatPath', getAppStorePath({ rootDir, srcDir, projectType }));
+  const existsAppStoreFile = fse.pathExistsSync(appStoreFilePath);
 
   applyMethod('addExport', { source: '@ice/store', specifier: '{ createStore }', exportName: 'createStore' });
-
-  if (!existsAppStoreFile) {
-    // set IStore to IAppConfig
-    applyMethod('addAppConfigTypes', { source: './store/types', specifier: '{ IStore }', exportName: 'store?: IStore' });
-  }
 
   onGetWebpackConfig((config) => {
     config.module.rule('appJSON')
@@ -46,16 +36,12 @@ export default async (api) => {
 
     // Set alias to run @ice/store
     config.resolve.alias
-      .set('$store', existsAppStoreFile ? appStoreFile : path.join(targetPath, 'store', 'index.ts'))
+      .set('$store', existsAppStoreFile ? appStoreFilePath : path.join(targetPath, 'store', 'index.ts'))
       .set('react-redux', require.resolve('rax-redux'))
       .set('react', path.join(rootDir, 'node_modules', 'rax/lib/compat'));
   });
 
   const gen = new Generator({
-    appStoreTemplatePath,
-    pageStoreTemplatePath,
-    pageStoresTemplatePath,
-    typesTemplatePath,
     targetPath,
     rootDir,
     applyMethod,
