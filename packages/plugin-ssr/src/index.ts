@@ -1,6 +1,6 @@
 import setWebDev from './web/setDev';
 import * as path from 'path';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import getSSRBase from './ssr/getBase';
 import setSSRBuild from './ssr/setBuild';
 import setSSRDev from './ssr/setDev';
