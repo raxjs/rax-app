@@ -31,11 +31,15 @@ function getPromptQuestion(appTemplate) {
     ],
   }, {
     type: 'checkbox',
-    name: 'projectTargets',
+    name: 'targets',
     default: ['web'],
     validate(targets) {
       if (targets && targets.length > 0) return true;
       return 'Choose at least one of target.';
+    },
+    when(answers) {
+      // app 不选 targets 直接走下面的 appType 即可
+      return answers.projectType !== 'app';
     },
     message: 'Choose targets your project want to run?',
     choices(answers) {
@@ -64,24 +68,33 @@ function getPromptQuestion(appTemplate) {
   }, {
     type: 'list',
     name: 'appType',
-    message: 'What\'s your application type? (Only valid in target: Web)',
+    message: 'What\'s your application type? ',
     when(answers) {
-      // app and targets include web/weex/kraken and targets not include miniapp/wechat-miniprogram/bytedance-microapp
-      return answers.projectType === 'app'
-        && !checkTargetExist(['miniapp', 'wechat-miniprogram', 'bytedance-microapp'], answers.projectTargets)
-        && checkTargetExist(['web', 'weex', 'kraken'], answers.projectTargets);
+      return answers.projectType === 'app';
     },
     choices: [
       {
-        name: 'Single-page application (SPA)',
-        value: 'spa',
+        name: 'Web 应用（多页面）',
+        value: 'web-mpa',
       },
       {
-        name: 'Multi-page application (MPA)',
-        value: 'mpa',
+        name: '小程序（MiniApp）',
+        value: 'miniapp',
+      },
+      {
+        name: 'Kraken 应用（多页面）',
+        value: 'kraken-mpa',
+      },
+      {
+        name: 'Weex 应用（多页面）',
+        value: 'weex-mpa',
+      },
+      {
+        name: 'Web 应用（单页面，手淘等 App 场景不推荐）',
+        value: 'web-spa',
       },
     ],
-    default: 'spa',
+    default: 'web-mpa',
   }, {
     type: 'list',
     name: 'languageType',
@@ -103,10 +116,6 @@ function getPromptQuestion(appTemplate) {
   }];
 
   return promptQuestion;
-}
-
-function checkTargetExist(allTargets, projectTargets) {
-  return allTargets.some((target) => projectTargets.includes(target));
 }
 
 module.exports = {

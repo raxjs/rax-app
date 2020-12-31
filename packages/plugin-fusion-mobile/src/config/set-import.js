@@ -12,7 +12,7 @@ module.exports = function (config) {
     },
   ];
 
-  ['tsx', 'jsx'].forEach(rule=>{
+  ['tsx', 'jsx'].forEach(rule => {
     config.module
       .rule(rule)
       .use('babel-loader')
