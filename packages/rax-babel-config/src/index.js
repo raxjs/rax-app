@@ -15,7 +15,6 @@ module.exports = (userOptions = {}) => {
     styleSheet,
     jsxPlus = true,
     jsxToHtml,
-    disableRegenerator = false,
     // preset-env modules options
     modules,
   } = options;
@@ -31,7 +30,6 @@ module.exports = (userOptions = {}) => {
           include: [
             'transform-computed-properties',
           ],
-          exclude: disableRegenerator ? ['transform-regenerator'] : [],
         },
       ],
       [
