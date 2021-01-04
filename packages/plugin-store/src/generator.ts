@@ -66,15 +66,24 @@ export default class Generator {
 
       const params = { pageName, pageNameDir, pageModelsDir, pageModelFile, pageStoreFile, existedStoreFile };
 
+      // generate .ice/store/types.ts
+      this.renderAppStoreTypes();
       // generate .ice/pages/${pageName}/index.ts
       this.renderPageIndex(params);
-
       // generate .ice/pages/${pageName}/Page.tsx
       this.renderPageComponent(params);
-
       // generate .ice/pages/${pageName}/Layout.tsx
       this.renderPageLayout(params);
     });
+  }
+
+  private renderAppStoreTypes() {
+    const typesTemplatePath = path.join(__dirname, './template/types.ts.ejs');
+    const sourceFilename = 'store/types';
+    const targetPath = path.join(this.targetPath, `${sourceFilename}.ts`);
+
+    this.applyMethod('addRenderFile', typesTemplatePath, targetPath);
+    this.applyMethod('addTypesExport', { source: './store/types' });
   }
 
   private renderPageComponent({ pageName, pageNameDir, pageModelsDir, pageModelFile, pageStoreFile, existedStoreFile }: IRenderPageParams) {

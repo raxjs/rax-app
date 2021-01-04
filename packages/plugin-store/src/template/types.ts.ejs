@@ -1,0 +1,14 @@
+import { Models, IcestoreRootState, IcestoreDispatch } from '@ice/store';
+
+interface IInitialStates {
+  [key: string]: any;
+}
+
+export interface IStore {
+  initialStates?: IInitialStates;
+  getInitialStates?: (initialData) => IInitialStates;
+}
+
+export type IStoreModels = Models;
+export type IStoreDispatch<M extends Models | void = void> = IcestoreDispatch<M>;
+export type IStoreRootState<M extends Models> = IcestoreRootState<M>;
