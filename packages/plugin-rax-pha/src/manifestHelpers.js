@@ -17,6 +17,10 @@ const retainKeys = [
   'tabBar',
   'pages',
   'dataPrefetches',
+  'spm',
+  'metas',
+  'links',
+  'scripts',
 ];
 
 // transform app config to decamelize
@@ -39,7 +43,10 @@ function transformAppConfig(appConfig, isRoot = true) {
       data[transformKey] = value;
     } else if (Array.isArray(value)) {
       data[transformKey] = value.map((item) => {
-        return transformAppConfig(item, false);
+        if (typeof item === 'object') {
+          return transformAppConfig(item, false);
+        }
+        return item;
       });
     } else if (typeof value === 'object') {
       data[transformKey] = transformAppConfig(value, false);
