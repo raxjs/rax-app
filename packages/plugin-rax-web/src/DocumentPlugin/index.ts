@@ -213,9 +213,10 @@ async function generateHtml(compilation, options) {
       } else {
         const initialHTML = Document.renderInitialHTML();
         const builtInDocumentTpl = Document.html;
-        insertLinks(assets.styles.map((style) => `<link rel="stylesheet" href="${style}" />`));
-        insertScripts(assets.scripts.map((script) => `<script src="${script}" />`));
-        const $ = generateHtmlStructure(builtInDocumentTpl);
+        const $ = generateHtmlStructure(builtInDocumentTpl, {
+          links: assets.styles.map((style) => `<link rel="stylesheet" href="${style}" />`),
+          scripts: assets.scripts.map((script) => `<script src="${script}" />`),
+        });
         const root = $('#root');
         root.html(initialHTML);
         pageSource = $.html();

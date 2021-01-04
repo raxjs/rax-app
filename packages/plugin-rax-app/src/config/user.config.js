@@ -47,7 +47,7 @@ module.exports = [
   },
   {
     name: 'compileDependencies',
-    defaultValue: [],
+    defaultValue: [''],
   },
   {
     name: 'vendor',
