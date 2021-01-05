@@ -9,9 +9,8 @@ import {
   getBuiltInHtmlTpl,
   generateHtmlStructure,
   insertCommonElements,
-  insertLinks,
-  insertScripts,
 } from '../utils/htmlStructure';
+import { setDocument } from '../utils/document';
 import { IHtmlInfo, IBuiltInDocumentQuery, ICustomDocumentQuery } from '../types';
 
 const { parse, print } = errorStackTracey;
@@ -210,6 +209,7 @@ async function generateHtml(compilation, options) {
       if (options.existDocument) {
         const $ = generateHtmlStructure(Document.renderToHTML(assets));
         pageSource = $.html();
+        setDocument(entryName, pageSource);
       } else {
         const initialHTML = Document.renderInitialHTML();
         const builtInDocumentTpl = Document.html;
