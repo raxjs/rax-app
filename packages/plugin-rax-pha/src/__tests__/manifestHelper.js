@@ -3,6 +3,25 @@
 const { transformAppConfig, getPageManifestByPath } = require('../manifestHelpers')
 
 describe('transformAppConfig', () => {
+  it('should transform document fields', () => {
+    const manifestJSON = transformAppConfig({
+      spm: 'A-123',
+      metas: [
+        '<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />'
+      ],
+      links: [
+        '<link rel=\"dns-prefetch\" href=\"//g.alicdn.com\" />'
+      ],
+      scripts: [
+        '<script defer src=\"xxx/index.js\"></script>'
+      ]
+    }, true);
+    expect(manifestJSON.spm).toBe('A-123');
+    expect(manifestJSON.metas[0]).toBe('<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />');
+    expect(manifestJSON.links[0]).toBe('<link rel=\"dns-prefetch\" href=\"//g.alicdn.com\" />');
+    expect(manifestJSON.scripts[0]).toBe('<script defer src=\"xxx/index.js\"></script>');
+  });
+
   it('should transform dataPrefetches', () => {
     const manifestJSON = transformAppConfig({
       dataPrefetches: [{
