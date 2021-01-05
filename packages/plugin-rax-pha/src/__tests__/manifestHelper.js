@@ -1,6 +1,6 @@
 
 
-const { transformAppConfig, getPageManifestByPath } = require('../manifestHelpers')
+const { transformAppConfig, getPageManifestByPath, setRealUrlToManifest } = require('../manifestHelpers')
 
 describe('transformAppConfig', () => {
   it('should transform document fields', () => {
@@ -163,5 +163,42 @@ describe('getPageManifestByPath', () => {
 
     expect(manifest.pages.length).toBe(2);
     expect(manifest.tab_bar).toMatchObject({ background_color: '#ff0000' });
+  });
+});
+
+describe('setRealUrlToManifest', () => {
+  const config = {
+    pages: [
+      {
+        path: '/',
+        name: 'home3',
+        source: 'pages/Home/index',
+        data_prefetches: [{
+          url: '/a.com',
+          data: {
+            id: 123,
+          },
+        }],
+      },
+      {
+        path: '/home1',
+        source: 'pages/Home1/index',
+      },
+      {
+        frames: [{
+          path: '/frame1',
+          source: 'pages/frame1/index',
+        }]
+      }
+    ],
+  };
+
+  it('should change real url to manifest', () => {
+    const manifest = setRealUrlToManifest('https://abc/', config);
+
+    expect(manifest.pages[0].path).toBe('https://abc/home3.html');
+    expect(manifest.pages[0].key).toBe('home3');
+    expect(manifest.pages[1].path).toBe('https://abc/home1.html');
+    expect(manifest.pages[2].frames[0].path).toBe('https://abc/frame1.html');
   });
 });
