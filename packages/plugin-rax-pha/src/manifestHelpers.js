@@ -90,6 +90,7 @@ function changePageUrl(urlPrefix, page) {
   let entryName;
   if (name) {
     entryName = name;
+    page.key = name;
   } else if (source) {
     const dir = pathPackage.dirname(source);
     entryName = pathPackage.parse(dir).name.toLocaleLowerCase();

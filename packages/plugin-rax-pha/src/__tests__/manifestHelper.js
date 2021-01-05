@@ -178,6 +178,7 @@ describe('setRealUrlToManifest', () => {
     const manifest = setRealUrlToManifest('https://abc/', config);
 
     expect(manifest.pages[0].path).toBe('https://abc/home3.html');
+    expect(manifest.pages[0].key).toBe('home3');
     expect(manifest.pages[1].path).toBe('https://abc/home1.html');
     expect(manifest.pages[2].frames[0].path).toBe('https://abc/frame1.html');
   });
