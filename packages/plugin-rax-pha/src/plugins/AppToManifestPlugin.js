@@ -5,7 +5,6 @@
 const fs = require('fs-extra');
 const path = require('path');
 const { RawSource } = require('webpack-sources');
-const address = require('address');
 const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers');
 
 const PLUGIN_NAME = 'PHA_AppToManifestPlugin';
@@ -25,7 +24,7 @@ module.exports = class {
         name: PLUGIN_NAME,
         context: true,
         call: () => {
-          const appConfig = fs.readJsonSync(path.resolve(rootDir, 'src/app.json'));
+          const appConfig = getValue('staticConfig');
           let manifestJSON = transformAppConfig(appConfig);
 
           const appWorkerJSPath = path.resolve(rootDir, 'src/pha-worker.js');
