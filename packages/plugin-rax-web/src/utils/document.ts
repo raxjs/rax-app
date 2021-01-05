@@ -1,10 +1,13 @@
 import * as path from 'path';
 
-// entryName => document
+// entryName => { document, custom }
 const documentMap = {};
 
-export function setDocument(entryName, content) {
-  documentMap[entryName] = content;
+export function setDocument(entryName: string, content: string, custom: boolean) {
+  documentMap[entryName] = {
+    document: content,
+    custom,
+  };
 }
 
 export function getDocument({ name, source }) {
