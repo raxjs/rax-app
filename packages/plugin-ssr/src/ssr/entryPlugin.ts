@@ -64,7 +64,7 @@ export default class EntryPlugin {
         query.builtInHTML = getBuiltInHtmlTpl(htmlInfo);
         query.styles = query.styles.map((style) => `<link rel="stylesheet" type="text/css" href="${style}">`);
         query.scripts = query.scripts.map((script) => `<script src="${script}" />`);
-        query.injectedHTML = applyMethod('getInjectedHTML');
+        query.injectedHTML = applyMethod('rax.getInjectedHTML');
       }
 
       entryConfig[name] = `${EntryLoader}?${qs.stringify(query)}!${entryPath}`;
