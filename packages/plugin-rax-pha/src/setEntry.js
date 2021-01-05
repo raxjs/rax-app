@@ -7,7 +7,7 @@ module.exports = ({ context, config }) => {
   const { outputDir = 'build' } = userConfig;
 
   const appWorkerPath = moduleResolve(formatPath(path.join(rootDir, './src/pha-worker')));
-  if (fs.pathExistsSync(appWorkerPath)) {
+  if (appWorkerPath) {
     config
       .entry('pha-worker')
       .add(appWorkerPath)
@@ -24,7 +24,7 @@ module.exports = ({ context, config }) => {
 function moduleResolve(filePath) {
   const ext = ['.ts', '.js'].find((extension) => fs.existsSync(`${filePath}${extension}`));
   if (!ext) {
-    throw new Error(`Cannot find target file ${filePath}.`);
+    return false;
   }
   return require.resolve(`${filePath}${ext}`);
 }
