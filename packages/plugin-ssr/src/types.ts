@@ -9,6 +9,7 @@ export interface IEntryLoaderQuery {
   scripts: string[];
   absoluteAppConfigPath: string;
   entryPath: string;
+  pagePath?: string;
   assetsProcessor?: string;
   documentPath?: string;
   builtInHTML?: string;
