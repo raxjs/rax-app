@@ -43,7 +43,7 @@ export default class EntryPlugin {
     const entryConfig = {};
 
     entries.forEach((entry) => {
-      const { name, entryPath, source, path } = entry;
+      const { name, entryPath, source, pagePath } = entry;
 
       const query: IEntryLoaderQuery = {
         styles: webConfig.mpa && !inlineStyle ? [`${publicPath}${name}.css`] : [],
@@ -55,7 +55,7 @@ export default class EntryPlugin {
 
       if (documentPath) {
         query.documentPath = documentPath;
-        query.pagePath = path;
+        query.pagePath = pagePath;
       } else {
         const targetRoute = staticConfig.routes.find((route) => route.source === source);
         const htmlInfo = {

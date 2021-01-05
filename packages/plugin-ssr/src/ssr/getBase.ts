@@ -28,12 +28,12 @@ export default (api) => {
   if (webConfig.mpa) {
     const mpaEntries = getMpaEntries(api, { target: 'web', appJsonContent: staticConfig });
     setMPAConfig(api, config, { type: NODE, entries: mpaEntries });
-    entries = mpaEntries.map(({ entryName, entryPath, source, path }) => {
+    entries = mpaEntries.map(({ entryName, entryPath, source, path: pagePath }) => {
       return {
         name: entryName,
         entryPath: formatPath(path.join(rootDir, 'src', entryPath)),
         source,
-        path,
+        pagePath,
       };
     });
   } else {
@@ -42,7 +42,7 @@ export default (api) => {
         name: getEntryName(route.path),
         entryPath: formatPath(path.join(rootDir, 'src', route.source)),
         source: route.source,
-        path: route.path,
+        pagePath: route.path,
       };
     });
   }
