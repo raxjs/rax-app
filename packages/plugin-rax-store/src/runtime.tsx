@@ -21,6 +21,7 @@ export default ({ addProvider, appConfig, context: { initialData = {} as any, cr
       children,
     });
   };
+  console.log('AppStore', AppStore);
   if (AppStore && AppStore.Provider) {
     addProvider(StoreProvider);
   }
