@@ -13,6 +13,7 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '/lib/',
+    '/utils/',
   ],
   preset: 'ts-jest',
 };
