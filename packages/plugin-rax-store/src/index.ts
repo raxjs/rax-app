@@ -3,12 +3,14 @@ import * as fse from 'fs-extra';
 import Generator from './generator';
 import checkStoreAndModelExists from './utils/checkStoreAndModelExists';
 import { getAppStorePath } from './utils/getPath';
+import checkIsMpa from './utils/checkIsMpa';
+import modifyRoutes from './utils/modifyRoutes';
 
 const { name: pluginName } = require('../package.json');
 
 export default async (api) => {
-  const { context, getValue, onHook, applyMethod, onGetWebpackConfig } = api;
-  const { rootDir } = context;
+  const { context, getValue, setValue, onHook, applyMethod, onGetWebpackConfig } = api;
+  const { rootDir, userConfig } = context;
 
   const srcDir = 'src';
   const targetPath = getValue('TEMP_PATH');
@@ -25,7 +27,13 @@ export default async (api) => {
 
   applyMethod('addExport', { source: '@ice/store', specifier: '{ createStore }', exportName: 'createStore' });
 
-  // console.log('targetPath==>', targetPath);
+  const isMpa = checkIsMpa(userConfig);
+  if (isMpa) {
+    const staticConfig = getValue('staticConfig');
+    const routes = modifyRoutes(staticConfig.routes, targetPath);
+    staticConfig.routes = routes;
+    setValue('staticConfig', staticConfig);
+  }
 
   onGetWebpackConfig((config) => {
     config.module.rule('appJSON')

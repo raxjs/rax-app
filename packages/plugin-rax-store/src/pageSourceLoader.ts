@@ -15,8 +15,6 @@ import { join } from 'path';
 export default function pageSourceLoader(appJSON) {
   const { targetPath } = getOptions(this);
   const content = JSON.parse(appJSON);
-  console.log('targetPath==>', targetPath);
-  console.log('content===>', content);
 
   content.routes = content.routes.map((route) => {
     let pageSource = route.source;
@@ -33,6 +31,6 @@ export default function pageSourceLoader(appJSON) {
     }
     return route;
   });
-  console.log('content.routes===>', content.routes);
+
   return JSON.stringify(content);
 }
