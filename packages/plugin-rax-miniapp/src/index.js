@@ -6,9 +6,10 @@ const { setAppConfig: setAppCompileConfig, setComponentConfig: setComponentCompi
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR } = require('./constants');
+const scan = require('./scan');
 
 module.exports = (api) => {
-  const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
+  const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig, onHook } = api;
   const { userConfig } = context;
   const { targets, inlineStyle } = userConfig;
 
@@ -102,6 +103,10 @@ module.exports = (api) => {
           }
         }
       });
+
+      onHook('after.start.compile', scan);
+
+      onHook('after.build.compile', scan);
     }
   });
 };
