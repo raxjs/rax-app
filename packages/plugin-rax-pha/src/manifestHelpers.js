@@ -1,4 +1,5 @@
 const { decamelize } = require('humps');
+const pathPackage = require('path');
 
 // appConfig keys need transform to manifest
 const retainKeys = [
@@ -17,6 +18,10 @@ const retainKeys = [
   'tabBar',
   'pages',
   'dataPrefetches',
+  'spm',
+  'metas',
+  'links',
+  'scripts',
 ];
 
 // transform app config to decamelize
@@ -39,7 +44,10 @@ function transformAppConfig(appConfig, isRoot = true) {
       data[transformKey] = value;
     } else if (Array.isArray(value)) {
       data[transformKey] = value.map((item) => {
-        return transformAppConfig(item, false);
+        if (typeof item === 'object') {
+          return transformAppConfig(item, false);
+        }
+        return item;
       });
     } else if (typeof value === 'object') {
       data[transformKey] = transformAppConfig(value, false);
@@ -81,24 +89,25 @@ function getPageManifestByPath(options) {
   return manifestData;
 }
 
-function getEntryName(string) {
-  return string.charAt(0).toLowerCase() + string.slice(1);
-}
-
 function changePageUrl(urlPrefix, page) {
-  if (page.path.startsWith('http')) {
+  if (page.path && page.path.startsWith('http')) {
     return page;
   }
-  const { source } = page;
-  if (source && source.length > 0) {
-    const match = source.match(/pages\/(.+)\//);
-
-    if (match && match[1]) {
-      page.path = `${urlPrefix + getEntryName(match[1]) }.html`;
-    }
-    delete page.source;
+  const { source, name } = page;
+  let entryName;
+  if (name) {
+    entryName = name;
+    page.key = name;
+  } else if (source) {
+    const dir = pathPackage.dirname(source);
+    entryName = pathPackage.parse(dir).name.toLocaleLowerCase();
   }
 
+  if (entryName && entryName.length > 0) {
+    page.path = `${urlPrefix + entryName}.html`;
+  }
+
+  delete page.source;
   return page;
 }
 

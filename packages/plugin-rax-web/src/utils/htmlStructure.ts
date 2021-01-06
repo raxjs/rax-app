@@ -41,7 +41,7 @@ export function generateHtmlStructure(htmlStr, htmlInfo?: IHtmlInfo) {
   const title = $('title');
   const { metas: pageMetas = [], links: pageLinks = [], scripts: pageScripts = [] } = htmlInfo || {};
   title.before([...metas, ...pageMetas]);
-  title.after([...scripts, ...pageLinks]);
+  title.after([...links, ...pageLinks]);
   root.after([...scripts, ...pageScripts]);
   return $;
 }

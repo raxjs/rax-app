@@ -1,8 +1,24 @@
+const path = require('path');
+const fs = require('fs-extra');
+const { formatPath } = require('@builder/app-helpers');
 const setEntry = require('./setEntry');
 const AppToManifestPlugin = require('./plugins/AppToManifestPlugin');
 
 module.exports = (api) => {
   const { onGetWebpackConfig, context, registerTask, getValue } = api;
+  const { rootDir } = context;
+  const appWorkerPath = moduleResolve(formatPath(path.join(rootDir, './src/pha-worker')));
+
+  onGetWebpackConfig('web', (config) => {
+    config.plugin('AppToManifestPlugin').use(AppToManifestPlugin, [
+      {
+        api,
+        appWorkerPath,
+      },
+    ]);
+  });
+
+  if (!appWorkerPath) return;
 
   const getWebpackBase = getValue('getRaxAppWebpackConfig');
   const target = 'PHA';
@@ -20,6 +36,7 @@ module.exports = (api) => {
     setEntry({
       context,
       config,
+      appWorkerPath,
     });
 
     // do not copy public
@@ -29,12 +46,12 @@ module.exports = (api) => {
       });
     }
   });
-
-  onGetWebpackConfig('web', (config) => {
-    config.plugin('AppToManifestPlugin').use(AppToManifestPlugin, [
-      {
-        api,
-      },
-    ]);
-  });
 };
+
+function moduleResolve(filePath) {
+  const ext = ['.ts', '.js'].find((extension) => fs.existsSync(`${filePath}${extension}`));
+  if (!ext) {
+    return false;
+  }
+  return require.resolve(`${filePath}${ext}`);
+}
