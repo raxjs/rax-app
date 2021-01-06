@@ -107,14 +107,13 @@ export default (api) => {
         name: 'mpa-entry',
         commands: ['start'],
       });
-      console.log('webpackConfig==>', webpackConfig.module.rules[webpackConfig.module.rules.length - 1].use);
       setMPAConfig(api, config, {
         type: 'web',
         framework: 'rax',
         targetDir: tempDir,
         entries: getMpaEntries(api, {
           target,
-          appJsonPath: path.join(rootDir, 'src/app.json'),
+          appJsonContent: staticConfig,
         }),
       });
     }
