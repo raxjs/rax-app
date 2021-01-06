@@ -42,6 +42,7 @@ export default (api) => {
     modifyUserConfig(() => {
       if (!context.userConfig.web) context.userConfig.web = {};
       context.userConfig.web.mpa = true;
+      delete context.userConfig.plugins;
       return context.userConfig;
     });
   }
