@@ -20,7 +20,7 @@
     "@builder/mpa-config": "^2.0.0",
     "fs-extra": "^9.0.1",
     "webpack-sources": "^2.0.0",
-    "@builder/app-helpers": "2.0.3-beta.2",
+    "@builder/app-helpers": "^2.0.3",
     "react-dev-utils": "^10.0.0"
   }
 }
