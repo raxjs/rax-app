@@ -1,30 +1,17 @@
 const path = require('path');
-const fs = require('fs-extra');
-const { formatPath } = require('@builder/app-helpers');
 
-module.exports = ({ context, config }) => {
+module.exports = ({ context, config, appWorkerPath }) => {
   const { userConfig, rootDir } = context;
   const { outputDir = 'build' } = userConfig;
 
-  const appWorkerPath = moduleResolve(formatPath(path.join(rootDir, './src/pha-worker')));
-  if (appWorkerPath) {
-    config
-      .entry('pha-worker')
-      .add(appWorkerPath)
-      .end()
-      .output.path(path.resolve(rootDir, outputDir, 'web'))
-      .libraryTarget('umd')
-      .globalObject('this')
-      .end()
-      .devServer.inline(false)
-      .hot(false);
-  }
+  config
+    .entry('pha-worker')
+    .add(appWorkerPath)
+    .end()
+    .output.path(path.resolve(rootDir, outputDir, 'web'))
+    .libraryTarget('umd')
+    .globalObject('this')
+    .end()
+    .devServer.inline(false)
+    .hot(false);
 };
-
-function moduleResolve(filePath) {
-  const ext = ['.ts', '.js'].find((extension) => fs.existsSync(`${filePath}${extension}`));
-  if (!ext) {
-    return false;
-  }
-  return require.resolve(`${filePath}${ext}`);
-}
