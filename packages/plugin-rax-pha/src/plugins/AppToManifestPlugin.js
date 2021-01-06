@@ -2,8 +2,6 @@
  * app.json to manifest.json plugin
  */
 
-const fs = require('fs-extra');
-const path = require('path');
 const { RawSource } = require('webpack-sources');
 const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers');
 
@@ -15,9 +13,9 @@ module.exports = class {
   }
 
   apply(compiler) {
-    const { api } = this.options;
+    const { api, appWorkerPath } = this.options;
     const { context, getValue } = api;
-    const { command, rootDir } = context;
+    const { command } = context;
 
     compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
       compiler.hooks.emit.intercept({
@@ -27,10 +25,8 @@ module.exports = class {
           const appConfig = getValue('staticConfig');
           let manifestJSON = transformAppConfig(appConfig);
 
-          const appWorkerJSPath = path.resolve(rootDir, 'src/pha-worker.js');
-          const appWorkerTSPath = path.resolve(rootDir, 'src/pha-worker.ts');
 
-          if (fs.pathExistsSync(appWorkerJSPath) || fs.pathExistsSync(appWorkerTSPath)) {
+          if (appWorkerPath) {
             manifestJSON.app_worker = manifestJSON.app_worker || {};
 
             if (!manifestJSON.app_worker.url) {

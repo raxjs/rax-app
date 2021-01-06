@@ -13,6 +13,7 @@ module.exports = (api) => {
     config.plugin('AppToManifestPlugin').use(AppToManifestPlugin, [
       {
         api,
+        appWorkerPath,
       },
     ]);
   });
