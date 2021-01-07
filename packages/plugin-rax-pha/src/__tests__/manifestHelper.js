@@ -1,6 +1,7 @@
 
 
-const { transformAppConfig, getPageManifestByPath, setRealUrlToManifest } = require('../manifestHelpers')
+const { transformAppConfig, getPageManifestByPath, setRealUrlToManifest } = require('../manifestHelpers');
+const cloneDeep = require('lodash.clonedeep');
 
 describe('transformAppConfig', () => {
   it('should transform document fields', () => {
@@ -192,13 +193,64 @@ describe('setRealUrlToManifest', () => {
       }
     ],
   };
+  const options = {
+    urlPrefix: 'https://abc.com/',
+    cdnPrefix: 'https://cdn.com/',
+    isTemplate: true,
+    inlineStyle: false,
+    api: {
+      applyMethod: () => {
+        return {};
+      }
+    },
+  };
 
   it('should change real url to manifest', () => {
-    const manifest = setRealUrlToManifest('https://abc/', config);
+    const manifest = setRealUrlToManifest(options, cloneDeep(config));
 
-    expect(manifest.pages[0].path).toBe('https://abc/home3.html');
+    expect(manifest.pages[0].path).toBe('https://abc.com/home3');
     expect(manifest.pages[0].key).toBe('home3');
-    expect(manifest.pages[1].path).toBe('https://abc/home1.html');
-    expect(manifest.pages[2].frames[0].path).toBe('https://abc/frame1.html');
+    expect(manifest.pages[0].script).toBe('https://cdn.com/home3.js');
+    expect(manifest.pages[0].stylesheet).toBe('https://cdn.com/home3.css');
+    expect(manifest.pages[1].path).toBe('https://abc.com/home1');
+    expect(manifest.pages[2].frames[0].path).toBe('https://abc.com/frame1');
+  });
+
+  it('should set document to manifest', () => {
+    const manifest = setRealUrlToManifest({
+      ...options,
+      api: {
+        applyMethod: () => {
+          return {
+            custom: true,
+            document: '<html>123</html>'
+          };
+        }
+      },
+    }, cloneDeep(config));
+
+    expect(manifest.pages[0].document).toBe('<html>123</html>');
+    expect(manifest.pages[1].document).toBe('<html>123</html>');
+    expect(manifest.pages[2].frames[0].document).toBe('<html>123</html>');
+  });
+
+  it('should not add stylesheet to page', () => {
+    const manifest = setRealUrlToManifest({
+      ...options,
+      inlineStyle: true,
+    }, cloneDeep(config));
+
+    expect(manifest.pages[0].stylesheet).toBeUndefined();
+  });
+
+  it('should not support template', () => {
+    const manifest = setRealUrlToManifest({
+      ...options,
+      isTemplate: false,
+    }, cloneDeep(config));
+
+    expect(manifest.pages[0].script).toBeUndefined();
+    expect(manifest.pages[0].stylesheet).toBeUndefined();
+    expect(manifest.pages[0].document).toBeUndefined();
   });
 });
