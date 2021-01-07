@@ -21,7 +21,7 @@
     "build-plugin-rax-app": "6.1.3",
     "build-plugin-rax-kraken": "1.0.9",
     "build-plugin-rax-miniapp": "1.2.0",
-    "build-plugin-rax-pha": "1.1.0",
+    "build-plugin-rax-pha": "1.2.0",
     "build-plugin-rax-web": "1.1.5",
     "build-plugin-rax-weex": "1.0.8",
     "build-plugin-ssr": "1.0.10",
