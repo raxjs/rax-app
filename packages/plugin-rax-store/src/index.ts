@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import Generator from './generator';
+import CodeGenerator from './Generator';
 import checkStoreAndModelExists from './utils/checkStoreAndModelExists';
 import { getAppStorePath } from './utils/getPath';
 import checkIsMpa from './utils/checkIsMpa';
@@ -49,7 +49,7 @@ export default async (api) => {
       .set('react', path.join(rootDir, 'node_modules', 'rax/lib/compat'));
   });
 
-  const gen = new Generator({
+  const gen = new CodeGenerator({
     targetPath,
     rootDir,
     applyMethod,
