@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import CodeGenerator from './Generator';
+import CodeGenerator from './generator';
 import checkStoreAndModelExists from './utils/checkStoreAndModelExists';
 import { getAppStorePath } from './utils/getPath';
 import checkIsMpa from './utils/checkIsMpa';
