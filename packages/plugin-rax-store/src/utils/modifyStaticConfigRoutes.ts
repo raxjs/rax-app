@@ -1,7 +1,9 @@
 import * as path from 'path';
 
-export default (routes, targetPath) => {
-  return routes.map((route) => {
+export default (staticConfig, targetPath) => {
+  const { routes } = staticConfig;
+
+  const modifyRoutes = routes.map((route) => {
     let pageSource = route.source;
 
     if (/^\/?pages/.test(pageSource) && !/app$/.test(pageSource)) {
@@ -12,9 +14,13 @@ export default (routes, targetPath) => {
       }
       return {
         ...route,
-        source: path.join(targetPath, pageSource),
+        pageSource: path.join(targetPath, pageSource),
       };
     }
     return route;
   });
+
+  staticConfig.routes = modifyRoutes;
+
+  return staticConfig;
 };

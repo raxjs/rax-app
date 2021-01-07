@@ -10,6 +10,10 @@
     {
       "path": "/about",
       "source": "pages/About/app"
+    },
+    {
+      "path": "/detail",
+      "source": "pages/Detail/index"
     }
   ],
   "window": {

@@ -4,12 +4,12 @@ import Generator from './generator';
 import checkStoreAndModelExists from './utils/checkStoreAndModelExists';
 import { getAppStorePath } from './utils/getPath';
 import checkIsMpa from './utils/checkIsMpa';
-import modifyRoutes from './utils/modifyRoutes';
+import modifyStaticConfigRoutes from './utils/modifyStaticConfigRoutes';
 
 const { name: pluginName } = require('../package.json');
 
 export default async (api) => {
-  const { context, getValue, setValue, onHook, applyMethod, onGetWebpackConfig } = api;
+  const { context, getValue, onHook, applyMethod, onGetWebpackConfig } = api;
   const { rootDir, userConfig } = context;
 
   const srcDir = 'src';
@@ -27,12 +27,10 @@ export default async (api) => {
 
   applyMethod('addExport', { source: '@ice/store', specifier: '{ createStore }', exportName: 'createStore' });
 
-  const isMpa = checkIsMpa(userConfig);
-  if (isMpa) {
+  const mpa = checkIsMpa(userConfig);
+  if (mpa) {
     const staticConfig = getValue('staticConfig');
-    const routes = modifyRoutes(staticConfig.routes, targetPath);
-    staticConfig.routes = routes;
-    setValue('staticConfig', staticConfig);
+    applyMethod('setStaticConfig', modifyStaticConfigRoutes(staticConfig, targetPath));
   }
 
   onGetWebpackConfig((config) => {
