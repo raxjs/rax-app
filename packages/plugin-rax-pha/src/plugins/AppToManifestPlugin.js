@@ -25,7 +25,7 @@ module.exports = class {
       pageSuffix,
     } = this.options;
     const { context, getValue } = api;
-    const { command, rootDir, userConfig = {} } = context;
+    const { command, userConfig = {} } = context;
     const { inlineStyle } = userConfig;
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {

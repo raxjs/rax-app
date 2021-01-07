@@ -107,13 +107,13 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
     const dir = pathPackage.dirname(source);
     entryName = pathPackage.parse(dir).name.toLocaleLowerCase();
   }
-  if (entryName && entryName.length > 0) {
+  if (entryName) {
     if (!page.path || !page.path.startsWith('http')) {
       page.path = `${urlPrefix + entryName + urlSuffix}`;
     }
 
     if (isTemplate) {
-      if (custom && document.length > 0) {
+      if (custom) {
         page.document = document;
 
         if (manifest.built_in_library) {
