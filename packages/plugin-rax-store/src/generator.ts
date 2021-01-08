@@ -48,10 +48,6 @@ export default class Generator {
     const pageEntries = getRaxPagesPath(this.rootDir);
 
     pageEntries.forEach((pageEntry) => {
-      // const exportDefaultDeclarationExists = checkExportDefaultDeclarationExists(path.join(this.rootDir, this.srcDir, pageEntry));
-      // if (!exportDefaultDeclarationExists) {
-      //   return;
-      // }
       const pageName = getRaxPageName(pageEntry);
       const pagePath = path.join('pages', pageName);
       const pageNameDir = path.join(this.rootDir, this.srcDir, pagePath);
