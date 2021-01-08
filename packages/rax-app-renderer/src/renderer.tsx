@@ -66,10 +66,9 @@ async function raxAppRenderer(options) {
     options.appConfig = {};
   }
 
-  const { appConfig, setAppConfig, loadStaticModules } = options || {};
+  const { appConfig, setAppConfig } = options || {};
 
   setAppConfig(appConfig);
-  loadStaticModules && loadStaticModules(appConfig);
 
   if (process.env.__IS_SERVER__) return;
 
