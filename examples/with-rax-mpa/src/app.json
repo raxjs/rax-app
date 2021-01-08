@@ -9,11 +9,7 @@
     },
     {
       "path": "/about",
-      "source": "pages/About/app"
-    },
-    {
-      "path": "/detail",
-      "source": "pages/Detail/index"
+      "source": "pages/About/index"
     }
   ],
   "window": {
