@@ -66,16 +66,14 @@ export default class Generator {
 
       const params = { pageName, pageNameDir, pageModelsDir, pageModelFile, pageStoreFile, existedStoreFile };
 
-      // generate .ice/store/index.ts
+      // generate .rax/store/index.ts
       this.renderAppStoreIndex();
-      // generate .ice/store/types.ts
+      // generate .rax/store/types.ts
       this.renderAppStoreTypes();
-      // generate .ice/pages/${pageName}/index.ts
+      // generate .rax/pages/${pageName}/index.ts
       this.renderPageIndex(params);
-      // generate .ice/pages/${pageName}/Page.tsx
+      // generate .rax/pages/${pageName}/Page.tsx
       this.renderPageComponent(params);
-      // generate .ice/pages/${pageName}/Layout.tsx
-      this.renderPageLayout(params);
     });
   }
 
@@ -109,35 +107,11 @@ export default class Generator {
       pageStoreImport: existedStoreFile ? `import store from '${pageStoreFile.replace(`.${this.projectType}`, '')}'` : 'import store from \'./store\'',
     };
 
-    if (existedStoreFile || fse.pathExistsSync(pageModelsDir) || fse.pathExistsSync(pageModelFile)) {
+    if (existedStoreFile && (fse.pathExistsSync(pageModelsDir) || fse.pathExistsSync(pageModelFile))) {
       pageComponentRenderData.hasPageStore = true;
     }
 
     this.applyMethod('addRenderFile', pageComponentTemplatePath, pageComponentTargetPath, pageComponentRenderData);
-  }
-
-  private renderPageLayout({ pageName, pageNameDir, pageModelsDir, pageModelFile, pageStoreFile, existedStoreFile }: IRenderPageParams) {
-    const pageComponentTemplatePath = path.join(__dirname, './template/pageComponent.tsx.ejs');
-    const pageComponentTargetPath = path.join(this.targetPath, 'pages', pageName, 'Layout.tsx');
-    const pageComponentSourcePath = this.applyMethod('formatPath', `${pageNameDir}/Layout`);
-
-    if (!fse.pathExistsSync(pageComponentSourcePath)) {
-      return;
-    }
-
-    const pageLayoutName = `${pageName}Layout`;
-    const pageLayoutRenderData = {
-      pageComponentImport: `import ${pageLayoutName} from '${pageComponentSourcePath}'`,
-      pageComponentExport: pageLayoutName,
-      hasPageStore: false,
-      pageStoreImport: existedStoreFile ? `import store from '${pageStoreFile.replace(`.${this.projectType}`, '')}'` : 'import store from \'./store\'',
-    };
-
-    if (existedStoreFile || fse.pathExistsSync(pageModelsDir) || fse.pathExistsSync(pageModelFile)) {
-      pageLayoutRenderData.hasPageStore = true;
-    }
-
-    this.applyMethod('addRenderFile', pageComponentTemplatePath, pageComponentTargetPath, pageLayoutRenderData);
   }
 
   private renderPageIndex(params) {

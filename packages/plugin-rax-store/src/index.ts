@@ -29,8 +29,7 @@ export default async (api) => {
 
   const mpa = checkIsMpa(userConfig);
   if (mpa) {
-    const staticConfig = getValue('staticConfig');
-    applyMethod('setStaticConfig', modifyStaticConfigRoutes(staticConfig, targetPath));
+    applyMethod('rax.modifyStaticConfig', (staticConfig) => modifyStaticConfigRoutes(staticConfig, targetPath));
   }
 
   onGetWebpackConfig((config) => {

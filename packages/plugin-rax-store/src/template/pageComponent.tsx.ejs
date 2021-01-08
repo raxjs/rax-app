@@ -17,7 +17,6 @@ const PageComponentName = <%= pageComponentExport %>;
       </PageProvider>
     )
   }
-  (StoreWrapperedPage as any).pageConfig = (PageComponentName as any).pageConfig || {} as any;
   export default StoreWrapperedPage;
   export { store };
 <% } else { %>
