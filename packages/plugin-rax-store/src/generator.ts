@@ -16,7 +16,7 @@ export interface IRenderPageParams {
 export default class Generator {
   private rootDir: string;
 
-  private targetPath: string;
+  private tempPath: string;
 
   private projectType: string;
 
@@ -26,19 +26,19 @@ export default class Generator {
 
   constructor({
     rootDir,
-    targetPath,
+    tempPath,
     applyMethod,
     projectType,
     srcDir,
   }: {
     rootDir: string;
-    targetPath: string;
+    tempPath: string;
     projectType: string;
     applyMethod: Function;
     srcDir: string;
   }) {
     this.rootDir = rootDir;
-    this.targetPath = targetPath;
+    this.tempPath = tempPath;
     this.applyMethod = applyMethod;
     this.projectType = projectType;
     this.srcDir = srcDir;
@@ -72,23 +72,23 @@ export default class Generator {
   private renderAppStoreIndex() {
     const appStoreTemplatePath = path.join(__dirname, './template/appIndex.ts.ejs');
     const sourceFilename = 'store/index';
-    const targetPath = path.join(this.targetPath, `${sourceFilename}.ts`);
+    const tempPath = path.join(this.tempPath, `${sourceFilename}.ts`);
 
-    this.applyMethod('addRenderFile', appStoreTemplatePath, targetPath);
+    this.applyMethod('addRenderFile', appStoreTemplatePath, tempPath);
   }
 
   private renderAppStoreTypes() {
     const typesTemplatePath = path.join(__dirname, './template/types.ts.ejs');
     const sourceFilename = 'store/types';
-    const targetPath = path.join(this.targetPath, `${sourceFilename}.ts`);
+    const tempPath = path.join(this.tempPath, `${sourceFilename}.ts`);
 
-    this.applyMethod('addRenderFile', typesTemplatePath, targetPath);
+    this.applyMethod('addRenderFile', typesTemplatePath, tempPath);
     this.applyMethod('addTypesExport', { source: './store/types' });
   }
 
   private renderPageComponent({ pageName, pageNameDir, pageStoreFile, existedStoreFile }: IRenderPageParams) {
     const pageComponentTemplatePath = path.join(__dirname, './template/pageComponent.tsx.ejs');
-    const pageComponentTargetPath = path.join(this.targetPath, 'pages', pageName, 'Page.tsx');
+    const pageComponentTempPath = path.join(this.tempPath, 'pages', pageName, 'Page.tsx');
     const pageComponentSourcePath = this.applyMethod('formatPath', pageNameDir);
 
     const pageComponentName = 'PageComponent';
@@ -103,6 +103,6 @@ export default class Generator {
       pageComponentRenderData.hasPageStore = true;
     }
 
-    this.applyMethod('addRenderFile', pageComponentTemplatePath, pageComponentTargetPath, pageComponentRenderData);
+    this.applyMethod('addRenderFile', pageComponentTemplatePath, pageComponentTempPath, pageComponentRenderData);
   }
 }

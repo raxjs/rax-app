@@ -19,9 +19,7 @@ export function getPageStorePath({ rootDir, srcDir, projectType, pageName }) {
 
 export function getRaxPagesName(rootDir) {
   const pagesPath = getRaxPagesPath(rootDir);
-  return pagesPath.map((pagePath) => {
-    return getRaxPageName(pagePath);
-  });
+  return pagesPath.map(getRaxPageName);
 }
 
 export function getRaxPageName(pagePath) {

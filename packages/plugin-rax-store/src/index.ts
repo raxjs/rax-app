@@ -14,7 +14,7 @@ export default async (api) => {
 
   const srcDir = 'src';
   const srcPath = path.join(rootDir, srcDir);
-  const targetPath = getValue('TEMP_PATH');
+  const tempPath = getValue('TEMP_PATH');
   const projectType = getValue('PROJECT_TYPE');
 
   const storeExists = checkStoreExists({ rootDir, srcDir, projectType });
@@ -30,7 +30,7 @@ export default async (api) => {
 
   const mpa = checkIsMpa(userConfig);
   if (mpa) {
-    applyMethod('rax.modifyStaticConfig', (staticConfig) => modifyStaticConfigRoutes(staticConfig, targetPath, srcPath));
+    applyMethod('rax.modifyStaticConfig', (staticConfig) => modifyStaticConfigRoutes(staticConfig, tempPath, srcPath));
   }
 
   onGetWebpackConfig((config) => {
@@ -39,18 +39,18 @@ export default async (api) => {
       .use('page-source-loader')
       .loader(require.resolve('./pageSourceLoader'))
       .options({
-        targetPath,
+        tempPath,
       });
 
     // Set alias to run @ice/store
     config.resolve.alias
-      .set('$store', existsAppStoreFile ? appStoreFilePath : path.join(targetPath, 'store', 'index.ts'))
+      .set('$store', existsAppStoreFile ? appStoreFilePath : path.join(tempPath, 'store', 'index.ts'))
       .set('react-redux', require.resolve('rax-redux'))
       .set('react', path.join(rootDir, 'node_modules', 'rax/lib/compat'));
   });
 
   const gen = new CodeGenerator({
-    targetPath,
+    tempPath,
     rootDir,
     applyMethod,
     projectType,

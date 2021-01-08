@@ -1,7 +1,12 @@
 import * as path from 'path';
 import { checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 
-export default function modifyRoutes(routes, targetPath, filename, srcPath?) {
+/**
+ * @param routes the routes in staticConfig
+ * @param tempPath the path of .rax/ dir
+ * @param filename the filename to be replaced e.g.: /example/.rax/pages/Home/index -> /example/.rax/pages/Home/Page.tsx
+ */
+export default function modifyRoutes(routes, tempPath, filename, srcPath?) {
   return routes.map((route) => {
     let pageSource = route.source;
     if (srcPath) {
@@ -18,7 +23,7 @@ export default function modifyRoutes(routes, targetPath, filename, srcPath?) {
       }
       return {
         ...route,
-        pageSource: path.join(targetPath, pageSource),
+        pageSource: path.join(tempPath, pageSource),
       };
     }
     return route;
