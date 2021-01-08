@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import CodeGenerator from './generator';
-import checkStoreAndModelExists from './utils/checkStoreAndModelExists';
+import checkStoreExists from './utils/checkStoreExists';
 import { getAppStorePath } from './utils/getPath';
 import checkIsMpa from './utils/checkIsMpa';
 import modifyStaticConfigRoutes from './utils/modifyStaticConfigRoutes';
@@ -13,11 +13,12 @@ export default async (api) => {
   const { rootDir, userConfig } = context;
 
   const srcDir = 'src';
+  const srcPath = path.join(rootDir, srcDir);
   const targetPath = getValue('TEMP_PATH');
   const projectType = getValue('PROJECT_TYPE');
 
-  const storeAndModelExists = checkStoreAndModelExists({ rootDir, srcDir, projectType });
-  if (!storeAndModelExists) {
+  const storeExists = checkStoreExists({ rootDir, srcDir, projectType });
+  if (!storeExists) {
     applyMethod('addDisableRuntimePlugin', pluginName);
     return;
   }
@@ -29,7 +30,7 @@ export default async (api) => {
 
   const mpa = checkIsMpa(userConfig);
   if (mpa) {
-    applyMethod('rax.modifyStaticConfig', (staticConfig) => modifyStaticConfigRoutes(staticConfig, targetPath));
+    applyMethod('rax.modifyStaticConfig', (staticConfig) => modifyStaticConfigRoutes(staticConfig, targetPath, srcPath));
   }
 
   onGetWebpackConfig((config) => {
