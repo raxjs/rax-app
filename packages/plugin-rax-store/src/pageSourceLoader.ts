@@ -7,7 +7,7 @@ import modifyRoutes from './utils/modifyRoutes';
  *  "routes": [
       {
         "path": "/",
-        "source": ".rax/pages/Home/Home",
+        "source": ".rax/pages/Home/Page",
       }
     ]
   }
