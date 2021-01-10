@@ -7,12 +7,14 @@ class CustomDocumentLoader extends EntryLoader {
   styles: string[];
   scripts: string[];
   assetsProcessor: string;
+  pagePath: string;
   constructor(options) {
     super(options);
     this.documentPath = options.documentPath;
     this.styles = options.styles || [];
     this.scripts = options.scripts;
     this.assetsProcessor = options.assetsProcessor;
+    this.pagePath = options.pagePath;
   }
   addInitImport() {
     super.addInitImport();
@@ -53,6 +55,7 @@ class CustomDocumentLoader extends EntryLoader {
           __initialData: JSON.stringify(data),
           __styles: styles,
           __scripts: scripts,
+          __pagePath: '${this.pagePath}'
         };
       };
       DocumentContextProvider.prototype.render = function() {

@@ -1,5 +1,12 @@
 ## Changelog
 
+### 3.2.5 (January 07 2021)
+- Feat: Support PHA template.
+- Feat: Wechat Miniprogram support `generator` syntactic suga.
+- Chore: `runApp` add type prompt.
+- Chore: PHA support without pha-worker.js
+- Fix: SSR build error.
+
 ### 3.2.2 (December 29 2020)
 - Fix: mpa insert all page bundle into html.
 

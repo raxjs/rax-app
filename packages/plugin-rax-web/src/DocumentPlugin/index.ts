@@ -9,9 +9,8 @@ import {
   getBuiltInHtmlTpl,
   generateHtmlStructure,
   insertCommonElements,
-  insertLinks,
-  insertScripts,
 } from '../utils/htmlStructure';
+import { setDocument } from '../utils/document';
 import { IHtmlInfo, IBuiltInDocumentQuery, ICustomDocumentQuery } from '../types';
 
 const { parse, print } = errorStackTracey;
@@ -210,6 +209,7 @@ async function generateHtml(compilation, options) {
       if (options.existDocument) {
         const $ = generateHtmlStructure(Document.renderToHTML(assets));
         pageSource = $.html();
+        setDocument(entryName, pageSource, true);
       } else {
         const initialHTML = Document.renderInitialHTML();
         const builtInDocumentTpl = Document.html;
@@ -220,6 +220,7 @@ async function generateHtml(compilation, options) {
         const root = $('#root');
         root.html(initialHTML);
         pageSource = $.html();
+        setDocument(entryName, pageSource, false);
       }
     } catch (error) {
       // eslint-disable-next-line no-await-in-loop

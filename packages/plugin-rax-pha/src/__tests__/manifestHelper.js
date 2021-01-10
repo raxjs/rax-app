@@ -1,8 +1,28 @@
 
 
-const { transformAppConfig, getPageManifestByPath } = require('../manifestHelpers')
+const { transformAppConfig, getPageManifestByPath, setRealUrlToManifest } = require('../manifestHelpers');
+const cloneDeep = require('lodash.clonedeep');
 
 describe('transformAppConfig', () => {
+  it('should transform document fields', () => {
+    const manifestJSON = transformAppConfig({
+      spm: 'A-123',
+      metas: [
+        '<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />'
+      ],
+      links: [
+        '<link rel=\"dns-prefetch\" href=\"//g.alicdn.com\" />'
+      ],
+      scripts: [
+        '<script defer src=\"xxx/index.js\"></script>'
+      ]
+    }, true);
+    expect(manifestJSON.spm).toBe('A-123');
+    expect(manifestJSON.metas[0]).toBe('<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />');
+    expect(manifestJSON.links[0]).toBe('<link rel=\"dns-prefetch\" href=\"//g.alicdn.com\" />');
+    expect(manifestJSON.scripts[0]).toBe('<script defer src=\"xxx/index.js\"></script>');
+  });
+
   it('should transform dataPrefetches', () => {
     const manifestJSON = transformAppConfig({
       dataPrefetches: [{
@@ -144,5 +164,93 @@ describe('getPageManifestByPath', () => {
 
     expect(manifest.pages.length).toBe(2);
     expect(manifest.tab_bar).toMatchObject({ background_color: '#ff0000' });
+  });
+});
+
+describe('setRealUrlToManifest', () => {
+  const config = {
+    pages: [
+      {
+        path: '/',
+        name: 'home3',
+        source: 'pages/Home/index',
+        data_prefetches: [{
+          url: '/a.com',
+          data: {
+            id: 123,
+          },
+        }],
+      },
+      {
+        path: '/home1',
+        source: 'pages/Home1/index',
+      },
+      {
+        frames: [{
+          path: '/frame1',
+          source: 'pages/frame1/index',
+        }]
+      }
+    ],
+  };
+  const options = {
+    urlPrefix: 'https://abc.com/',
+    cdnPrefix: 'https://cdn.com/',
+    isTemplate: true,
+    inlineStyle: false,
+    api: {
+      applyMethod: () => {
+        return {};
+      }
+    },
+  };
+
+  it('should change real url to manifest', () => {
+    const manifest = setRealUrlToManifest(options, cloneDeep(config));
+
+    expect(manifest.pages[0].path).toBe('https://abc.com/home3');
+    expect(manifest.pages[0].key).toBe('home3');
+    expect(manifest.pages[0].script).toBe('https://cdn.com/home3.js');
+    expect(manifest.pages[0].stylesheet).toBe('https://cdn.com/home3.css');
+    expect(manifest.pages[1].path).toBe('https://abc.com/home1');
+    expect(manifest.pages[2].frames[0].path).toBe('https://abc.com/frame1');
+  });
+
+  it('should set document to manifest', () => {
+    const manifest = setRealUrlToManifest({
+      ...options,
+      api: {
+        applyMethod: () => {
+          return {
+            custom: true,
+            document: '<html>123</html>'
+          };
+        }
+      },
+    }, cloneDeep(config));
+
+    expect(manifest.pages[0].document).toBe('<html>123</html>');
+    expect(manifest.pages[1].document).toBe('<html>123</html>');
+    expect(manifest.pages[2].frames[0].document).toBe('<html>123</html>');
+  });
+
+  it('should not add stylesheet to page', () => {
+    const manifest = setRealUrlToManifest({
+      ...options,
+      inlineStyle: true,
+    }, cloneDeep(config));
+    
+    expect(manifest.pages[0].stylesheet).toBeUndefined();
+  });
+
+  it('should not support template', () => {
+    const manifest = setRealUrlToManifest({
+      ...options,
+      isTemplate: false,
+    }, cloneDeep(config));
+    
+    expect(manifest.pages[0].script).toBeUndefined();
+    expect(manifest.pages[0].stylesheet).toBeUndefined();
+    expect(manifest.pages[0].document).toBeUndefined();
   });
 });
