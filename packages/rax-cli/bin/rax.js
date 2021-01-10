@@ -199,7 +199,8 @@ async function createProject(name, verbose, template, userAnswers) {
 
   if (projectType === 'app') {
     const appTemplate = template || (languageType === 'ts' ? '@rax-materials/scaffolds-app-ts' : '@rax-materials/scaffolds-app-js');
-    const projectTargets = [];
+
+    let projectTargets = [];
     let enableMPA = false;
     let enablePHA = false;
 
