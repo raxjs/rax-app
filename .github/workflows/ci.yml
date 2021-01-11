@@ -19,11 +19,17 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         registry-url: https://registry.npmjs.org/
+    - name: Check Branch
+      id: check-branch
+      run: |
+          if [[ ${{ env.BRANCH_NAME }} =~ ^(master|release-next)$|^hotfix\/* ]]; then
+              echo ::set-output name=match::true
+          fi
     - run: npm run setup
     - run: npm run dependency:check
     - run: npm run lint
     - run: npm run test
-    - if: /^(master|release-next)$|^hotfix\/*/.test(env.BRANCH_NAME)
+    - if: steps.check-branch.outputs.match == 'true'
       run: npm run version:check
     - run: npm run coverage
       env:
