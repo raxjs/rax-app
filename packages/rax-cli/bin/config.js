@@ -74,23 +74,23 @@ function getPromptQuestion(appTemplate) {
     },
     choices: [
       {
-        name: 'Web 应用（多页面）',
+        name: 'Web 多页应用',
         value: 'web-mpa',
       },
       {
-        name: '小程序（MiniApp）',
+        name: '小程序跨端应用',
         value: 'miniapp',
       },
       {
-        name: 'Kraken 应用（多页面）',
+        name: 'Kraken 跨端应用',
         value: 'kraken-mpa',
       },
       {
-        name: 'Weex 应用（多页面）',
+        name: 'Weex 跨端应用',
         value: 'weex-mpa',
       },
       {
-        name: 'Web 应用（单页面，手淘等 App 场景不推荐）',
+        name: 'Web 单页应用',
         value: 'web-spa',
       },
     ],
