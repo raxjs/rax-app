@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { IHtmlInfo } from '../types';
 
 let scripts = [];
 let links = [];
@@ -22,25 +23,26 @@ export function getBuiltInHtmlTpl(htmlInfo) {
 }
 
 export function insertCommonElements(staticConfig) {
-  const { metas: customMetas, links: customLinks, scripts: customScripts } = staticConfig;
+  const { metas: customMetas = [], links: customLinks = [], scripts: customScripts = [] } = staticConfig;
   if (customMetas) {
-    metas = [...metas, customMetas];
+    metas = [...metas, ...customMetas];
   }
   if (customLinks) {
-    links = [...links, customLinks];
+    links = [...links, ...customLinks];
   }
   if (customScripts) {
-    scripts = [...scripts, customScripts];
+    scripts = [...scripts, ...customScripts];
   }
 }
 
-export function generateHtmlStructure(htmlStr) {
+export function generateHtmlStructure(htmlStr, htmlInfo?: IHtmlInfo) {
   const $ = cheerio.load(htmlStr);
   const root = $('#root');
   const title = $('title');
-  title.before(metas);
-  title.after(links);
-  root.after(scripts);
+  const { metas: pageMetas = [], links: pageLinks = [], scripts: pageScripts = [] } = htmlInfo || {};
+  title.before([...metas, ...pageMetas]);
+  title.after([...links, ...pageLinks]);
+  root.after([...scripts, ...pageScripts]);
   return $;
 }
 

@@ -1,4 +1,5 @@
 const { decamelize } = require('humps');
+const pathPackage = require('path');
 
 // appConfig keys need transform to manifest
 const retainKeys = [
@@ -17,6 +18,10 @@ const retainKeys = [
   'tabBar',
   'pages',
   'dataPrefetches',
+  'spm',
+  'metas',
+  'links',
+  'scripts',
 ];
 
 // transform app config to decamelize
@@ -39,7 +44,10 @@ function transformAppConfig(appConfig, isRoot = true) {
       data[transformKey] = value;
     } else if (Array.isArray(value)) {
       data[transformKey] = value.map((item) => {
-        return transformAppConfig(item, false);
+        if (typeof item === 'object') {
+          return transformAppConfig(item, false);
+        }
+        return item;
       });
     } else if (typeof value === 'object') {
       data[transformKey] = transformAppConfig(value, false);
@@ -81,34 +89,62 @@ function getPageManifestByPath(options) {
   return manifestData;
 }
 
-function getEntryName(string) {
-  return string.charAt(0).toLowerCase() + string.slice(1);
-}
-
-function changePageUrl(urlPrefix, page) {
-  if (page.path.startsWith('http')) {
+/*
+ * change page info
+ */
+function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inlineStyle, api }, page, manifest) {
+  const { applyMethod } = api;
+  const { source, name } = page;
+  if (!source && !name) {
     return page;
   }
-  const { source } = page;
-  if (source && source.length > 0) {
-    const match = source.match(/pages\/(.+)\//);
-
-    if (match && match[1]) {
-      page.path = `${urlPrefix + getEntryName(match[1]) }.html`;
+  const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
+  let entryName;
+  if (name) {
+    entryName = name;
+    page.key = name;
+  } else if (source) {
+    const dir = pathPackage.dirname(source);
+    entryName = pathPackage.parse(dir).name.toLocaleLowerCase();
+  }
+  if (entryName) {
+    if (!page.path || !page.path.startsWith('http')) {
+      page.path = `${urlPrefix + entryName + urlSuffix}`;
     }
-    delete page.source;
+
+    if (isTemplate) {
+      if (custom) {
+        page.document = document;
+
+        if (manifest.built_in_library) {
+          // remove when has document
+          delete manifest.built_in_library;
+        }
+      } else {
+        // add script and stylesheet
+        page.script = `${cdnPrefix + entryName}.js`;
+        if (!inlineStyle) {
+          page.stylesheet = `${cdnPrefix + entryName}.css`;
+        }
+      }
+    }
   }
 
+  delete page.source;
   return page;
 }
 
-function setRealUrlToManifest(urlPrefix, manifest) {
+/**
+ * set real url to manifest
+ */
+function setRealUrlToManifest(options, manifest) {
+  const { urlPrefix, cdnPrefix } = options;
   if (!urlPrefix) {
     return manifest;
   }
 
   if (manifest.app_worker && manifest.app_worker.url) {
-    manifest.app_worker.url = urlPrefix + manifest.app_worker.url;
+    manifest.app_worker.url = cdnPrefix + manifest.app_worker.url;
   }
 
   if (manifest.pages && manifest.pages.length > 0) {
@@ -116,11 +152,11 @@ function setRealUrlToManifest(urlPrefix, manifest) {
       // has frames
       if (page.frames && page.frames.length > 0) {
         page.frames = page.frames.map((frame) => {
-          return changePageUrl(urlPrefix, frame);
+          return changePageInfo(options, frame, manifest);
         });
       }
 
-      return changePageUrl(urlPrefix, page);
+      return changePageInfo(options, page, manifest);
     });
   }
 

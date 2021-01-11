@@ -1,4 +1,22 @@
 ## Changelog
+
+### 3.2.2 (December 29 2020)
+- Fix: mpa insert all page bundle into html.
+
+### 3.2.1 (December 25 2020)
+- Chore: `compileDependencies` default value is `['']`. 
+
+### 3.2.0 (December 24 2020)
+- Feat: config store runtime automatically. ([alibaba/ice#3932](https://github.com/alibaba/ice/pull/3932))
+- Feat: support config hydrate in rax-app. ([alibaba/ice#3918](https://github.com/alibaba/ice/pull/3918) [#548](https://github.com/raxjs/rax-app/pull/548))
+- Feat: support set webpackLoaders and webpackPlugins through build.json.([alibaba/ice#3938]((https://github.com/alibaba/ice/pull/3938)))
+- Feat: support build without `src/document/index.tsx`. ([#546](https://github.com/raxjs/rax-app/pull/546))
+- Feat: support cloud IDE.([#542]((https://github.com/raxjs/rax-app/pull/542)))
+- Feat: miniapp subPackage.
+- Chore: `compileDependencies` default value is `[]`. ([#548]((https://github.com/raxjs/rax-app/pull/548)))
+- Chore: TerserPlugin will remove unused code. ([#548]((https://github.com/raxjs/rax-app/pull/548)))
+- Fix: kraken mpa error.([#541]((https://github.com/raxjs/rax-app/pull/541)))
+
 ### 3.1.2 & 3.1.3 (December 15 2020)
 For v3.1.1 patch version.
 ### 3.1.1 (December 14 2020)
