@@ -23,7 +23,8 @@ jobs:
     - run: npm run dependency:check
     - run: npm run lint
     - run: npm run test
-    - run: npm run version:check
+    - if: env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'release-next'
+      run: npm run version:check
     - run: npm run coverage
       env:
         ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
