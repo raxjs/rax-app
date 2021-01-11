@@ -23,7 +23,7 @@ jobs:
     - run: npm run dependency:check
     - run: npm run lint
     - run: npm run test
-    - if: env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'release-next'
+    - if: /^(master|release-next)$|^hotfix\/*/.test(env.BRANCH_NAME)
       run: npm run version:check
     - run: npm run coverage
       env:
