@@ -5,6 +5,7 @@ import {
   getRaxPageName,
   getRaxPagesPath,
 } from './utils/getPath';
+import { formatPath } from '@builder/app-helpers';
 
 export interface IRenderPageParams {
   pageName: string;
@@ -51,7 +52,7 @@ export default class Generator {
       const pageName = getRaxPageName(pageEntry);
       const pagePath = path.join('pages', pageName);
       const pageNameDir = path.join(this.rootDir, this.srcDir, pagePath);
-      const pageStoreFile = this.applyMethod('formatPath', getPageStorePath({
+      const pageStoreFile = formatPath(getPageStorePath({
         rootDir: this.rootDir,
         srcDir: this.srcDir,
         pageName,
@@ -95,13 +96,9 @@ export default class Generator {
     const pageComponentRenderData = {
       pageComponentImport: `import ${pageComponentName} from '${pageComponentSourcePath}'`,
       pageComponentExport: pageComponentName,
-      hasPageStore: false,
+      hasPageStore: existedStoreFile,
       pageStoreImport: existedStoreFile ? `import store from '${pageStoreFile.replace(`.${this.projectType}`, '')}'` : 'import store from \'./store\'',
     };
-
-    if (existedStoreFile) {
-      pageComponentRenderData.hasPageStore = true;
-    }
 
     this.applyMethod('addRenderFile', pageComponentTemplatePath, pageComponentTempPath, pageComponentRenderData);
   }
