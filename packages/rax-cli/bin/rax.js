@@ -209,7 +209,7 @@ async function createProject(name, verbose, template, userAnswers) {
       enablePHA = true;
       projectTargets = ['web'];
     } else if (appType === 'miniapp') {
-      projectTargets = ['web', 'miniapp', 'wechat-miniapp'];
+      projectTargets = ['web', 'miniapp', 'wechat-miniprogram'];
     } else if (appType === 'kraken-mpa') {
       enableMPA = true;
       projectTargets = ['web', 'kraken'];
