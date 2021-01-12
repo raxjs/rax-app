@@ -52,7 +52,7 @@ $ npm run start # running on http://localhost:3333.
 
 ## 项目示例
 
-- [with-rax](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax)
+- [basic-spa](https://github.com/raxjs/rax-scripts/tree/master/examples/basic-spa)
 - [with-rax-mpa](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax-mpa)
 - [with-rax-store](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax-store)
 - [with-rax-miniapp-compile](https://github.com/raxjs/rax-scripts/tree/master/examples/with-rax-miniapp-compile)

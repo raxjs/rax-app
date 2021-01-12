@@ -23,7 +23,7 @@
     "clean": "lerna clean --yes && rimraf packages/*/lib",
     "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./",
     "lint:fix": "npm run lint -- --fix",
-    "test": "jest",
+    "test": "jest --forceExit",
     "test:watch": "jest --watch",
     "coverage": "codecov"
   },
@@ -57,7 +57,10 @@
     "simple-git": "^1.132.0",
     "ts-jest": "^25.4.0",
     "ts-node": "^8.6.1",
-    "typescript": "^3.7.4"
+    "typescript": "^3.7.4",
+    "@types/puppeteer": "^5.4.2",
+    "puppeteer": "^5.5.0",
+    "get-port": "^5.1.1"
   },
   "dependencies": {
     "core-js": "^3.6.4",

@@ -239,7 +239,7 @@ describe('setRealUrlToManifest', () => {
       ...options,
       inlineStyle: true,
     }, cloneDeep(config));
-    
+
     expect(manifest.pages[0].stylesheet).toBeUndefined();
   });
 
@@ -248,7 +248,7 @@ describe('setRealUrlToManifest', () => {
       ...options,
       isTemplate: false,
     }, cloneDeep(config));
-    
+
     expect(manifest.pages[0].script).toBeUndefined();
     expect(manifest.pages[0].stylesheet).toBeUndefined();
     expect(manifest.pages[0].document).toBeUndefined();
