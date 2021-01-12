@@ -114,7 +114,7 @@ export default (api) => {
         targetDir: tempDir,
         entries: getMpaEntries(api, {
           target,
-          appJsonPath: path.join(rootDir, 'src/app.json'),
+          appJsonContent: staticConfig,
         }),
       });
     }

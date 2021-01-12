@@ -33,6 +33,7 @@ module.exports = (api) => {
     const { userConfig, rootDir, command } = context;
     const { outputDir = 'build' } = userConfig;
     const krakenConfig = userConfig.kraken || {};
+    const staticConfig = getValue('staticConfig');
 
     if (krakenConfig.mpa) {
       setMPAConfig.default(api, config, {
@@ -40,7 +41,7 @@ module.exports = (api) => {
         targetDir: tempDir,
         entries: getMpaEntries(api, {
           target,
-          appJsonPath: path.join(rootDir, 'src/app.json'),
+          appJsonContent: staticConfig,
         }),
       });
     }

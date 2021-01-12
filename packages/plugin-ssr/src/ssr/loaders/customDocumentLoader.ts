@@ -55,7 +55,7 @@ class CustomDocumentLoader extends EntryLoader {
           __initialData: JSON.stringify(data),
           __styles: styles,
           __scripts: scripts,
-          __pagePath: '${this.pagePath}'
+          __pagePath: ${this.pagePath}
         };
       };
       DocumentContextProvider.prototype.render = function() {
