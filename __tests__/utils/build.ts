@@ -3,6 +3,7 @@ import { build } from '@alib/build-scripts';
 import * as getPort from 'get-port';
 import Browser, { IPage } from './browser';
 import getBuiltInPlugins = require('../../packages/rax-app/src');
+import executeCommand from './executeCommand';
 
 interface ISetupBrowser {
   (options: {
@@ -21,6 +22,8 @@ interface IReturn {
 export const buildFixture = function(example: string) {
   test(`setup ${example}`, async () => {
     const rootDir = path.join(__dirname, `../../examples/${example}`);
+    executeCommand('rm -rf node_modules', rootDir);
+    executeCommand('npm install --registry=https://registry.npm.taobao.org/', rootDir);
     await build({
       args: {
         config: path.join(rootDir, 'build.json'),
@@ -37,7 +40,10 @@ export const setupBrowser: ISetupBrowser = async (options) => {
   const { example, outputDir = 'build', defaultHtml = 'index.html' } = options;
   const rootDir = path.join(__dirname, `../../examples/${example}`);
   const port = await getPort();
-  const browser = new Browser(path.join(rootDir, outputDir, 'web'), port);
+  const browser = new Browser({
+    cwd: path.join(rootDir, outputDir, 'web'),
+    port,
+  });
   await browser.start();
   const page = await browser.page(`http://127.0.0.1:${port}/${defaultHtml}`);
   return {

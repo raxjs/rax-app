@@ -4,6 +4,11 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as puppeteer from 'puppeteer';
 
+interface IBrowserOptions {
+  cwd?: string;
+  port?: number;
+}
+
 export interface IPage extends puppeteer.Page {
   html?: () => Promise<string>;
   $text?: (selector: string, trim?: boolean) => Promise<string|null>;
@@ -18,8 +23,14 @@ export default class Browser {
   private browser: puppeteer.Browser;
   private baseUrl: string;
 
-  constructor (cwd: string, port: number) {
-    this.server = this.createServer(cwd, port);
+  constructor (options?: IBrowserOptions) {
+    if (options) {
+      const {
+        cwd,
+        port,
+      } = options;
+      this.server = this.createServer(cwd, port);
+    }
   }
 
   createServer(cwd: string, port: number) {
@@ -69,7 +80,7 @@ export default class Browser {
   async close () {
     if (!this.browser) { return }
     await this.browser.close();
-    this.server.close();
+    this.server?.close();
   }
 
   async page (url: string) {
@@ -85,7 +96,6 @@ export default class Browser {
     }, trim);
     page.$$text = (selector, trim) =>
       page.$$eval(selector, (els, trim) => els.map((el) => {
-        console.log('el', el);
         return trim ? (el.textContent || '').replace(/^\s+|\s+$/g, '') : el.textContent
       }), trim);
     page.$attr = (selector, attr) =>
