@@ -189,7 +189,7 @@ async function createProject(name, verbose, template, userAnswers) {
     process.chdir(rootDir);
   }
 
-  const { projectType = 'app', projectTargets, appType, languageType } = userAnswers;
+  const { projectType = 'app', targets, appType, languageType } = userAnswers;
   const registry = 'https://registry.npm.taobao.org';
 
   console.log(
@@ -199,6 +199,27 @@ async function createProject(name, verbose, template, userAnswers) {
 
   if (projectType === 'app') {
     const appTemplate = template || (languageType === 'ts' ? '@rax-materials/scaffolds-app-ts' : '@rax-materials/scaffolds-app-js');
+
+    let projectTargets = [];
+    let enableMPA = false;
+    let enablePHA = false;
+
+    if (appType === 'web-mpa') {
+      enableMPA = true;
+      enablePHA = true;
+      projectTargets = ['web'];
+    } else if (appType === 'miniapp') {
+      projectTargets = ['web', 'miniapp', 'wechat-miniprogram'];
+    } else if (appType === 'kraken-mpa') {
+      enableMPA = true;
+      projectTargets = ['web', 'kraken'];
+    } else if (appType === 'weex-mpa') {
+      enableMPA = true;
+      projectTargets = ['web', 'weex'];
+    } else if (appType === 'web-spa') {
+      projectTargets = ['web'];
+    }
+
     await downloadAndGenerateProject(
       rootDir,
       appTemplate,
@@ -207,7 +228,8 @@ async function createProject(name, verbose, template, userAnswers) {
       null,
       {
         targets: projectTargets,
-        mpa: appType === 'mpa',
+        mpa: enableMPA,
+        pha: enablePHA,
       },
     );
   } else {
@@ -229,7 +251,7 @@ async function createProject(name, verbose, template, userAnswers) {
       materialTemplateDir: tempDir,
       templateOptions: {
         npmName: 'rax-example',
-        projectTargets,
+        projectTargets: targets,
       },
       materialType: 'component',
     });
