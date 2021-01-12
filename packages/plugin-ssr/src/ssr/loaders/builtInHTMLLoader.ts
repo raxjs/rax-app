@@ -51,8 +51,16 @@ class BuiltInHTMLLoader extends EntryLoader {
   addRenderComponentToHTML() {
     this.source += `
     async function renderComponentToHTML(Component, ctx) {
-      const pageData = await getInitialProps(Component, ctx);
-      const initialData = appConfig.app && appConfig.app.getInitialData ? await appConfig.app.getInitialData(ctx) : {};
+      let initialData;
+      let pageData;
+      let error;
+
+      try {
+        pageData = await getInitialProps(Component, ctx);
+        initialData = appConfig.app && appConfig.app.getInitialData ? await appConfig.app.getInitialData(ctx) : {};
+      } catch(e) {
+        error = e;
+      }
 
       const data = {
         __SSR_ENABLED__: true,
@@ -60,7 +68,10 @@ class BuiltInHTMLLoader extends EntryLoader {
         pageData,
       };
 
-      builtInScripts.push('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>')
+      builtInScripts.push(
+        '<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>',
+        '<script data-from="server">window.__RAX_SSR_ERROR__=' + JSON.stringify(error) + '</script>'
+      )
 
       const contentElement = createElement(Component, pageData);
 

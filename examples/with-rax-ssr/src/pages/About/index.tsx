@@ -6,8 +6,6 @@ import styles from './index.module.css';
 import Logo from '../../components/Logo';
 
 function About(props) {
-  console.log('About props==>', props);
-
   const { title, info, history } = props;
   return (
     <View className={styles.container}>
@@ -20,7 +18,6 @@ function About(props) {
 }
 
 About.getInitialProps = (ctx) => {
-  console.log('getInitialProps About===>', ctx);
   return {
     title: 'About Page',
     info: 'About',

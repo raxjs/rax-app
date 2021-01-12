@@ -6,6 +6,13 @@ import { isWeb, isWeex, isKraken } from 'universal-env';
 import UniversalDriver from 'driver-universal';
 import * as queryString from 'query-string';
 
+interface IInitialContext {
+  pathname: string;
+  path: string;
+  query: queryString.ParsedQuery,
+  ssrError?: string;
+}
+
 const useRouter = createUseRouter({ useState, useLayoutEffect });
 
 let AppNavigation;
@@ -92,13 +99,12 @@ async function raxAppRenderer(options) {
   const path = href.replace(origin, '');
   const query = queryString.parse(search);
 
-  const initialContext = {
+  const initialContext: IInitialContext = {
     pathname,
     path,
     query,
-    // ssrError TODO:
   };
-
+  initialContext.ssrError = (window as any).__RAX_SSR_ERROR__;
   // ssr enabled and the server has returned data
   if ((window as any).__INITIAL_DATA__) {
     initialData = (window as any).__INITIAL_DATA__.initialData;

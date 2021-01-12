@@ -6,8 +6,6 @@ import styles from './index.module.css';
 import Logo from '../../components/Logo';
 
 function Home(props) {
-  console.log('Home props===>', props);
-
   const { title, info, link, history } = props;
   return (
     <View className={styles.homeContainer}>
@@ -21,9 +19,9 @@ function Home(props) {
 }
 
 Home.getInitialProps = (ctx) => {
-  // console.log('Home getInitialProps ==>', ctx);
+  console.log('Home getInitialProps ==>', ctx);
   return {
-    title: 'Welcome to Your Rax App',
+    title: 'Welcome to Your Rax App SSR',
     info: 'More information about Rax',
     link: 'Visit https://rax.js.org'
   }
