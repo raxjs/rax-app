@@ -26,16 +26,7 @@ export default function Home(props) {
       <Logo />
       <Text className="title">{props?.data?.title || 'Welcome to Your Rax App'}</Text>
       <Text className="info">{props?.data?.info || 'More information about Rax'}</Text>
-      <Text className="info" onClick={dispatchers.increment}>Home Count: {state.count}</Text>
+      <Text id="count" className="info" onClick={dispatchers.increment}>Home Count: {state.count}</Text>
     </View>
   );
 }
-
-Home.getInitialProps = async () => {
-  return {
-    data: {
-      title: 'Welcome to Your Rax App with SSR',
-      info: 'More information about Rax',
-    },
-  };
-};
