@@ -84,7 +84,7 @@ export default class Browser {
   }
 
   async page (url: string) {
-    this.baseUrl = url;
+    this.baseUrl = url.replace(/\/\w+.html$/, '');
     if (!this.browser) { throw new Error('Please call start() before page(url)'); }
     const page: IPage = await this.browser.newPage();
     await page.goto(url);
