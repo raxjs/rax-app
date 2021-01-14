@@ -12,7 +12,11 @@ class About extends PureComponent {
     return (
       <View className="about">
         <Text className="title">About Page</Text>
+<<<<<<< HEAD
         <Text className="info" onClick={dispatchers.increment}>Home Count: {state.count}</Text>
+=======
+        <Text id="count" className="info" onClick={dispatchers.increment}>About Count: {state.count}</Text>
+>>>>>>> master
       </View>
     );
   }
