@@ -2,7 +2,7 @@
 import { render, createElement, useEffect, useState, Fragment, useLayoutEffect } from 'rax';
 import { createNavigation, createTabBar } from 'create-app-container';
 import { createUseRouter } from 'create-use-router';
-import { isWeb, isWeex, isKraken } from 'universal-env';
+import { isWeb, isWeex, isKraken, isNode } from 'universal-env';
 import UniversalDriver from 'driver-universal';
 
 const useRouter = createUseRouter({ useState, useLayoutEffect });

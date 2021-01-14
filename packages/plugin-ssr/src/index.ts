@@ -1,51 +1,58 @@
-import setWebDev from './web/setDev';
 import * as path from 'path';
 import * as chalk from 'chalk';
-import getSSRBase from './ssr/getBase';
-import setSSRBuild from './ssr/setBuild';
-import setSSRDev from './ssr/setDev';
+import * as fs from 'fs-extra';
+import getWebpackBase from './ssr/getBase';
+import EntryPlugin from './ssr/EntryPlugin';
+import { NODE } from './constants';
+import setDev from './ssr/setDev';
 
-// can‘t clone webpack chain object
-export default (api) => {
+export default function (api) {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;
-  const { command, rootDir, userConfig = {} } = context;
-  const { outputDir } = userConfig;
+  const {
+    userConfig: { outputDir },
+    rootDir,
+    command,
+  } = context;
+  const baseConfig = getWebpackBase(api);
+  registerTask('ssr', baseConfig);
+  let entries = {};
 
-  const ssrConfig = getSSRBase(api);
-  const isDev = command === 'start';
-
-  registerTask('ssr', ssrConfig);
-
-  if (isDev) {
-    onGetWebpackConfig('web', (config) => {
-      config.optimization.splitChunks({ cacheGroups: {} });
-      setWebDev(config);
-    });
-  }
-
+  // This callback executed is before ssr onGetWebpackConfig
+  onGetWebpackConfig('web', (config) => {
+    const webpackConfig = config.toConfig();
+    // Before set ssr entry, it need exclude document entry
+    entries = webpackConfig.entry;
+  });
   onGetWebpackConfig('ssr', (config) => {
+    const documentPath: string = getDocumentPath(rootDir);
     config.target('node');
+    // Set entry
+    Object.keys(entries).forEach((entryName) => {
+      config.entry(entryName).add(entries[entryName][0]);
+    });
 
-    // do not generate vendor.js when compile document
-    config.optimization.splitChunks({ cacheGroups: {} });
+    // Set output
+    const outputPath = path.join(rootDir, outputDir, NODE);
+    config.output.path(outputPath).libraryTarget('commonjs2');
+    config.plugin('entryPlugin').use(EntryPlugin, [
+      {
+        entries,
+        api,
+        documentPath,
+      },
+    ]);
 
-    config.devServer.writeToDisk(true);
-
-    config.output
-      .filename('node/[name].js')
-      .libraryTarget('commonjs2');
-
-    if (isDev) {
-      setSSRDev(config, api);
-    } else {
-      setSSRBuild(config);
-    }
-
-    config
-      .plugin('DefinePlugin')
-      .tap((args) => [Object.assign({}, ...args, {
+    // Set server flag
+    config.plugin('DefinePlugin').tap((args) => [
+      Object.assign({}, ...args, {
         'process.env.__IS_SERVER__': true,
-      })]);
+      }),
+    ]);
+
+    if (command === 'start') {
+      // Set dev config
+      setDev(api, config);
+    }
   });
 
   onHook('after.build.compile', () => {
@@ -53,4 +60,11 @@ export default (api) => {
     console.log('   ', chalk.underline.white(path.resolve(rootDir, outputDir, 'node')));
     console.log();
   });
-};
+}
+
+function getDocumentPath(rootDir: string): string {
+  const targetPath = path.join(rootDir, 'src/document/index');
+  const targetExt = ['.jsx', '.tsx'].find((ext) => fs.existsSync(`${targetPath}${ext}`));
+  if (!targetExt) return '';
+  return `${targetPath}${targetExt}`;
+}

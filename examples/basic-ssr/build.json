@@ -1,0 +1,9 @@
+{
+  "targets": ["web"],
+  "web": {
+    "ssr": true,
+    "mpa": true
+  },
+  "minify": false,
+  "compileDependencies": []
+}

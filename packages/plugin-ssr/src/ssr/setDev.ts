@@ -1,80 +1,67 @@
-import * as path from 'path';
 import * as Module from 'module';
-import * as fs from 'fs';
-import * as errorStackTracey from 'error-stack-tracey';
-import { getMpaEntries } from '@builder/app-helpers';
-import getEntryName from './getEntryName';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { NODE, WEB } from '../constants';
 
-const { parse, print } = errorStackTracey;
-
-function exec(code, filename, filePath) {
-  const module: any = new Module(filename, this);
-  module.paths = (Module as any)._nodeModulePaths(filePath);
-  module.filename = filename;
-  module._compile(code, filename);
-  return module.exports;
-}
-
-export default (config, api) => {
-  const { context, getValue } = api;
-  const { rootDir, userConfig } = context;
-  const { web: webConfig = {}, outputDir } = userConfig;
-  const distDir = path.join(rootDir, outputDir, 'node');
-
-  config.mode('development');
-  const staticConfig = getValue('staticConfig');
-  const { routes } = staticConfig;
-
-  if (webConfig.mpa) {
-    const entries = getMpaEntries(api, { target: 'web', appJsonContent: staticConfig });
-    routes.forEach((route) => {
-      const { entryName } = entries.find(({ source }) => source === route.source);
-      route.path = `/${entryName}.html`;
-      route.entryName = entryName;
-      route.componentPath = path.join(distDir, `${entryName}.js`);
-    });
-  } else {
-    routes.forEach((route) => {
-      const entryName = getEntryName(route.path);
-      route.entryName = entryName;
-      route.componentPath = path.join(distDir, `${entryName}.js`);
-    });
-  }
-
-  // enable inline soucremap for get error stack
-  config.devtool('eval-cheap-source-map');
-
+export default function (api, config) {
+  let serverReady = false;
+  let httpResponseQueue = [];
+  const {
+    context: {
+      userConfig: { outputDir },
+      rootDir,
+    },
+  } = api;
+  const outputPath = path.resolve(rootDir, outputDir);
+  const originalDevServeBefore = config.devServer.get('before');
+  config.devServer.inline(false);
   config.devServer.hot(false);
-  const originalBeforeDevFunc = config.devServer.get('before');
-
-  // There can only be one `before` config, this config will overwrite `before` config in web plugin.
-  config.devServer.set('before', (app, devServer) => {
-    if (originalBeforeDevFunc) {
-      originalBeforeDevFunc(app, devServer);
+  config.devServer.set('before', (app, server) => {
+    if (typeof originalDevServeBefore === 'function') {
+      originalDevServeBefore(app, server);
     }
-    // outputFileSystem in devServer is MemoryFileSystem by defalut, but it can also be custom with other file systems.
-    const outputFs = devServer.compiler.compilers[0].outputFileSystem;
-    routes.forEach((route) => {
-      app.get(route.path, async (req, res) => {
-        const bundleContent = outputFs.readFileSync(route.componentPath, 'utf8');
-
-        process.once('unhandledRejection', async (error: Error) => {
-          const errorStack = await parse(error, bundleContent);
-          print(error.message, errorStack);
-        });
-
-        try {
-          const mod = exec(bundleContent, route.componentPath, route.componentPath);
-          mod.render(req, res);
-        } catch (error) {
-          console.log('exec error');
-          fs.writeFileSync(path.resolve(rootDir, 'build', 'index.js'), bundleContent);
-          const errorStack = await parse(error, bundleContent);
-          print(error.message, errorStack);
+    let compilerDoneCount = 0;
+    server.compiler.compilers.forEach((compiler) => {
+      compiler.hooks.done.tap('ssrServer', () => {
+        compilerDoneCount++;
+        console.log('compilerDoneCount', compilerDoneCount);
+        console.log('server.compiler.compilers.length', server.compiler.compilers.length);
+        // wait until all compiler is done
+        if (compilerDoneCount === server.compiler.compilers.length) {
+          serverReady = true;
+          httpResponseQueue.forEach(([req, res]) => {
+            serverRender(res, req, outputPath);
+          });
+          // empty httpResponseQueue
+          httpResponseQueue = [];
         }
       });
     });
-  });
 
-  return config;
-};
+    const pattern = /^\/?((?!\.(js|css|map|json|png|jpg|jpeg|gif|svg|eot|woff2|ttf|ico)).)*$/;
+    app.get(pattern, async (req, res) => {
+      if (serverReady) {
+        serverRender(res, req, outputPath);
+      } else {
+        httpResponseQueue.push([req, res]);
+      }
+    });
+  });
+}
+
+function serverRender(res, req, outputPath) {
+  const nodeFilePath = path.join(outputPath, NODE, `${req.url.replace('.html', '')}.js`);
+  const htmlFilePath = path.join(outputPath, WEB, /\.html$/.test(req.url) ? req.url : `${req.url}.html`);
+  const bundleContent = fs.readFileSync(nodeFilePath, 'utf-8');
+  const htmlTpl = fs.readFileSync(htmlFilePath, 'utf-8');
+  const mod = exec(bundleContent, nodeFilePath);
+  mod.render(req, res, htmlTpl);
+}
+
+function exec(code, filePath) {
+  const module: any = new Module(filePath, this);
+  module.paths = (Module as any)._nodeModulePaths(filePath);
+  module.filename = filePath;
+  module._compile(code, filePath);
+  return module.exports;
+}

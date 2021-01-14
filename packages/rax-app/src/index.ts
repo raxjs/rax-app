@@ -21,7 +21,7 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
   ];
 
   if (store) {
-    builtInPlugins.push(['build-plugin-rax-store']);
+    builtInPlugins.push('build-plugin-rax-store');
   }
 
   if (targets.includes('web')) {

@@ -55,6 +55,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
       publicUrl = publicUrl.substring(0, publicUrl.length - 1);
     }
 
+    console.log('publicUrl', target, publicUrl);
     config.plugin('DefinePlugin').tap((args) => [
       Object.assign({}, ...args, {
         'process.env.PUBLIC_URL': JSON.stringify(publicUrl),
