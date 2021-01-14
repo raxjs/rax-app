@@ -1,5 +1,5 @@
 {
-  "name": "with-rax",
+  "name": "basic-mpa-store",
   "description": "rax example",
   "dependencies": {
     "rax": "^1.1.0",

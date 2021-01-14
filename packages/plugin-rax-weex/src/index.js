@@ -34,6 +34,7 @@ module.exports = (api) => {
 
   onGetWebpackConfig(target, (config) => {
     const { outputDir = 'build', weex = {} } = userConfig;
+    const staticConfig = getValue('staticConfig');
     // set mpa config
     if (weex.mpa) {
       setMPAConfig.default(api, config, {
@@ -42,7 +43,7 @@ module.exports = (api) => {
         type: 'weex',
         entries: getMpaEntries(api, {
           target,
-          appJsonPath: path.join(rootDir, 'src/app.json'),
+          appJsonContent: staticConfig,
         }),
       });
     }

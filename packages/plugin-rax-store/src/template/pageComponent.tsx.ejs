@@ -1,0 +1,24 @@
+import { createElement } from 'rax';
+
+<% if(hasPageStore) { %>
+  <%- pageStoreImport %>
+<% } %>
+
+<%- pageComponentImport %>
+
+const PageComponentName = <%= pageComponentExport %>;
+
+<% if(hasPageStore) { %>
+  const PageProvider = store.Provider;
+  const StoreWrapperedPage = (props) => {
+    return (
+      <PageProvider>
+        <PageComponentName {...props} />
+      </PageProvider>
+    )
+  }
+  export default StoreWrapperedPage;
+  export { store };
+<% } else { %>
+  export default PageComponentName;
+<% } %>

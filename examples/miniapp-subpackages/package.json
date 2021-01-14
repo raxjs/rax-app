@@ -24,8 +24,7 @@
     "rax-app": "^3.0.0",
     "eslint": "^6.8.0",
     "prettier": "^2.1.2",
-    "stylelint": "^13.7.2",
-    "@ali/build-plugin-rax-app-def": "^2.0.0"
+    "stylelint": "^13.7.2"
   },
   "private": true,
   "originTemplate": "@rax-materials/scaffolds-app-js"

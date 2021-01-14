@@ -1,7 +1,6 @@
 import { createElement, useState } from 'rax';
 import View from 'rax-view';
 import Text from 'rax-text';
-
 import styles from './index.module.css';
 
 import Logo from '@/components/Logo';

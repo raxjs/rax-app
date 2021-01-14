@@ -10,10 +10,14 @@ const customOptionConfig = require('./config/options.config');
 const modifyTargets = require('./utils/modifyTargets');
 const setStaicConfig = require('./utils/setStaticConfig');
 const setDevUrlPrefix = require('./utils/setDevUrlPrefix');
+const setRegisterMethod = require('./utils/setRegisterMethod');
 
 module.exports = (api) => {
   const { onGetWebpackConfig, context, setValue } = api;
   const { command, rootDir } = context;
+
+  setRegisterMethod(api);
+
   setValue(GET_RAX_APP_WEBPACK_CONFIG, getBase);
   // Set dev url prefix
   setDevUrlPrefix(api);
