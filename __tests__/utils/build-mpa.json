@@ -1,0 +1,6 @@
+{
+  "targets": ["web"],
+  "web": {
+    "mpa": true
+  }
+}

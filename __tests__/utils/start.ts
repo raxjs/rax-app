@@ -22,7 +22,7 @@ export const startFixture = async function (example: string) {
   executeCommand('npm install --registry=https://registry.npm.taobao.org/', rootDir);
   const devServer = await start({
     args: {
-      config: path.join(rootDir, 'build.json'),
+      config: path.join(__dirname, 'build-mpa.json'),
       port,
       disableOpen: true
     },
