@@ -29,9 +29,7 @@ export default async (api) => {
   applyMethod('addExport', { source: '@ice/store', specifier: '{ createStore }', exportName: 'createStore' });
 
   const mpa = checkIsMpa(userConfig);
-  // if (mpa) {
   applyMethod('rax.modifyStaticConfig', (staticConfig) => modifyStaticConfigRoutes(staticConfig, tempPath, mpa ? 'Page.tsx' : 'Page', srcPath, mpa));
-  // }
 
   onGetWebpackConfig((config) => {
     config.module.rule('appJSON')
