@@ -2,7 +2,10 @@ const path = require('path');
 const fs = require('fs-extra');
 const { platformMap } = require('miniapp-builder-shared');
 const { setConfig } = require('miniapp-runtime-config');
-const { setAppConfig: setAppCompileConfig, setComponentConfig: setComponentCompileConfig } = require('miniapp-compile-config');
+const {
+  setAppConfig: setAppCompileConfig,
+  setComponentConfig: setComponentCompileConfig,
+} = require('miniapp-compile-config');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR } = require('./constants');
@@ -60,18 +63,20 @@ module.exports = (api) => {
             return [copyList.concat(needCopyDirs)];
           });
         } else if (needCopyDirs.length > 0) {
-          config
-            .plugin('CopyWebpackPlugin')
-            .use(CopyWebpackPlugin, [needCopyDirs]);
+          config.plugin('CopyWebpackPlugin').use(CopyWebpackPlugin, [needCopyDirs]);
         }
 
         if (isCompileProject) {
-          setAppCompileConfig(config, userConfig[target] || {}, { target, context, outputPath, entryPath: './src/app' });
-        } else {
-          setConfig(config, userConfig[target] || {}, {
-            context,
+          setAppCompileConfig(config, userConfig[target] || {}, {
             target,
-            babelRuleName: 'babel-loader',
+            context,
+            outputPath,
+            entryPath: './src/app',
+          });
+        } else {
+          setConfig(config, {
+            api,
+            target,
             modernMode: true,
             outputPath,
           });

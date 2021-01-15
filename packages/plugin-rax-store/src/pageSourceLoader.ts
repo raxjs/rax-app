@@ -13,10 +13,10 @@ import modifyRoutes from './utils/modifyRoutes';
   }
  */
 export default function pageSourceLoader(appJSON) {
-  const { tempPath } = getOptions(this);
+  const { tempPath, srcPath, projectType } = getOptions(this);
   const content = JSON.parse(appJSON);
 
-  content.routes = modifyRoutes(content.routes, tempPath, 'Page');
+  content.routes = modifyRoutes(content.routes, tempPath, 'Page', srcPath, projectType);
 
   return JSON.stringify(content);
 }
