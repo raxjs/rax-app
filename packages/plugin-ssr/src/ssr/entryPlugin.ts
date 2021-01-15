@@ -7,6 +7,14 @@ interface IEntryPluginOptions {
   documentPath: string;
 }
 
+interface ILoaderQuery {
+  documentPath?: string;
+  entryName?: string;
+  needInjectStyle?: boolean;
+
+  publicPath?: string;
+}
+
 const EntryLoader = require.resolve('./EntryLoader');
 
 /**
@@ -23,12 +31,25 @@ export default class EntryPlugin {
    */
   apply(compiler) {
     const { api, entries, documentPath } = this.options;
-    const query = {
-      documentPath,
-    };
+    const {
+      context: {
+        userConfig: { web, inlineStyle },
+      },
+    } = api;
+    const { publicPath } = compiler.options.output;
+    let query: ILoaderQuery;
+
+    if (documentPath) {
+      query = {
+        needInjectStyle: web.mpa && !inlineStyle,
+        documentPath,
+        publicPath,
+      };
+    }
 
     Object.keys(entries).forEach((entryName) => {
-      compiler.options.entry[entryName] = `${EntryLoader}?${qs.stringify(query)}!${entries[entryName][0]}`;
+      query.entryName = entryName;
+      compiler.options.entry[entryName] = `${EntryLoader}?${qs.stringify(query || {})}!${entries[entryName][0]}`;
     });
   }
 }
