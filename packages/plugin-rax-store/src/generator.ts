@@ -63,8 +63,8 @@ export default class Generator {
         projectType: this.projectType,
       }));
       const existedStoreFile = fse.pathExistsSync(pageStoreFile);
-      // if the page store does not exist, don't generate .rax/pages/${pageName}/Page.tsx
       if (!existedStoreFile) {
+        // if the page store does not exist, don't generate .rax/pages/${pageName}/Page.tsx
         return;
       }
       const params = { pageName, pageNameDir, pageStoreFile };

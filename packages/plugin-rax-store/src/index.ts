@@ -30,7 +30,7 @@ export default async (api) => {
   applyMethod('addExport', { source: '@ice/store', specifier: '{ createStore }', exportName: 'createStore' });
 
   const mpa = checkIsMpa(userConfig);
-  applyMethod('rax.modifyStaticConfig', (staticConfig) => modifyStaticConfigRoutes(staticConfig, tempPath, mpa ? 'Page.tsx' : 'Page', srcPath, mpa));
+  applyMethod('rax.modifyStaticConfig', (staticConfig) => modifyStaticConfigRoutes(staticConfig, tempPath, mpa ? 'Page.tsx' : 'Page', srcPath, projectType, mpa));
 
   onGetWebpackConfig((config) => {
     config.module.rule('storePageSourceLoader')
@@ -41,6 +41,7 @@ export default async (api) => {
         tempPath,
         srcPath,
         mpa,
+        projectType,
       });
 
     // Set alias to run @ice/store

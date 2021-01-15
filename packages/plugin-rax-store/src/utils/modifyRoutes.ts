@@ -8,7 +8,7 @@ import { getPageStorePath } from './getPath';
  * @param tempPath the path of .rax/ dir
  * @param filename the filename to be replaced e.g.: /example/.rax/pages/Home/index -> /example/.rax/pages/Home/Page.tsx
  */
-export default function modifyRoutes(routes, tempPath, filename, srcPath, mpa = false) {
+export default function modifyRoutes(routes, tempPath, filename, srcPath, projectType, mpa = false) {
   return routes.map((route) => {
     let pageSource = route.source;
     if (mpa) {
@@ -20,7 +20,7 @@ export default function modifyRoutes(routes, tempPath, filename, srcPath, mpa = 
 
     const dir = path.dirname(pageSource);
     const pageName = path.parse(dir).name;
-    const pageStorePath = getPageStorePath({ srcPath, projectType: 'ts', pageName });
+    const pageStorePath = getPageStorePath({ srcPath, projectType, pageName });
     if (!fse.pathExistsSync(pageStorePath)) {
       return route;
     }
