@@ -4,6 +4,7 @@ import CodeGenerator from './generator';
 import checkStoreExists from './utils/checkStoreExists';
 import { getAppStorePath } from './utils/getPath';
 import checkIsMpa from './utils/checkIsMpa';
+import { formatPath } from '@builder/app-helpers';
 import modifyStaticConfigRoutes from './utils/modifyStaticConfigRoutes';
 
 const { name: pluginName } = require('../package.json');
@@ -23,7 +24,7 @@ export default async (api) => {
     return;
   }
 
-  const appStoreFilePath = applyMethod('formatPath', getAppStorePath({ srcPath, projectType }));
+  const appStoreFilePath = formatPath(getAppStorePath({ srcPath, projectType }));
   const existsAppStoreFile = fse.pathExistsSync(appStoreFilePath);
 
   applyMethod('addExport', { source: '@ice/store', specifier: '{ createStore }', exportName: 'createStore' });
@@ -32,8 +33,8 @@ export default async (api) => {
   applyMethod('rax.modifyStaticConfig', (staticConfig) => modifyStaticConfigRoutes(staticConfig, tempPath, mpa ? 'Page.tsx' : 'Page', srcPath, mpa));
 
   onGetWebpackConfig((config) => {
-    config.module.rule('appJSON')
-      .test(/app\.json$/)
+    config.module.rule('storePageSourceLoader')
+      .test(path.join(srcPath, 'app.json'))
       .use('page-source-loader')
       .loader(require.resolve('./pageSourceLoader'))
       .options({
