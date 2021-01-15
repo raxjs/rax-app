@@ -32,7 +32,6 @@ export default function modifyRoutes(routes, tempPath, filename, srcPath, mpa = 
         pageSource = path.join(pageSource, filename);
       }
 
-      console.log('pageSource==>', path.dirname(pageSource), tempPath);
       return {
         ...route,
         pageSource: path.join(tempPath, pageSource),
