@@ -1,16 +1,16 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
 
-export function getAppStorePath({ rootDir, srcDir, projectType }) {
+export function getAppStorePath({ srcPath, projectType }) {
   // e.g: src/store.ts
-  const appStoreFilePath = path.join(rootDir, srcDir, `store.${projectType}`);
+  const appStoreFilePath = path.join(srcPath, `store.${projectType}`);
   return appStoreFilePath;
 }
 
-export function getPageStorePath({ rootDir, srcDir, projectType, pageName }) {
+export function getPageStorePath({ srcPath, projectType, pageName }) {
   const pagePath = path.join('pages', pageName);
 
-  const pageNameDir = path.join(rootDir, srcDir, pagePath);
+  const pageNameDir = path.join(srcPath, pagePath);
   // e.g: src/pages/${pageName}/store.ts
   const pageStoreFilePath = path.join(pageNameDir, `store.${projectType}`);
 
