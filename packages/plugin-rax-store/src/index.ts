@@ -23,7 +23,7 @@ export default async (api) => {
     return;
   }
 
-  const appStoreFilePath = applyMethod('formatPath', getAppStorePath({ rootDir, srcDir, projectType }));
+  const appStoreFilePath = applyMethod('formatPath', getAppStorePath({ srcPath, projectType }));
   const existsAppStoreFile = fse.pathExistsSync(appStoreFilePath);
 
   applyMethod('addExport', { source: '@ice/store', specifier: '{ createStore }', exportName: 'createStore' });
@@ -40,6 +40,7 @@ export default async (api) => {
       .loader(require.resolve('./pageSourceLoader'))
       .options({
         tempPath,
+        srcPath,
       });
 
     // Set alias to run @ice/store
