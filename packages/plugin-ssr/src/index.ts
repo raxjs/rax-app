@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import getWebpackBase from './ssr/getBase';
-import EntryPlugin from './ssr/EntryPlugin';
+import EntryPlugin from './ssr/entryPlugin';
 import { NODE } from './constants';
 import setDev from './ssr/setDev';
 
