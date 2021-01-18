@@ -1,5 +1,6 @@
 import { formatPath } from '@builder/app-helpers';
 import * as qs from 'qs';
+import { ILoaderQuery } from '../types';
 
 function addExport(fn) {
   return function (code: string) {
@@ -24,12 +25,15 @@ function addBuiltInRenderMethod(code) {
       req,
       res
     });
+
+    const initialData = appConfig.app && appConfig.app.getInitialData ? await appConfig.app.getInitialData() : {};
     const data = {
       __SSR_ENABLED__: true,
+      initialData,
       pageData
     };
     root.html(html);
-    root.before('<l data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</l>');
+    root.before('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>');
     res.send($.html());
   };
   `;
@@ -42,10 +46,11 @@ function addImportDocument(code, documentPath) {
     `;
 }
 
-function addCustomRenderMethod({ needInjectStyle, entryName, publicPath }, code) {
-  const scripts = [];
-  const styles = [];
-  if (needInjectStyle) {
+function addCustomRenderMethod({ needInjectStyle, entryName, publicPath, injectedHTML }, code) {
+  const scripts = [...injectedHTML.scripts];
+  const styles = [...injectedHTML.links];
+  const metas = [...injectedHTML.metas];
+  if (needInjectStyle === 'true') {
     styles.push(`<link rel="stylesheet" href="${publicPath}${entryName}.css"></link>`);
   }
   scripts.push(`<script src="${publicPath}${entryName}.js"></script>`);
@@ -59,8 +64,10 @@ function addCustomRenderMethod({ needInjectStyle, entryName, publicPath }, code)
       res
     });
 
+    const initialData = appConfig.app && appConfig.app.getInitialData ? await appConfig.app.getInitialData() : {};
     const data = {
       __SSR_ENABLED__: true,
+      initialData,
       pageData
     };
 
@@ -83,6 +90,9 @@ function addCustomRenderMethod({ needInjectStyle, entryName, publicPath }, code)
 
     const $ = cheerio.load(html);
     const root = $('#root');
+    const head = $('head');
+
+    head.after(${JSON.stringify(metas)});
 
     root.html(html);
     if (html.indexOf('window.__INITIAL_DATA__=') < 0) {
@@ -95,13 +105,16 @@ function addCustomRenderMethod({ needInjectStyle, entryName, publicPath }, code)
 }
 
 export default function () {
-  const query = qs.parse(this.query.substr(1)) || {};
+  const query = qs.parse(this.query.substr(1)) as ILoaderQuery;
 
   let code = `
     import * as cheerio from 'cheerio';
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
     import Page from '${formatPath(this.resourcePath)}';
+    import { getAppConfig } from '${formatPath(query.appConfigPath)}';
+
+    const appConfig = getAppConfig() || {};
 
     async function getInitialProps(Component, ctx) {
       if (!Component.getInitialProps) return null;

@@ -1,19 +1,6 @@
 import * as qs from 'qs';
-
-interface IEntryPluginOptions {
-  api: any;
-
-  entries: any;
-  documentPath: string;
-}
-
-interface ILoaderQuery {
-  documentPath?: string;
-  entryName?: string;
-  needInjectStyle?: boolean;
-
-  publicPath?: string;
-}
+import * as path from 'path';
+import { IEntryPluginOptions, ILoaderQuery } from '../types';
 
 const EntryLoader = require.resolve('./EntryLoader');
 
@@ -33,17 +20,24 @@ export default class EntryPlugin {
     const { api, entries, documentPath } = this.options;
     const {
       context: {
+        rootDir,
         userConfig: { web, inlineStyle },
       },
+      getValue,
+      applyMethod,
     } = api;
     const { publicPath } = compiler.options.output;
-    let query: ILoaderQuery;
+    let query: ILoaderQuery = {
+      appConfigPath: path.join(rootDir, getValue('TEMP_PATH'), 'appConfig.ts'),
+    };
 
     if (documentPath) {
       query = {
-        needInjectStyle: web.mpa && !inlineStyle,
+        ...query,
+        needInjectStyle: String(web.mpa && !inlineStyle),
         documentPath,
         publicPath,
+        injectedHTML: applyMethod('rax.getInjectedHTML'),
       };
     }
 
