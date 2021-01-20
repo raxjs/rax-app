@@ -22,7 +22,7 @@ export default function addCustomRenderComponentToHTML(
 
   return `
   async function renderComponentToHTML(Component, ctx, initialData) {
-    const pageInitialProps = getInitialProps(Component, ctx);
+    const pageInitialProps = await getInitialProps(Component, ctx);
     const data = {
       __SSR_ENABLED__: true,
       initialData,
