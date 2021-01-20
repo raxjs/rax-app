@@ -101,13 +101,8 @@ export default function () {
       return html;
     }
 
-    async function renderWithContext({ ctx, initialData, htmlTemplate, res, req }) {
-      if (!ctx) {
-        ctx = { req, res };
-      } else {
-        req = ctx.req;
-        res = ctx.res;
-      }
+    async function renderWithContext(ctx, { initialData, htmlTemplate }) {
+      const { res, req } = ctx;
       ${query.useRunApp ? addDefineInitialPage() : ''}
       let html;
       try {
@@ -120,19 +115,19 @@ export default function () {
       ctx.body = html;
     }
 
-    async function render({ ctx, initialData, htmlTemplate }) {
+    async function render(ctx, { initialData, htmlTemplate }) {
       let html;
-      if (!ctx) {
-        const [req, res] = [...arguments];
-        ctx = { req, res };
-        html = await renderToHTML({ ctx });
-      } else {
+      if (ctx.req) {
         try {
           html = await renderToHTML({ ctx, initialData, htmlTemplate });
         } catch (e) {
           html = htmlTemplate;
           logError(e);
         }
+      } else {
+        const [req, res] = [...arguments];
+        ctx = { req, res };
+        html = await renderToHTML({ ctx });
       }
 
       ctx.res.setHeader('Content-Type', 'text/html; charset=utf-8');

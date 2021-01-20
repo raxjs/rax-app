@@ -30,6 +30,7 @@ export default function addCustomRenderComponentToHTML(
     };
     let pageHTML;
 
+    // Assign pageHTML
     if (!${useRunApp}) {
       const contentElement = createElement(Component, pageInitialProps);
       pageHTML = renderer.renderToString(contentElement, {

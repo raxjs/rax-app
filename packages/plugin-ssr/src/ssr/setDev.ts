@@ -54,7 +54,7 @@ function serverRender(res, req, { outputPath, mpa }) {
   const mod = exec(bundleContent, nodeFilePath);
   const htmlFilePath = path.join(outputPath, WEB, /\.html$/.test(url) ? url : `${url}.html`);
   const htmlTemplate = fs.readFileSync(htmlFilePath, 'utf-8');
-  mod.render({ ctx: { req, res }, htmlTemplate });
+  mod.render({ req, res }, { htmlTemplate });
 }
 
 function exec(code, filePath) {
