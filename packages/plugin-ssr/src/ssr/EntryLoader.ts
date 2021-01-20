@@ -1,42 +1,17 @@
 import { formatPath } from '@builder/app-helpers';
 import * as qs from 'qs';
+import * as path from 'path';
 import { ILoaderQuery } from '../types';
+import addCustomRenderComponentToHTML from './addCustomRenderComponentToHTML';
+import addBuiltInRenderComponentToHTML from './addBuiltInRenderComponentToHTML';
 
-function addExport(fn) {
-  return function (code: string) {
-    return `${fn(code)}
-    export {
-      render,
-      renderToHTML,
-      renderWithContext,
-    };
-    `;
-  };
-}
-
-function addBuiltInRenderMethod(code) {
+function addExport(code) {
   return `${code}
-  async function render(req, res, htmlTemplate = '__RAX_APP_SERVER_HTML_TEMPLATE__') {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    const $ = cheerio.load(htmlTemplate, { decodeEntities: false });
-    const root = $('#root');
-
-    const { html, pageData } = await renderComponentToHTML(Page, {
-      req,
-      res
-    });
-
-    const initialData = appConfig.app && appConfig.app.getInitialData ? await appConfig.app.getInitialData() : {};
-    const data = {
-      __SSR_ENABLED__: true,
-      initialData,
-      pageData
-    };
-    root.html(html);
-    root.before('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>');
-    res.send($.html());
-  };
-  `;
+  export {
+    render,
+    renderToHTML,
+    renderWithContext,
+  };`;
 }
 
 function addImportDocument(code, documentPath) {
@@ -46,75 +21,66 @@ function addImportDocument(code, documentPath) {
     `;
 }
 
-function addCustomRenderMethod({ needInjectStyle, entryName, publicPath, injectedHTML }, code) {
-  const scripts = [...injectedHTML.scripts];
-  const styles = [...injectedHTML.links];
-  const metas = [...injectedHTML.metas];
-  if (needInjectStyle === 'true') {
-    styles.push(`<link rel="stylesheet" href="${publicPath}${entryName}.css"></link>`);
-  }
-  scripts.push(`<script src="${publicPath}${entryName}.js"></script>`);
+function addImportPageComponent(resourcePath, pageConfig) {
+  return `import Page from '${formatPath(resourcePath)}';
+  Page.__pageConfig = ${JSON.stringify(pageConfig)};`;
+}
 
-  return `${code}
-  async function render(req, res) {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+function addRunAppDependcies(resourcePath, tempPath) {
+  return `
+  import '${resourcePath}';
+  import app from '${path.join(tempPath, 'runApp.ts')}';
 
-    const { html: pageHTML, pageData } = await renderComponentToHTML(Page, {
-      req,
-      res
-    });
+  const { createBaseApp, emitLifeCycles } = app;
+  `;
+}
 
-    const initialData = appConfig.app && appConfig.app.getInitialData ? await appConfig.app.getInitialData() : {};
-    const data = {
-      __SSR_ENABLED__: true,
-      initialData,
-      pageData
-    };
-
-    let scripts = ${JSON.stringify(scripts)};
-    let styles = ${JSON.stringify(styles)};
-
-    const DocumentContextProvider = function() {};
-    DocumentContextProvider.prototype.getChildContext = function() {
-      return {
-        __initialData: JSON.stringify(data),
-        __styles: styles,
-        __scripts: scripts,
-      };
-    };
-    DocumentContextProvider.prototype.render = function() {
-      return createElement(Document);
-    };
-
-    const html = renderer.renderToString(createElement(DocumentContextProvider));
-
-    const $ = cheerio.load(html);
-    const root = $('#root');
-    const head = $('head');
-
-    head.after(${JSON.stringify(metas)});
-
-    root.html(html);
-    if (html.indexOf('window.__INITIAL_DATA__=') < 0) {
-      root.after('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>');
-    }
-    root.html(pageHTML);
-    res.send($.html());
+function addDefineInitialPage() {
+  return `
+  const pathname = req.path;
+  const routes = staticConfig.routes;
+  const route = routes.find(({ path }) => path === pathname);
+  const Page = route.component();
+  Page.__pageConfig = {
+    title: route.window && route.window.title,
   };
   `;
 }
 
+/**
+ * Global variables:
+ * utils: cheerio/qs/chalk
+ * rax render: createElement/renderer
+ * Component: Page/Document
+ * generated in .rax: appConfig/staticConfig/createBaseApp/emitLifeCycles
+ */
 export default function () {
-  const query = qs.parse(this.query.substr(1)) as ILoaderQuery;
-
+  const query = (qs.parse(this.query.substr(1)) as unknown) as ILoaderQuery;
+  const appConfigPath = path.join(query.tempPath, 'appConfig.ts');
+  query.useRunApp = query.useRunApp === 'true';
+  query.needInjectStyle = query.needInjectStyle === 'true';
   let code = `
     import * as cheerio from 'cheerio';
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
-    import Page from '${formatPath(this.resourcePath)}';
-    import { getAppConfig } from '${formatPath(query.appConfigPath)}';
+    import staticConfig from '${formatPath(path.join(query.tempPath, 'staticConfig.ts'))}';
+    import { getAppConfig } from '${formatPath(appConfigPath)}';
+    import * as qs from 'qs';
+    import * as chalk from 'chalk';
+    ${
+  query.useRunApp
+    ? addRunAppDependcies(this.resourcePath, query.tempPath)
+    : addImportPageComponent(this.resourcePath, query.pageConfig)
+}
 
     const appConfig = getAppConfig() || {};
+
+    function logError(msg) {
+      console.log(
+        chalk.red('ERR!'),
+        chalk.magenta(msg),
+      );
+    }
 
     async function getInitialProps(Component, ctx) {
       if (!Component.getInitialProps) return null;
@@ -126,38 +92,57 @@ export default function () {
       return props;
     }
 
-    async function renderComponentToHTML(Component, ctx) {
-      const pageData = await getInitialProps(Component, ctx);
-      const contentElement = createElement(Component, pageData);
-      const html = renderer.renderToString(contentElement, {
-        defaultUnit: 'rpx'
-      });
+    ${query.documentPath ? addCustomRenderComponentToHTML(query) : addBuiltInRenderComponentToHTML(query)}
 
-      return {
-        html,
-        pageData,
-      }
-    }
-
-    async function renderToHTML(req, res) {
-      const { html } = await renderComponentToHTML(Page, {
-        req,
-        res
-      });
+    async function renderToHTML({ ctx, initialData, htmlTemplate }) {
+      const { req, res } = ctx;
+      ${query.useRunApp ? addDefineInitialPage() : ''}
+      const html = await renderComponentToHTML(Page, ctx, initialData, htmlTemplate);
       return html;
     }
 
-    async function renderWithContext(ctx) {
-      const { html } = await renderComponentToHTML(Page, ctx);
+    async function renderWithContext({ ctx, initialData, htmlTemplate, res, req }) {
+      if (!ctx) {
+        ctx = { req, res };
+      } else {
+        req = ctx.req;
+        res = ctx.res;
+      }
+      ${query.useRunApp ? addDefineInitialPage() : ''}
+      let html;
+      try {
+        html = await renderComponentToHTML(Page, ctx, initialData);
+      } catch (e) {
+        html = htmlTemplate;
+        logError(e);
+      }
       ctx.set('Content-Type', 'text/html; charset=utf-8');
       ctx.body = html;
+    }
+
+    async function render({ ctx, initialData, htmlTemplate }) {
+      let html;
+      if (!ctx) {
+        const [req, res] = [...arguments];
+        ctx = { req, res };
+        html = await renderToHTML({ ctx });
+      } else {
+        try {
+          html = await renderToHTML({ ctx, initialData, htmlTemplate });
+        } catch (e) {
+          html = htmlTemplate;
+          logError(e);
+        }
+      }
+
+      ctx.res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      ctx.res.send(html);
     }
   `;
 
   if (query.documentPath) {
     code = addImportDocument(code, query.documentPath);
-    return addExport(addCustomRenderMethod.bind(null, query))(code);
   }
 
-  return addExport(addBuiltInRenderMethod)(code);
+  return addExport(code);
 }

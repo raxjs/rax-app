@@ -14,5 +14,8 @@ const StoreWrapperedPage = (props) => {
     </PageProvider>
   )
 }
+
+StoreWrapperedPage.getInitialProps = PageComponentName.getInitialProps;
+
 export default StoreWrapperedPage;
 export { store };

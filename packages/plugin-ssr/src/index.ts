@@ -1,9 +1,10 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
+import { minify } from 'html-minifier';
 import getWebpackBase from './ssr/getBase';
 import EntryPlugin from './ssr/entryPlugin';
-import { NODE } from './constants';
+import { NODE, WEB } from './constants';
 import setDev from './ssr/setDev';
 
 export default function (api) {
@@ -13,7 +14,10 @@ export default function (api) {
     rootDir,
     command,
   } = context;
+  const documentPath: string = getDocumentPath(rootDir);
+  const outputPath = path.join(rootDir, outputDir, NODE);
   const baseConfig = getWebpackBase(api);
+
   registerTask('ssr', baseConfig);
   let entries = {};
 
@@ -24,7 +28,6 @@ export default function (api) {
     entries = webpackConfig.entry;
   });
   onGetWebpackConfig('ssr', (config) => {
-    const documentPath: string = getDocumentPath(rootDir);
     config.target('node');
     // Set entry
     Object.keys(entries).forEach((entryName) => {
@@ -32,7 +35,6 @@ export default function (api) {
     });
 
     // Set output
-    const outputPath = path.join(rootDir, outputDir, NODE);
     config.output.path(outputPath).libraryTarget('commonjs2');
     config.plugin('entryPlugin').use(EntryPlugin, [
       {
@@ -49,10 +51,36 @@ export default function (api) {
       }),
     ]);
 
+    // do not copy public
+    if (config.plugins.has('CopyWebpackPlugin')) {
+      config.plugin('CopyWebpackPlugin').tap(() => {
+        return [[]];
+      });
+    }
+
     if (command === 'start') {
       // Set dev config
       setDev(api, config);
     }
+  });
+
+  let webBuildDir;
+
+  onHook(`before.${command}.run`, ({ config: configs }) => {
+    const webConfig = configs.find((config) => config.name === WEB);
+    webBuildDir = webConfig.output.path;
+  });
+
+  onHook(`after.${command}.compile`, () => {
+    Object.keys(entries).forEach((entryName) => {
+      const serverFilePath = path.join(outputPath, `${entryName}.js`);
+      const htmlFilePath = path.join(webBuildDir, `${entryName}.html`);
+      const bundle = fs.readFileSync(serverFilePath, 'utf-8');
+      const html = fs.readFileSync(htmlFilePath, 'utf-8');
+      const minifedHtml = minify(html, { collapseWhitespace: true, quoteCharacter: "'" });
+      const newBundle = bundle.replace(/__RAX_APP_SERVER_HTML_TEMPLATE__/, minifedHtml);
+      fs.writeFileSync(serverFilePath, newBundle, 'utf-8');
+    });
   });
 
   onHook('after.build.compile', () => {

@@ -2,8 +2,9 @@
 import { render, createElement, useEffect, useState, Fragment, useLayoutEffect } from 'rax';
 import { createNavigation, createTabBar } from 'create-app-container';
 import { createUseRouter } from 'create-use-router';
-import { isWeb, isWeex, isKraken, isNode } from 'universal-env';
+import { isWeb, isWeex, isKraken } from 'universal-env';
 import UniversalDriver from 'driver-universal';
+import parseSearch from './parseSearch';
 
 const useRouter = createUseRouter({ useState, useLayoutEffect });
 
@@ -38,7 +39,6 @@ function _matchInitialComponent(fullpath, routes) {
 function App(props) {
   const { staticConfig, history, routes, InitialComponent, context } = props;
   const { component: PageComponent } = useRouter(() => ({ history, routes, InitialComponent }));
-
   // Return null directly if not matched
   if (_isNullableComponent(PageComponent)) return null;
 
@@ -66,7 +66,7 @@ async function raxAppRenderer(options) {
     options.appConfig = {};
   }
 
-  const { appConfig, setAppConfig } = options || {};
+  const { appConfig, setAppConfig, getHistory } = options;
 
   setAppConfig(appConfig);
 
@@ -81,9 +81,16 @@ async function raxAppRenderer(options) {
     pageInitialProps = (window as any).__INITIAL_DATA__.pageData;
   } else {
     // ssr not enabled, or SSR is enabled but the server does not return data
-    // eslint-disable-next-line
     if (appConfig.app && appConfig.app.getInitialData) {
-      initialData = await appConfig.app.getInitialData();
+      const initialContext: any = {};
+      const history = getHistory();
+      if (history) {
+        const { pathname, search } = history.location;
+        const query = parseSearch(search);
+        initialContext.pathname = pathname;
+        initialContext.query = query;
+      }
+      initialData = await appConfig.app.getInitialData(initialContext);
     }
   }
 
@@ -101,7 +108,6 @@ function _renderApp(context, options) {
     getHistory,
     staticConfig,
     createAppInstance,
-    ErrorBoundary,
   } = options;
 
   const {
@@ -133,7 +139,7 @@ function _renderApp(context, options) {
       };
 
       const { app = {} } = appDynamicConfig;
-      const { rootId, ErrorBoundaryFallback, onErrorBoundaryHander, errorBoundary } = app;
+      const { rootId } = app;
 
       let appInstance;
 
@@ -141,24 +147,7 @@ function _renderApp(context, options) {
       if (typeof createAppInstance === 'function') {
         appInstance = createAppInstance(initialComponent);
       } else {
-        const AppProvider = runtime?.composeAppProvider?.();
-        const RootComponent = () => {
-          if (AppProvider) {
-            return (
-              <AppProvider><App {...props} /></AppProvider>
-            );
-          }
-          return <App {...props} />;
-        };
-        const Root = <RootComponent />;
-
-        if (errorBoundary) {
-          appInstance = (<ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHander}>
-            {Root}
-                         </ErrorBoundary>);
-        } else {
-          appInstance = Root;
-        }
+        appInstance = getRenderAppInstance(runtime, props, options);
       }
 
       // Emit app launch cycle
@@ -173,6 +162,29 @@ function _renderApp(context, options) {
         { driver, hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr },
       );
     });
+}
+
+export function getRenderAppInstance(runtime, props, options) {
+  const { ErrorBoundary, appConfig = {} } = options;
+  const { ErrorBoundaryFallback, onErrorBoundaryHander, errorBoundary } = appConfig.app || {};
+  const AppProvider = runtime?.composeAppProvider?.();
+  const RootComponent = () => {
+    if (AppProvider) {
+      return (
+        <AppProvider><App {...props} /></AppProvider>
+      );
+    }
+    return <App {...props} />;
+  };
+  const Root = <RootComponent />;
+
+  if (errorBoundary && ErrorBoundary) {
+    return (<ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHander}>
+      {Root}
+                   </ErrorBoundary>);
+  } else {
+    return Root;
+  }
 }
 
 export default raxAppRenderer;

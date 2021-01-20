@@ -31,6 +31,7 @@
     "qs": "^6.9.4",
     "@builder/app-helpers": "^2.1.0",
     "react-dev-utils": "^10.0.0",
-    "cheerio": "1.0.0-rc.3"
+    "cheerio": "1.0.0-rc.3",
+    "html-minifier": "^4.0.0"
   }
 }

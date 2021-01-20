@@ -1,20 +1,31 @@
-import * as qs from 'qs';
-
 export interface IEntryPluginOptions {
   api: any;
 
   entries: any;
   documentPath: string;
+
+  assetsProcessor?: string;
 }
 
-export interface ILoaderQuery extends qs.ParsedQs {
+export interface IPageConfig {
+  path: string;
+  title?: string;
+}
+
+export interface ILoaderQuery {
   documentPath?: string;
   entryName?: string;
-  needInjectStyle?: string;
+  needInjectStyle?: boolean | string;
+  useRunApp: boolean | string;
 
   publicPath?: string;
 
-  appConfigPath: string;
+  tempPath: string;
 
-  injectedHTML?: string;
+  injectedHTML?: any;
+
+  assetsProcessor?: string;
+
+  pageConfig?: IPageConfig;
+  doctype?: string;
 }

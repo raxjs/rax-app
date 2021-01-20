@@ -8,7 +8,7 @@ export default function (api, config) {
   let httpResponseQueue = [];
   const {
     context: {
-      userConfig: { outputDir },
+      userConfig: { outputDir, web = {} },
       rootDir,
     },
   } = api;
@@ -24,13 +24,11 @@ export default function (api, config) {
     server.compiler.compilers.forEach((compiler) => {
       compiler.hooks.done.tap('ssrServer', () => {
         compilerDoneCount++;
-        console.log('compilerDoneCount', compilerDoneCount);
-        console.log('server.compiler.compilers.length', server.compiler.compilers.length);
         // wait until all compiler is done
         if (compilerDoneCount === server.compiler.compilers.length) {
           serverReady = true;
           httpResponseQueue.forEach(([req, res]) => {
-            serverRender(res, req, outputPath);
+            serverRender(res, req, { outputPath, mpa: web.mpa });
           });
           // empty httpResponseQueue
           httpResponseQueue = [];
@@ -41,7 +39,7 @@ export default function (api, config) {
     const pattern = /^\/?((?!\.(js|css|map|json|png|jpg|jpeg|gif|svg|eot|woff2|ttf|ico)).)*$/;
     app.get(pattern, async (req, res) => {
       if (serverReady) {
-        serverRender(res, req, outputPath);
+        serverRender(res, req, { outputPath, mpa: web.mpa });
       } else {
         httpResponseQueue.push([req, res]);
       }
@@ -49,13 +47,14 @@ export default function (api, config) {
   });
 }
 
-function serverRender(res, req, outputPath) {
-  const nodeFilePath = path.join(outputPath, NODE, `${req.url.replace('.html', '')}.js`);
-  const htmlFilePath = path.join(outputPath, WEB, /\.html$/.test(req.url) ? req.url : `${req.url}.html`);
+function serverRender(res, req, { outputPath, mpa }) {
+  const url = !mpa || req.url === '/' ? '/index.html' : req.url;
+  const nodeFilePath = path.join(outputPath, NODE, `${url.replace('.html', '')}.js`);
   const bundleContent = fs.readFileSync(nodeFilePath, 'utf-8');
-  const htmlTpl = fs.readFileSync(htmlFilePath, 'utf-8');
   const mod = exec(bundleContent, nodeFilePath);
-  mod.render(req, res, htmlTpl);
+  const htmlFilePath = path.join(outputPath, WEB, /\.html$/.test(url) ? url : `${url}.html`);
+  const htmlTemplate = fs.readFileSync(htmlFilePath, 'utf-8');
+  mod.render({ ctx: { req, res }, htmlTemplate });
 }
 
 function exec(code, filePath) {
