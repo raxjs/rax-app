@@ -101,8 +101,9 @@ export default function () {
       return html;
     }
 
-    async function renderWithContext(ctx, { initialData, htmlTemplate }) {
+    async function renderWithContext(ctx, options = {}) {
       const { res, req } = ctx;
+      const { initialData, htmlTemplate } = options;
       ${query.useRunApp ? addDefineInitialPage() : ''}
       let html;
       try {
@@ -115,10 +116,11 @@ export default function () {
       ctx.body = html;
     }
 
-    async function render(ctx, { initialData, htmlTemplate }) {
+    async function render(ctx, options) {
       let html;
       if (ctx.req) {
         try {
+          const { initialData, htmlTemplate } = options;
           html = await renderToHTML({ ctx, initialData, htmlTemplate });
         } catch (e) {
           html = htmlTemplate;
