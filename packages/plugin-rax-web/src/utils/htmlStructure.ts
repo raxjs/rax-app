@@ -5,17 +5,28 @@ let scripts = [];
 let links = [];
 let metas = [];
 
+function addSpmA(spmA) {
+  if (!spmA) return '';
+  return `<meta name="data-spm" content="${spmA}" />`;
+}
+
+function addSpmB(spmB) {
+  if (!spmB) return '';
+  return `data-spm="${spmB}"`;
+}
+
 export function getBuiltInHtmlTpl(htmlInfo) {
-  const { doctype = '<!DOCTYPE html>', title } = htmlInfo;
+  const { doctype = '<!DOCTYPE html>', title, spmA, spmB } = htmlInfo;
   return `
   ${doctype}
   <html>
     <head>
       <meta charset="utf-8" />
+      ${addSpmA(spmA)}
       <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover" />
       <title>${title}</title>
     </head>
-    <body>
+    <body ${addSpmB(spmB)}>
       <div id="root"></div>
     </body>
   </html>
