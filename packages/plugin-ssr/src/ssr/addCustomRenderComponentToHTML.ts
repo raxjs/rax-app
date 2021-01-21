@@ -1,5 +1,5 @@
 import { ILoaderQuery } from '../types';
-import addRunAppRenderer from './addRunAppRenderer';
+import addPageHTMLAssign from './addPageHTMLAssign';
 
 export default function addCustomRenderComponentToHTML(
   {
@@ -28,17 +28,9 @@ export default function addCustomRenderComponentToHTML(
       initialData,
       pageInitialProps
     };
-    let pageHTML;
 
     // Assign pageHTML
-    if (!${useRunApp}) {
-      const contentElement = createElement(Component, pageInitialProps);
-      pageHTML = renderer.renderToString(contentElement, {
-        defaultUnit: 'rpx'
-      });
-    } else {
-      ${addRunAppRenderer()}
-    }
+    ${addPageHTMLAssign(useRunApp)}
 
     const documentData = await getInitialProps(Document, ctx);
     const title = Component.__pageConfig.title;

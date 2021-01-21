@@ -119,8 +119,8 @@ export default function () {
     async function render(ctx, options) {
       let html;
       if (ctx.req) {
+        const { initialData, htmlTemplate } = options;
         try {
-          const { initialData, htmlTemplate } = options;
           html = await renderToHTML({ ctx, initialData, htmlTemplate });
         } catch (e) {
           html = htmlTemplate;

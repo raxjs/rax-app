@@ -1,18 +1,12 @@
 import * as Module from 'module';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { NODE, WEB } from '../constants';
+import { NODE, STATIC_CONFIG, WEB } from '../constants';
 
 export default function (api, config) {
   let serverReady = false;
   let httpResponseQueue = [];
-  const {
-    context: {
-      userConfig: { outputDir, web = {} },
-      rootDir,
-    },
-  } = api;
-  const outputPath = path.resolve(rootDir, outputDir);
+
   const originalDevServeBefore = config.devServer.get('before');
   config.devServer.inline(false);
   config.devServer.hot(false);
@@ -28,7 +22,7 @@ export default function (api, config) {
         if (compilerDoneCount === server.compiler.compilers.length) {
           serverReady = true;
           httpResponseQueue.forEach(([req, res]) => {
-            serverRender(res, req, { outputPath, mpa: web.mpa });
+            serverRender(res, req, api);
           });
           // empty httpResponseQueue
           httpResponseQueue = [];
@@ -39,7 +33,7 @@ export default function (api, config) {
     const pattern = /^\/?((?!\.(js|css|map|json|png|jpg|jpeg|gif|svg|eot|woff2|ttf|ico)).)*$/;
     app.get(pattern, async (req, res) => {
       if (serverReady) {
-        serverRender(res, req, { outputPath, mpa: web.mpa });
+        serverRender(res, req, api);
       } else {
         httpResponseQueue.push([req, res]);
       }
@@ -47,14 +41,29 @@ export default function (api, config) {
   });
 }
 
-function serverRender(res, req, { outputPath, mpa }) {
-  const url = !mpa || req.url === '/' ? '/index.html' : req.url;
-  const nodeFilePath = path.join(outputPath, NODE, `${url.replace('.html', '')}.js`);
-  const bundleContent = fs.readFileSync(nodeFilePath, 'utf-8');
-  const mod = exec(bundleContent, nodeFilePath);
-  const htmlFilePath = path.join(outputPath, WEB, /\.html$/.test(url) ? url : `${url}.html`);
-  const htmlTemplate = fs.readFileSync(htmlFilePath, 'utf-8');
-  mod.render({ req, res }, { htmlTemplate });
+function serverRender(res, req, api) {
+  const {
+    context: {
+      userConfig: { outputDir, web = {} },
+      rootDir,
+    },
+    getValue,
+  } = api;
+  const outputPath = path.join(rootDir, outputDir);
+  let pathname = req.path;
+  const staticConfig = getValue(STATIC_CONFIG);
+  if (!web.mpa) {
+    if (!staticConfig.routes.find(({ path: routePath }) => routePath === pathname)) return;
+    pathname = 'index';
+  }
+  const nodeFilePath = path.join(outputPath, NODE, `${pathname}.js`);
+  if (fs.existsSync(nodeFilePath)) {
+    const bundleContent = fs.readFileSync(nodeFilePath, 'utf-8');
+    const mod = exec(bundleContent, nodeFilePath);
+    const htmlFilePath = path.join(outputPath, WEB, `${pathname}.html`);
+    const htmlTemplate = fs.readFileSync(htmlFilePath, 'utf-8');
+    mod.render({ req, res }, { htmlTemplate });
+  }
 }
 
 function exec(code, filePath) {

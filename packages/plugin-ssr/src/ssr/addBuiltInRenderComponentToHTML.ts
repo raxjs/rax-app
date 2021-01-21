@@ -1,5 +1,5 @@
 import { ILoaderQuery } from '../types';
-import addRunAppRenderer from './addRunAppRenderer';
+import addPageHTMLAssign from './addPageHTMLAssign';
 
 export default function addBuiltInRenderComponentToHTML({ useRunApp }: ILoaderQuery) {
   return `
@@ -14,16 +14,8 @@ export default function addBuiltInRenderComponentToHTML({ useRunApp }: ILoaderQu
       initialData,
       pageInitialProps
     };
-    const contentElement = createElement(Component, pageInitialProps);
-    let pageHTML;
-    if (!${useRunApp}) {
-      pageHTML = renderer.renderToString(contentElement, {
-        defaultUnit: 'rpx'
-      });
-    } else {
-      ${addRunAppRenderer()}
-    }
-
+    // Assign pageHTML
+    ${addPageHTMLAssign(useRunApp)}
     root.html(pageHTML);
     root.before('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>');
     return $.html();

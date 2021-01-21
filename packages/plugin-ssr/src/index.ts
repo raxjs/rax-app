@@ -19,6 +19,7 @@ export default function (api) {
   const baseConfig = getWebpackBase(api);
 
   registerTask('ssr', baseConfig);
+
   let entries = {};
 
   // This callback executed is before ssr onGetWebpackConfig
@@ -31,7 +32,8 @@ export default function (api) {
     config.target('node');
     // Set entry
     Object.keys(entries).forEach((entryName) => {
-      config.entry(entryName).add(entries[entryName][0]);
+      const entryPaths = entries[entryName];
+      config.entry(entryName).add(entryPaths[entryPaths.length - 1]);
     });
 
     // Set output
@@ -53,9 +55,7 @@ export default function (api) {
 
     // do not copy public
     if (config.plugins.has('CopyWebpackPlugin')) {
-      config.plugin('CopyWebpackPlugin').tap(() => {
-        return [[]];
-      });
+      config.plugins.delete('CopyWebpackPlugin');
     }
 
     if (command === 'start') {
