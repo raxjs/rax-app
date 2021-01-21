@@ -83,7 +83,7 @@ module.exports = function (api) {
     // Do not print localUrl and assets information when containing an error
     const isSuccessful = !messages.errors.length;
     const { userConfig } = context;
-    const { outputDir = 'build', targets } = userConfig;
+    const { outputDir = 'build', targets, web = {} } = userConfig;
     const urlPrefix = getValue(DEV_URL_PREFIX);
     const showLocalUrl = !process.env.CLOUDIDE_ENV;
 
@@ -162,7 +162,7 @@ module.exports = function (api) {
             openEntries.push(webEntryKeys[0]);
           }
           webEntryKeys.forEach((entryKey) => {
-            const entryPath = webMpa ? `${entryKey}.html` : '';
+            const entryPath = webMpa ? `${entryKey}${web.ssr ? '' : '.html'}` : '';
             const lanUrl = `${urlPrefix}/${entryPath}`;
             devInfo.urls.web.push(lanUrl);
             showLocalUrl && console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}${entryPath}`)}`);
