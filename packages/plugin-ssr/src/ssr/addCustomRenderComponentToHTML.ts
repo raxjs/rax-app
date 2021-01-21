@@ -5,7 +5,7 @@ export default function addCustomRenderComponentToHTML(
   {
     needInjectStyle,
     entryName,
-    pageConfig,
+    pageConfig = { path: '/' },
     publicPath,
     assetsProcessor = '',
     useRunApp,
