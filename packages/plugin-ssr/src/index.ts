@@ -1,51 +1,86 @@
-import setWebDev from './web/setDev';
 import * as path from 'path';
 import * as chalk from 'chalk';
-import getSSRBase from './ssr/getBase';
-import setSSRBuild from './ssr/setBuild';
-import setSSRDev from './ssr/setDev';
+import * as fs from 'fs-extra';
+import { minify } from 'html-minifier';
+import getWebpackBase from './ssr/getBase';
+import EntryPlugin from './ssr/entryPlugin';
+import { NODE, WEB } from './constants';
+import setDev from './ssr/setDev';
 
-// can‘t clone webpack chain object
-export default (api) => {
+export default function (api) {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;
-  const { command, rootDir, userConfig = {} } = context;
-  const { outputDir } = userConfig;
+  const {
+    userConfig: { outputDir },
+    rootDir,
+    command,
+  } = context;
+  const documentPath: string = getDocumentPath(rootDir);
+  const outputPath = path.join(rootDir, outputDir, NODE);
+  const baseConfig = getWebpackBase(api);
 
-  const ssrConfig = getSSRBase(api);
-  const isDev = command === 'start';
+  registerTask('ssr', baseConfig);
 
-  registerTask('ssr', ssrConfig);
+  let entries = {};
 
-  if (isDev) {
-    onGetWebpackConfig('web', (config) => {
-      config.optimization.splitChunks({ cacheGroups: {} });
-      setWebDev(config);
-    });
-  }
-
+  // This callback executed is before ssr onGetWebpackConfig
+  onGetWebpackConfig('web', (config) => {
+    const webpackConfig = config.toConfig();
+    // Before set ssr entry, it need exclude document entry
+    entries = webpackConfig.entry;
+  });
   onGetWebpackConfig('ssr', (config) => {
     config.target('node');
+    // Set entry
+    Object.keys(entries).forEach((entryName) => {
+      const entryPaths = entries[entryName];
+      config.entry(entryName).add(entryPaths[entryPaths.length - 1]);
+    });
 
-    // do not generate vendor.js when compile document
-    config.optimization.splitChunks({ cacheGroups: {} });
+    // Set output
+    config.output.path(outputPath).libraryTarget('commonjs2');
+    config.plugin('entryPlugin').use(EntryPlugin, [
+      {
+        entries,
+        api,
+        documentPath,
+      },
+    ]);
 
-    config.devServer.writeToDisk(true);
+    // Set server flag
+    config.plugin('DefinePlugin').tap((args) => [
+      Object.assign({}, ...args, {
+        'process.env.__IS_SERVER__': true,
+      }),
+    ]);
 
-    config.output
-      .filename('node/[name].js')
-      .libraryTarget('commonjs2');
-
-    if (isDev) {
-      setSSRDev(config, api);
-    } else {
-      setSSRBuild(config);
+    // do not copy public
+    if (config.plugins.has('CopyWebpackPlugin')) {
+      config.plugins.delete('CopyWebpackPlugin');
     }
 
-    config
-      .plugin('DefinePlugin')
-      .tap((args) => [Object.assign({}, ...args, {
-        'process.env.__IS_SERVER__': true,
-      })]);
+    if (command === 'start') {
+      // Set dev config
+      setDev(api, config);
+    }
+  });
+
+  let webBuildDir;
+
+  onHook(`before.${command}.run`, ({ config: configs }) => {
+    const webConfig = configs.find((config) => config.name === WEB);
+    webBuildDir = webConfig.output.path;
+  });
+
+  onHook(`after.${command}.compile`, () => {
+    Object.keys(entries).forEach((entryName) => {
+      const serverFilePath = path.join(outputPath, `${entryName}.js`);
+      const htmlFilePath = path.join(webBuildDir, `${entryName}.html`);
+      const bundle = fs.readFileSync(serverFilePath, 'utf-8');
+      const html = fs.readFileSync(htmlFilePath, 'utf-8');
+      const minifedHtml = minify(html, { collapseWhitespace: true, quoteCharacter: "'" });
+      const newBundle = bundle.replace(/__RAX_APP_SERVER_HTML_TEMPLATE__/, minifedHtml);
+      fs.writeFileSync(serverFilePath, newBundle, 'utf-8');
+    });
   });
 
   onHook('after.build.compile', () => {
@@ -53,4 +88,11 @@ export default (api) => {
     console.log('   ', chalk.underline.white(path.resolve(rootDir, outputDir, 'node')));
     console.log();
   });
-};
+}
+
+function getDocumentPath(rootDir: string): string {
+  const targetPath = path.join(rootDir, 'src/document/index');
+  const targetExt = ['.jsx', '.tsx'].find((ext) => fs.existsSync(`${targetPath}${ext}`));
+  if (!targetExt) return '';
+  return `${targetPath}${targetExt}`;
+}
