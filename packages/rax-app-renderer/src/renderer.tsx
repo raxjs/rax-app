@@ -179,9 +179,7 @@ export function getRenderAppInstance(runtime, props, options) {
   const Root = <RootComponent />;
 
   if (errorBoundary && ErrorBoundary) {
-    return (<ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHander}>
-      {Root}
-                   </ErrorBoundary>);
+    return (<ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHander}>{Root}</ErrorBoundary>);
   } else {
     return Root;
   }
