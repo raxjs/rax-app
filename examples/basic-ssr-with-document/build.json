@@ -4,6 +4,5 @@
     "ssr": true,
     "mpa": true
   },
-  "minify": false,
   "compileDependencies": []
 }

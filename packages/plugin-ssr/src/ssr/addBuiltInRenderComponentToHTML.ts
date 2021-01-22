@@ -8,7 +8,6 @@ export default function addBuiltInRenderComponentToHTML({ useRunApp }: ILoaderQu
     const root = $('#root');
 
     const pageInitialProps = await getInitialProps(Component, ctx);
-
     const data = {
       __SSR_ENABLED__: true,
       initialData,

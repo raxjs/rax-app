@@ -2,10 +2,9 @@
 import { render, createElement, useEffect, useState, Fragment, useLayoutEffect } from 'rax';
 import { createNavigation, createTabBar } from 'create-app-container';
 import { createUseRouter } from 'create-use-router';
-import { isWeb, isWeex, isKraken } from 'universal-env';
+import { isWeb, isWeex, isKraken, isNode } from 'universal-env';
 import UniversalDriver from 'driver-universal';
-import parseSearch from './parseSearch';
-import { IInitialContext } from './types';
+import { IInitialContext, IContext } from './types';
 import { setInitialData } from './initialData';
 
 const useRouter = createUseRouter({ useState, useLayoutEffect });
@@ -40,19 +39,23 @@ function _matchInitialComponent(fullpath, routes) {
 
 function App(props) {
   const { staticConfig, history, routes, InitialComponent, pageInitialProps } = props;
-  const { component: PageComponent } = useRouter(() => ({ history, routes, InitialComponent }));
+  let PageComponent;
+  if (isNode) {
+    PageComponent = InitialComponent;
+  } else {
+    PageComponent = useRouter(() => ({ history, routes, InitialComponent })).component;
+  }
   // Return null directly if not matched
   if (_isNullableComponent(PageComponent)) return null;
 
   if (isWeb) {
     const navigationProps = Object.assign(
-      { staticConfig, component: PageComponent, history, location: history.location, routes },
+      { staticConfig, component: PageComponent, history, location: history.location, routes, ...pageInitialProps },
     );
     return <AppNavigation {...navigationProps} />;
   }
 
   const pageProps = { history, location: history.location, ...pageInitialProps };
-
   const tabBarProps = { history, config: staticConfig.tabBar };
   return (
     <Fragment>
@@ -84,35 +87,27 @@ async function renderInClient(options) {
     emitLifeCycles,
     pathRedirect,
     staticConfig,
-    createAppInstance,
   } = options;
+
+  const context: IContext = {};
+  // ssr enabled and the server has returned data
+  if ((window as any).__INITIAL_DATA__) {
+    context.initialData = (window as any).__INITIAL_DATA__.initialData;
+    context.pageInitialProps = (window as any).__INITIAL_DATA__.pageInitialProps;
+  }
 
   const {
     runtime,
     appConfig: appDynamicConfig,
     history,
-  } = createBaseApp(appConfig, buildConfig);
+  } = await createBaseApp(appConfig, buildConfig, context);
 
-  let pageInitialProps = {};
+  setInitialData(context.initialData);
+
   const initialContext: IInitialContext = {
     pathname: '',
     query: {}
   };
-
-  // ssr enabled and the server has returned data
-  if ((window as any).__INITIAL_DATA__) {
-    setInitialData((window as any).__INITIAL_DATA__.initialData);
-    pageInitialProps = (window as any).__INITIAL_DATA__.pageInitialProps;
-  } else {
-    // ssr not enabled, or SSR is enabled but the server does not return data
-    if (appConfig.app && appConfig.app.getInitialData) {
-      const { pathname, search } = history.location;
-      const query = parseSearch(search);
-      initialContext.pathname = pathname;
-      initialContext.query = query;
-      setInitialData(await appConfig.app.getInitialData(initialContext));
-    }
-  }
 
   // Set custom driver
   if (typeof staticConfig.driver !== 'undefined') {
@@ -127,28 +122,21 @@ async function renderInClient(options) {
   return _matchInitialComponent(history.location.pathname, routes)
     .then(async (InitialComponent) => {
       const initialComponent = InitialComponent();
-      if (initialComponent.getInitialProps) {
-        pageInitialProps = await initialComponent.getInitialProps(initialContext);
+      if (!context.pageInitialProps && initialComponent.getInitialProps) {
+        context.pageInitialProps = await initialComponent.getInitialProps(initialContext);
       }
       const props = {
         staticConfig,
         history,
         routes,
         InitialComponent,
-        pageInitialProps
+        pageInitialProps: context.pageInitialProps
       };
 
       const { app = {} } = appDynamicConfig;
       const { rootId } = app;
 
-      let appInstance;
-
-      // For rax-app 2.x
-      if (typeof createAppInstance === 'function') {
-        appInstance = createAppInstance(InitialComponent);
-      } else {
-        appInstance = getRenderAppInstance(runtime, props, options);
-      }
+      const appInstance = getRenderAppInstance(runtime, props, options);;
 
       // Emit app launch cycle
       emitLifeCycles();

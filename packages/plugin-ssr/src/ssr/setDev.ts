@@ -53,7 +53,11 @@ function serverRender(res, req, api) {
   let pathname = req.path;
   const staticConfig = getValue(STATIC_CONFIG);
   if (!web.mpa) {
-    if (!staticConfig.routes.find(({ path: routePath }) => routePath === pathname)) return;
+    if (!staticConfig.routes.find(({ path: routePath }) => routePath === pathname)) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send('Cannot find target page.');
+      return;
+    }
     pathname = 'index';
   }
   const nodeFilePath = path.join(outputPath, NODE, `${pathname.replace(/\.html$/, '')}.js`);

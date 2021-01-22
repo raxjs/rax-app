@@ -1,9 +1,9 @@
 import renderer from 'rax-server-renderer';
 import { getRenderAppInstance } from './renderer';
 
-function renderInServer(context, props, options) {
+async function renderInServer(context, props, options) {
   const { appConfig, buildConfig = {}, createBaseApp, emitLifeCycles } = options;
-  const { runtime, appConfig: modifiedAppConfig } = createBaseApp(appConfig, buildConfig, context);
+  const { runtime, appConfig: modifiedAppConfig } = await createBaseApp(appConfig, buildConfig, context);
 
   options.appConfig = modifiedAppConfig;
   // Emit app launch cycle
@@ -15,11 +15,11 @@ function renderInServer(context, props, options) {
   });
 }
 
-export default function raxAppRendererWithSSR(context, props, options) {
+export default async function raxAppRendererWithSSR(context, props, options) {
   const { appConfig } = options || {};
   if (!appConfig.router) {
     appConfig.router = {};
   }
   appConfig.router.type = 'static';
-  return renderInServer(context, props, options);
+  return await renderInServer(context, props, options);
 }
