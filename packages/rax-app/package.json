@@ -22,7 +22,7 @@
     "build-plugin-rax-kraken": "1.1.0",
     "build-plugin-rax-miniapp": "1.2.1",
     "build-plugin-rax-pha": "1.2.1",
-    "build-plugin-rax-web": "1.2.1",
+    "build-plugin-rax-web": "1.2.0",
     "build-plugin-rax-weex": "1.1.0",
     "build-plugin-ssr": "1.2.0",
     "chokidar": "^3.3.1",
