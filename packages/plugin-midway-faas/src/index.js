@@ -12,15 +12,11 @@ module.exports = async ({ context, onGetWebpackConfig }) => {
   // Register FaaS Dev Server for API
   onGetWebpackConfig(target, (config) => {
     if (command === 'start' && hasAPI) {
-      const originalDevServerBefore = config.devServer.get('before');
+      const originalDevServeBefore = config.devServer.get('before');
 
       config.merge({
         devServer: {
           before(app, server) {
-            // If originalDevServerBefore is before than midway, ssr will shut down
-            if (typeof originalDevServeBefore === 'function') {
-              originalDevServerBefore(app, server);
-            }
             app.use(
               // eslint-disable-next-line react-hooks/rules-of-hooks
               useExpressDevPack({
@@ -32,6 +28,10 @@ module.exports = async ({ context, onGetWebpackConfig }) => {
                 },
               }),
             );
+
+            if (typeof originalDevServeBefore === 'function') {
+              originalDevServeBefore(app, server);
+            }
           },
         },
       });

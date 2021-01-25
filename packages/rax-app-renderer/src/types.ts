@@ -1,6 +1,8 @@
 export interface IInitialContext {
   pathname: string;
-  query: any;
+  query: {
+    [key: string]: string;
+  };
 }
 
 export interface IContext {

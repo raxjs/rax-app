@@ -5,11 +5,13 @@ async function renderInServer(context, props, options) {
   const { appConfig, buildConfig = {}, createBaseApp, emitLifeCycles } = options;
   const { runtime, appConfig: modifiedAppConfig } = await createBaseApp(appConfig, buildConfig, context);
 
-  options.appConfig = modifiedAppConfig;
   // Emit app launch cycle
   emitLifeCycles();
 
-  const App = getRenderAppInstance(runtime, props, options);
+  const App = getRenderAppInstance(runtime, props, {
+    ...options,
+    appConfig: modifiedAppConfig,
+  });
   return renderer.renderToString(App, {
     defaultUnit: 'rpx',
   });

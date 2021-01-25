@@ -49,9 +49,7 @@ function App(props) {
   if (_isNullableComponent(PageComponent)) return null;
 
   if (isWeb) {
-    const navigationProps = Object.assign(
-      { staticConfig, component: PageComponent, history, location: history.location, routes, ...pageInitialProps },
-    );
+    const navigationProps = { staticConfig, component: PageComponent, history, location: history.location, routes, ...pageInitialProps };
     return <AppNavigation {...navigationProps} />;
   }
 
