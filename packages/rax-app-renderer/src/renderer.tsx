@@ -91,7 +91,7 @@ async function renderInClient(options) {
 
   const context: IContext = {};
   // ssr enabled and the server has returned data
-  if ((window as any).__INITIAL_DATA__) {
+  if ((window as any)?.__INITIAL_DATA__) {
     context.initialData = (window as any).__INITIAL_DATA__.initialData;
     context.pageInitialProps = (window as any).__INITIAL_DATA__.pageInitialProps;
   }
