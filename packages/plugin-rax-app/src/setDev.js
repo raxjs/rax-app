@@ -66,7 +66,7 @@ module.exports = function (api) {
     // Remove outputDir when start devServer
     const { outputDir = 'build' } = userConfig;
     configs.forEach((config) => {
-      fs.removeSync(path.resolve(rootDir, outputDir, config.name));
+      fs.emptyDirSync(path.resolve(rootDir, outputDir, config.name));
     });
 
     logWebpackConfig(configs);
