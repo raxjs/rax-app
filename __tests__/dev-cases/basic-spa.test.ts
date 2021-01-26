@@ -14,7 +14,7 @@ describe('should start web devServer: ', () => {
     const serverOptions = await startFixture(example);
     const port = serverOptions.port;
     devServer = serverOptions.devServer;
-    const res = await setupBrowser({ port });
+    const res = await setupBrowser({ port, defaultHtml: '' });
     page = res.page;
     browser = res.browser;
     await page.waitForFunction(`document.getElementsByTagName('span').length > 0`);
