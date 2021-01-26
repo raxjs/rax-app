@@ -2,17 +2,23 @@ const fs = require('fs-extra');
 const path = require('path');
 
 module.exports = (config, context) => {
-  const { rootDir, command } = context;
+  const {
+    rootDir,
+    command,
+    userConfig: { weex },
+  } = context;
   const isDev = command === 'start';
 
-  // SPA
-  const appEntry = moduleResolve(formatPath(path.join(rootDir, './src/app')));
-  const entryConfig = config.entry('index');
+  if (!weex.mpa) {
+    // SPA
+    const appEntry = moduleResolve(formatPath(path.join(rootDir, './src/app')));
+    const entryConfig = config.entry('index');
 
-  if (isDev) {
-    entryConfig.add(require.resolve('react-dev-utils/webpackHotDevClient'));
+    if (isDev) {
+      entryConfig.add(require.resolve('react-dev-utils/webpackHotDevClient'));
+    }
+    entryConfig.add(appEntry);
   }
-  entryConfig.add(appEntry);
 };
 
 function moduleResolve(filePath) {

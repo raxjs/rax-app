@@ -5,6 +5,9 @@ export interface IHtmlInfo {
   links?: string[];
   scripts?: string[];
   metas?: string[];
+
+  spmA?: string;
+  spmB?: string;
 }
 
 export interface IBuiltInDocumentQuery {

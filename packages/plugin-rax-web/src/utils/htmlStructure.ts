@@ -15,8 +15,20 @@ function addSpmB(spmB) {
   return `data-spm="${spmB}"`;
 }
 
-export function getBuiltInHtmlTpl(htmlInfo) {
-  const { doctype = '<!DOCTYPE html>', title, spmA, spmB } = htmlInfo;
+function addStaticSource(sources: string[]) {
+  return sources.reduce((prev, current) => `${prev}${current}\n`, '');
+}
+
+export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
+  const {
+    doctype = '<!DOCTYPE html>',
+    title,
+    spmA,
+    spmB,
+    links: customLinks = [],
+    scripts: customScripts = [],
+    metas: customMetas = [],
+  } = htmlInfo;
   return `
   ${doctype}
   <html>
@@ -24,10 +36,13 @@ export function getBuiltInHtmlTpl(htmlInfo) {
       <meta charset="utf-8" />
       ${addSpmA(spmA)}
       <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover" />
+      ${addStaticSource(customMetas)}
       <title>${title}</title>
+      ${addStaticSource(customLinks)}
     </head>
     <body ${addSpmB(spmB)}>
       <div id="root"></div>
+      ${addStaticSource(customScripts)}
     </body>
   </html>
 `;

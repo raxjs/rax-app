@@ -61,37 +61,16 @@ export default (api) => {
       setDev(config);
     }
 
-    const webpackConfig = config.toConfig();
-
-    webpackConfig.target = 'node';
-
-    webpackConfig.output.libraryTarget = 'commonjs2';
-    // do not generate vendor.js when compile document
-    // deep copy webpackConfig optimization, because the toConfig method is shallow copy
-    webpackConfig.optimization = {
-      ...webpackConfig.optimization,
-      splitChunks: {
-        ...webpackConfig.optimization.splitChunks,
-        cacheGroups: {},
-      },
-    };
-
     config.plugin('document').use(DocumentPlugin, [
       {
-        context,
+        api,
+        staticConfig,
         pages: [
           {
             entryName: 'index',
             path: '/',
           },
         ],
-        staticExport: webConfig.staticExport,
-        webpackConfig,
-        staticConfig,
-        htmlInfo: {
-          title: staticConfig.window && staticConfig.window.title,
-          doctype: webConfig.doctype,
-        },
       },
     ]);
     if (webConfig.snapshot) {
