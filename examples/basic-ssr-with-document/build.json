@@ -3,5 +3,6 @@
   "web": {
     "ssr": true,
     "mpa": true
-  }
+  },
+  "compileDependencies": []
 }

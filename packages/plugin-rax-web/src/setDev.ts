@@ -12,7 +12,6 @@ export default (config) => {
     const compiler = devServer.compiler.compilers[0];
     const httpResponseQueue = [];
     let fallbackHTMLContent;
-
     compiler.hooks.emit.tap('AppHistoryFallback', (compilation) => {
       if (compilation.assets[HTMLAssetPath]) {
         fallbackHTMLContent = compilation.assets[HTMLAssetPath].source();

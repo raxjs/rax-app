@@ -53,14 +53,18 @@ function serverRender(res, req, api) {
   let pathname = req.path;
   const staticConfig = getValue(STATIC_CONFIG);
   if (!web.mpa) {
-    if (!staticConfig.routes.find(({ path: routePath }) => routePath === pathname)) return;
+    if (!staticConfig.routes.find(({ path: routePath }) => routePath === pathname)) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send('Cannot find target page.');
+      return;
+    }
     pathname = 'index';
   }
-  const nodeFilePath = path.join(outputPath, NODE, `${pathname}.js`);
+  const nodeFilePath = path.join(outputPath, NODE, `${pathname.replace(/\.html$/, '')}.js`);
   if (fs.existsSync(nodeFilePath)) {
     const bundleContent = fs.readFileSync(nodeFilePath, 'utf-8');
     const mod = exec(bundleContent, nodeFilePath);
-    const htmlFilePath = path.join(outputPath, WEB, `${pathname}.html`);
+    const htmlFilePath = path.join(outputPath, WEB, /\.html$/.test(pathname) ? pathname : `${pathname}.html`);
     const htmlTemplate = fs.readFileSync(htmlFilePath, 'utf-8');
     mod.render({ req, res }, { htmlTemplate });
   }

@@ -7,6 +7,7 @@ export default (useRunApp) => {
     });`;
   }
   return `
+    const { setInitialData } = require('rax-app-renderer');
     const raxServerRenderer = require('rax-app-renderer/lib/server').default;
     const { req, res } = ctx;
     const search = req.search;
@@ -25,7 +26,9 @@ export default (useRunApp) => {
       data.initialData = appConfig.app && appConfig.app.getInitialData ? await appConfig.app.getInitialData(initialContext) : {};
     }
 
-    const pageHTML = raxServerRenderer({ initialContext }, {
+    setInitialData(data.initialData);
+
+    const pageHTML = await raxServerRenderer({ initialContext }, {
         staticConfig,
         routes: staticConfig.routes,
         InitialComponent: Component,

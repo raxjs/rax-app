@@ -10,7 +10,7 @@ import setDev from './ssr/setDev';
 export default function (api) {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;
   const {
-    userConfig: { outputDir },
+    userConfig: { outputDir, compileDependencies },
     rootDir,
     command,
   } = context;
@@ -56,6 +56,16 @@ export default function (api) {
     // do not copy public
     if (config.plugins.has('CopyWebpackPlugin')) {
       config.plugins.delete('CopyWebpackPlugin');
+    }
+
+    // SSR does not compile node_modules in full
+    if (compileDependencies.length === 1 && compileDependencies[0] === '') {
+      ['jsx', 'tsx'].forEach((rule) => {
+        config.module
+          .rule(rule)
+          .exclude.clear()
+          .add(/node_modules/);
+      });
     }
 
     if (command === 'start') {
