@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as webpackSources from 'webpack-sources';
-import * as chalk from 'chalk';
 import { getInjectedHTML, getBuiltInHtmlTpl } from '../utils/htmlStructure';
 
 const PLUGIN_NAME = 'DocumentPlugin';
@@ -21,9 +20,7 @@ export default class DocumentPlugin {
       },
     } = this.options;
     const { publicPath } = compiler.options.output;
-    if (!web.mpa && web.staticExport) {
-      console.log(chalk.red("SPA doesn't support staticExport!"));
-    }
+
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, async (compilation, callback) => {
       const injectedHTML = getInjectedHTML();
       pages.forEach(({ entryName }) => {

@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as chalk from 'chalk';
 import setMPAConfig from '@builder/mpa-config';
 import * as appHelpers from '@builder/app-helpers';
 import setDev from './setDev';
@@ -7,6 +8,7 @@ import DocumentPlugin from './DocumentPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import SnapshotPlugin from './SnapshotPlugin';
 import setRegisterMethod from './utils/setRegisterMethod';
+import setDocumentBuilder from './utils/setDocumentBuilder';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
@@ -45,6 +47,14 @@ export default (api) => {
       delete context.userConfig.plugins;
       return context.userConfig;
     });
+  }
+
+  if (webConfig.staticExport) {
+    if (!webConfig.mpa) {
+      console.log(chalk.red("SPA doesn't support staticExport!"));
+      return;
+    }
+    setDocumentBuilder(api);
   }
 
   onGetWebpackConfig(target, (config) => {
