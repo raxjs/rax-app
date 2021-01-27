@@ -96,6 +96,8 @@ export default class DocumentPlugin {
       const htmlInfo: IHtmlInfo = {
         ...options.htmlInfo,
         title: (targetPage && targetPage.window && targetPage.window.title) || options.htmlInfo.title,
+        spmA: options.staticConfig.spm,
+        spmB: targetPage && targetPage.spm,
       };
 
       if (this.documentPath) {
