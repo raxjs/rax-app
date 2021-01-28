@@ -28,7 +28,7 @@ export default (useRunApp) => {
 
     setInitialData(data.initialData);
 
-    const pageHTML = await raxServerRenderer({ initialContext }, {
+    const pageHTML = raxServerRenderer({ initialContext }, {
         staticConfig,
         routes: staticConfig.routes,
         InitialComponent: Component,
