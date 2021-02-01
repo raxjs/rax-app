@@ -22,6 +22,7 @@ const retainKeys = [
   'metas',
   'links',
   'scripts',
+  'offlineResources',
 ];
 
 // transform app config to decamelize

@@ -15,12 +15,14 @@ describe('transformAppConfig', () => {
       ],
       scripts: [
         '<script defer src=\"xxx/index.js\"></script>'
-      ]
+      ],
+      'offlineResources': ["//g.alicdn.com/.*"]
     }, true);
     expect(manifestJSON.spm).toBe('A-123');
     expect(manifestJSON.metas[0]).toBe('<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />');
     expect(manifestJSON.links[0]).toBe('<link rel=\"dns-prefetch\" href=\"//g.alicdn.com\" />');
     expect(manifestJSON.scripts[0]).toBe('<script defer src=\"xxx/index.js\"></script>');
+    expect(manifestJSON.offline_resources[0]).toBe('//g.alicdn.com/.*');
   });
 
   it('should transform dataPrefetches', () => {
