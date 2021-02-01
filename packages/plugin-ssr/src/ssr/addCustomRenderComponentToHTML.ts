@@ -58,7 +58,7 @@ export default function addCustomRenderComponentToHTML(
 
     const html = renderer.renderToString(createElement(DocumentContextProvider));
 
-    const $ = cheerio.load(html);
+    const $ = cheerio.load(html, { decodeEntities: false });
     const rootNode = $('#root');
     const titleNode = $('title');
     if (titleNode && title) {
