@@ -23,7 +23,7 @@ export default async (api) => {
     applyMethod('addDisableRuntimePlugin', pluginName);
     return;
   }
-  process.env.enabled_store = 'true';
+  process.env.STORE_ENABLED = 'true';
 
   const appStoreFilePath = formatPath(getAppStorePath({ srcPath, projectType }));
   const existsAppStoreFile = fse.pathExistsSync(appStoreFilePath);
