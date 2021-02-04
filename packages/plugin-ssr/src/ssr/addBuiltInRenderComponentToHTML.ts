@@ -4,8 +4,7 @@ import addPageHTMLAssign from './addPageHTMLAssign';
 export default function addBuiltInRenderComponentToHTML({ useRunApp }: ILoaderQuery) {
   return `
   async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate = "__RAX_APP_SERVER_HTML_TEMPLATE__") {
-    const $ = cheerio.load(htmlTemplate, { decodeEntities: false });
-    const root = $('#root');
+    const $ = new Generator(htmlTemplate);
 
     const pageInitialProps = await getInitialProps(Component, ctx);
     const data = {
@@ -15,8 +14,8 @@ export default function addBuiltInRenderComponentToHTML({ useRunApp }: ILoaderQu
     };
     // Assign pageHTML
     ${addPageHTMLAssign(useRunApp)}
-    root.html(pageHTML);
-    root.before('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>');
+    $.root.innerHTML = pageHTML;
+    $.insertScript('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>');
     return $.html();
   };
   `;

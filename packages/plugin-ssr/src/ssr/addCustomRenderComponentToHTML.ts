@@ -43,6 +43,7 @@ export default function addCustomRenderComponentToHTML(
     const DocumentContextProvider = function() {};
     DocumentContextProvider.prototype.getChildContext = function() {
       return {
+        __initialHtml: pageHTML,
         __initialData: JSON.stringify(data),
         __styles: styles,
         __scripts: scripts,
@@ -58,20 +59,16 @@ export default function addCustomRenderComponentToHTML(
 
     const html = renderer.renderToString(createElement(DocumentContextProvider));
 
-    const $ = cheerio.load(html);
-    const rootNode = $('#root');
-    const titleNode = $('title');
-    if (titleNode && title) {
-      titleNode.html(Component.__pageConfig.title);
+    const $ = new Generator(html);
+    if (title) {
+      $.title.innerHTML = Component.__pageConfig.title;
     }
 
-    rootNode.after(${JSON.stringify(injectedHTML.scripts || [])});
+    $.insertScript(${JSON.stringify(injectedHTML.scripts || [])});
 
-    rootNode.html(html);
     if (html.indexOf('window.__INITIAL_DATA__=') < 0) {
-      rootNode.after('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>');
+      $.insertScript('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>')
     }
-    rootNode.html(pageHTML);
 
     return '${doctype || ''}' + $.html();
   };
