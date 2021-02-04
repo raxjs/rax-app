@@ -1,5 +1,6 @@
 import { IPlaceholderOptions } from './types';
 import wrapFunc from './wrapFunc';
+
 let count = 0;
 
 export default class Node {
