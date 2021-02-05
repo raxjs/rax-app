@@ -4,18 +4,19 @@ import wrapFunc from './wrapFunc';
 let count = 0;
 
 export default class Node {
-  innerHTML: string;
+  innerHTML: string = '';
   insertedAfterElements: string[] = [];
   insertedBeforeElements: string[] = [];
   tagName: string;
-  attributes: string;
+  attributes: string = '';
   attributePlaceholder: string;
-  __outerHTML: string;
+  __outerHTML: string = '';
   private nodeId: string;
-  private initInnerHTML: string;
-  private initOuterHTML: string;
+  private initInnerHTML: string = '';
+  private initOuterHTML: string = '';
   private matchRegExp: RegExp;
   private placeholderOptions: IPlaceholderOptions;
+  private matched: boolean = false;
   constructor(html: string, tagName: string, matchRegx: RegExp, placeholderOptions?: IPlaceholderOptions) {
     this.nodeId = `${tagName.toUpperCase()}_${++count}`;
     this.placeholderOptions = placeholderOptions;
@@ -35,9 +36,8 @@ export default class Node {
       return matchedHTML;
     });
 
-    if (!matchedHTML) {
-      throw new Error(`The HTML template is missing the ${tagName} element!`);
-    }
+    if (!matchedHTML) return;
+    this.matched = true;
     const attributesMatched = matchedHTML.match(new RegExp(`<${tagName}(\\S\s*?)>`));
     this.attributes = (attributesMatched && attributesMatched[1]) || '';
     this.attributePlaceholder = `${this.nodeId}_ATTRIBUTES`;
@@ -47,6 +47,7 @@ export default class Node {
   }
 
   get outerHTML(): string {
+    if (!this.matched) return '';
     return (
       this.__outerHTML ||
       this.initOuterHTML

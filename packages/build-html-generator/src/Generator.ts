@@ -43,15 +43,15 @@ export default class Generator {
     this.root.insertAfter(scripts);
   }
 
-  insertedMetas(): string[] {
+  getInsertedMetas(): string[] {
     return this.title.insertedBeforeElements;
   }
 
-  insertedLinks(): string[] {
+  getInsertedLinks(): string[] {
     return this.title.insertedAfterElements;
   }
 
-  insertedScripts(): string[] {
+  getInsertedScripts(): string[] {
     return this.root.insertedAfterElements;
   }
 

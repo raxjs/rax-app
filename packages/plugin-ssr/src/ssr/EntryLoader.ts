@@ -95,7 +95,8 @@ export default function () {
 
     ${query.documentPath ? addCustomRenderComponentToHTML(query) : addBuiltInRenderComponentToHTML(query)}
 
-    async function renderToHTML(req, res, { initialData, htmlTemplate }) {
+    async function renderToHTML(req, res, options = {}) {
+      const { initialData, htmlTemplate } = options;
       ${query.useRunApp ? addDefineInitialPage() : ''}
       const html = await renderComponentToHTML(Page, { req, res }, initialData, htmlTemplate);
       return html;

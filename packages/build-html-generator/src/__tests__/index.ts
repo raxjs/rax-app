@@ -60,4 +60,16 @@ describe('HTML Generator', () => {
       '<html><head><title>Rax App</title></head><body data-index="123"><div class="bbb" id="root" >456</div></body></html>';
     expect($.html()).toEqual(expected);
   });
+
+  it('should run without title', () => {
+    const tmpl = '<body><div class="bbb" id="root" >456</div></body>';
+    const $ = new Generator(tmpl);
+    expect($.html()).toEqual(tmpl);
+  });
+
+  it('should run without body', () => {
+    const tmpl = '<div class="bbb" id="root" >456</div><script src="//g.alicdn.com/index.js"></script>';
+    const $ = new Generator(tmpl);
+    expect($.html()).toEqual(tmpl);
+  });
 });

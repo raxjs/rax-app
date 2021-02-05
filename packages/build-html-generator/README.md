@@ -129,5 +129,5 @@ const $ = new Generator(tmpl, { rootId: 'container' });
 
 $.insertScript('<script src="//g.alicdn.com/index.js"></script>');
 
-console.log('Inserted scripts: ', $.insertedScripts);
+console.log('Inserted scripts: ', $.getInsertedScripts);
 ```
