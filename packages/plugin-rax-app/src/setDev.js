@@ -4,6 +4,7 @@ const openBrowser = require('react-dev-utils/openBrowser');
 const qrcode = require('qrcode-terminal');
 const path = require('path');
 const fs = require('fs-extra');
+const chokidar = require('chokidar');
 
 const logWebpackConfig = require('./utils/logWebpackConfig');
 const {
@@ -19,9 +20,28 @@ const generateTempFile = require('./utils/generateTempFile');
 
 const highlightPrint = chalk.hex('#F4AF3D');
 
+function watchAppJson(log) {
+  const watcher = chokidar.watch(path.resolve('app.json'), {
+    ignoreInitial: true,
+  });
+
+  watcher.on('change', () => {
+    console.log('\n');
+    log.info('app.json has been changed');
+    log.info('restart dev server');
+    // add process env for mark restart dev process
+    process.send('RESTART_DEV');
+  });
+
+  watcher.on('error', error => {
+    log.error('fail to watch file', error);
+    process.exit(1);
+  });
+}
+
 module.exports = function (api) {
   // eslint-disable-next-line global-require
-  const { context, onHook, getValue } = api;
+  const { context, onHook, getValue, log } = api;
   const { commandArgs, rootDir } = context;
   let webEntryKeys = [];
   let weexEntryKeys = [];
@@ -31,6 +51,7 @@ module.exports = function (api) {
   let krakenMpa = false;
   let isFirstCompile = true;
   let pha = false;
+  watchAppJson(log);
   const getWebpackInfo = (configs, configName) => {
     const taskConfig = configs.find((webpackConfig) => webpackConfig.name === configName);
     if (!taskConfig) {
