@@ -7,15 +7,7 @@ const fs = require('fs-extra');
 const chokidar = require('chokidar');
 
 const logWebpackConfig = require('./utils/logWebpackConfig');
-const {
-  MINIAPP,
-  WEB,
-  WECHAT_MINIPROGRAM,
-  BYTEDANCE_MICROAPP,
-  WEEX,
-  KRAKEN,
-  DEV_URL_PREFIX,
-} = require('./constants');
+const { MINIAPP, WEB, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX, KRAKEN, DEV_URL_PREFIX } = require('./constants');
 const generateTempFile = require('./utils/generateTempFile');
 
 const highlightPrint = chalk.hex('#F4AF3D');
@@ -33,7 +25,7 @@ function watchAppJson(log) {
     process.send('RESTART_DEV');
   });
 
-  watcher.on('error', error => {
+  watcher.on('error', (error) => {
     log.error('fail to watch file', error);
     process.exit(1);
   });
@@ -129,14 +121,9 @@ module.exports = function (api) {
         const miniappOutputPath = path.resolve(rootDir, outputDir, MINIAPP);
         devInfo.urls.miniapp = [miniappOutputPath];
         console.log(
-          highlightPrint(
-            '  [Alibaba Miniapp] Use ali miniapp developer tools to open the following folder:',
-          ),
+          highlightPrint('  [Alibaba Miniapp] Use ali miniapp developer tools to open the following folder:'),
         );
-        console.log(
-          '   ',
-          chalk.underline.white(miniappOutputPath),
-        );
+        console.log('   ', chalk.underline.white(miniappOutputPath));
         console.log();
       }
 
@@ -144,14 +131,9 @@ module.exports = function (api) {
         const wechatOutputPath = path.resolve(rootDir, outputDir, WECHAT_MINIPROGRAM);
         devInfo.urls.wechat = [wechatOutputPath];
         console.log(
-          highlightPrint(
-            '  [WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:',
-          ),
+          highlightPrint('  [WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'),
         );
-        console.log(
-          '   ',
-          chalk.underline.white(wechatOutputPath),
-        );
+        console.log('   ', chalk.underline.white(wechatOutputPath));
         console.log();
       }
 
@@ -159,21 +141,17 @@ module.exports = function (api) {
         const bytedanceOutputPath = path.resolve(rootDir, outputDir, BYTEDANCE_MICROAPP);
         devInfo.urls.bytedance = [bytedanceOutputPath];
         console.log(
-          highlightPrint(
-            '  [Bytedance Microapp] Use bytedance microapp developer tools to open the following folder:',
-          ),
+          highlightPrint('  [Bytedance Microapp] Use bytedance microapp developer tools to open the following folder:'),
         );
-        console.log(
-          '   ',
-          chalk.underline.white(bytedanceOutputPath),
-        );
+        console.log('   ', chalk.underline.white(bytedanceOutputPath));
         console.log();
       }
       if (targets.includes(WEB)) {
         devInfo.urls.web = [];
         console.log(highlightPrint('  [Web] Development server at: '));
         // do not open browser when restart dev
-        const shouldOpenBrowser = !commandArgs.disableOpen && !process.env.RESTART_DEV && isFirstCompile && showLocalUrl;
+        const shouldOpenBrowser =
+          !commandArgs.disableOpen && !process.env.RESTART_DEV && isFirstCompile && showLocalUrl;
         isFirstCompile = false;
         if (webEntryKeys.length > 0) {
           let openEntries = [];
