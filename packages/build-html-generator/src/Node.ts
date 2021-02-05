@@ -16,7 +16,7 @@ export default class Node {
   private initOuterHTML = '';
   private matchRegExp: RegExp;
   private placeholderOptions: IPlaceholderOptions;
-  private matched: boolean = false;
+  private matched = false;
   constructor(html: string, tagName: string, matchRegx: RegExp, placeholderOptions?: IPlaceholderOptions) {
     this.nodeId = `${tagName.toUpperCase()}_${++count}`;
     this.placeholderOptions = placeholderOptions;
