@@ -4,16 +4,16 @@ import wrapFunc from './wrapFunc';
 let count = 0;
 
 export default class Node {
-  innerHTML: string = '';
+  innerHTML = '';
   insertedAfterElements: string[] = [];
   insertedBeforeElements: string[] = [];
   tagName: string;
-  attributes: string = '';
+  attributes = '';
   attributePlaceholder: string;
-  __outerHTML: string = '';
+  __outerHTML = '';
   private nodeId: string;
-  private initInnerHTML: string = '';
-  private initOuterHTML: string = '';
+  private initInnerHTML = '';
+  private initOuterHTML = '';
   private matchRegExp: RegExp;
   private placeholderOptions: IPlaceholderOptions;
   private matched: boolean = false;
