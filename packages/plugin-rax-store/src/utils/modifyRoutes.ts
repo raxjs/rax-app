@@ -51,8 +51,8 @@ export default function modifyRoutes(
   mpa: boolean,
 ) {
   return routes.map((route) => {
-    if (route.tabHeader) {
-      route.tabHeader = modifyRoute(route.tabHeader, tempPath, filename, srcPath, projectType, mpa);
+    if (route.pageHeader) {
+      route.pageHeader = modifyRoute(route.pageHeader, tempPath, filename, srcPath, projectType, mpa);
     }
     if (route.frames) {
       route.frames = modifyRoutes(route.frames, tempPath, filename, srcPath, projectType, mpa);
