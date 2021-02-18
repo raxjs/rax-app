@@ -45,16 +45,12 @@ function modifyRoute(route, ...args) {
  */
 export default function modifyRoutes(routes, ...args) {
   return routes.map((route) => {
-    if (route.source) {
-      return modifyRoute(route, ...args);
-    } else {
-      if (route.tabHeader) {
-        route.tabHeader = modifyRoute(route.tabHeader, ...args);
-      }
-      if (route.frames) {
-        route.frames = modifyRoutes(route.frames, ...args);
-      }
+    if (route.tabHeader) {
+      route.tabHeader = modifyRoute(route.tabHeader, ...args);
     }
-    return route;
+    if (route.frames) {
+      route.frames = modifyRoutes(route.frames, ...args);
+    }
+    return modifyRoute(route, ...args);
   });
 }
