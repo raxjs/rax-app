@@ -33,18 +33,19 @@ export function getRaxPagesPath(rootDir) {
   const appJSON = fse.readJSONSync(absoluteAppJSONPath);
   const { routes } = appJSON;
   const pagesPath = [];
-  routes.forEach(({ source, frames, tabHeader }) => {
+  routes.forEach(({ source, frames, pageHeader }) => {
     if (source) {
       pagesPath.push(source);
-    } else {
-      if (tabHeader) {
-        pagesPath.push(tabHeader.source);
-      }
-      if (Array.isArray(frames)) {
-        frames.forEach(({ source: frameSource }) => {
+    }
+    if (pageHeader && pageHeader.source) {
+      pagesPath.push(pageHeader.source);
+    }
+    if (Array.isArray(frames)) {
+      frames.forEach(({ source: frameSource }) => {
+        if (frameSource) {
           pagesPath.push(frameSource);
-        });
-      }
+        }
+      });
     }
   });
 

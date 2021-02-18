@@ -54,6 +54,7 @@ export default class Generator {
     const srcPath = path.join(this.rootDir, this.srcDir);
 
     pageEntries.forEach((pageEntry) => {
+      console.log('pageEntry=====>', pageEntry);
       const pageName = getRaxPageName(pageEntry);
       const pagePath = path.join('pages', pageName);
       const pageNameDir = path.join(this.rootDir, this.srcDir, pagePath);
