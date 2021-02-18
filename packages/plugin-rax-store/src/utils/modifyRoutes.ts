@@ -3,8 +3,7 @@ import * as fse from 'fs-extra';
 import { checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 import { getPageStorePath } from './getPath';
 
-function modifyRoute(route, ...args) {
-  const [tempPath, filename, srcPath, projectType, mpa = false] = args;
+function modifyRoute(route, tempPath, filename, srcPath, projectType, mpa = false) {
   let pageSource = route.source;
   if (mpa) {
     const exportDefaultDeclarationExists = checkExportDefaultDeclarationExists(path.join(srcPath, pageSource));
@@ -43,14 +42,21 @@ function modifyRoute(route, ...args) {
  * @param projectType typescript or javascript
  * @param mpa wheather MPA
  */
-export default function modifyRoutes(routes, ...args) {
+export default function modifyRoutes(
+  routes: any[],
+  tempPath: string,
+  filename: string,
+  srcPath: string,
+  projectType: string,
+  mpa: boolean,
+) {
   return routes.map((route) => {
     if (route.tabHeader) {
-      route.tabHeader = modifyRoute(route.tabHeader, ...args);
+      route.tabHeader = modifyRoute(route.tabHeader, tempPath, filename, srcPath, projectType, mpa);
     }
     if (route.frames) {
-      route.frames = modifyRoutes(route.frames, ...args);
+      route.frames = modifyRoutes(route.frames, tempPath, filename, srcPath, projectType, mpa);
     }
-    return modifyRoute(route, ...args);
+    return modifyRoute(route, tempPath, filename, srcPath, projectType, mpa);
   });
 }
