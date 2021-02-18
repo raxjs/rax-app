@@ -73,16 +73,6 @@ export default function () {
 
     const appConfig = getAppConfig() || {};
 
-    function parseSearch (search) {
-      const results = search.substr(1).split('&');
-      const query = {};
-      results.forEach((result) => {
-        const [key, value] = result.split('=');
-        query[key] = value;
-      });
-      return query;
-    }
-
     async function getInitialProps(Component, ctx) {
       if (!Component.getInitialProps) return null;
       const props = await Component.getInitialProps(ctx);
