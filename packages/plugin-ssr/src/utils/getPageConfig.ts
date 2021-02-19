@@ -1,16 +1,13 @@
-import * as path from 'path';
+import { WEB } from '../constants';
+import { getMpaEntries } from '@builder/app-helpers';
 
-export default function (staticConfig) {
+export default function (api, staticConfig) {
+  const entries = getMpaEntries(api, {
+    target: WEB,
+    appJsonContent: staticConfig,
+  });
   const map = {};
-  staticConfig?.routes.forEach(({ path: pathname, source, name, window }) => {
-    let entryName;
-
-    if (name) {
-      entryName = name;
-    } else if (source) {
-      entryName = path.parse(path.dirname(source)).name.toLocaleLowerCase();
-    }
-
+  entries.forEach(({ path: pathname, entryName, window }) => {
     if (entryName) {
       map[entryName] = {
         path: pathname,

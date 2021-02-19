@@ -1,6 +1,11 @@
-// The HTML assets path is related to the webpack output filename.
-// It is determined by webpack configuration, but not vary based on the operating system.
-const HTMLAssetPath = 'index.html';
+let compilationCache;
+
+function getHTMLFromCompilation(compilation, filename) {
+  if (compilation.assets[`${filename}.html`]) {
+    return compilation.assets[`${filename}.html`].source();
+  }
+  return 'Document Not Found.';
+}
 
 export default (config) => {
   const devServerBeforeHook = config.devServer.get('before');
@@ -10,27 +15,31 @@ export default (config) => {
     }
     // Get web compiler for intercept AppHistoryFallback
     const compiler = devServer.compiler.compilers[0];
-    const httpResponseQueue = [];
-    let fallbackHTMLContent;
+    const contextQueue = [];
     compiler.hooks.emit.tap('AppHistoryFallback', (compilation) => {
-      if (compilation.assets[HTMLAssetPath]) {
-        fallbackHTMLContent = compilation.assets[HTMLAssetPath].source();
-      } else {
-        fallbackHTMLContent = 'Document Not Found.';
-      }
-
-      let res;
+      let context;
+      compilationCache = compilation;
       // eslint-disable-next-line
-      while (res = httpResponseQueue.shift()) {
-        res.send(fallbackHTMLContent);
+      while ((context = contextQueue.shift())) {
+        const { entryName, res } = context;
+        res.send(getHTMLFromCompilation(compilation, entryName));
       }
     });
 
-    app.get(/^\/?(?!\.(js|html|css|json))$/, (req, res) => {
-      if (fallbackHTMLContent !== undefined) {
-        res.send(fallbackHTMLContent);
+    app.get(/^\/?(?!\.(js|css|json))/, (req, res, next) => {
+      const matched = req.url.match(/^\/(\S*?)\.html/);
+      if (!matched) {
+        next();
+        return;
+      }
+      const entryName = matched[1];
+      if (compilationCache) {
+        res.send(getHTMLFromCompilation(compilationCache, entryName));
       } else {
-        httpResponseQueue.push(res);
+        contextQueue.push({
+          res,
+          entryName,
+        });
       }
     });
   });

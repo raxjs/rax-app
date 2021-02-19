@@ -14,6 +14,7 @@ const retainKeys = [
   'icons',
   'appWorker',
   'window',
+  'pageHeader',
   'tabHeader',
   'tabBar',
   'pages',
@@ -22,6 +23,7 @@ const retainKeys = [
   'metas',
   'links',
   'scripts',
+  'offlineResources',
 ];
 
 // transform app config to decamelize
@@ -31,13 +33,18 @@ function transformAppConfig(appConfig, isRoot = true) {
   if (isRoot && appConfig.routes) {
     appConfig.pages = appConfig.routes;
   }
-  for (const key in appConfig) {
+  for (let key in appConfig) {
     // filter not need key
     if (isRoot && retainKeys.indexOf(key) === -1) {
       continue;
     }
-    const transformKey = decamelize(key);
     const value = appConfig[key];
+
+    // compatible tabHeader
+    if (key === 'pageHeader') {
+      key = 'tabHeader';
+    }
+    const transformKey = decamelize(key);
     if (key === 'window') {
       Object.assign(data, transformAppConfig(value, false));
     } else if (typeof value === 'string' || typeof value === 'number') {
@@ -55,38 +62,7 @@ function transformAppConfig(appConfig, isRoot = true) {
       data[transformKey] = value;
     }
   }
-
   return data;
-}
-
-// get every page manifest
-function getPageManifestByPath(options) {
-  const { path = '/', decamelizeAppConfig = {} } = options;
-  let manifestData = {};
-  const { pages = [] } = decamelizeAppConfig;
-  const page = pages.find((item) => {
-    return item.path === path;
-  });
-
-  if (!page) {
-    return manifestData;
-  }
-
-  manifestData = {
-    ...decamelizeAppConfig,
-    ...page,
-  };
-
-  // if current page is not frame page
-  // delete tabbar/tabHeader/pages
-  if (!page.frame) {
-    delete manifestData.tab_bar;
-    delete manifestData.tab_header;
-    delete manifestData.pages;
-  }
-  delete manifestData.source;
-
-  return manifestData;
 }
 
 /*
@@ -165,6 +141,5 @@ function setRealUrlToManifest(options, manifest) {
 
 module.exports = {
   transformAppConfig,
-  getPageManifestByPath,
   setRealUrlToManifest,
 };

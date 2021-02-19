@@ -1,6 +1,6 @@
 
 
-const { transformAppConfig, getPageManifestByPath, setRealUrlToManifest } = require('../manifestHelpers');
+const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers');
 const cloneDeep = require('lodash.clonedeep');
 
 describe('transformAppConfig', () => {
@@ -15,12 +15,14 @@ describe('transformAppConfig', () => {
       ],
       scripts: [
         '<script defer src=\"xxx/index.js\"></script>'
-      ]
+      ],
+      'offlineResources': ["//g.alicdn.com/.*"]
     }, true);
     expect(manifestJSON.spm).toBe('A-123');
     expect(manifestJSON.metas[0]).toBe('<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />');
     expect(manifestJSON.links[0]).toBe('<link rel=\"dns-prefetch\" href=\"//g.alicdn.com\" />');
     expect(manifestJSON.scripts[0]).toBe('<script defer src=\"xxx/index.js\"></script>');
+    expect(manifestJSON.offline_resources[0]).toBe('//g.alicdn.com/.*');
   });
 
   it('should transform dataPrefetches', () => {
@@ -123,48 +125,6 @@ describe('getPageManifestByPath', () => {
       },
     ],
   };
-
-  it('should get empty object when no path', () => {
-    const manifest = getPageManifestByPath({});
-
-    expect(manifest).toMatchObject({});
-  });
-
-  it('should get first page manifest', () => {
-    const manifest = getPageManifestByPath({
-      decamelizeAppConfig: config,
-    });
-
-    expect(manifest).toMatchObject({
-      path: '/',
-      name: 'home',
-      data_prefetches: [
-        { url: '/a.com', data: { id: 123 } },
-      ],
-    });
-  });
-
-  it('should generate nsr script', () => {
-    const manifest = getPageManifestByPath({
-      decamelizeAppConfig: config,
-      nsr: true,
-    });
-  });
-
-  it('should delete fields when frame page', () => {
-    const copyConfig = { ...config };
-    copyConfig.pages[0].frame = true;
-    copyConfig.pages[0].tab_bar = {
-      background_color: '#ff0000',
-    };
-
-    const manifest = getPageManifestByPath({
-      decamelizeAppConfig: copyConfig,
-    });
-
-    expect(manifest.pages.length).toBe(2);
-    expect(manifest.tab_bar).toMatchObject({ background_color: '#ff0000' });
-  });
 });
 
 describe('setRealUrlToManifest', () => {
