@@ -11,7 +11,7 @@ export default (useRunApp) => {
     const raxServerRenderer = require('rax-app-renderer/lib/server').default;
     const { req, res } = ctx;
     const search = req.search;
-    const parsedQuery = qs.parse(search);
+    const parsedQuery = parseSearch(search);
     const pathname = req.path;
     const location = { pathname, search, state: null };
     const initialContext = {
@@ -27,6 +27,16 @@ export default (useRunApp) => {
     }
 
     setInitialData(data.initialData);
+
+    function parseSearch (search) {
+      const results = search.substr(1).split('&');
+      const query = {};
+      results.forEach((result) => {
+        const [key, value] = result.split('=');
+        query[key] = value;
+      });
+      return query;
+    }
 
     const pageHTML = raxServerRenderer({ initialContext }, {
         staticConfig,

@@ -19,7 +19,7 @@ function Document(props) {
           <body>
             {/* root container */}
             <Root />
-            <div id="star">{props.data.stars}</div>
+            <div id="star">{props.data && props.data.stars}</div>
             <Data />
             <Script />
           </body>

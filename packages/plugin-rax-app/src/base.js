@@ -41,7 +41,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
       .use('platform-loader')
       .loader(require.resolve('rax-platform-loader'))
       .options({
-        platform: target,
+        platform: target === 'ssr' ? 'node' : target,
       });
   });
 

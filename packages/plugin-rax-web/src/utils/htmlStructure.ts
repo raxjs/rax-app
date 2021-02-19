@@ -47,7 +47,7 @@ export function insertCommonElements(staticConfig) {
 }
 
 export function generateHtmlStructure(htmlStr, htmlInfo?: IHtmlInfo) {
-  const $ = cheerio.load(htmlStr);
+  const $ = cheerio.load(htmlStr, { decodeEntities: false });
   const root = $('#root');
   const title = $('title');
   const { metas: pageMetas = [], links: pageLinks = [], scripts: pageScripts = [] } = htmlInfo || {};

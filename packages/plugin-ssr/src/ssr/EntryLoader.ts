@@ -49,7 +49,7 @@ function addDefineInitialPage() {
 
 /**
  * Global variables:
- * utils: cheerio/qs/chalk
+ * utils: Generator
  * rax render: createElement/renderer
  * Component: Page/Document
  * generated in .rax: appConfig/staticConfig/createBaseApp/emitLifeCycles
@@ -60,13 +60,11 @@ export default function () {
   query.useRunApp = query.useRunApp === 'true';
   query.needInjectStyle = query.needInjectStyle === 'true';
   let code = `
-    import * as cheerio from 'cheerio';
+    import Generator from '@builder/html-generator';
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
     import staticConfig from '${formatPath(path.join(query.tempPath, 'staticConfig.ts'))}';
     import { getAppConfig } from '${formatPath(appConfigPath)}';
-    import * as qs from 'qs';
-    import * as chalk from 'chalk';
     ${
   query.useRunApp
     ? addRunAppDependcies(this.resourcePath, query.tempPath)
@@ -74,13 +72,6 @@ export default function () {
 }
 
     const appConfig = getAppConfig() || {};
-
-    function logError(msg) {
-      console.log(
-        chalk.red('ERR!'),
-        chalk.magenta(msg),
-      );
-    }
 
     async function getInitialProps(Component, ctx) {
       if (!Component.getInitialProps) return null;
@@ -94,10 +85,10 @@ export default function () {
 
     ${query.documentPath ? addCustomRenderComponentToHTML(query) : addBuiltInRenderComponentToHTML(query)}
 
-    async function renderToHTML({ ctx, initialData, htmlTemplate }) {
-      const { req, res } = ctx;
+    async function renderToHTML(req, res, options = {}) {
+      const { initialData, htmlTemplate } = options;
       ${query.useRunApp ? addDefineInitialPage() : ''}
-      const html = await renderComponentToHTML(Page, ctx, initialData, htmlTemplate);
+      const html = await renderComponentToHTML(Page, { req, res }, initialData, htmlTemplate);
       return html;
     }
 
@@ -110,7 +101,7 @@ export default function () {
         html = await renderComponentToHTML(Page, ctx, initialData);
       } catch (e) {
         html = htmlTemplate;
-        logError(e);
+        console.error(e);
       }
       ctx.set('Content-Type', 'text/html; charset=utf-8');
       ctx.body = html;
@@ -121,15 +112,15 @@ export default function () {
       if (ctx.req) {
         const { initialData, htmlTemplate } = options;
         try {
-          html = await renderToHTML({ ctx, initialData, htmlTemplate });
+          html = await renderToHTML(ctx.req, ctx.res, { initialData, htmlTemplate });
         } catch (e) {
           html = htmlTemplate;
-          logError(e);
+          console.error(e);
         }
       } else {
         const [req, res] = [...arguments];
         ctx = { req, res };
-        html = await renderToHTML({ ctx });
+        html = await renderToHTML(ctx.req, ctx.res);
       }
 
       ctx.res.setHeader('Content-Type', 'text/html; charset=utf-8');

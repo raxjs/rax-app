@@ -3,6 +3,7 @@
   "references": [
     { "path": "packages/stylesheet-loader" },
     { "path": "packages/babel-plugin-transform-jsx-stylesheet" },
+    { "path": "packages/build-html-generator" },
     { "path": "packages/rax-app-renderer" },
     { "path": "packages/plugin-rax-web" },
     { "path": "packages/plugin-ssr" },
