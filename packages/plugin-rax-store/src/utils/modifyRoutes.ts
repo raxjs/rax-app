@@ -48,7 +48,7 @@ export default function modifyRoutes(
   filename: string,
   srcPath: string,
   projectType: string,
-  mpa: boolean,
+  mpa?: boolean,
 ) {
   return routes.map((route) => {
     if (route.pageHeader) {
