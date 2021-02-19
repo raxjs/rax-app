@@ -1,6 +1,6 @@
 
 
-const { transformAppConfig, getPageManifestByPath, setRealUrlToManifest } = require('../manifestHelpers');
+const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers');
 const cloneDeep = require('lodash.clonedeep');
 
 describe('transformAppConfig', () => {
@@ -125,48 +125,6 @@ describe('getPageManifestByPath', () => {
       },
     ],
   };
-
-  it('should get empty object when no path', () => {
-    const manifest = getPageManifestByPath({});
-
-    expect(manifest).toMatchObject({});
-  });
-
-  it('should get first page manifest', () => {
-    const manifest = getPageManifestByPath({
-      decamelizeAppConfig: config,
-    });
-
-    expect(manifest).toMatchObject({
-      path: '/',
-      name: 'home',
-      data_prefetches: [
-        { url: '/a.com', data: { id: 123 } },
-      ],
-    });
-  });
-
-  it('should generate nsr script', () => {
-    const manifest = getPageManifestByPath({
-      decamelizeAppConfig: config,
-      nsr: true,
-    });
-  });
-
-  it('should delete fields when frame page', () => {
-    const copyConfig = { ...config };
-    copyConfig.pages[0].frame = true;
-    copyConfig.pages[0].tab_bar = {
-      background_color: '#ff0000',
-    };
-
-    const manifest = getPageManifestByPath({
-      decamelizeAppConfig: copyConfig,
-    });
-
-    expect(manifest.pages.length).toBe(2);
-    expect(manifest.tab_bar).toMatchObject({ background_color: '#ff0000' });
-  });
 });
 
 describe('setRealUrlToManifest', () => {

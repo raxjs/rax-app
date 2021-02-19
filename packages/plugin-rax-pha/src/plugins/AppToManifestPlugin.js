@@ -57,7 +57,7 @@ module.exports = class {
         inlineStyle,
         api,
       }, manifestJSON);
-      compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON));
+      compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON, null, 2));
       callback();
     });
   }
