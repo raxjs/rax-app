@@ -33,7 +33,8 @@
     "postcss-import": "^12.0.1",
     "postcss-preset-env": "^6.7.0",
     "null-loader": "^4.0.1",
-    "address": "^1.1.2"
+    "address": "^1.1.2",
+    "chokidar": "^3.5.1"
   },
   "devDependencies": {
     "webpack": "^4.41.1"
