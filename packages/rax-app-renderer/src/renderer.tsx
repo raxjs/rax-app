@@ -6,6 +6,7 @@ import { isWeb, isWeex, isKraken, isNode } from 'universal-env';
 import UniversalDriver from 'driver-universal';
 import { IInitialContext, IContext } from './types';
 import { setInitialData } from './initialData';
+import parseSearch from './parseSearch';
 
 const useRouter = createUseRouter({ useState, useLayoutEffect });
 
@@ -92,13 +93,21 @@ async function renderInClient(options) {
   if ((window as any)?.__INITIAL_DATA__) {
     context.initialData = (window as any).__INITIAL_DATA__.initialData;
     context.pageInitialProps = (window as any).__INITIAL_DATA__.pageInitialProps;
+  } else if (isWeb && appConfig?.app?.getInitialData) {
+    const { pathname, search } = window.location;
+    const query = parseSearch(search);
+    const initialContext = {
+      pathname,
+      query
+    };
+    context.initialData = await appConfig.app.getInitialData(initialContext);
   }
 
   const {
     runtime,
     appConfig: appDynamicConfig,
     history,
-  } = await createBaseApp(appConfig, buildConfig, context);
+  } = createBaseApp(appConfig, buildConfig, context);
 
   setInitialData(context.initialData);
 

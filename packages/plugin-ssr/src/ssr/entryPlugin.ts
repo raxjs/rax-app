@@ -28,7 +28,7 @@ export default class EntryPlugin {
     } = api;
     const { publicPath } = compiler.options.output;
     const staticConfig = getValue(STATIC_CONFIG);
-    const pageConfig = getPageConfig(staticConfig);
+    const pageConfig = getPageConfig(api, staticConfig);
 
     let query: ILoaderQuery = {
       tempPath: getValue(TEMP_PATH),

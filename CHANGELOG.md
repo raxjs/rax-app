@@ -1,5 +1,13 @@
 ## Changelog
 
+### 3.3.7 (February 20 2021)
+- Feat: PHA cross slide. ([#601](https://github.com/raxjs/rax-app/pull/601) [alibaba/ice#4059](https://github.com/alibaba/ice/pull/4059))
+- Feat: watch app.json change. ([#601](https://github.com/raxjs/rax-app/pull/601))
+- Refactor: SSR without cheerio. ([#607](https://github.com/raxjs/rax-app/pull/607))
+- Fix: escape problem during HTML generation. ([#607](https://github.com/raxjs/rax-app/pull/607))
+- Fix: browser history in MPA. ([#608](https://github.com/raxjs/rax-app/pull/608))
+- Fix: react alias with DEF plugin. ([#605](https://github.com/raxjs/rax-app/pull/605))
+
 ### 3.2.5 (January 07 2021)
 - Feat: Support PHA template.
 - Feat: Wechat Miniprogram support `generator` syntactic suga.
