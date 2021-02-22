@@ -27,7 +27,7 @@ const retainKeys = [
 ];
 
 // transform app config to decamelize
-function transformAppConfig(appConfig, isRoot = true) {
+function transformAppConfig(appConfig, isRoot = true, parentKey) {
   const data = {};
 
   if (isRoot && appConfig.routes) {
@@ -52,12 +52,12 @@ function transformAppConfig(appConfig, isRoot = true) {
     } else if (Array.isArray(value)) {
       data[transformKey] = value.map((item) => {
         if (typeof item === 'object') {
-          return transformAppConfig(item, false);
+          return transformAppConfig(item, false, key);
         }
         return item;
       });
-    } else if (typeof value === 'object') {
-      data[transformKey] = transformAppConfig(value, false);
+    } else if (typeof value === 'object' && !(parentKey === 'dataPrefetches' && (key === 'header' || key === 'data'))) {
+      data[transformKey] = transformAppConfig(value, false, key);
     } else {
       data[transformKey] = value;
     }

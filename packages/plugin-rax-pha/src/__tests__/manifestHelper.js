@@ -31,12 +31,26 @@ describe('transformAppConfig', () => {
         url: '/a.com',
         data: {
           id: 123,
+          taskId: 233,
+          cId: {
+            dId: true
+          }
         },
+        header: {
+          taskId: 455
+        }
       }],
     }, true);
     expect(manifestJSON.data_prefetches.length).toBe(1);
     expect(manifestJSON.data_prefetches[0].data).toMatchObject({
       id: 123,
+      taskId: 233,
+      cId: {
+        dId: true
+      }
+    });
+    expect(manifestJSON.data_prefetches[0].header).toMatchObject({
+      taskId: 455,
     });
   });
 
