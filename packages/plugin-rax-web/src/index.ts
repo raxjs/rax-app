@@ -8,7 +8,7 @@ import DocumentPlugin from './Plugins/DocumentPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import SnapshotPlugin from './SnapshotPlugin';
 import setRegisterMethod from './utils/setRegisterMethod';
-import setDocumentBuilder from './utils/setDocumentBuilder';
+import setLocalBuilder from './setLocalBuilder';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
@@ -54,7 +54,7 @@ export default (api) => {
       console.log(chalk.red("SPA doesn't support staticExport!"));
       return;
     }
-    setDocumentBuilder(api);
+    setLocalBuilder(api);
   }
 
   onGetWebpackConfig(target, (config) => {

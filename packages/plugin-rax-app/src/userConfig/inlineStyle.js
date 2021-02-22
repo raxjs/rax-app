@@ -50,7 +50,6 @@ function setCSSRule(configRule, context, value) {
   const isWebStandard = webStandardList.includes(taskName);
   const isMiniAppStandard = miniappStandardList.includes(taskName);
   const isNodeStandard = taskName === DOCUMENT || taskName === SSR;
-
   // When taskName is weex or kraken, inlineStyle should be true
   if (isInlineStandard) {
     value = true;
