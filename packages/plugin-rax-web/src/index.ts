@@ -4,7 +4,7 @@ import setMPAConfig from '@builder/mpa-config';
 import * as appHelpers from '@builder/app-helpers';
 import setDev from './setDev';
 import setEntry from './setEntry';
-import DocumentPlugin from './DocumentPlugin';
+import DocumentPlugin from './Plugins/DocumentPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import SnapshotPlugin from './SnapshotPlugin';
 import setRegisterMethod from './utils/setRegisterMethod';
