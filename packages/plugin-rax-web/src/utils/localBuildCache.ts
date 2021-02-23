@@ -1,4 +1,5 @@
 const callbacks = [];
+let enableListen = false;
 
 function emit(assets) {
   let fn;
@@ -12,7 +13,23 @@ function listen(callback) {
   callbacks.push(callback);
 }
 
+function registerListenTask() {
+  return new Promise((resolve) => {
+    if (enableListen) {
+      listen(resolve);
+    } else {
+      resolve({});
+    }
+  });
+}
+
+function updateEnableStatus(val: boolean) {
+  enableListen = val;
+}
+
 export {
   emit,
   listen,
+  registerListenTask,
+  updateEnableStatus,
 };

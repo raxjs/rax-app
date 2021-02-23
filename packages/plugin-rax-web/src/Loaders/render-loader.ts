@@ -10,6 +10,8 @@ export default function () {
       });
     }
 
-    export default renderPage;
+    export {
+      renderPage
+    };
   `;
 }

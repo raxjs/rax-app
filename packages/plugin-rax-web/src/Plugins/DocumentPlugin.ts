@@ -1,4 +1,6 @@
 import * as path from 'path';
+import * as Module from 'module';
+import { registerListenTask } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
 import { getInjectedHTML, getBuiltInHtmlTpl } from '../utils/htmlStructure';
 
@@ -21,27 +23,41 @@ export default class DocumentPlugin {
     } = this.options;
     const { publicPath } = compiler.options.output;
 
+    let localBuildTask = registerListenTask();
+
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, async (compilation, callback) => {
-      const injectedHTML = getInjectedHTML();
-      pages.forEach(({ entryName }) => {
-        const buildResult = compilation.entrypoints.get(entryName).getFiles();
-        const assets = getAssetsForPage(buildResult, publicPath);
-        const title = getTitleByStaticConfig(staticConfig, {
-          entryName,
-          mpa: web.mpa,
-        });
-        const html = getBuiltInHtmlTpl({
-          doctype: web.doctype,
-          title,
-          scripts: [...injectedHTML.scripts, ...assets.scripts],
-          links: [...injectedHTML.links, ...assets.links],
-          metas: injectedHTML.metas,
+      localBuildTask.then((localBuildAssets) => {
+        // update local build task
+        localBuildTask = registerListenTask();
+        const injectedHTML = getInjectedHTML();
+        pages.forEach(({ entryName, entryPath }) => {
+          const buildResult = compilation.entrypoints.get(entryName).getFiles();
+          const assets = getAssetsForPage(buildResult, publicPath);
+          const title = getTitleByStaticConfig(staticConfig, {
+            entryName,
+            mpa: web.mpa,
+          });
+          let initialHTML = '';
+
+          if (localBuildAssets[`${entryName}.js`]) {
+            const bundleContent = localBuildAssets[`${entryName}.js`].source();
+            const mod = exec(bundleContent, entryPath);
+            initialHTML = mod.renderPage();
+          }
+
+          const html = getBuiltInHtmlTpl({
+            doctype: web.doctype,
+            title,
+            scripts: [...injectedHTML.scripts, ...assets.scripts],
+            links: [...injectedHTML.links, ...assets.links],
+            metas: injectedHTML.metas,
+            initialHTML,
+          });
+          compilation.assets[`${entryName}.html`] = new RawSource(html);
         });
 
-        compilation.assets[`${entryName}.html`] = new RawSource(html);
+        callback();
       });
-
-      callback();
     });
   }
 }
@@ -82,4 +98,12 @@ function getAssetsForPage(files, publicPath) {
       return `<link rel="stylesheet" href="${href}" />`;
     }),
   };
+}
+
+function exec(code, filePath) {
+  const module: any = new Module(filePath, this);
+  module.paths = (Module as any)._nodeModulePaths(filePath);
+  module.filename = filePath;
+  module._compile(code, filePath);
+  return module.exports;
 }

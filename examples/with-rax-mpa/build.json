@@ -7,8 +7,7 @@
     "mpa": true
   },
   "web": {
-    "mpa": true,
-    "staticExport": true
+    "mpa": true
   },
   "hash": true
 }

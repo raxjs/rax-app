@@ -1,13 +1,12 @@
 export interface IHtmlInfo {
   title?: string;
   doctype?: string;
-
   links?: string[];
   scripts?: string[];
   metas?: string[];
-
   spmA?: string;
   spmB?: string;
+  initialHTML: string;
 }
 
 export interface IBuiltInDocumentQuery {

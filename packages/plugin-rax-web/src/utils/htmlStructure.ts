@@ -28,6 +28,7 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
     links: customLinks = [],
     scripts: customScripts = [],
     metas: customMetas = [],
+    initialHTML,
   } = htmlInfo;
   return `
   ${doctype}
@@ -41,7 +42,7 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
       ${addStaticSource(customLinks)}
     </head>
     <body ${addSpmB(spmB)}>
-      <div id="root"></div>
+      <div id="root">${initialHTML}</div>
       ${addStaticSource(customScripts)}
     </body>
   </html>

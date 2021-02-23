@@ -2,6 +2,7 @@ import { getMpaEntries } from '@builder/app-helpers';
 import * as path from 'path';
 import LocalBuilderPlugin from './Plugins/LocalBuilderPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
+import { updateEnableStatus } from './utils/localBuildCache';
 
 export default (api) => {
   const { onGetWebpackConfig, getValue, context, registerTask } = api;
@@ -28,6 +29,11 @@ export default (api) => {
     baseConfig.plugins.delete('CopyWebpackPlugin');
   }
 
+  // enable listen local build result
+  updateEnableStatus(true);
+  process.on('exit', () => {
+    updateEnableStatus(false);
+  });
   baseConfig.plugin('LocalBuilderPlugin').use(LocalBuilderPlugin);
 
   // document does not compile node_modules in full
@@ -48,6 +54,8 @@ export default (api) => {
       target: 'document',
       appJsonContent: staticConfig,
     });
+
+    config.output.filename('[name].js');
 
     entries.forEach(({ entryName, entryPath }) => {
       config.entry(entryName).add(`${require.resolve('./Loaders/render-loader')}!${entryPath}`);
