@@ -8,6 +8,5 @@
   },
   "web": {
     "mpa": true
-  },
-  "hash": true
+  }
 }
