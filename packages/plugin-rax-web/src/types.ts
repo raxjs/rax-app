@@ -1,9 +1,15 @@
 export interface IHtmlInfo {
   title?: string;
   doctype?: string;
-  links?: string[];
-  scripts?: string[];
-  metas?: string[];
+  assets?: {
+    scripts?: string[];
+    links?: string[];
+  };
+  injectedHTML?: {
+    links?: string[];
+    scripts?: string[];
+    metas?: string[];
+  };
   spmA?: string;
   spmB?: string;
   initialHTML: string;

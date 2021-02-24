@@ -1,13 +1,14 @@
 import { getMpaEntries } from '@builder/app-helpers';
 import * as path from 'path';
+import * as qs from 'qs';
 import LocalBuilderPlugin from './Plugins/LocalBuilderPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import { updateEnableStatus } from './utils/localBuildCache';
 
-export default (api) => {
+export default (api, documentPath?: string | undefined) => {
   const { onGetWebpackConfig, getValue, context, registerTask } = api;
   const {
-    userConfig: { inlineStyle, compileDependencies, outputDir },
+    userConfig: { inlineStyle, compileDependencies, outputDir, web: webConfig = {} },
     rootDir,
   } = context;
 
@@ -58,7 +59,14 @@ export default (api) => {
     config.output.filename('[name].js');
 
     entries.forEach(({ entryName, entryPath }) => {
-      config.entry(entryName).add(`${require.resolve('./Loaders/render-loader')}!${entryPath}`);
+      config
+        .entry(entryName)
+        .add(
+          `${require.resolve('./Loaders/render-loader')}?${qs.stringify({
+            documentPath,
+            staticExport: webConfig.staticExport,
+          })}!${entryPath}`,
+        );
     });
   });
 };

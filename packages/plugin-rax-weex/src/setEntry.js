@@ -5,7 +5,7 @@ module.exports = (config, context) => {
   const {
     rootDir,
     command,
-    userConfig: { weex },
+    userConfig: { weex = {} },
   } = context;
   const isDev = command === 'start';
 

@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
+import * as fs from 'fs-extra';
 import setMPAConfig from '@builder/mpa-config';
 import * as appHelpers from '@builder/app-helpers';
 import setDev from './setDev';
@@ -17,8 +18,9 @@ export default (api) => {
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
   const target = 'web';
-  const { userConfig = {} } = context;
+  const { userConfig = {}, rootDir } = context;
   const webConfig = userConfig.web || {};
+  const documentPath = getAbsolutePath(path.join(rootDir, 'src/document/index'));
   const chainConfig = getWebpackBase(api, {
     target,
     babelConfigOptions: { styleSheet: userConfig.inlineStyle },
@@ -49,7 +51,9 @@ export default (api) => {
     });
   }
 
-  if (webConfig.staticExport) {
+  if (documentPath) {
+    setLocalBuilder(api, documentPath);
+  } else if (webConfig.staticExport) {
     if (!webConfig.mpa) {
       console.log(chalk.red("SPA doesn't support staticExport!"));
       return;
@@ -75,6 +79,7 @@ export default (api) => {
       {
         api,
         staticConfig,
+        documentPath,
         pages: [
           {
             entryName: 'index',
@@ -109,3 +114,10 @@ export default (api) => {
     }
   });
 };
+
+function getAbsolutePath(filepath: string): string | undefined {
+  const targetExt = ['.tsx', '.jsx'].find((ext) => fs.existsSync(`${filepath}${ext}`));
+  if (targetExt) {
+    return `${filepath}${targetExt}`;
+  }
+}

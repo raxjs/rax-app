@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as Module from 'module';
+import * as cheerio from 'cheerio';
 import { registerListenTask } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
 import { getInjectedHTML, getBuiltInHtmlTpl } from '../utils/htmlStructure';
@@ -17,11 +18,13 @@ export default class DocumentPlugin {
       staticConfig,
       api: {
         context: {
-          userConfig: { web },
+          userConfig: { web = {} },
         },
       },
+      documentPath,
     } = this.options;
     const { publicPath } = compiler.options.output;
+    const doctype = web.doctype || '<!DOCTYPE html>';
 
     let localBuildTask = registerListenTask();
 
@@ -30,29 +33,45 @@ export default class DocumentPlugin {
         // update local build task
         localBuildTask = registerListenTask();
         const injectedHTML = getInjectedHTML();
-        pages.forEach(({ entryName, entryPath }) => {
+        pages.forEach(({ entryName, entryPath, path: pagePath, spm }) => {
           const buildResult = compilation.entrypoints.get(entryName).getFiles();
           const assets = getAssetsForPage(buildResult, publicPath);
           const title = getTitleByStaticConfig(staticConfig, {
             entryName,
             mpa: web.mpa,
           });
-          let initialHTML = '';
-
-          if (localBuildAssets[`${entryName}.js`]) {
+          let html = '';
+          if (documentPath && localBuildAssets[`${entryName}.js`]) {
             const bundleContent = localBuildAssets[`${entryName}.js`].source();
             const mod = exec(bundleContent, entryPath);
-            initialHTML = mod.renderPage();
+            html = mod.renderPage(assets, {
+              doctype,
+              title,
+              pagePath,
+            });
+            const $ = cheerio.load(html, { decodeEntities: false });
+            $('head').append(injectedHTML.scripts);
+            html = $.html();
+          } else {
+            let initialHTML = '';
+
+            if (localBuildAssets[`${entryName}.js`]) {
+              const bundleContent = localBuildAssets[`${entryName}.js`].source();
+              const mod = exec(bundleContent, entryPath);
+              initialHTML = mod.renderPage();
+            }
+
+            html = getBuiltInHtmlTpl({
+              doctype,
+              title,
+              injectedHTML,
+              assets,
+              initialHTML,
+              spmA: staticConfig.spm,
+              spmB: spm,
+            });
           }
 
-          const html = getBuiltInHtmlTpl({
-            doctype: web.doctype,
-            title,
-            scripts: [...injectedHTML.scripts, ...assets.scripts],
-            links: [...injectedHTML.links, ...assets.links],
-            metas: injectedHTML.metas,
-            initialHTML,
-          });
           compilation.assets[`${entryName}.html`] = new RawSource(html);
         });
 
@@ -90,12 +109,10 @@ function getAssetsForPage(files, publicPath) {
     // Support publicPath use relative path.
     // Change MPA 'pageName/index.js' to 'index.js', when use relative path.
     scripts: jsFiles.map((script) => {
-      const src = publicPath + (publicPath.startsWith('.') ? path.basename(script) : script);
-      return `<script crossorigin="anonymous" type="application/javascript" src="${src}"></script>`;
+      return publicPath + (publicPath.startsWith('.') ? path.basename(script) : script);
     }),
     links: cssFiles.map((style) => {
-      const href = publicPath + (publicPath.startsWith('.') ? path.basename(style) : style);
-      return `<link rel="stylesheet" href="${href}" />`;
+      return publicPath + (publicPath.startsWith('.') ? path.basename(style) : style);
     }),
   };
 }

@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 
 module.exports = (config, context) => {
-  const { rootDir, userConfig: { kraken } } = context;
+  const { rootDir, userConfig: { kraken = {} } } = context;
 
   if (!kraken.mpa) {
     // SPA
