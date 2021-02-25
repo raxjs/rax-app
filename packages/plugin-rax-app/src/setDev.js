@@ -79,6 +79,7 @@ module.exports = function (api) {
     // Remove outputDir when start devServer
     const { outputDir = 'build' } = userConfig;
     configs.forEach((config) => {
+      // Only empty build dir whick task configed name
       if (config.name) {
         fs.emptyDirSync(path.resolve(rootDir, outputDir, config.name));
       }
