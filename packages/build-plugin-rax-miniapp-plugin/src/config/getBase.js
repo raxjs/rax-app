@@ -2,12 +2,13 @@ const webpack = require('webpack');
 const Chain = require('webpack-chain');
 const { resolve } = require('path');
 const { existsSync } = require('fs-extra');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const getPluginConfig = require('./getPluginConfig');
 const setEntry = require('./setEntry');
 const getOutputPath = require('./getOutputPath');
 
-const ModifyOutputFileSystemPlugin = require('../plugins/miniapp/ModifyOutputFileSystem');
+const RemoveDefaultResultPlugin = require('../plugins/miniapp/RemoveDefaultResult');
 const CopyJsx2mpRuntimePlugin = require('../plugins/miniapp/CopyJsx2mpRuntime');
 const CopyPublicFilePlugin = require('../plugins/miniapp/CopyPublicFile');
 const ProcessPluginJsonPlugin = require('../plugins/miniapp/ProcessPluginJson');
@@ -53,19 +54,14 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
 
   setEntry(config, pluginConfig, { entryPath });
 
-  config.target('web');
   config.context(rootDir);
 
   config.plugin('noError')
     .use(webpack.NoEmitOnErrorsPlugin);
 
-  if (command === 'start') {
-    config.mode('development');
-  }
+  config.cache(true).mode('production').target('node');
 
-  config
-    .mode('production')
-    .target('node');
+  config.devServer.writeToDisk(true).noInfo(true).inline(false);
 
   config.resolve.alias
     .set('react', 'rax')
@@ -172,12 +168,21 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
     }
   }]);
   config.plugin('watchIgnore').use(webpack.WatchIgnorePlugin, [[/node_modules/]]);
-  config.plugin('modifyOutputFileSystem').use(ModifyOutputFileSystemPlugin);
+  config.plugin('removeDefaultResult').use(RemoveDefaultResultPlugin);
   config.plugin('processPluginJson').use(ProcessPluginJsonPlugin, [{ outputPath, rootDir, target }]);
   config.plugin('generateAppCss').use(GenerateAppCssPlugin, [{ outputPath, platformInfo }]);
 
   if (isPublicFileExist) {
     config.plugin('copyFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir }]);
+  }
+
+  // Copy src/miniapp-native dir
+  if (existsSync(resolve(rootDir, 'src', 'miniapp-native'))) {
+    const needCopyDirs = [{
+      from: resolve(rootDir, 'src', 'miniapp-native'),
+      to: resolve(outputPath, 'miniapp-native'),
+    }];
+    config.plugin('CopyWebpackPlugin').use(CopyWebpackPlugin, [needCopyDirs]);
   }
 
   if (!disableCopyNpm) {
