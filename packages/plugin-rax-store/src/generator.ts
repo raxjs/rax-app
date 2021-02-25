@@ -5,12 +5,12 @@ import {
   getRaxPageName,
   getRaxPagesPath,
 } from './utils/getPath';
-import { formatPath } from '@builder/app-helpers';
+import { formatPath, checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 
 export interface IRenderPageParams {
-  pageName: string;
-  pageNameDir: string;
   pageStoreFile: string;
+  pageEntry: string;
+  pageComponentPath: string;
 }
 
 export default class Generator {
@@ -55,20 +55,26 @@ export default class Generator {
 
     pageEntries.forEach((pageEntry) => {
       const pageName = getRaxPageName(pageEntry);
-      const pagePath = path.join('pages', pageName);
-      const pageNameDir = path.join(this.rootDir, this.srcDir, pagePath);
+      const pageComponentPath = path.join(this.rootDir, this.srcDir, pageEntry);
       const pageStoreFile = formatPath(getPageStorePath({
         srcPath,
         pageName,
         projectType: this.projectType,
       }));
       const existedStoreFile = fse.pathExistsSync(pageStoreFile);
-      if (!existedStoreFile) {
-        // if the page store does not exist, don't generate .rax/pages/${pageName}/Page.tsx
+      const exportDefaultDeclarationExists = checkExportDefaultDeclarationExists(pageComponentPath);
+      if (!existedStoreFile || !exportDefaultDeclarationExists) {
+        // don't generate .rax/pages/${pageSource}
+        // 1. the page store does not exist
+        // 2. the entry has no `export default`
         return;
       }
-      const params = { pageName, pageNameDir, pageStoreFile };
-      // generate .rax/pages/${pageName}/Page.tsx
+      const params = {
+        pageStoreFile,
+        pageEntry,
+        pageComponentPath,
+      };
+      // generate .rax/pages/${pageSource}
       this.renderPageComponent(params);
     });
   }
@@ -90,10 +96,11 @@ export default class Generator {
     this.applyMethod('addTypesExport', { source: './store/types' });
   }
 
-  private renderPageComponent({ pageName, pageNameDir, pageStoreFile }: IRenderPageParams) {
+  private renderPageComponent({ pageStoreFile, pageEntry, pageComponentPath }: IRenderPageParams) {
     const pageComponentTemplatePath = path.join(__dirname, './template/pageComponent.tsx.ejs');
-    const pageComponentTempPath = path.join(this.tempPath, 'pages', pageName, 'Page.tsx');
-    const pageComponentSourcePath = this.applyMethod('formatPath', pageNameDir);
+    // e.g.: generate .rax/pages/Home/myIndex.tsx
+    const pageComponentTempPath = path.join(this.tempPath, `${pageEntry}.${this.projectType}x`);
+    const pageComponentSourcePath = this.applyMethod('formatPath', pageComponentPath);
 
     const pageComponentName = 'PageComponent';
     const pageComponentRenderData = {

@@ -3,8 +3,8 @@ import * as fse from 'fs-extra';
 import { checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 import { getPageStorePath } from './getPath';
 
-function modifyRoute(route, tempPath, filename, srcPath, projectType, mpa = false) {
-  let pageSource = route.source;
+function modifyRoute(route, tempPath, srcPath, projectType, mpa = false) {
+  const pageSource = route.source;
   if (mpa) {
     const exportDefaultDeclarationExists = checkExportDefaultDeclarationExists(path.join(srcPath, pageSource));
     if (!exportDefaultDeclarationExists) {
@@ -15,17 +15,12 @@ function modifyRoute(route, tempPath, filename, srcPath, projectType, mpa = fals
   const dir = path.dirname(pageSource);
   const pageName = path.parse(dir).name;
   const pageStorePath = getPageStorePath({ srcPath, projectType, pageName });
+
   if (!fse.pathExistsSync(pageStorePath)) {
     return route;
   }
 
   if (/^\/?pages/.test(pageSource) && !/app$/.test(pageSource)) {
-    if (/index$/.test(pageSource)) {
-      pageSource = pageSource.replace(/index$/, filename);
-    } else {
-      pageSource = path.join(pageSource, filename);
-    }
-
     return {
       ...route,
       pageSource: path.join(tempPath, pageSource),
@@ -45,18 +40,17 @@ function modifyRoute(route, tempPath, filename, srcPath, projectType, mpa = fals
 export default function modifyRoutes(
   routes: any[],
   tempPath: string,
-  filename: string,
   srcPath: string,
   projectType: string,
   mpa?: boolean,
 ) {
   return routes.map((route) => {
     if (route.pageHeader) {
-      route.pageHeader = modifyRoute(route.pageHeader, tempPath, filename, srcPath, projectType, mpa);
+      route.pageHeader = modifyRoute(route.pageHeader, tempPath, srcPath, projectType, mpa);
     }
     if (route.frames) {
-      route.frames = modifyRoutes(route.frames, tempPath, filename, srcPath, projectType, mpa);
+      route.frames = modifyRoutes(route.frames, tempPath, srcPath, projectType, mpa);
     }
-    return modifyRoute(route, tempPath, filename, srcPath, projectType, mpa);
+    return modifyRoute(route, tempPath, srcPath, projectType, mpa);
   });
 }

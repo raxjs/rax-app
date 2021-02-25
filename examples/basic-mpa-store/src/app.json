@@ -8,6 +8,10 @@
       }
     },
     {
+      "path": "/info",
+      "source": "pages/Home/info"
+    },
+    {
       "path": "/about",
       "source": "pages/About/app"
     },

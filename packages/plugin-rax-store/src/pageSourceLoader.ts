@@ -16,7 +16,6 @@ export default function pageSourceLoader(appJSON) {
   const { tempPath, srcPath, projectType } = getOptions(this);
   const content = JSON.parse(appJSON);
 
-  content.routes = modifyRoutes(content.routes, tempPath, 'Page', srcPath, projectType);
-
+  content.routes = modifyRoutes(content.routes, tempPath, srcPath, projectType);
   return JSON.stringify(content);
 }
