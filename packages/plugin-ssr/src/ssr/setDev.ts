@@ -2,6 +2,7 @@ import * as Module from 'module';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { NODE, STATIC_CONFIG, WEB } from '../constants';
+import { getChunkInfo } from '../utils/chunkInfo';
 
 export default function (api, config) {
   let serverReady = false;
@@ -66,7 +67,7 @@ function serverRender(res, req, api) {
     const mod = exec(bundleContent, nodeFilePath);
     const htmlFilePath = path.join(outputPath, WEB, /\.html$/.test(pathname) ? pathname : `${pathname}.html`);
     const htmlTemplate = fs.readFileSync(htmlFilePath, 'utf-8');
-    mod.render({ req, res }, { htmlTemplate });
+    mod.render({ req, res }, { htmlTemplate, chunkInfo: getChunkInfo() });
   }
 }
 

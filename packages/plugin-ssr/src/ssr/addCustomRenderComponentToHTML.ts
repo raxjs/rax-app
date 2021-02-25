@@ -16,12 +16,11 @@ export default function addCustomRenderComponentToHTML(
   const scripts = [];
   const styles = [];
   if (needInjectStyle) {
-    styles.push(`${publicPath}${entryName}.css`);
+    styles.push(`${publicPath}__${entryName}_FILE__.css`);
   }
-  scripts.push(`${publicPath}${entryName}.js`);
-
+  scripts.push(`${publicPath}__${entryName}_FILE__.js`);
   return `
-  async function renderComponentToHTML(Component, ctx, initialData) {
+  async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate, chunkInfo = {}) {
     const pageInitialProps = await getInitialProps(Component, ctx);
     const data = {
       __SSR_ENABLED__: true,
@@ -37,6 +36,11 @@ export default function addCustomRenderComponentToHTML(
 
     let scripts = ${JSON.stringify(scripts)};
     let styles = ${JSON.stringify(styles)};
+    if (process.env.NODE_ENV === 'development') {
+      const chunkname = chunkInfo['${entryName}'] || '${entryName}';
+      scripts = scripts.map(script => script.replace('__${entryName}_FILE__', chunkname));
+      styles = styles.map(link => link.replace('__${entryName}_FILE__', chunkname));
+    }
 
     ${assetsProcessor}
 

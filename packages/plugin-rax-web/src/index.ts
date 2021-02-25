@@ -1,12 +1,15 @@
 import * as path from 'path';
+import * as chalk from 'chalk';
+import * as fs from 'fs-extra';
 import setMPAConfig from '@builder/mpa-config';
 import * as appHelpers from '@builder/app-helpers';
 import setDev from './setDev';
 import setEntry from './setEntry';
-import DocumentPlugin from './DocumentPlugin';
+import DocumentPlugin from './Plugins/DocumentPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import SnapshotPlugin from './SnapshotPlugin';
 import setRegisterMethod from './utils/setRegisterMethod';
+import setLocalBuilder from './setLocalBuilder';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
@@ -15,8 +18,9 @@ export default (api) => {
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
   const target = 'web';
-  const { userConfig = {} } = context;
+  const { userConfig = {}, rootDir } = context;
   const webConfig = userConfig.web || {};
+  const documentPath = getAbsolutePath(path.join(rootDir, 'src/document/index'));
   const chainConfig = getWebpackBase(api, {
     target,
     babelConfigOptions: { styleSheet: userConfig.inlineStyle },
@@ -47,6 +51,16 @@ export default (api) => {
     });
   }
 
+  if (documentPath) {
+    setLocalBuilder(api, documentPath);
+  } else if (webConfig.staticExport) {
+    if (!webConfig.mpa) {
+      console.log(chalk.red("SPA doesn't support staticExport!"));
+      return;
+    }
+    setLocalBuilder(api);
+  }
+
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     const { rootDir, command, userConfig } = context;
@@ -61,37 +75,17 @@ export default (api) => {
       setDev(config);
     }
 
-    const webpackConfig = config.toConfig();
-
-    webpackConfig.target = 'node';
-
-    webpackConfig.output.libraryTarget = 'commonjs2';
-    // do not generate vendor.js when compile document
-    // deep copy webpackConfig optimization, because the toConfig method is shallow copy
-    webpackConfig.optimization = {
-      ...webpackConfig.optimization,
-      splitChunks: {
-        ...webpackConfig.optimization.splitChunks,
-        cacheGroups: {},
-      },
-    };
-
     config.plugin('document').use(DocumentPlugin, [
       {
-        context,
+        api,
+        staticConfig,
+        documentPath,
         pages: [
           {
             entryName: 'index',
             path: '/',
           },
         ],
-        staticExport: webConfig.staticExport,
-        webpackConfig,
-        staticConfig,
-        htmlInfo: {
-          title: staticConfig.window && staticConfig.window.title,
-          doctype: webConfig.doctype,
-        },
       },
     ]);
     if (webConfig.snapshot) {
@@ -120,3 +114,10 @@ export default (api) => {
     }
   });
 };
+
+function getAbsolutePath(filepath: string): string | undefined {
+  const targetExt = ['.tsx', '.jsx'].find((ext) => fs.existsSync(`${filepath}${ext}`));
+  if (targetExt) {
+    return `${filepath}${targetExt}`;
+  }
+}

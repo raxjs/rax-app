@@ -17,18 +17,18 @@
     "rax": "^1.0.0"
   },
   "dependencies": {
+    "@builder/app-helpers": "^2.1.0",
     "@builder/mpa-config": "^3.0.0",
+    "chalk": "^4.1.0",
+    "cheerio": "1.0.0-rc.3",
     "error-stack-tracey": "^0.1.4",
     "fs-extra": "^9.0.1",
+    "html-minifier": "^4.0.0",
     "klaw-sync": "^6.0.0",
+    "node-hot-loader": "^1.21.0",
     "qs": "^6.9.4",
     "rax-server-renderer": "^1.2.0",
-    "webpack-sources": "^2.0.0",
-    "webpack": "^4.0.0",
-    "@builder/app-helpers": "^2.1.0",
     "react-dev-utils": "^10.0.0",
-    "chalk": "^4.1.0",
-    "html-minifier": "^4.0.0",
-    "cheerio": "1.0.0-rc.3"
+    "webpack-sources": "^2.0.0"
   }
 }
