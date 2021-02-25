@@ -12,8 +12,8 @@ const generateTempFile = require('./utils/generateTempFile');
 
 const highlightPrint = chalk.hex('#F4AF3D');
 
-function watchAppJson(log) {
-  const watcher = chokidar.watch(path.resolve('app.json'), {
+function watchAppJson(rootDir, log) {
+  const watcher = chokidar.watch(path.resolve(rootDir, 'src/app.json'), {
     ignoreInitial: true,
   });
 
@@ -22,7 +22,7 @@ function watchAppJson(log) {
     log.info('app.json has been changed');
     log.info('restart dev server');
     // add process env for mark restart dev process
-    process.send('RESTART_DEV');
+    process.send({ type: 'RESTART_DEV' });
   });
 
   watcher.on('error', (error) => {
@@ -43,7 +43,7 @@ module.exports = function (api) {
   let krakenMpa = false;
   let isFirstCompile = true;
   let pha = false;
-  watchAppJson(log);
+  watchAppJson(rootDir, log);
   const getWebpackInfo = (configs, configName) => {
     const taskConfig = configs.find((webpackConfig) => webpackConfig.name === configName);
     if (!taskConfig) {
