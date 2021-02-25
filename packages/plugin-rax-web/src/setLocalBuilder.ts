@@ -8,7 +8,7 @@ import { updateEnableStatus } from './utils/localBuildCache';
 export default (api, documentPath?: string | undefined) => {
   const { onGetWebpackConfig, getValue, context, registerTask } = api;
   const {
-    userConfig: { inlineStyle, compileDependencies, outputDir, web: webConfig = {} },
+    userConfig: { inlineStyle, compileDependencies, web: webConfig = {} },
     rootDir,
   } = context;
 
@@ -18,12 +18,12 @@ export default (api, documentPath?: string | undefined) => {
     babelConfigOptions: { styleSheet: inlineStyle },
     isNode: true,
   });
+  baseConfig.name('document');
 
   baseConfig.plugins.delete('ProgressPlugin');
 
   baseConfig.target('node');
   baseConfig.output.libraryTarget('commonjs2');
-  baseConfig.output.path(path.join(rootDir, outputDir, 'document'));
 
   // do not copy public
   if (baseConfig.plugins.has('CopyWebpackPlugin')) {
