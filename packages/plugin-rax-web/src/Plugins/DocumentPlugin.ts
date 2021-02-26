@@ -22,8 +22,10 @@ export default class DocumentPlugin {
         },
       },
       documentPath,
+      insertScript,
     } = this.options;
-    const { publicPath } = compiler.options.output;
+    // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
+    const publicPath = this.options.publicPath || compiler.options.output;
     const doctype = web.doctype || '<!DOCTYPE html>';
 
     let localBuildTask = registerListenTask();
@@ -33,6 +35,7 @@ export default class DocumentPlugin {
         // update local build task
         localBuildTask = registerListenTask();
         const injectedHTML = getInjectedHTML();
+        injectedHTML.scripts.push(`<script>${insertScript}</script>`);
         pages.forEach(({ entryName, entryPath, path: pagePath, spm }) => {
           const buildResult = compilation.entrypoints.get(entryName).getFiles();
           const assets = getAssetsForPage(buildResult, publicPath);

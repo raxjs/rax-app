@@ -1,5 +1,9 @@
 ## Changelog
 
+### 3.3.9 (February 26 2021)
+
+- Fix: receive params passed by DEF plugin
+
 ### 3.3.8 (February 26 2021)
 
 - Refactor: document. ([#618](https://github.com/raxjs/rax-app/pull/618))

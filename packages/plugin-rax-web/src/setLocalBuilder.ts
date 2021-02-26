@@ -1,5 +1,4 @@
 import { getMpaEntries } from '@builder/app-helpers';
-import * as path from 'path';
 import * as qs from 'qs';
 import LocalBuilderPlugin from './Plugins/LocalBuilderPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
@@ -9,7 +8,6 @@ export default (api, documentPath?: string | undefined) => {
   const { onGetWebpackConfig, getValue, context, registerTask } = api;
   const {
     userConfig: { inlineStyle, compileDependencies, web: webConfig = {} },
-    rootDir,
   } = context;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
