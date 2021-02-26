@@ -25,7 +25,7 @@ export default class DocumentPlugin {
       insertScript,
     } = this.options;
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
-    const publicPath = this.options.publicPath || compiler.options.output;
+    const publicPath = this.options.publicPath || compiler.options.output.publicPath;
     const doctype = web.doctype || '<!DOCTYPE html>';
 
     let localBuildTask = registerListenTask();
