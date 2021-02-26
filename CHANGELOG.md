@@ -1,6 +1,13 @@
 ## Changelog
 
+### 3.3.8 (February 26 2021)
+
+- Refactor: document. ([#618](https://github.com/raxjs/rax-app/pull/618))
+- Fix: app json content watch. ([#612](https://github.com/raxjs/rax-app/pull/612))
+- Fix: data prefetches do not decamelize in PHA. ([#616](https://github.com/raxjs/rax-app/pull/616))
+
 ### 3.3.7 (February 20 2021)
+
 - Feat: PHA cross slide. ([#601](https://github.com/raxjs/rax-app/pull/601) [alibaba/ice#4059](https://github.com/alibaba/ice/pull/4059))
 - Feat: watch app.json change. ([#601](https://github.com/raxjs/rax-app/pull/601))
 - Refactor: SSR without cheerio. ([#607](https://github.com/raxjs/rax-app/pull/607))
@@ -9,6 +16,7 @@
 - Fix: react alias with DEF plugin. ([#605](https://github.com/raxjs/rax-app/pull/605))
 
 ### 3.2.5 (January 07 2021)
+
 - Feat: Support PHA template.
 - Feat: Wechat Miniprogram support `generator` syntactic suga.
 - Chore: `runApp` add type prompt.
@@ -16,12 +24,15 @@
 - Fix: SSR build error.
 
 ### 3.2.2 (December 29 2020)
+
 - Fix: mpa insert all page bundle into html.
 
 ### 3.2.1 (December 25 2020)
+
 - Chore: `compileDependencies` default value is `['']`. 
 
 ### 3.2.0 (December 24 2020)
+
 - Feat: config store runtime automatically. ([alibaba/ice#3932](https://github.com/alibaba/ice/pull/3932))
 - Feat: support config hydrate in rax-app. ([alibaba/ice#3918](https://github.com/alibaba/ice/pull/3918) [#548](https://github.com/raxjs/rax-app/pull/548))
 - Feat: support set webpackLoaders and webpackPlugins through build.json.([alibaba/ice#3938]((https://github.com/alibaba/ice/pull/3938)))
@@ -33,13 +44,16 @@
 - Fix: kraken mpa error.([#541]((https://github.com/raxjs/rax-app/pull/541)))
 
 ### 3.1.2 & 3.1.3 (December 15 2020)
+
 For v3.1.1 patch version.
 ### 3.1.1 (December 14 2020)
+
 - Feat: support use name specifies MPA page name and output path.([alibaba/ice#3906](https://github.com/alibaba/ice/pull/3906))
 - Feat: support set html info by app.json.([#525](https://github.com/raxjs/rax-app/pull/525))
 - Feat: support snapshot in Web and optimize build PHA.([#516](https://github.com/raxjs/rax-app/pull/516))
 
 ### 3.1.0 (December 04 2020)
+
 - Feat: support build pha app.([#507](https://github.com/raxjs/rax-app/pull/507))
 - Feat: support use `--dev-targets` specified build targets in development.([#508](https://github.com/raxjs/rax-app/pull/508))
 - Feat: support http request mock.([#506](https://github.com/raxjs/rax-app/pull/506))
@@ -48,6 +62,7 @@ For v3.1.1 patch version.
 - Fix: `withPageLifeCycle` makes `componentWillUnmount` invalid and `runApp({ app: { onShareAppMessage() {} } })` is invalid.([alibaba/ice#3880](https://github.com/alibaba/ice/pull/3880) [alibaba/ice#3890](https://github.com/alibaba/ice/pull/3890))
 
 ### 3.0.9 (November 23, 2020)
+
 - Feat: support CSS Modules.([#488](https://github.com/raxjs/rax-app/pull/488)) 
 - Refactor: change mpa entry to `.rax` temp dir.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3825))
 - Fix: user couldn't custom `outputDir`.([#494](https://github.com/raxjs/rax-app/pull/494))
@@ -57,6 +72,7 @@ For v3.1.1 patch version.
 - Fix: compact react plugin targets is undefined.([#490](https://github.com/raxjs/rax-app/pull/490))
 
 ### 3.0.8 (November 13, 2020)
+
 - Fix: mpa restart logic.([#3817](https://github.com/alibaba/ice/pull/3817))
 - Fix: kraken error.([#3817](https://github.com/alibaba/ice/pull/3817))
 
