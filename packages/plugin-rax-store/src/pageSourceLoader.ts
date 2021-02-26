@@ -13,9 +13,9 @@ import modifyRoutes from './utils/modifyRoutes';
   }
  */
 export default function pageSourceLoader(appJSON) {
-  const { tempPath, srcPath, projectType } = getOptions(this);
+  const { tempPath, srcPath, projectType, mpa } = getOptions(this);
   const content = JSON.parse(appJSON);
 
-  content.routes = modifyRoutes(content.routes, tempPath, srcPath, projectType);
+  content.routes = modifyRoutes(content.routes, tempPath, srcPath, projectType, mpa);
   return JSON.stringify(content);
 }

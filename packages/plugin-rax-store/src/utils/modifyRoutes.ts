@@ -3,7 +3,7 @@ import * as fse from 'fs-extra';
 import { checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 import { getPageStorePath } from './getPath';
 
-function modifyRoute(route, tempPath, srcPath, projectType, mpa = false) {
+function modifyRoute(route, tempPath, srcPath, projectType, mpa) {
   const pageSource = route.source;
   if (mpa) {
     const exportDefaultDeclarationExists = checkExportDefaultDeclarationExists(path.join(srcPath, pageSource));
@@ -19,7 +19,7 @@ function modifyRoute(route, tempPath, srcPath, projectType, mpa = false) {
     return route;
   }
 
-  if (/^\/?pages/.test(pageSource) && !/app$/.test(pageSource)) {
+  if (/^\/?pages/.test(pageSource)) {
     return {
       ...route,
       pageSource: path.join(tempPath, pageSource),
@@ -41,7 +41,7 @@ export default function modifyRoutes(
   tempPath: string,
   srcPath: string,
   projectType: string,
-  mpa?: boolean,
+  mpa: boolean,
 ) {
   return routes.map((route) => {
     if (route.pageHeader) {
