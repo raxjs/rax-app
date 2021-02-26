@@ -6,11 +6,13 @@ import getWebpackBase from './ssr/getBase';
 import EntryPlugin from './ssr/entryPlugin';
 import { NODE, WEB } from './constants';
 import setDev from './ssr/setDev';
+import WebAssetsPlugin from './WebAssetsPlugin';
+import { getChunkInfo } from './utils/chunkInfo';
 
 export default function (api) {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;
   const {
-    userConfig: { outputDir, compileDependencies },
+    userConfig: { outputDir, compileDependencies, hash },
     rootDir,
     command,
   } = context;
@@ -27,6 +29,10 @@ export default function (api) {
     const webpackConfig = config.toConfig();
     // Before set ssr entry, it need exclude document entry
     entries = webpackConfig.entry;
+
+    if (hash) {
+      config.plugin('WebAssetsPlugin').use(WebAssetsPlugin);
+    }
   });
   onGetWebpackConfig('ssr', (config) => {
     config.target('node');
@@ -38,6 +44,7 @@ export default function (api) {
 
     // Set output
     config.output.path(outputPath).libraryTarget('commonjs2');
+    config.output.filename('[name].js');
     config.plugin('entryPlugin').use(EntryPlugin, [
       {
         entries,
@@ -82,13 +89,16 @@ export default function (api) {
   });
 
   onHook(`after.${command}.compile`, () => {
+    const chunkInfo = getChunkInfo();
     Object.keys(entries).forEach((entryName) => {
       const serverFilePath = path.join(outputPath, `${entryName}.js`);
       const htmlFilePath = path.join(webBuildDir, `${entryName}.html`);
       const bundle = fs.readFileSync(serverFilePath, 'utf-8');
       const html = fs.readFileSync(htmlFilePath, 'utf-8');
       const minifedHtml = minify(html, { collapseWhitespace: true, quoteCharacter: "'" });
-      const newBundle = bundle.replace(/__RAX_APP_SERVER_HTML_TEMPLATE__/, minifedHtml);
+      const newBundle = bundle
+        .replace(/__RAX_APP_SERVER_HTML_TEMPLATE__/, minifedHtml)
+        .replace(new RegExp(`__${entryName}_FILE__`, 'g'), chunkInfo[entryName] || entryName);
       fs.writeFileSync(serverFilePath, newBundle, 'utf-8');
     });
   });

@@ -1,4 +1,3 @@
-import * as cheerio from 'cheerio';
 import { IHtmlInfo } from '../types';
 
 let scripts = [];
@@ -15,8 +14,32 @@ function addSpmB(spmB) {
   return `data-spm="${spmB}"`;
 }
 
-export function getBuiltInHtmlTpl(htmlInfo) {
-  const { doctype = '<!DOCTYPE html>', title, spmA, spmB } = htmlInfo;
+function addStaticSource(sources: string[]) {
+  return sources.reduce((prev, current) => `${prev}${current}\n`, '');
+}
+
+function addScriptsBySource(sources: string[]) {
+  return sources.reduce(
+    (prev, current) =>
+      `${prev}${`<script crossorigin="anonymous" type="application/javascript" src="${current}"></script>`}\n`,
+    '',
+  );
+}
+
+function addLinksBySource(sources: string[]) {
+  return sources.reduce((prev, current) => `${prev}${`<link rel="stylesheet" href="${current}" />`}\n`, '');
+}
+
+export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
+  const {
+    doctype,
+    title,
+    spmA,
+    spmB,
+    injectedHTML: { links: customLinks = [], scripts: customScripts = [], metas: customMetas = [] },
+    assets: { links: assetLinks = [], scripts: assetScripts = [] },
+    initialHTML,
+  } = htmlInfo;
   return `
   ${doctype}
   <html>
@@ -24,37 +47,18 @@ export function getBuiltInHtmlTpl(htmlInfo) {
       <meta charset="utf-8" />
       ${addSpmA(spmA)}
       <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover" />
+      ${addStaticSource(customMetas)}
       <title>${title}</title>
+      ${addStaticSource(customLinks)}
+      ${addLinksBySource(assetLinks)}
     </head>
     <body ${addSpmB(spmB)}>
-      <div id="root"></div>
+      <div id="root">${initialHTML}</div>
+      ${addStaticSource(customScripts)}
+      ${addScriptsBySource(assetScripts)}
     </body>
   </html>
 `;
-}
-
-export function insertCommonElements(staticConfig) {
-  const { metas: customMetas = [], links: customLinks = [], scripts: customScripts = [] } = staticConfig;
-  if (customMetas) {
-    metas = [...metas, ...customMetas];
-  }
-  if (customLinks) {
-    links = [...links, ...customLinks];
-  }
-  if (customScripts) {
-    scripts = [...scripts, ...customScripts];
-  }
-}
-
-export function generateHtmlStructure(htmlStr, htmlInfo?: IHtmlInfo) {
-  const $ = cheerio.load(htmlStr, { decodeEntities: false });
-  const root = $('#root');
-  const title = $('title');
-  const { metas: pageMetas = [], links: pageLinks = [], scripts: pageScripts = [] } = htmlInfo || {};
-  title.before([...metas, ...pageMetas]);
-  title.after([...links, ...pageLinks]);
-  root.after([...scripts, ...pageScripts]);
-  return $;
 }
 
 export function insertScripts(customScripts) {
