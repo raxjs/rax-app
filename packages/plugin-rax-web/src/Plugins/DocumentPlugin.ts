@@ -35,7 +35,9 @@ export default class DocumentPlugin {
         // update local build task
         localBuildTask = registerListenTask();
         const injectedHTML = getInjectedHTML();
-        injectedHTML.scripts.push(`<script>${insertScript}</script>`);
+        if (insertScript) {
+          injectedHTML.scripts.push(`<script>${insertScript}</script>`);
+        }
         pages.forEach(({ entryName, entryPath, path: pagePath, spm }) => {
           const buildResult = compilation.entrypoints.get(entryName).getFiles();
           const assets = getAssetsForPage(buildResult, publicPath);
