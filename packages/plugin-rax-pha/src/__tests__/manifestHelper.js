@@ -106,7 +106,13 @@ describe('transformAppConfig', () => {
       ],
     }, true);
     expect(manifestJSON.pages.length).toBe(2);
-    expect(manifestJSON.pages[0].data_prefetches).toMatchObject([{ url: '/a.com', data: { id: 123 } }]);
+    expect(manifestJSON.pages[0].data_prefetches).toMatchObject([{
+      url: '/a.com',
+      data: {
+        id: 123
+      },
+      header: {}
+    }]);
   });
 
   it('should not filter whitelist fields', () => {
