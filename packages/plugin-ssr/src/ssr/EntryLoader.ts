@@ -86,9 +86,9 @@ export default function () {
     ${query.documentPath ? addCustomRenderComponentToHTML(query) : addBuiltInRenderComponentToHTML(query)}
 
     async function renderToHTML(req, res, options = {}) {
-      const { initialData, htmlTemplate } = options;
+      const { initialData, htmlTemplate, chunkInfo } = options;
       ${query.useRunApp ? addDefineInitialPage() : ''}
-      const html = await renderComponentToHTML(Page, { req, res }, initialData, htmlTemplate);
+      const html = await renderComponentToHTML(Page, { req, res }, initialData, htmlTemplate, chunkInfo);
       return html;
     }
 
@@ -110,9 +110,9 @@ export default function () {
     async function render(ctx, options) {
       let html;
       if (ctx.req) {
-        const { initialData, htmlTemplate } = options;
+        const { initialData, htmlTemplate, chunkInfo } = options;
         try {
-          html = await renderToHTML(ctx.req, ctx.res, { initialData, htmlTemplate });
+          html = await renderToHTML(ctx.req, ctx.res, { initialData, htmlTemplate, chunkInfo });
         } catch (e) {
           html = htmlTemplate;
           console.error(e);

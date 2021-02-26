@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-ssr",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "",
   "author": "",
   "homepage": "https://github.com/alibaba/ice#readme",
@@ -31,7 +31,7 @@
     "react-dev-utils": "^10.0.0",
     "cheerio": "1.0.0-rc.3",
     "html-minifier": "^4.0.0",
-    "rax-app-renderer": "^1.1.0",
+    "rax-app-renderer": "^2.0.0",
     "@builder/html-generator": "^1.0.0",
     "chalk": "^4.0.0"
   }
