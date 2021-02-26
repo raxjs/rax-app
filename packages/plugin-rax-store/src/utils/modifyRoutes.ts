@@ -15,7 +15,6 @@ function modifyRoute(route, tempPath, srcPath, projectType, mpa = false) {
   const dir = path.dirname(pageSource);
   const pageName = path.parse(dir).name;
   const pageStorePath = getPageStorePath({ srcPath, projectType, pageName });
-
   if (!fse.pathExistsSync(pageStorePath)) {
     return route;
   }

@@ -100,7 +100,7 @@ export default class Generator {
     const pageComponentTemplatePath = path.join(__dirname, './template/pageComponent.tsx.ejs');
     // e.g.: generate .rax/pages/Home/myIndex.tsx
     const pageComponentTempPath = path.join(this.tempPath, `${pageEntry}.${this.projectType}x`);
-    const pageComponentSourcePath = this.applyMethod('formatPath', pageComponentPath);
+    const pageComponentSourcePath = formatPath(pageComponentPath);
 
     const pageComponentName = 'PageComponent';
     const pageComponentRenderData = {
