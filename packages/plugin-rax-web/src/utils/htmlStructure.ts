@@ -62,22 +62,22 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
 }
 
 export function insertScripts(customScripts) {
-  scripts = [...scripts, customScripts];
+  scripts = [...scripts, ...customScripts];
 }
 
 export function insertLinks(customLinks) {
-  links = [...links, customLinks];
+  links = [...links, ...customLinks];
 }
 
 export function insertMetas(customMetas) {
-  metas = [...metas, customMetas];
+  metas = [...metas, ...customMetas];
 }
 
 export function insertScriptsByInfo(customScripts) {
   insertScripts(
     customScripts.map((scriptInfo) => {
-      const attrStr = Object.keys(scriptInfo).reduce((curr, next) => `${curr} ${next}=${scriptInfo[next]} `, '');
-      return `<script${attrStr} />`;
+      const attrStr = Object.keys(scriptInfo).reduce((curr, next) => `${curr} ${next}="${scriptInfo[next]}" `, '');
+      return `<script${attrStr}></script>`;
     }),
   );
 }
