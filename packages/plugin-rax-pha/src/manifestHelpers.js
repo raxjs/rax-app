@@ -24,6 +24,12 @@ const retainKeys = [
   'links',
   'scripts',
   'offlineResources',
+  'manifestPrefetchExpires',
+  'manifestPrefetchMaxAge',
+  'queryParamsPassKeys',
+  'queryParamsPassIgnoreKeys',
+  'splashViewTimeout',
+  'swiperThreshold',
 ];
 
 // transform app config to decamelize
@@ -52,6 +58,10 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
     } else if (Array.isArray(value)) {
       data[transformKey] = value.map((item) => {
         if (typeof item === 'object') {
+          if (key === 'dataPrefetches' && !item.header) {
+            // hack: No header will crash in Android
+            item.header = {};
+          }
           return transformAppConfig(item, false, key);
         }
         return item;
