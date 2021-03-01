@@ -20,14 +20,14 @@ export default function () {
       import renderer from 'rax-server-renderer';
 
       function renderPage(assets, { title, doctype, pagePath }) {
-        let initalHTML = '';
+        let initialHTML = '';
         ${staticExport ? addRenderInitialHTML() : ''}
 
-        // This loader is executed after babel, so need to be tansformed to ES5.
+        // This loader is executed after babel, so need to be transformed to ES5.
         const DocumentContextProvider = function() {};
         DocumentContextProvider.prototype.getChildContext = function() {
           return {
-            __initialHtml: initalHTML,
+            __initialHtml: initialHTML,
             __styles: assets.links,
             __scripts: assets.scripts,
             __pagePath: pagePath,
