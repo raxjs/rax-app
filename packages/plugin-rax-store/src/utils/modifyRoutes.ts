@@ -31,7 +31,6 @@ function modifyRoute(route, tempPath, srcPath, projectType, mpa) {
 /**
  * @param routes the routes in staticConfig
  * @param tempPath the path of .rax/ dir
- * @param filename the filename to be replaced e.g.: /example/.rax/pages/Home/index -> /example/.rax/pages/Home/Page.tsx
  * @param srcPath the project source path  e.g.: /Users/project/src
  * @param projectType typescript or javascript
  * @param mpa wheather MPA

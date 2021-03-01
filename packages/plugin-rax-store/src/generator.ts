@@ -62,9 +62,8 @@ export default class Generator {
         projectType: this.projectType,
       }));
       const existedStoreFile = fse.pathExistsSync(pageStoreFile);
-      const exportDefaultDeclarationExists = checkExportDefaultDeclarationExists(pageComponentPath);
-      if (!existedStoreFile || !exportDefaultDeclarationExists) {
-        // don't generate .rax/pages/${pageSource}
+      if (!existedStoreFile || !checkExportDefaultDeclarationExists(pageComponentPath)) {
+        // don't generate .rax/pages/Home/index.tsx
         // 1. the page store does not exist
         // 2. the entry has no `export default`
         return;
@@ -74,7 +73,7 @@ export default class Generator {
         pageEntry,
         pageComponentPath,
       };
-      // generate .rax/pages/${pageSource}
+      // generate .rax/pages/Home/index.tsx
       this.renderPageComponent(params);
     });
   }
