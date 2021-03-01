@@ -17,15 +17,11 @@ export interface ILoaderQuery {
   entryName?: string;
   needInjectStyle?: boolean | string;
   useRunApp: boolean | string;
-
   publicPath?: string;
-
   tempPath: string;
-
   injectedHTML?: any;
-
   assetsProcessor?: string;
-
   pageConfig?: IPageConfig;
   doctype?: string;
+  injectServerSideData: boolean | string;
 }
