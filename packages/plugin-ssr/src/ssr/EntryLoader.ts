@@ -76,6 +76,7 @@ export default function () {
     async function getInitialProps(Component, ctx) {
       if (!Component.getInitialProps) return null;
       const props = await Component.getInitialProps(ctx);
+      // null will be return as page component initial props
       if (typeof props === 'object') {
         return props;
       }
