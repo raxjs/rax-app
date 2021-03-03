@@ -81,7 +81,7 @@ export default (api) => {
         api,
         staticConfig,
         documentPath,
-        pages: [
+        pages: webConfig.mpa ? [] : [
           {
             entryName: 'index',
             entryPath: getAppEntry(rootDir),
