@@ -1,0 +1,20 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "source": "pages/Home/index",
+      "window": {
+        "title": "home"
+      },
+      "spm": "b456"
+    },
+    {
+      "path": "/about",
+      "source": "pages/About/index"
+    }
+  ],
+  "window": {
+    "title": "Rax App"
+  },
+  "spm": "a123"
+}

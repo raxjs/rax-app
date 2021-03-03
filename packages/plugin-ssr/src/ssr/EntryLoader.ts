@@ -26,7 +26,7 @@ function addImportPageComponent(resourcePath, pageConfig) {
   Page.__pageConfig = ${JSON.stringify(pageConfig)};`;
 }
 
-function addRunAppDependcies(resourcePath, tempPath) {
+function addRunAppDependencies(resourcePath, tempPath) {
   return `
   import '${resourcePath}';
   import app from '${path.join(tempPath, 'runApp.ts')}';
@@ -59,6 +59,7 @@ export default function () {
   const appConfigPath = path.join(query.tempPath, 'appConfig.ts');
   query.useRunApp = query.useRunApp === 'true';
   query.needInjectStyle = query.needInjectStyle === 'true';
+  query.injectServerSideData = query.injectServerSideData === 'true';
   let code = `
     import Generator from '@builder/html-generator';
     import { createElement } from 'rax';
@@ -67,7 +68,7 @@ export default function () {
     import { getAppConfig } from '${formatPath(appConfigPath)}';
     ${
   query.useRunApp
-    ? addRunAppDependcies(this.resourcePath, query.tempPath)
+    ? addRunAppDependencies(this.resourcePath, query.tempPath)
     : addImportPageComponent(this.resourcePath, query.pageConfig)
 }
 
@@ -76,11 +77,12 @@ export default function () {
     async function getInitialProps(Component, ctx) {
       if (!Component.getInitialProps) return null;
       const props = await Component.getInitialProps(ctx);
-      if (!props || typeof props !== 'object') {
-        const message = '"getInitialProps()" should resolve to an object. But found "' + props + '" instead.';
-        throw new Error(message);
+      // null will be return as page component initial props
+      if (typeof props === 'object') {
+        return props;
       }
-      return props;
+      const message = '"getInitialProps()" should resolve to an object. But found "' + props + '" instead.';
+      throw new Error(message);
     }
 
     ${query.documentPath ? addCustomRenderComponentToHTML(query) : addBuiltInRenderComponentToHTML(query)}

@@ -5,6 +5,10 @@
       "source": "pages/Home/index"
     },
     {
+      "path": "/detail",
+      "source": "pages/Home/detail"
+    },
+    {
       "path": "/about",
       "source": "pages/About/index"
     }
