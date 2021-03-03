@@ -4,21 +4,21 @@ let scripts = [];
 let links = [];
 let metas = [];
 
-function addSpmA(spmA) {
+export function addSpmA(spmA) {
   if (!spmA) return '';
   return `<meta name="data-spm" content="${spmA}" />`;
 }
 
-function addSpmB(spmB) {
+export function addSpmB(spmB) {
   if (!spmB) return '';
   return `data-spm="${spmB}"`;
 }
 
-function addStaticSource(sources: string[]) {
+export function addStaticSource(sources: string[]) {
   return sources.reduce((prev, current) => `${prev}${current}\n`, '');
 }
 
-function addScriptsBySource(sources: string[]) {
+export function addScriptsBySource(sources: string[]) {
   return sources.reduce(
     (prev, current) =>
       `${prev}${`<script crossorigin="anonymous" type="application/javascript" src="${current}"></script>`}\n`,
@@ -26,7 +26,7 @@ function addScriptsBySource(sources: string[]) {
   );
 }
 
-function addLinksBySource(sources: string[]) {
+export function addLinksBySource(sources: string[]) {
   return sources.reduce((prev, current) => `${prev}${`<link rel="stylesheet" href="${current}" />`}\n`, '');
 }
 
@@ -62,22 +62,22 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
 }
 
 export function insertScripts(customScripts) {
-  scripts = [...scripts, customScripts];
+  scripts = [...scripts, ...customScripts];
 }
 
 export function insertLinks(customLinks) {
-  links = [...links, customLinks];
+  links = [...links, ...customLinks];
 }
 
 export function insertMetas(customMetas) {
-  metas = [...metas, customMetas];
+  metas = [...metas, ...customMetas];
 }
 
 export function insertScriptsByInfo(customScripts) {
   insertScripts(
     customScripts.map((scriptInfo) => {
-      const attrStr = Object.keys(scriptInfo).reduce((curr, next) => `${curr} ${next}=${scriptInfo[next]} `, '');
-      return `<script${attrStr} />`;
+      const attrStr = Object.keys(scriptInfo).reduce((curr, next) => `${curr} ${next}="${scriptInfo[next]}" `, '');
+      return `<script${attrStr}></script>`;
     }),
   );
 }
