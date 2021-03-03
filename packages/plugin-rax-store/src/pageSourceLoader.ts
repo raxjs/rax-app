@@ -7,16 +7,15 @@ import modifyRoutes from './utils/modifyRoutes';
  *  "routes": [
       {
         "path": "/",
-        "source": ".rax/pages/Home/Page",
+        "source": ".rax/pages/Home/index",
       }
     ]
   }
  */
 export default function pageSourceLoader(appJSON) {
-  const { tempPath, srcPath, projectType } = getOptions(this);
+  const { tempPath, srcPath, projectType, mpa } = getOptions(this);
   const content = JSON.parse(appJSON);
 
-  content.routes = modifyRoutes(content.routes, tempPath, 'Page', srcPath, projectType);
-
+  content.routes = modifyRoutes(content.routes, tempPath, srcPath, projectType, mpa);
   return JSON.stringify(content);
 }
