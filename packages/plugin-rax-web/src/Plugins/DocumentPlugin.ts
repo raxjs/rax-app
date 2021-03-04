@@ -18,12 +18,13 @@ export default class DocumentPlugin {
       staticConfig,
       api: {
         context: {
-          userConfig: { web: { mpa, staticExport, doctype = '<!DOCTYPE html>' } },
+          userConfig: { web: webConfig },
         },
       },
       documentPath,
       insertScript,
     } = this.options;
+    const { mpa, staticExport, doctype = '<!DOCTYPE html>' } = webConfig || {};
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
     const publicPath = this.options.publicPath || compiler.options.output.publicPath;
     insertCommonElements(staticConfig);
