@@ -25,9 +25,9 @@ describe('transformAppConfig', () => {
     expect(manifestJSON.offline_resources[0]).toBe('//g.alicdn.com/.*');
   });
 
-  it('should transform dataPrefetches', () => {
+  it('should transform dataPrefetch', () => {
     const manifestJSON = transformAppConfig({
-      dataPrefetches: [{
+      dataPrefetch: [{
         url: '/a.com',
         data: {
           id: 123,
@@ -41,15 +41,15 @@ describe('transformAppConfig', () => {
         }
       }],
     }, true);
-    expect(manifestJSON.data_prefetches.length).toBe(1);
-    expect(manifestJSON.data_prefetches[0].data).toMatchObject({
+    expect(manifestJSON.data_prefetch.length).toBe(1);
+    expect(manifestJSON.data_prefetch[0].data).toMatchObject({
       id: 123,
       taskId: 233,
       cId: {
         dId: true
       }
     });
-    expect(manifestJSON.data_prefetches[0].header).toMatchObject({
+    expect(manifestJSON.data_prefetch[0].header).toMatchObject({
       taskId: 455,
     });
   });
@@ -91,7 +91,7 @@ describe('transformAppConfig', () => {
           path: '/',
           name: 'home',
           source: 'pages/Home/index',
-          dataPrefetches: [{
+          dataPrefetch: [{
             url: '/a.com',
             data: {
               id: 123,
@@ -106,7 +106,7 @@ describe('transformAppConfig', () => {
       ],
     }, true);
     expect(manifestJSON.pages.length).toBe(2);
-    expect(manifestJSON.pages[0].data_prefetches).toMatchObject([{
+    expect(manifestJSON.pages[0].data_prefetch).toMatchObject([{
       url: '/a.com',
       data: {
         id: 123
@@ -131,7 +131,7 @@ describe('getPageManifestByPath', () => {
         path: '/',
         name: 'home',
         source: 'pages/Home/index',
-        data_prefetches: [{
+        data_prefetch: [{
           url: '/a.com',
           data: {
             id: 123,
@@ -154,7 +154,7 @@ describe('setRealUrlToManifest', () => {
         path: '/',
         name: 'home3',
         source: 'pages/Home/index',
-        data_prefetches: [{
+        data_prefetch: [{
           url: '/a.com',
           data: {
             id: 123,

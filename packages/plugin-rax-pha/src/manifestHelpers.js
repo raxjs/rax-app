@@ -18,7 +18,7 @@ const retainKeys = [
   'tabHeader',
   'tabBar',
   'pages',
-  'dataPrefetches',
+  'dataPrefetch',
   'spm',
   'metas',
   'links',
@@ -58,7 +58,7 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
     } else if (Array.isArray(value)) {
       data[transformKey] = value.map((item) => {
         if (typeof item === 'object') {
-          if (key === 'dataPrefetches' && !item.header) {
+          if (key === 'dataPrefetch' && !item.header) {
             // hack: No header will crash in Android
             item.header = {};
           }
@@ -66,7 +66,7 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
         }
         return item;
       });
-    } else if (typeof value === 'object' && !(parentKey === 'dataPrefetches' && (key === 'header' || key === 'data'))) {
+    } else if (typeof value === 'object' && !(parentKey === 'dataPrefetch' && (key === 'header' || key === 'data'))) {
       data[transformKey] = transformAppConfig(value, false, key);
     } else {
       data[transformKey] = value;
