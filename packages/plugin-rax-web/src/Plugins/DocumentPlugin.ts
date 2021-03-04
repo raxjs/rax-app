@@ -18,7 +18,7 @@ export default class DocumentPlugin {
       staticConfig,
       api: {
         context: {
-          userConfig: { web = {} },
+          userConfig: { web: { mpa, staticExport, doctype = '<!DOCTYPE html>' } },
         },
       },
       documentPath,
@@ -26,7 +26,6 @@ export default class DocumentPlugin {
     } = this.options;
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
     const publicPath = this.options.publicPath || compiler.options.output.publicPath;
-    const doctype = web.doctype || '<!DOCTYPE html>';
     insertCommonElements(staticConfig);
 
     let localBuildTask = registerListenTask();
@@ -52,8 +51,10 @@ export default class DocumentPlugin {
       }
 
       function emitAssets(localBuildAssets) {
-        // update local build task
-        localBuildTask = registerListenTask();
+        // update local build task when local builder existed
+        if (staticExport || documentPath) {
+          localBuildTask = registerListenTask();
+        }
         // update enable status
         updateEnableStatus(false);
         const injectedHTML = getInjectedHTML();
@@ -65,7 +66,7 @@ export default class DocumentPlugin {
           const assets = getAssetsForPage(buildResult, publicPath);
           const title = getTitleByStaticConfig(staticConfig, {
             entryName,
-            mpa: web.mpa,
+            mpa,
           });
           let html = '';
           if (documentPath && localBuildAssets[`${entryName}.js`]) {
