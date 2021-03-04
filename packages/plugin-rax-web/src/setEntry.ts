@@ -1,5 +1,4 @@
-import * as path from 'path';
-import * as fs from 'fs';
+import getAppEntry from './utils/getAppEntry';
 
 export default (config, context) => {
   const {
@@ -11,7 +10,7 @@ export default (config, context) => {
 
   if (!web.mpa) {
     // SPA
-    const appEntry = moduleResolve(formatPath(path.join(rootDir, './src/app')));
+    const appEntry = getAppEntry(rootDir);
     const entryConfig = config.entry('index');
 
     config.module.rule('appJSON').use('loader');
@@ -23,14 +22,3 @@ export default (config, context) => {
   }
 };
 
-function moduleResolve(filePath) {
-  const ext = ['.ts', '.js', '.tsx', '.jsx'].find((extension) => fs.existsSync(`${filePath}${extension}`));
-  if (!ext) {
-    throw new Error(`Cannot find target file ${filePath}.`);
-  }
-  return require.resolve(`${filePath}${ext}`);
-}
-
-function formatPath(pathStr) {
-  return process.platform === 'win32' ? pathStr.split(path.sep).join('/') : pathStr;
-}

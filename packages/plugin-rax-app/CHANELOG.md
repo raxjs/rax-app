@@ -1,5 +1,9 @@
 # Changelog
 
+## v6.2.7
+
+- Chore: update rax-webpack-config version
+
 ## v6.2.6
 
 - Fix: imported css rpx unit converted fail

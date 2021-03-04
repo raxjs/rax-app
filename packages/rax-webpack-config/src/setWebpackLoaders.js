@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const URL_LOADER_LIMIT = 8192;
 const EXCLUDE_REGX = /node_modules/;
 // config css rules
-const configCSSRule = (config, style, mode, loaders = [], target) => {
+const configCSSRule = (config, style, mode, loaders = []) => {
   const cssModuleReg = new RegExp(`\\.module\\.${style}$`);
   const styleReg = new RegExp(`\\.${style}$`);
   const cssLoaderOpts = {
@@ -29,17 +29,6 @@ const configCSSRule = (config, style, mode, loaders = [], target) => {
       rule = config.module.rule(style)
         .test(styleReg)
         .exclude.add(cssModuleReg).end();
-    }
-
-    if (mode === 'development' && target === 'web') {
-      const cssHotLoader = rule.use('css-hot-loader')
-        .loader(require.resolve('css-hot-loader'));
-      if (ruleKey === 'module') {
-        // https://www.npmjs.com/package/css-hot-loader#cssmodule
-        // TODO: now the mini-css-extract-plugin support css hot reload (since 0.6.x)
-        // use hmr option instead of css-hot-loader after mini-css-extract-plugin support css-modules hmr
-        cssHotLoader.tap(() => ({ cssModule: true }));
-      }
     }
     rule
       .use('MiniCssExtractPlugin.loader')
@@ -75,7 +64,7 @@ const configAssetsRule = (config, type, testReg, loaderOpts = {}) => {
     });
 };
 
-module.exports = (config, { rootDir, mode, babelConfig, target }) => {
+module.exports = (config, { rootDir, mode, babelConfig }) => {
   config.resolve.alias
     .set('babel-runtime-jsx-plus', require.resolve('babel-runtime-jsx-plus'))
     // @babel/runtime has no index
@@ -106,7 +95,7 @@ module.exports = (config, { rootDir, mode, babelConfig, target }) => {
     ['scss', [['sass-loader', require.resolve('sass-loader')]]],
     ['less', [['less-loader', require.resolve('less-loader'), { javascriptEnabled: true }]]],
   ].forEach(([style, loaders]) => {
-    configCSSRule(config, style, mode, loaders || [], target);
+    configCSSRule(config, style, mode, loaders || []);
   });
 
   [
@@ -120,8 +109,6 @@ module.exports = (config, { rootDir, mode, babelConfig, target }) => {
   });
 
   const babelLoader = require.resolve('babel-loader');
-
-  config.resolve.extensions.merge(['.js', '.json', '.jsx', '.ts', '.tsx', '.html']);
 
   // js loader
   config.module.rule('jsx')
