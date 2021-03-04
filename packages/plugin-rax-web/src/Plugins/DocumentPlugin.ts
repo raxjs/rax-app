@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as Module from 'module';
 import * as cheerio from 'cheerio';
-import { registerListenTask } from '../utils/localBuildCache';
+import { registerListenTask, getCacheAssets, getEnableStatus, updateEnableStatus } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
 import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
 
@@ -32,9 +32,28 @@ export default class DocumentPlugin {
     let localBuildTask = registerListenTask();
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, async (compilation, callback) => {
-      localBuildTask.then((localBuildAssets) => {
+      const enableListen = getEnableStatus();
+      /**
+       * 1. Exist local builder, before local builder compiler created (it's more earlier than this hook) enable listen will be true,
+       *  so it will resolve the first listen resolve, and then hot reload:
+       *  - Something changed that will emit web and local builder all restart, it will be ok as the first one:
+       *    - web builder is faster than local builder, enable status has been true when restart(before local builder compiler created), so it will wait local builder emits assets
+       *    - local builder is faster than web builder, localBuildTask is ready to resolve when web finished
+       *  - Something changed that will only emit web changed:
+       *    - the enableListen status has been false when latest emitted, so it will use the last time cache assets as html content
+       */
+      if (enableListen) {
+        localBuildTask.then(emitAssets);
+      } else {
+        const cacheAssets = getCacheAssets();
+        emitAssets(cacheAssets);
+      }
+
+      function emitAssets(localBuildAssets) {
         // update local build task
         localBuildTask = registerListenTask();
+        // update enable status
+        updateEnableStatus(false);
         const injectedHTML = getInjectedHTML();
         if (insertScript) {
           injectedHTML.scripts.push(`<script>${insertScript}</script>`);
@@ -82,7 +101,7 @@ export default class DocumentPlugin {
         });
 
         callback();
-      });
+      }
     });
   }
 }
