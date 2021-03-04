@@ -30,6 +30,19 @@ export function addLinksBySource(sources: string[]) {
   return sources.reduce((prev, current) => `${prev}${`<link rel="stylesheet" href="${current}" />`}\n`, '');
 }
 
+export function insertCommonElements(staticConfig) {
+  const { metas: customMetas = [], links: customLinks = [], scripts: customScripts = [] } = staticConfig;
+  if (customMetas) {
+    metas = [...metas, ...customMetas];
+  }
+  if (customLinks) {
+    links = [...links, ...customLinks];
+  }
+  if (customScripts) {
+    scripts = [...scripts, ...customScripts];
+  }
+}
+
 export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
   const {
     doctype,

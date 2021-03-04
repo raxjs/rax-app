@@ -1,5 +1,11 @@
 ## Changelog
 
+### 3.4.1 (March 04 2021)
+
+- Chore: update sass-loader
+- Chore: change data prefetch key in PHA
+- Fix: html generate in document mode
+
 ### 3.3.9 (February 26 2021)
 
 - Fix: receive params passed by DEF plugin

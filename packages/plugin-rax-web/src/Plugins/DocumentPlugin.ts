@@ -3,7 +3,7 @@ import * as Module from 'module';
 import * as cheerio from 'cheerio';
 import { registerListenTask } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
-import { getInjectedHTML, getBuiltInHtmlTpl } from '../utils/htmlStructure';
+import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
 
 const PLUGIN_NAME = 'DocumentPlugin';
 const { RawSource } = webpackSources;
@@ -27,6 +27,7 @@ export default class DocumentPlugin {
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
     const publicPath = this.options.publicPath || compiler.options.output.publicPath;
     const doctype = web.doctype || '<!DOCTYPE html>';
+    insertCommonElements(staticConfig);
 
     let localBuildTask = registerListenTask();
 
