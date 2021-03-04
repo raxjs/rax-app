@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.3
+
+- Fix: insert links in app.json
+
 ## v1.3.2
 
 - Fix: generate html when insert extra scripts
