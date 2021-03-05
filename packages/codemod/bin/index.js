@@ -1,1 +1,1 @@
-require('../lib').default();
+require('../lib/index.js').default();

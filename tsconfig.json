@@ -1,7 +1,7 @@
 {
   "files": [],
   "references": [
-    { "path": "packages/rax-app-codemod" },
+    { "path": "packages/codemod" },
     { "path": "packages/stylesheet-loader" },
     { "path": "packages/babel-plugin-transform-jsx-stylesheet" },
     { "path": "packages/build-html-generator" },
