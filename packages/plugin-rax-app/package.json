@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-app",
-  "version": "6.2.6",
+  "version": "6.2.7",
   "description": "The basic webpack configuration for rax project",
   "author": "Rax Team",
   "main": "lib/index.js",
@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "rax-webpack-config": "^2.0.0",
+    "rax-webpack-config": "2.0.1",
     "rax-babel-config": "^1.0.0",
     "rax-jest-config": "^1.0.0",
     "rax-platform-loader": "^1.0.0",
@@ -45,3 +45,4 @@
   },
   "gitHead": "07ac7bb07162aac8c90778dd1de4a2060f8df498"
 }
+

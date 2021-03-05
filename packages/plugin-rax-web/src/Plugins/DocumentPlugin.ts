@@ -1,9 +1,10 @@
 import * as path from 'path';
 import * as Module from 'module';
 import * as cheerio from 'cheerio';
+import { getEntriesByRoute } from '@builder/app-helpers';
 import { registerListenTask } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
-import { getInjectedHTML, getBuiltInHtmlTpl } from '../utils/htmlStructure';
+import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
 
 const PLUGIN_NAME = 'DocumentPlugin';
 const { RawSource } = webpackSources;
@@ -19,6 +20,7 @@ export default class DocumentPlugin {
       api: {
         context: {
           userConfig: { web = {} },
+          rootDir,
         },
       },
       documentPath,
@@ -27,6 +29,7 @@ export default class DocumentPlugin {
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
     const publicPath = this.options.publicPath || compiler.options.output.publicPath;
     const doctype = web.doctype || '<!DOCTYPE html>';
+    insertCommonElements(staticConfig);
 
     let localBuildTask = registerListenTask();
 
@@ -44,6 +47,7 @@ export default class DocumentPlugin {
           const title = getTitleByStaticConfig(staticConfig, {
             entryName,
             mpa: web.mpa,
+            rootDir,
           });
           let html = '';
           if (documentPath && localBuildAssets[`${entryName}.js`]) {
@@ -86,18 +90,13 @@ export default class DocumentPlugin {
   }
 }
 
-function getTitleByStaticConfig(staticConfig, { entryName, mpa }): string {
+function getTitleByStaticConfig(staticConfig, { entryName, mpa, rootDir }): string {
   if (!mpa) return staticConfig.window?.title;
-  const route = staticConfig.routes.find(({ source, name }) => {
-    let pageEntry;
-    if (name) {
-      pageEntry = name;
-    } else if (source) {
-      const dir = path.dirname(source);
-      pageEntry = path.parse(dir).name.toLocaleLowerCase();
-    }
-    return pageEntry === entryName;
-  });
+  const route = staticConfig.routes
+    .reduce((prev, curr) => {
+      return [...prev, ...getEntriesByRoute(curr, rootDir)];
+    }, [])
+    .find(({ entryName: pageEntry }) => pageEntry === entryName);
   return route.window?.title || staticConfig.window?.title;
 }
 

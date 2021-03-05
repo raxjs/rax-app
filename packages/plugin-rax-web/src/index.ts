@@ -7,9 +7,10 @@ import setDev from './setDev';
 import setEntry from './setEntry';
 import DocumentPlugin from './Plugins/DocumentPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
-import SnapshotPlugin from './SnapshotPlugin';
+import SnapshotPlugin from './Plugins/SnapshotPlugin';
 import setRegisterMethod from './utils/setRegisterMethod';
 import setLocalBuilder from './setLocalBuilder';
+import getAppEntry from './utils/getAppEntry';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
@@ -80,9 +81,10 @@ export default (api) => {
         api,
         staticConfig,
         documentPath,
-        pages: [
+        pages: webConfig.mpa ? [] : [
           {
             entryName: 'index',
+            entryPath: getAppEntry(rootDir),
             path: '/',
           },
         ],
