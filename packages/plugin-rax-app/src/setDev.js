@@ -146,6 +146,9 @@ module.exports = function (api) {
         console.log('   ', chalk.underline.white(bytedanceOutputPath));
         console.log();
       }
+
+      const appConfig = getValue('staticConfig');
+      const needGenerateMultipleManifest = pha && !appConfig.tabBar;
       if (targets.includes(WEB)) {
         devInfo.urls.web = [];
         console.log(highlightPrint('  [Web] Development server at: '));
@@ -216,7 +219,10 @@ module.exports = function (api) {
         });
       }
 
-      if (pha) {
+      /**
+       * @TODO: Delete it first, and then open it after the PHA supports it
+       */
+      if (pha && !needGenerateMultipleManifest) {
         // Use PHA App to scan ip address (mobile phone can't visit localhost).
         console.log(highlightPrint('  [PHA] Development server at: '));
         const manifestUrl = `${urlPrefix}/manifest.json?pha=true`;

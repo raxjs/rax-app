@@ -1,31 +1,19 @@
 {
-  "tabBar": {
-    "textColor": "#444444",
-    "selectedColor": "#FF2742",
-    "selectedIndex": 0,
-    "backgroundColor": "#FFFFFF",
-    "height": 100,
-    "items": [{
-      "icon": "https://img.alicdn.com/tfs/TB1roWCwrr1gK0jSZFDXXb9yVXa-96-96.png?getAvatar=avatar",
-      "activeIcon": "https://img.alicdn.com/tfs/TB1ycKGwAT2gK0jSZPcXXcKkpXa-96-96.png?getAvatar=avatar",
-      "name": "首页"
-    }, {
-      "icon": "//img.alicdn.com/tfs/TB1XcaXwuL2gK0jSZPhXXahvXXa-48-48.png?getAvatar=avatar",
-      "activeIcon": "https://img.alicdn.com/tfs/TB1_Sp8wqL7gK0jSZFBXXXZZpXa-48-48.png?getAvatar=avatar",
-      "name": "about"
-    }]
-  },
   "routes": [
     {
-      "path": "/",
-      "source": "pages/Home/index",
-      "window": {
-        "title": "home"
-      }
-    },
-    {
-      "path": "/about",
-      "source": "/pages/About/index"
+      "frames": [
+        {
+          "path": "/",
+          "source": "pages/Home/index",
+          "window": {
+            "title": "home"
+          }
+        },
+        {
+          "path": "/about",
+          "source": "pages/About/index"
+        }
+      ]
     }
   ],
   "window": {
