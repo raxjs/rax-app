@@ -58,6 +58,7 @@ module.exports = function (api) {
   };
   const devInfo = {
     urls: {},
+    framework: 'rax'
   };
   onHook('before.start.run', ({ config: configs }) => {
     const { userConfig } = context;
