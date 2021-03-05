@@ -8,13 +8,9 @@ export default function (api, config) {
   let serverReady = false;
   let httpResponseQueue = [];
 
-  const originalDevServeBefore = config.devServer.get('before');
   config.devServer.inline(false);
   config.devServer.hot(false);
   config.devServer.set('before', (app, server) => {
-    if (typeof originalDevServeBefore === 'function') {
-      originalDevServeBefore(app, server);
-    }
     let compilerDoneCount = 0;
     server.compiler.compilers.forEach((compiler) => {
       compiler.hooks.done.tap('ssrServer', () => {
