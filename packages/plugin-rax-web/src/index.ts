@@ -62,19 +62,22 @@ export default (api) => {
     setLocalBuilder(api);
   }
 
+  onGetWebpackConfig((config) => {
+    const { command } = context;
+    if (command === 'start') {
+      setDev(config);
+    }
+  });
+
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { rootDir, command, userConfig } = context;
+    const { rootDir, userConfig } = context;
     const { outputDir } = userConfig;
     const staticConfig = getValue('staticConfig');
 
     // Set output dir
     const outputPath = path.resolve(rootDir, outputDir, target);
     config.output.path(outputPath);
-
-    if (command === 'start') {
-      setDev(config);
-    }
 
     config.plugin('document').use(DocumentPlugin, [
       {

@@ -33,12 +33,13 @@ export default class DocumentPlugin {
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, async (compilation, callback) => {
       localBuildTask.then((localBuildAssets = {}) => {
+        // update enable status
+        updateEnableStatus(false);
         // update local build task when local builder existed
         if (staticExport || documentPath) {
           localBuildTask = registerListenTask();
         }
-        // update enable status
-        updateEnableStatus(false);
+
         const injectedHTML = getInjectedHTML();
         if (insertScript) {
           injectedHTML.scripts.push(`<script>${insertScript}</script>`);
