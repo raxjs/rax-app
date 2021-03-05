@@ -74,15 +74,15 @@ module.exports = class {
           appJsonContent: appConfig,
         });
         const copyManifestJSON = Object.assign({}, manifestJSON);
-        entries.filter(({ _frameIndex, _tabHeader }) => {
-          if ((typeof _frameIndex !== 'undefined' && _frameIndex !== 0) || _tabHeader) {
+        entries.filter(({ __frameIndex, __pageHeader }) => {
+          if ((typeof __frameIndex !== 'undefined' && __frameIndex !== 0) || __pageHeader) {
             return false;
           }
           return true;
-        }).forEach(({ source, entryName, _frameIndex }) => {
+        }).forEach(({ source, entryName, __frameIndex }) => {
           manifestJSON.pages = copyManifestJSON.pages.filter((page) => {
             // has frames
-            if (_frameIndex === 0) {
+            if (__frameIndex === 0) {
               return !!(page.frames && page.frames[0] && page.frames[0].source === source);
             } else {
               return page.source === source;
