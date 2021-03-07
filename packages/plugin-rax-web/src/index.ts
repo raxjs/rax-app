@@ -85,11 +85,7 @@ export default (api) => {
         staticConfig,
         documentPath,
         pages: webConfig.mpa ? [] : [
-          {
-            entryName: 'index',
-            entryPath: getAppEntry(rootDir),
-            path: '/',
-          },
+          getAppEntry(rootDir),
         ],
       },
     ]);
@@ -121,7 +117,7 @@ export default (api) => {
 };
 
 function getAbsolutePath(filepath: string): string | undefined {
-  const targetExt = ['.tsx', '.jsx'].find((ext) => fs.existsSync(`${filepath}${ext}`));
+  const targetExt = ['.tsx', '.jsx', '.js'].find((ext) => fs.existsSync(`${filepath}${ext}`));
   if (targetExt) {
     return `${filepath}${targetExt}`;
   }

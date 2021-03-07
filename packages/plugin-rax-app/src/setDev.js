@@ -13,13 +13,13 @@ const generateTempFile = require('./utils/generateTempFile');
 const highlightPrint = chalk.hex('#F4AF3D');
 
 function watchAppJson(rootDir, log) {
-  const watcher = chokidar.watch(path.resolve(rootDir, 'src/app.json'), {
+  const watcher = chokidar.watch([path.resolve(rootDir, 'src/app.json'), `${rootDir}/src/document/index.@(tsx|js?(x))`], {
     ignoreInitial: true,
   });
 
   watcher.on('change', () => {
     console.log('\n');
-    log.info('app.json has been changed');
+    log.info('HTML config has been changed');
     log.info('restart dev server');
     // add process env for mark restart dev process
     process.send({ type: 'RESTART_DEV' });

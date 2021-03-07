@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as Module from 'module';
 import * as cheerio from 'cheerio';
-import { registerListenTask, updateEnableStatus } from '../utils/localBuildCache';
+import { registerListenTask, getAssets } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
 import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
 
@@ -9,8 +9,10 @@ const PLUGIN_NAME = 'DocumentPlugin';
 const { RawSource } = webpackSources;
 export default class DocumentPlugin {
   options: any;
+  init: boolean;
   constructor(options) {
     this.options = options;
+    this.init = false;
   }
   apply(compiler) {
     const {
@@ -24,22 +26,21 @@ export default class DocumentPlugin {
       documentPath,
       insertScript,
     } = this.options;
-    const { mpa, staticExport, doctype = '<!DOCTYPE html>' } = webConfig || {};
+    const { mpa, doctype = '<!DOCTYPE html>' } = webConfig || {};
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
     const publicPath = this.options.publicPath || compiler.options.output.publicPath;
     insertCommonElements(staticConfig);
 
-    let localBuildTask = registerListenTask();
+    const localBuildTask = registerListenTask();
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, async (compilation, callback) => {
-      localBuildTask.then((localBuildAssets = {}) => {
-        // update enable status
-        updateEnableStatus(false);
-        // update local build task when local builder existed
-        if (staticExport || documentPath) {
-          localBuildTask = registerListenTask();
-        }
-
+      if (!this.init) {
+        this.init = true;
+        localBuildTask.then(emitAssets);
+      } else {
+        emitAssets(getAssets());
+      }
+      function emitAssets(localBuildAssets) {
         const injectedHTML = getInjectedHTML();
         if (insertScript) {
           injectedHTML.scripts.push(`<script>${insertScript}</script>`);
@@ -87,7 +88,7 @@ export default class DocumentPlugin {
         });
 
         callback();
-      });
+      }
     });
   }
 }

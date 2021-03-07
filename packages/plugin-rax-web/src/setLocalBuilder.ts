@@ -3,11 +3,13 @@ import * as qs from 'qs';
 import LocalBuilderPlugin from './Plugins/LocalBuilderPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import { updateEnableStatus } from './utils/localBuildCache';
+import getAppEntry from './utils/getAppEntry';
 
 export default (api, documentPath?: string | undefined) => {
   const { onGetWebpackConfig, getValue, context, registerTask } = api;
   const {
     userConfig: { inlineStyle, compileDependencies, web: webConfig = {} },
+    rootDir,
   } = context;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
@@ -30,9 +32,7 @@ export default (api, documentPath?: string | undefined) => {
 
   // enable listen local build result
   updateEnableStatus(true);
-  process.on('exit', () => {
-    updateEnableStatus(false);
-  });
+
   baseConfig.plugin('LocalBuilderPlugin').use(LocalBuilderPlugin);
 
   // document does not compile node_modules in full
@@ -49,10 +49,15 @@ export default (api, documentPath?: string | undefined) => {
 
   onGetWebpackConfig('document', (config) => {
     const staticConfig = getValue('staticConfig');
-    const entries = getMpaEntries(api, {
-      target: 'document',
-      appJsonContent: staticConfig,
-    });
+    let entries;
+    if (webConfig.mpa) {
+      entries = getMpaEntries(api, {
+        target: 'document',
+        appJsonContent: staticConfig,
+      });
+    } else {
+      entries = [getAppEntry(rootDir)];
+    }
 
     config.output.filename('[name].js');
 
