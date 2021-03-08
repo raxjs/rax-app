@@ -1,12 +1,13 @@
 import * as meow from 'meow';
 import * as path from 'path';
 import * as execa from 'execa';
+import * as fs from 'fs-extra';
 import checkGitStatus from './utils/checkGitStatus';
 import expandFilePathsIfNeeded from './utils/expandFilePathsIfNeeded';
 
 const transformerDirectory = path.join(__dirname, '../lib', 'transforms');
 const jscodeshiftExecutable = require.resolve('.bin/jscodeshift');
-const baseIgnorePattern = 'node_modules/**|.vscode/**|abc.json';
+const baseIgnorePattern = 'node_modules/**|.vscode/**|abc.json|.rax/**|build/**';
 export default function run() {
   const cli = meow(
     {
@@ -83,6 +84,10 @@ function runTransform({ files, flags, transformer }) {
   if (transformer === 'project') {
     args.push('--project=true');
     args.push(`--ignore-pattern=(${baseIgnorePattern}|src/!(app.json))`);
+    fs.writeFileSync(
+      path.join(process.cwd(), files[0], 'tsconfig.json'),
+      JSON.stringify(require('./utils/tsconfig.json'), null, 2),
+    );
   } else {
     args.push(`--ignore-pattern=(${baseIgnorePattern})`);
   }

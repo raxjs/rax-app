@@ -33,6 +33,9 @@ const devAddDepList = [
     name: 'rax-app',
     version: '^3.0.0',
   },
+];
+
+const updateDevList = [
   {
     name: '@ali/build-plugin-rax-faas',
     version: '^4.0.0',
@@ -44,7 +47,12 @@ export default function (fileInfo) {
   depDeleteList.forEach((pkgName) => delete pkg.dependencies[pkgName]);
   devDepDeleteList.forEach((pkgName) => delete pkg.devDependencies[pkgName]);
   devAddDepList.forEach(({ name, version }) => {
-    pkg[name] = version;
+    pkg.devDependencies[name] = version;
+  });
+  updateDevList.forEach(({ name, version }) => {
+    if (pkg.devDependencies[name]) {
+      pkg.devDependencies[name] = version;
+    }
   });
 
   if (pkg.devDependencies['@ali/build-plugin-rax-app-def']) {

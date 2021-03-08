@@ -9,17 +9,25 @@ export default function (fileInfo) {
   let staticExport = false;
   let snapshot = false;
   let mpa = false;
+  let ssr;
+  let doctype;
   if (buildConfig.plugins.includes('build-plugin-rax-multi-pages')) {
     mpa = true;
   }
   const pluginCore = buildConfig.plugins.find((plugin) => {
     return Array.isArray(plugin) && plugin[0] === 'build-plugin-rax-app';
   });
+  if (!pluginCore) {
+    throw new Error('This is not build-plugin-rax-app project!');
+  }
   const pluginCoreOptions = pluginCore[1] || {};
   buildConfig.plugins = deletePlugin(buildConfig.plugins, buildConfig.plugins.indexOf(pluginCore));
   builtInPlugins.forEach((pluginName) => {
     const index = buildConfig.plugins.indexOf(pluginName);
     if (index > -1) {
+      if (pluginName === 'build-plugin-rax-ssr') {
+        ssr = true;
+      }
       buildConfig.plugins = deletePlugin(buildConfig.plugins, index);
     }
   });
@@ -28,19 +36,25 @@ export default function (fileInfo) {
   }
   delete pluginCoreOptions.type;
 
-  // snapshot
+  if (Object.prototype.hasOwnProperty.call(pluginCoreOptions, 'doctype')) {
+    doctype = pluginCoreOptions.doctype;
+    delete pluginCoreOptions.doctype;
+  }
+
   const pwaPlugin = buildConfig.plugins.find((plugin) => {
     if (Array.isArray(plugin)) {
-      return plugin[0] === 'build-plugin-rax-pwa';
+      return plugin[0] === 'build-plugin-rax-pwa' || plugin[0] === 'build-plugin-rax-pha';
     } else {
-      return plugin === 'build-plugin-rax-pwa';
+      return plugin === 'build-plugin-rax-pwa' || plugin === 'build-plugin-rax-pha';
     }
   });
   if (Array.isArray(pwaPlugin)) {
     const pwaPluginOptions = pwaPlugin[1];
+    // snapshot
     if (Object.prototype.hasOwnProperty.call(pwaPluginOptions, 'snapshot')) {
       snapshot = pluginCoreOptions.snapshot;
     }
+    // serviceWorker
     if (pwaPluginOptions.serviceWorker) {
       console.error('rax-app 3.x 暂不支持 serviceWorker');
     }
@@ -62,7 +76,6 @@ export default function (fileInfo) {
     ...pluginCoreOptions,
     ...buildConfig,
   };
-  console.log('buildConfig', buildConfig);
 
   // web config
   if (buildConfig.targets.includes('web')) {
@@ -75,6 +88,12 @@ export default function (fileInfo) {
     }
     if (mpa) {
       buildConfig.web.mpa = true;
+    }
+    if (doctype !== undefined) {
+      buildConfig.web.doctype = doctype;
+    }
+    if (ssr !== undefined) {
+      buildConfig.web.ssr = ssr;
     }
     if (Object.prototype.hasOwnProperty.call(appJSON, 'hydrate')) {
       buildConfig.web.hydrate = appJSON.hydrate;
