@@ -4,7 +4,7 @@ import * as path from 'path';
 const builtInPlugins = ['build-plugin-rax-multi-pages', 'build-plugin-rax-ssr'];
 
 export default function (fileInfo) {
-  const appJSON = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'src/app.json')));
+  const appJSON = JSON.parse(fs.readFileSync(path.join(process.cwd(), path.dirname(fileInfo.path), 'src/app.json')));
   let buildConfig = JSON.parse(fileInfo.source);
   let staticExport = false;
   let snapshot = false;

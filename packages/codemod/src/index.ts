@@ -7,7 +7,7 @@ import expandFilePathsIfNeeded from './utils/expandFilePathsIfNeeded';
 
 const transformerDirectory = path.join(__dirname, '../lib', 'transforms');
 const jscodeshiftExecutable = require.resolve('.bin/jscodeshift');
-const baseIgnorePattern = 'node_modules/**|.vscode/**|abc.json|.rax/**|build/**';
+const baseIgnorePattern = '*(node_modules|.vscode|abc.json|.rax|build)';
 export default function run() {
   const cli = meow(
     {
@@ -81,17 +81,16 @@ function runTransform({ files, flags, transformer }) {
 
   args = args.concat(['--transform', transformerPath]);
 
+  args.push(`--ignore-pattern=${baseIgnorePattern}`);
+
   if (transformer === 'project') {
     args.push('--project=true');
-    args.push(`--ignore-pattern=(${baseIgnorePattern}|src/!(app.json))`);
+    args.push('--ignore-pattern=**/src/!(app.json|app.@(t|j)s?(x))/**');
     fs.writeFileSync(
       path.join(process.cwd(), files[0], 'tsconfig.json'),
       JSON.stringify(require('./utils/tsconfig.json'), null, 2),
     );
-  } else {
-    args.push(`--ignore-pattern=(${baseIgnorePattern})`);
   }
-
   if (flags.jscodeshift) {
     args = args.concat(flags.jscodeshift);
   }
