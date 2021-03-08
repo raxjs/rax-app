@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@alib/build-scripts": "^0.1.24",
-    "build-plugin-app-core": "1.3.0",
+    "build-plugin-app-core": "1.3.3",
     "build-plugin-ice-config": "1.8.0",
     "build-plugin-rax-store": "1.1.0",
     "build-plugin-rax-app": "6.2.8",
