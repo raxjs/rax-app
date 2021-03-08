@@ -4,6 +4,7 @@
 
 const chalk = require('chalk');
 const { RawSource } = require('webpack-sources');
+const cloneDeep = require('lodash.clonedeep');
 const { getMpaEntries } = require('@builder/app-helpers');
 const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers');
 
@@ -73,14 +74,14 @@ module.exports = class {
           target: 'web',
           appJsonContent: appConfig,
         });
-        const copyManifestJSON = Object.assign({}, manifestJSON);
         entries.filter(({ __frameIndex, __pageHeader }) => {
           if ((typeof __frameIndex !== 'undefined' && __frameIndex !== 0) || __pageHeader) {
             return false;
           }
           return true;
         }).forEach(({ source, entryName, __frameIndex }) => {
-          manifestJSON.pages = copyManifestJSON.pages.filter((page) => {
+          let copyManifestJSON = cloneDeep(manifestJSON);
+          copyManifestJSON.pages = copyManifestJSON.pages.filter((page) => {
             // has frames
             if (__frameIndex === 0) {
               return !!(page.frames && page.frames[0] && page.frames[0].source === source);
@@ -89,15 +90,15 @@ module.exports = class {
             }
           });
 
-          manifestJSON = setRealUrlToManifest({
+          copyManifestJSON = setRealUrlToManifest({
             urlPrefix: pagePrefix,
             urlSuffix: pageSuffix,
             cdnPrefix,
             isTemplate,
             inlineStyle,
             api,
-          }, manifestJSON);
-          compilation.assets[`${entryName}-manifest.json`] = new RawSource(JSON.stringify(manifestJSON, null, 2));
+          }, copyManifestJSON);
+          compilation.assets[`${entryName}-manifest.json`] = new RawSource(JSON.stringify(copyManifestJSON, null, 2));
 
           console.log(`  ${chalk.underline.white(`${cdnPrefix}${entryName}-manifest.json?pha=true`)}`);
         });
