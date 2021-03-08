@@ -1,3 +1,18 @@
+/**
+ *
+ * @param {array} targets
+ * @returns {boolean}
+ */
+function checkIsMiniappPlatformIncluded(targets = []) {
+  const miniappPlatforms = ['miniapp', 'wechat-miniprogram'];
+  for (let mp of miniappPlatforms) {
+    if (targets.includes(mp)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function getPromptQuestion(appTemplate) {
   const promptQuestion = [{
     type: 'list',
@@ -65,6 +80,28 @@ function getPromptQuestion(appTemplate) {
       }
       return targets;
     },
+  }, {
+    type: 'list',
+    name: 'miniappComponentBuildType',
+    default: 'compile',
+    message: 'What\'s your component build type for miniapp ?',
+    when(answers) {
+      // 组件工程且 targets 包含小程序端时，提供用户选择编译时或者运行时的选项
+      if (answers.projectType === 'component' && checkIsMiniappPlatformIncluded(answers.targets)) {
+        return true;
+      }
+      return false;
+    },
+    choices: [
+      {
+        name: 'compile mode (high preformance, recommended)',
+        value: 'compile',
+      },
+      {
+        name: 'runtime mode (with no syntax constraints)',
+        value: 'runtime',
+      }
+    ]
   }, {
     type: 'list',
     name: 'appType',

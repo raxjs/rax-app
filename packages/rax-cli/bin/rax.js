@@ -189,7 +189,7 @@ async function createProject(name, verbose, template, userAnswers) {
     process.chdir(rootDir);
   }
 
-  const { projectType = 'app', targets, appType, languageType } = userAnswers;
+  const { projectType = 'app', targets, appType, languageType, miniappComponentBuildType = 'compile' } = userAnswers;
   const registry = 'https://registry.npm.taobao.org';
 
   console.log(
@@ -252,6 +252,7 @@ async function createProject(name, verbose, template, userAnswers) {
       templateOptions: {
         npmName: 'rax-example',
         projectTargets: targets,
+        miniappComponentBuildType
       },
       materialType: 'component',
     });
