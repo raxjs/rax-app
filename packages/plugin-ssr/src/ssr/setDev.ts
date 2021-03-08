@@ -10,6 +10,7 @@ export default function (api, config) {
 
   config.devServer.inline(false);
   config.devServer.hot(false);
+  // It will override all devServer before func
   config.devServer.set('before', (app, server) => {
     let compilerDoneCount = 0;
     server.compiler.compilers.forEach((compiler) => {
