@@ -1,10 +1,12 @@
 const callbacks = [];
-let enableListen = false;
+let cacheAssets = {};
+let enableStatus = false;
 
 function emit(assets) {
+  cacheAssets = assets;
   let fn;
   // eslint-disable-next-line no-cond-assign
-  while (fn = callbacks.pop()) {
+  while ((fn = callbacks.pop())) {
     fn(assets);
   }
 }
@@ -15,21 +17,20 @@ function listen(callback) {
 
 function registerListenTask() {
   return new Promise((resolve) => {
-    if (enableListen) {
-      listen(resolve);
-    } else {
-      resolve({});
-    }
+    listen(resolve);
   });
 }
 
-function updateEnableStatus(val: boolean) {
-  enableListen = val;
+function getAssets() {
+  return cacheAssets;
 }
 
-export {
-  emit,
-  listen,
-  registerListenTask,
-  updateEnableStatus,
-};
+function updateEnableStatus(val: boolean) {
+  enableStatus = val;
+}
+
+function getEnableStatus() {
+  return enableStatus;
+}
+
+export { emit, listen, registerListenTask, getAssets, updateEnableStatus, getEnableStatus };

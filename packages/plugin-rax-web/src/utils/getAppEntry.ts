@@ -11,5 +11,8 @@ function moduleResolve(filePath) {
 }
 
 export default function (rootDir) {
-  return moduleResolve(formatPath(path.join(rootDir, './src/app')));
+  return {
+    entryName: 'index',
+    entryPath: moduleResolve(formatPath(path.join(rootDir, './src/app'))),
+  };
 }
