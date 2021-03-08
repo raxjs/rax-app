@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as Module from 'module';
 import * as cheerio from 'cheerio';
-import { registerListenTask, getAssets } from '../utils/localBuildCache';
+import { registerListenTask, getAssets, getNeedWaiting, updateNeedWaiting } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
 import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
 
@@ -12,7 +12,6 @@ export default class DocumentPlugin {
   init: boolean;
   constructor(options) {
     this.options = options;
-    this.init = false;
   }
   apply(compiler) {
     const {
@@ -31,12 +30,14 @@ export default class DocumentPlugin {
     const publicPath = this.options.publicPath || compiler.options.output.publicPath;
     insertCommonElements(staticConfig);
 
-    const localBuildTask = registerListenTask();
+    let localBuildTask = registerListenTask();
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, async (compilation, callback) => {
-      if (!this.init) {
-        this.init = true;
+      const needWaiting: boolean = getNeedWaiting();
+      if (needWaiting) {
+        updateNeedWaiting(false);
         localBuildTask.then(emitAssets);
+        localBuildTask = registerListenTask();
       } else {
         emitAssets(getAssets());
       }

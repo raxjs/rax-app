@@ -1,8 +1,10 @@
 import { getMpaEntries } from '@builder/app-helpers';
 import * as qs from 'qs';
+import * as fs from 'fs';
+import * as chokidar from 'chokidar';
 import LocalBuilderPlugin from './Plugins/LocalBuilderPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
-import { updateEnableStatus } from './utils/localBuildCache';
+import { updateEnableStatus, updateNeedWaiting } from './utils/localBuildCache';
 import getAppEntry from './utils/getAppEntry';
 
 export default (api, documentPath?: string | undefined) => {
@@ -10,6 +12,7 @@ export default (api, documentPath?: string | undefined) => {
   const {
     userConfig: { inlineStyle, compileDependencies, web: webConfig = {} },
     rootDir,
+    command,
   } = context;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
@@ -32,6 +35,8 @@ export default (api, documentPath?: string | undefined) => {
 
   // enable listen local build result
   updateEnableStatus(true);
+  // let web task know, it need waiting local builder task
+  updateNeedWaiting(true);
 
   baseConfig.plugin('LocalBuilderPlugin').use(LocalBuilderPlugin);
 
@@ -59,17 +64,41 @@ export default (api, documentPath?: string | undefined) => {
       entries = [getAppEntry(rootDir)];
     }
 
+    // Watch document change and rewrite page entry file
+    if (command === 'start' && documentPath) {
+      addReloadByDocumentChange(rootDir, entries);
+    }
+
     config.output.filename('[name].js');
 
     entries.forEach(({ entryName, entryPath }) => {
-      config
-        .entry(entryName)
-        .add(
-          `${require.resolve('./Loaders/render-loader')}?${qs.stringify({
-            documentPath,
-            staticExport: webConfig.staticExport,
-          })}!${entryPath}`,
-        );
+      let entry = entryPath;
+      if (documentPath) {
+        entry = documentPath;
+      }
+      config.entry(entryName).add(
+        `${require.resolve('./Loaders/render-loader')}?${qs.stringify({
+          documentPath,
+          entryPath,
+          staticExport: webConfig.staticExport,
+        })}!${entry}`,
+      );
     });
   });
 };
+
+function addReloadByDocumentChange(rootDir, entries) {
+  const watcher = chokidar.watch(`${rootDir}/src/document/index.@(tsx|js?(x))`, {
+    ignoreInitial: true,
+  });
+  watcher.on('change', () => {
+    updateNeedWaiting(true);
+    const contents = entries.map(({ entryPath }) => ({
+      entryPath,
+      content: fs.readFileSync(entryPath, { encoding: 'utf-8' }),
+    }));
+    contents.forEach(({ entryPath, content }) => {
+      fs.writeFileSync(entryPath, content);
+    });
+  });
+}
