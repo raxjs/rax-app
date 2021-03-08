@@ -5,7 +5,7 @@
  */
 function checkIsMiniappPlatformIncluded(targets = []) {
   const miniappPlatforms = ['miniapp', 'wechat-miniprogram'];
-  for (let mp of miniappPlatforms) {
+  for (const mp of miniappPlatforms) {
     if (targets.includes(mp)) {
       return true;
     }
@@ -100,8 +100,8 @@ function getPromptQuestion(appTemplate) {
       {
         name: 'runtime mode (with no syntax constraints)',
         value: 'runtime',
-      }
-    ]
+      },
+    ],
   }, {
     type: 'list',
     name: 'appType',
