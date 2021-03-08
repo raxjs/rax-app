@@ -7,16 +7,16 @@ export default function (fileInfo, api, options) {
   let source;
   switch (fileInfo.path) {
     case 'package.json':
-      source = transformPkgJSON(fileInfo, api, options);
+      source = transformPkgJSON(fileInfo);
       break;
     case 'build.json':
       source = transformBuildConfig(fileInfo, api, options);
       break;
     case 'src/app.json':
-      source = transformAppJSON(fileInfo, api, options);
+      source = transformAppJSON(fileInfo);
       break;
     case '.eslintrc.js':
-      source = transformEslint(fileInfo, api, options);
+      source = transformEslint();
       break;
     default:
       source = fileInfo.source;

@@ -32,7 +32,7 @@ const devAddDepList = [
   },
 ];
 
-export default function (fileInfo, api, options) {
+export default function (fileInfo) {
   const pkg = JSON.parse(fileInfo.source);
   depDeleteList.forEach((pkgName) => delete pkg.dependencies[pkgName]);
   devDepDeleteList.forEach((pkgName) => delete pkg.devDependencies[pkgName]);
