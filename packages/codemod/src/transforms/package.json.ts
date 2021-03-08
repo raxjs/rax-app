@@ -7,6 +7,8 @@ const devDepDeleteList = [
   'eslint-plugin-import',
   'eslint-plugin-module',
   'eslint-plugin-react',
+  'build-plugin-rax-multi-pages',
+  'build-plugin-rax-ssr',
 ];
 
 const devAddDepList = [
@@ -38,6 +40,16 @@ export default function (fileInfo) {
   devDepDeleteList.forEach((pkgName) => delete pkg.devDependencies[pkgName]);
   devAddDepList.forEach(({ name, version }) => {
     pkg[name] = version;
+  });
+
+  if (pkg.devDependencies['@ali/build-plugin-rax-app-def']) {
+    pkg.devDependencies['@ali/build-plugin-rax-app-def'] = '^3.0.0';
+  }
+
+  Object.keys(pkg.scripts).forEach((command) => {
+    pkg.scripts[command] = pkg.scripts[command]
+      .replace('build-scripts build', 'rax-app build')
+      .replace('build-scripts start', 'rax-app start');
   });
 
   return JSON.stringify(pkg, null, 2);
