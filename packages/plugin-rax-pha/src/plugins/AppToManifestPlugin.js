@@ -2,10 +2,14 @@
  * app.json to manifest.json plugin
  */
 
+const chalk = require('chalk');
 const { RawSource } = require('webpack-sources');
+const cloneDeep = require('lodash.clonedeep');
+const { getMpaEntries } = require('@builder/app-helpers');
 const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers');
 
 const PLUGIN_NAME = 'PHA_AppToManifestPlugin';
+const highlightPrint = chalk.hex('#F4AF3D');
 
 module.exports = class {
   constructor(options) {
@@ -49,15 +53,58 @@ module.exports = class {
         pagePrefix = cdnPrefix;
         pageSuffix = '.html';
       }
-      manifestJSON = setRealUrlToManifest({
-        urlPrefix: pagePrefix,
-        urlSuffix: pageSuffix,
-        cdnPrefix,
-        isTemplate,
-        inlineStyle,
-        api,
-      }, manifestJSON);
-      compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON, null, 2));
+
+      isStart && console.log(highlightPrint('  [PHA] Development server at: '));
+      // if has tabBar, do not generate multiple manifest.json
+      if (manifestJSON.tab_bar) {
+        manifestJSON = setRealUrlToManifest({
+          urlPrefix: pagePrefix,
+          urlSuffix: pageSuffix,
+          cdnPrefix,
+          isTemplate,
+          inlineStyle,
+          api,
+        }, manifestJSON);
+
+        compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON, null, 2));
+
+        isStart && console.log(`  ${chalk.underline.white(`${cdnPrefix}manifest.json?pha=true`)}`);
+      } else {
+        const entries = getMpaEntries(api, {
+          target: 'web',
+          appJsonContent: appConfig,
+        });
+        entries.filter(({ __frameIndex, __pageHeader }) => {
+          if ((typeof __frameIndex !== 'undefined' && __frameIndex !== 0) || __pageHeader) {
+            return false;
+          }
+          return true;
+        }).forEach(({ source, entryName, __frameIndex }) => {
+          let copyManifestJSON = cloneDeep(manifestJSON);
+          copyManifestJSON.pages = copyManifestJSON.pages.filter((page) => {
+            // has frames
+            if (__frameIndex === 0) {
+              return !!(page.frames && page.frames[0] && page.frames[0].source === source);
+            } else {
+              return page.source === source;
+            }
+          });
+
+          copyManifestJSON = setRealUrlToManifest({
+            urlPrefix: pagePrefix,
+            urlSuffix: pageSuffix,
+            cdnPrefix,
+            isTemplate,
+            inlineStyle,
+            api,
+          }, copyManifestJSON);
+          compilation.assets[`${entryName}-manifest.json`] = new RawSource(JSON.stringify(copyManifestJSON, null, 2));
+
+          isStart && console.log(`  ${chalk.underline.white(`${cdnPrefix}${entryName}-manifest.json?pha=true`)}`);
+        });
+      }
+
+      isStart && console.log();
       callback();
     });
   }
