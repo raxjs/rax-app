@@ -1,7 +1,6 @@
 const callbacks = [];
 let cacheAssets = {};
 let enableStatus = false;
-let needWaiting = false;
 
 function emit(assets) {
   cacheAssets = assets;
@@ -34,12 +33,8 @@ function updateEnableStatus(val: boolean) {
   enableStatus = val;
 }
 
-function getNeedWaiting(): boolean {
-  return needWaiting;
+function getEnableStatus() {
+  return enableStatus;
 }
 
-function updateNeedWaiting(val: boolean) {
-  needWaiting = val;
-}
-
-export { emit, listen, registerListenTask, getAssets, updateEnableStatus, getNeedWaiting, updateNeedWaiting };
+export { emit, listen, registerListenTask, getAssets, updateEnableStatus, getEnableStatus };

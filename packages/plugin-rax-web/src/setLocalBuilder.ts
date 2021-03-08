@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as chokidar from 'chokidar';
 import LocalBuilderPlugin from './Plugins/LocalBuilderPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
-import { updateEnableStatus, updateNeedWaiting } from './utils/localBuildCache';
+import { updateEnableStatus } from './utils/localBuildCache';
 import getAppEntry from './utils/getAppEntry';
 
 export default (api, documentPath?: string | undefined) => {
@@ -35,8 +35,6 @@ export default (api, documentPath?: string | undefined) => {
 
   // enable listen local build result
   updateEnableStatus(true);
-  // let web task know, it need waiting local builder task
-  updateNeedWaiting(true);
 
   baseConfig.plugin('LocalBuilderPlugin').use(LocalBuilderPlugin);
 
@@ -90,9 +88,10 @@ export default (api, documentPath?: string | undefined) => {
 function addReloadByDocumentChange(rootDir, entries) {
   const watcher = chokidar.watch(`${rootDir}/src/document/index.@(tsx|js?(x))`, {
     ignoreInitial: true,
+    atomic: 300,
   });
   watcher.on('change', () => {
-    updateNeedWaiting(true);
+    updateEnableStatus(true);
     const contents = entries.map(({ entryPath }) => ({
       entryPath,
       content: fs.readFileSync(entryPath, { encoding: 'utf-8' }),
