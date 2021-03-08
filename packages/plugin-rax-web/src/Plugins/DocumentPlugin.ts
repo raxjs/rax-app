@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as Module from 'module';
 import * as cheerio from 'cheerio';
-import { registerListenTask } from '../utils/localBuildCache';
+import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
 import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
 
@@ -9,6 +9,7 @@ const PLUGIN_NAME = 'DocumentPlugin';
 const { RawSource } = webpackSources;
 export default class DocumentPlugin {
   options: any;
+  init: boolean;
   constructor(options) {
     this.options = options;
   }
@@ -18,23 +19,29 @@ export default class DocumentPlugin {
       staticConfig,
       api: {
         context: {
-          userConfig: { web = {} },
+          userConfig: { web: webConfig },
         },
       },
       documentPath,
       insertScript,
     } = this.options;
+    const { mpa, doctype = '<!DOCTYPE html>' } = webConfig || {};
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
     const publicPath = this.options.publicPath || compiler.options.output.publicPath;
-    const doctype = web.doctype || '<!DOCTYPE html>';
     insertCommonElements(staticConfig);
 
     let localBuildTask = registerListenTask();
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, async (compilation, callback) => {
-      localBuildTask.then((localBuildAssets) => {
-        // update local build task
+      const enableStatus: boolean = getEnableStatus();
+      if (enableStatus) {
+        updateEnableStatus(false);
+        localBuildTask.then(emitAssets);
         localBuildTask = registerListenTask();
+      } else {
+        emitAssets(getAssets());
+      }
+      function emitAssets(localBuildAssets) {
         const injectedHTML = getInjectedHTML();
         if (insertScript) {
           injectedHTML.scripts.push(`<script>${insertScript}</script>`);
@@ -44,7 +51,7 @@ export default class DocumentPlugin {
           const assets = getAssetsForPage(buildResult, publicPath);
           const title = getTitleByStaticConfig(staticConfig, {
             entryName,
-            mpa: web.mpa,
+            mpa,
           });
           let html = '';
           if (documentPath && localBuildAssets[`${entryName}.js`]) {
@@ -82,7 +89,7 @@ export default class DocumentPlugin {
         });
 
         callback();
-      });
+      }
     });
   }
 }
