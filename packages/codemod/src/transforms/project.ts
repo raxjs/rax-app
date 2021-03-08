@@ -3,14 +3,14 @@ import transformPkgJSON from './package.json';
 import transformAppJSON from './app.json';
 import transformEslint from './eslint';
 
-export default function (fileInfo, api, options) {
+export default function (fileInfo) {
   let source;
   switch (fileInfo.path) {
     case 'package.json':
       source = transformPkgJSON(fileInfo);
       break;
     case 'build.json':
-      source = transformBuildConfig(fileInfo, api, options);
+      source = transformBuildConfig(fileInfo);
       break;
     case 'src/app.json':
       source = transformAppJSON(fileInfo);

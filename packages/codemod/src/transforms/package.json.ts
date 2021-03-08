@@ -9,6 +9,7 @@ const devDepDeleteList = [
   'eslint-plugin-react',
   'build-plugin-rax-multi-pages',
   'build-plugin-rax-ssr',
+  'build-plugin-rax-pwa',
 ];
 
 const devAddDepList = [
@@ -31,6 +32,10 @@ const devAddDepList = [
   {
     name: 'rax-app',
     version: '^3.0.0',
+  },
+  {
+    name: '@ali/build-plugin-rax-faas',
+    version: '^4.0.0',
   },
 ];
 
