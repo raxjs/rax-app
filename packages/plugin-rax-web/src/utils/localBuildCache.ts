@@ -17,11 +17,7 @@ function listen(callback) {
 
 function registerListenTask() {
   return new Promise((resolve) => {
-    if (enableStatus) {
-      listen(resolve);
-    } else {
-      resolve(cacheAssets);
-    }
+    listen(resolve);
   });
 }
 
