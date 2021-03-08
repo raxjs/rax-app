@@ -54,7 +54,7 @@ module.exports = class {
         pageSuffix = '.html';
       }
 
-      console.log(highlightPrint('  [PHA] Development server at: '));
+      isStart && console.log(highlightPrint('  [PHA] Development server at: '));
       // if has tabBar, do not generate multiple manifest.json
       if (manifestJSON.tab_bar) {
         manifestJSON = setRealUrlToManifest({
@@ -68,7 +68,7 @@ module.exports = class {
 
         compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON, null, 2));
 
-        console.log(`  ${chalk.underline.white(`${cdnPrefix}manifest.json?pha=true`)}`);
+        isStart && console.log(`  ${chalk.underline.white(`${cdnPrefix}manifest.json?pha=true`)}`);
       } else {
         const entries = getMpaEntries(api, {
           target: 'web',
@@ -100,11 +100,11 @@ module.exports = class {
           }, copyManifestJSON);
           compilation.assets[`${entryName}-manifest.json`] = new RawSource(JSON.stringify(copyManifestJSON, null, 2));
 
-          console.log(`  ${chalk.underline.white(`${cdnPrefix}${entryName}-manifest.json?pha=true`)}`);
+          isStart && console.log(`  ${chalk.underline.white(`${cdnPrefix}${entryName}-manifest.json?pha=true`)}`);
         });
       }
 
-      console.log();
+      isStart && console.log();
       callback();
     });
   }

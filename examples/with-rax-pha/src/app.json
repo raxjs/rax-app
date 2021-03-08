@@ -14,6 +14,14 @@
           "source": "pages/About/index"
         }
       ]
+    },
+    {
+      "path": "/home-single",
+      "source": "pages/Home-Single/index"
+    },
+    {
+      "path": "/about-single",
+      "source": "pages/About-Single/index"
     }
   ],
   "window": {
