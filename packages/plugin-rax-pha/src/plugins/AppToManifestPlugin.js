@@ -2,14 +2,13 @@
  * app.json to manifest.json plugin
  */
 
-const chalk = require('chalk');
 const { RawSource } = require('webpack-sources');
 const cloneDeep = require('lodash.clonedeep');
 const { getMpaEntries } = require('@builder/app-helpers');
 const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers');
+const { setPHADevUrls } = require('../phaDevUrls');
 
 const PLUGIN_NAME = 'PHA_AppToManifestPlugin';
-const highlightPrint = chalk.hex('#F4AF3D');
 
 module.exports = class {
   constructor(options) {
@@ -23,19 +22,27 @@ module.exports = class {
       builtInLibrary,
       appWorkerPath,
     } = this.options;
+
+    const { context, getValue } = api;
+    const { command, userConfig = {} } = context;
+    const { inlineStyle } = userConfig;
+    const isStart = command === 'start';
+
     let {
       cdnPrefix = '',
       pagePrefix = '',
       pageSuffix,
     } = this.options;
-    const { context, getValue } = api;
-    const { command, userConfig = {} } = context;
-    const { inlineStyle } = userConfig;
+    if (isStart) {
+      cdnPrefix = `${getValue('devUrlPrefix')}/`;
+      pagePrefix = cdnPrefix;
+      pageSuffix = '.html';
+    }
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
       const appConfig = getValue('staticConfig');
       let manifestJSON = transformAppConfig(appConfig);
-      const isStart = command === 'start';
+      const devUrls = [];
 
       if (appWorkerPath) {
         manifestJSON.app_worker = manifestJSON.app_worker || {};
@@ -48,13 +55,7 @@ module.exports = class {
       if (builtInLibrary && builtInLibrary.length > 0) {
         manifestJSON.built_in_library = builtInLibrary;
       }
-      if (isStart) {
-        cdnPrefix = `${getValue('devUrlPrefix')}/`;
-        pagePrefix = cdnPrefix;
-        pageSuffix = '.html';
-      }
 
-      isStart && console.log(highlightPrint('  [PHA] Development server at: '));
       // if has tabBar, do not generate multiple manifest.json
       if (manifestJSON.tab_bar) {
         manifestJSON = setRealUrlToManifest({
@@ -68,7 +69,7 @@ module.exports = class {
 
         compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON, null, 2));
 
-        isStart && console.log(`  ${chalk.underline.white(`${cdnPrefix}manifest.json?pha=true`)}`);
+        devUrls.push(`${cdnPrefix}manifest.json?pha=true`);
       } else {
         const entries = getMpaEntries(api, {
           target: 'web',
@@ -100,11 +101,14 @@ module.exports = class {
           }, copyManifestJSON);
           compilation.assets[`${entryName}-manifest.json`] = new RawSource(JSON.stringify(copyManifestJSON, null, 2));
 
-          isStart && console.log(`  ${chalk.underline.white(`${cdnPrefix}${entryName}-manifest.json?pha=true`)}`);
+          devUrls.push(`${cdnPrefix}${entryName}-manifest.json?pha=true`);
         });
       }
 
-      isStart && console.log();
+      if (isStart) {
+        setPHADevUrls(devUrls);
+      }
+
       callback();
     });
   }
