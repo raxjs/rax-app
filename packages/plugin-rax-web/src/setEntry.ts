@@ -10,7 +10,7 @@ export default (config, context) => {
 
   if (!web.mpa) {
     // SPA
-    const appEntry = getAppEntry(rootDir);
+    const { entryPath } = getAppEntry(rootDir);
     const entryConfig = config.entry('index');
 
     config.module.rule('appJSON').use('loader');
@@ -18,7 +18,7 @@ export default (config, context) => {
     if (isDev) {
       entryConfig.add(require.resolve('react-dev-utils/webpackHotDevClient'));
     }
-    entryConfig.add(appEntry);
+    entryConfig.add(entryPath);
   }
 };
 
