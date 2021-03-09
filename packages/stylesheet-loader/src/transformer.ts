@@ -1,4 +1,4 @@
-import camelCase from 'camelcase';
+import * as camelCase from 'camelcase';
 import chalk from 'chalk';
 import normalizeColor from './normalizeColor';
 import particular from './particular';
