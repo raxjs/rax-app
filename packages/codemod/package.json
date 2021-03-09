@@ -1,7 +1,7 @@
 {
-  "name": "rax-app-codemod",
+  "name": "rax-codemod",
   "version": "1.0.0",
-  "description": "Rax App codemod scripts",
+  "description": "Rax codemod scripts",
   "license": "MIT",
   "main": "lib/index.js",
   "repository": {

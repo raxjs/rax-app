@@ -11,10 +11,10 @@ const baseIgnorePattern = '*(node_modules|.vscode|abc.json|.rax|build)';
 export default function run() {
   const cli = meow(
     {
-      description: 'Codemods for updating Rax App.',
+      description: 'Codemods for updating Rax.',
       help: `
     Usage
-      $ npx rax-app-codemod <transform> <path> <...options>
+      $ npx rax-codemod <transform> <path> <...options>
         transform    One of the choices from https://github.com/raxjs/blob/master/packages/codemod
         path         Files or directory to transform. Can be a glob like src/**.test.js
     Options
@@ -58,8 +58,6 @@ export default function run() {
 }
 
 function runTransform({ files, flags, transformer }) {
-  const transformerPath = path.join(transformerDirectory, `${transformer}.js`);
-
   let args = [];
 
   const { dry, print, explicitRequire } = flags;
@@ -79,11 +77,11 @@ function runTransform({ files, flags, transformer }) {
 
   args.push('--extensions=tsx,ts,jsx,js,json');
 
-  args = args.concat(['--transform', transformerPath]);
-
   args.push(`--ignore-pattern=${baseIgnorePattern}`);
 
   if (transformer === 'project') {
+    const transformerPath = path.join(transformerDirectory, 'app', `${transformer}.js`);
+    args = args.concat(['--transform', transformerPath]);
     args.push('--project=true');
     args.push('--ignore-pattern=**/src/!(app.json|app.@(t|j)s?(x))/**');
     fs.writeFileSync(
