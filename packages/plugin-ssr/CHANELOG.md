@@ -1,3 +1,9 @@
+# Changelog
+
+## v1.3.2
+
+- Chore: it won't execute original dev server
+
 ## v1.3.1
 
 - Feat: add `injectServerSideData` in app.json
