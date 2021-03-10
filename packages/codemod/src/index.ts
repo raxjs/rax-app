@@ -68,10 +68,10 @@ function runTransform(options) {
   let args = [];
 
   const { dry, print, explicitRequire } = flags;
-  if (!dry) {
+  if (dry) {
     args.push('--dry');
   }
-  if (!print) {
+  if (print) {
     args.push('--print');
   }
 

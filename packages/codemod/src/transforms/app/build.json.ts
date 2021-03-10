@@ -80,37 +80,50 @@ export default function (fileInfo) {
     ...buildConfig,
   };
 
-  // web config
-  if (buildConfig.targets.includes('web')) {
-    buildConfig.web = {};
-    if (staticExport) {
-      buildConfig.web.staticExport = staticExport;
+  buildConfig.targets.forEach((target) => {
+    switch (target) {
+      // web config
+      case 'web':
+        buildConfig.web = {};
+        if (staticExport) {
+          buildConfig.web.staticExport = staticExport;
+        }
+        if (snapshot) {
+          buildConfig.web.snapshot = snapshot;
+        }
+        if (mpa) {
+          buildConfig.web.mpa = true;
+        }
+        if (doctype !== undefined) {
+          buildConfig.web.doctype = doctype;
+        }
+        if (ssr !== undefined) {
+          buildConfig.web.ssr = ssr;
+        }
+        if (Object.prototype.hasOwnProperty.call(appJSON, 'hydrate')) {
+          buildConfig.web.hydrate = appJSON.hydrate;
+        }
+        break;
+      // weex config
+      case 'weex':
+        if (mpa) {
+          buildConfig.weex = {
+            mpa: true,
+          };
+        }
+        break;
+      // miniapp
+      case 'miniapp':
+      case 'wechat-miniprogram':
+        if (!buildConfig[target]) {
+          buildConfig[target] = {
+            buildType: 'compile',
+          };
+        }
+        break;
+      default:
     }
-    if (snapshot) {
-      buildConfig.web.snapshot = snapshot;
-    }
-    if (mpa) {
-      buildConfig.web.mpa = true;
-    }
-    if (doctype !== undefined) {
-      buildConfig.web.doctype = doctype;
-    }
-    if (ssr !== undefined) {
-      buildConfig.web.ssr = ssr;
-    }
-    if (Object.prototype.hasOwnProperty.call(appJSON, 'hydrate')) {
-      buildConfig.web.hydrate = appJSON.hydrate;
-    }
-  }
-
-  // weex config
-  if (buildConfig.targets.includes('weex')) {
-    if (mpa) {
-      buildConfig.weex = {
-        mpa: true,
-      };
-    }
-  }
+  });
 
   return JSON.stringify(buildConfig, null, 2);
 }

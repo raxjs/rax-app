@@ -4,7 +4,8 @@ import transformPkgJSON from './package.json';
 import transformAppJSON from './app.json';
 import transformEslint from './eslint';
 
-export default function (fileInfo) {
+export default function (fileInfo, api, options) {
+  console.log('options===>', options);
   let source;
   switch (path.basename(fileInfo.path)) {
     case 'package.json':
