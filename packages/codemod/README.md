@@ -8,7 +8,7 @@ This repository contains a collection of codemod scripts for use with [JSCodeshi
 npx rax-codemod <transform> <path> <...options>
 ```
 
-- `transform` - name of transform, see available transforms below.
+- `transform` - name of transform, see available transforms below, default value is `app`.
 - `path` - files or directory to transform, default value is current dir.
 
 ### Included Transforms
@@ -18,5 +18,5 @@ npx rax-codemod <transform> <path> <...options>
 Converts `build-plugin-rax-app@0.x` ~ `build-plugin-rax-app@5.x` into `rax-app@3.x`.
 
 ```bash
-npx rax-codemod project <path>
+npx rax-codemod
 ```
