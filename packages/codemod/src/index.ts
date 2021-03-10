@@ -1,11 +1,9 @@
 import * as meow from 'meow';
-import * as path from 'path';
 import * as execa from 'execa';
-import * as fs from 'fs-extra';
+import * as chalk from 'chalk';
 import checkGitStatus from './utils/checkGitStatus';
 import expandFilePathsIfNeeded from './utils/expandFilePathsIfNeeded';
 
-const transformerDirectory = path.join(__dirname, '../lib', 'transforms');
 const jscodeshiftExecutable = require.resolve('.bin/jscodeshift');
 const baseIgnorePattern = '*(node_modules|.vscode|abc.json|.rax|build)';
 export default function run() {
@@ -40,32 +38,40 @@ export default function run() {
   const filesBeforeExpansion = cli.input[1] || '.';
   const filesExpanded = expandFilePathsIfNeeded([filesBeforeExpansion]);
 
-  const selectedTransformer = cli.input[0] || 'project';
+  const selectedTransformer = cli.input[0] || 'app';
 
   if (!filesExpanded.length) {
     console.log(`No files found matching ${filesBeforeExpansion.join(' ')}`);
     return null;
   }
-  console.log('cli.flags=====>', cli.flags);
-  console.log('selectedTransformer====>', selectedTransformer);
-  console.log('filesExpanded====>', filesExpanded);
 
-  return runTransform({
+  return loadTransform({
     files: filesExpanded,
     flags: cli.flags,
     transformer: selectedTransformer,
   });
 }
 
-function runTransform({ files, flags, transformer }) {
+function loadTransform(options) {
+  const { transformer } = options;
+  const { beforeTransform, afterTransform } = require(`./hooks/${transformer}`);
+  return runTransform({
+    ...options,
+    beforeTransform,
+    afterTransform,
+  });
+}
+
+function runTransform(options) {
+  const { files, flags, beforeTransform, afterTransform } = options;
+
   let args = [];
 
   const { dry, print, explicitRequire } = flags;
-
-  if (dry) {
+  if (!dry) {
     args.push('--dry');
   }
-  if (print) {
+  if (!print) {
     args.push('--print');
   }
 
@@ -79,25 +85,26 @@ function runTransform({ files, flags, transformer }) {
 
   args.push(`--ignore-pattern=${baseIgnorePattern}`);
 
-  if (transformer === 'project') {
-    const transformerPath = path.join(transformerDirectory, 'app', `${transformer}.js`);
-    args = args.concat(['--transform', transformerPath]);
-    args.push('--project=true');
-    args.push('--ignore-pattern=**/src/!(app.json|app.@(t|j)s?(x))/**');
-    fs.writeFileSync(
-      path.join(process.cwd(), files[0], 'tsconfig.json'),
-      JSON.stringify(require('./utils/tsconfig.json'), null, 2),
-    );
-  }
+  args = beforeTransform(args, options).args;
+
   if (flags.jscodeshift) {
     args = args.concat(flags.jscodeshift);
   }
 
   args = args.concat(files);
 
-  console.log(`Executing command: jscodeshift ${args.join(' ')}`);
-
   execa.sync(jscodeshiftExecutable, args, {
     stdio: 'inherit',
   });
+
+  console.log();
+
+  afterTransform(options);
+
+  console.log();
+  console.log(
+    chalk.green(
+      'Thanks for using rax-codemod, if you have any problem after migrating Rax related project, report it by https://github.com/alibaba/rax/issues.',
+    ),
+  );
 }

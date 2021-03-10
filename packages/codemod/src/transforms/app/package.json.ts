@@ -40,6 +40,14 @@ const updateDevList = [
     name: '@ali/build-plugin-rax-faas',
     version: '^4.0.0',
   },
+  {
+    name: '@ali/build-plugin-rax-app-def',
+    version: '^3.0.0',
+  },
+  {
+    name: 'build-plugin-rax-compat-react',
+    version: '^1.0.0',
+  },
 ];
 
 export default function (fileInfo) {
@@ -54,10 +62,6 @@ export default function (fileInfo) {
       pkg.devDependencies[name] = version;
     }
   });
-
-  if (pkg.devDependencies['@ali/build-plugin-rax-app-def']) {
-    pkg.devDependencies['@ali/build-plugin-rax-app-def'] = '^3.0.0';
-  }
 
   Object.keys(pkg.scripts).forEach((command) => {
     pkg.scripts[command] = pkg.scripts[command]

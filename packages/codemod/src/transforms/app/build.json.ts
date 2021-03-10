@@ -6,6 +6,14 @@ const builtInPlugins = ['build-plugin-rax-multi-pages', 'build-plugin-rax-ssr'];
 export default function (fileInfo) {
   const appJSON = JSON.parse(fs.readFileSync(path.join(process.cwd(), path.dirname(fileInfo.path), 'src/app.json')));
   let buildConfig = JSON.parse(fileInfo.source);
+
+  const pluginCore = buildConfig?.plugins.find((plugin) => {
+    return Array.isArray(plugin) && plugin[0] === 'build-plugin-rax-app';
+  });
+  if (!pluginCore) {
+    return fileInfo.source;
+  }
+
   let staticExport = false;
   let snapshot = false;
   let mpa = false;
@@ -14,12 +22,7 @@ export default function (fileInfo) {
   if (buildConfig.plugins.includes('build-plugin-rax-multi-pages')) {
     mpa = true;
   }
-  const pluginCore = buildConfig.plugins.find((plugin) => {
-    return Array.isArray(plugin) && plugin[0] === 'build-plugin-rax-app';
-  });
-  if (!pluginCore) {
-    throw new Error('This is not build-plugin-rax-app project!');
-  }
+
   const pluginCoreOptions = pluginCore[1] || {};
   buildConfig.plugins = deletePlugin(buildConfig.plugins, buildConfig.plugins.indexOf(pluginCore));
   builtInPlugins.forEach((pluginName) => {

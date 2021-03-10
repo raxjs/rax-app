@@ -13,7 +13,7 @@ npx rax-codemod <transform> <path> <...options>
 
 ### Included Transforms
 
-#### `project`
+#### `app`
 
 Converts `build-plugin-rax-app@0.x` ~ `build-plugin-rax-app@5.x` into `rax-app@3.x`.
 

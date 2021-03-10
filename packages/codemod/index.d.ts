@@ -1,5 +1,5 @@
 declare module 'chalk' {
-  export const hex: any;
+  export const green: any;
   export const underline: any;
   export const yellow: any;
 }
