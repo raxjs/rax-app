@@ -25,7 +25,7 @@ export function beforeTransform(args, options) {
     customConfigPaths.forEach((customConfigPath) => {
       args.push(`--customBuildJSON=${customConfigPath}`);
     });
-  // eslint-disable-next-line no-empty
+    // eslint-disable-next-line no-empty
   } catch (err) {}
   return {
     args,
@@ -43,4 +43,24 @@ export function afterTransform(options) {
 
   // Rewrite .gitignore
   additionalContent(path.join(rootDir, '.gitignore'), '.rax', path.join(libDirectory, 'templates/gitignore.txt'));
+
+  // Rewrite prettier
+  fs.writeFileSync(
+    path.join(rootDir, '.prettierignore'),
+    fs.readFileSync(path.join(libDirectory, 'templates/prettierignore.txt')),
+  );
+  fs.writeFileSync(
+    path.join(rootDir, 'prettierrc.js'),
+    fs.readFileSync(path.join(libDirectory, 'templates/prettierrc.js')),
+  );
+
+  // Rewrite style lint
+  fs.writeFileSync(
+    path.join(rootDir, '.stylelintignore'),
+    fs.readFileSync(path.join(libDirectory, 'templates/stylelintignore.txt')),
+  );
+  fs.writeFileSync(
+    path.join(rootDir, 'stylelintrc.js'),
+    fs.readFileSync(path.join(libDirectory, 'templates/stylelintrc.js')),
+  );
 }

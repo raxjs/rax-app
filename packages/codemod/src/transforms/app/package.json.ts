@@ -50,6 +50,25 @@ const updateDevList = [
   },
 ];
 
+const extraScripts = [
+  {
+    name: 'eslint',
+    command: 'eslint --ext .js,.jsx ./',
+  },
+  {
+    name: 'stylelint',
+    command: 'stylelint "**/*.{css,scss,less}"',
+  },
+  {
+    name: 'prettier',
+    command: 'prettier **/* --write',
+  },
+  {
+    name: 'lint',
+    command: 'npm run eslint && npm run stylelint',
+  },
+];
+
 export default function (fileInfo) {
   const pkg = JSON.parse(fileInfo.source);
   depDeleteList.forEach((pkgName) => delete pkg.dependencies[pkgName]);
@@ -67,6 +86,12 @@ export default function (fileInfo) {
     pkg.scripts[command] = pkg.scripts[command]
       .replace('build-scripts build', 'rax-app build')
       .replace('build-scripts start', 'rax-app start');
+  });
+
+  extraScripts.forEach(({ name, command }) => {
+    if (!pkg.scripts[name]) {
+      pkg.scripts[name] = command;
+    }
   });
 
   return JSON.stringify(pkg, null, 2);
