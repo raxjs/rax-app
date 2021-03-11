@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.5
+
+- Fix: web dev server content base
+
 ## v1.3.4
 
 - Fix: SPA with document is invalid
