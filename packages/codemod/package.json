@@ -25,6 +25,6 @@
     "npm": ">=3.0.0"
   },
   "bin": {
-    "rax-app-codemod": "./bin/index.js"
+    "rax-codemod": "./bin/index.js"
   }
 }
