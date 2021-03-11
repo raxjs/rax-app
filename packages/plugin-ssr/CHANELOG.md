@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.3
+
+- Fix: compatible `request.search` without default value
+
 ## v1.3.2
 
 - Chore: it won't execute original dev server
