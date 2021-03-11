@@ -1,3 +1,8 @@
+# Changelog
+
+## v2.0.2
+
+- Chore: upgrade less version
 ## v2.0.1
 
 - Chore: update sass-loader version

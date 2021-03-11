@@ -1,5 +1,9 @@
 # Changelog
 
+## v6.2.9
+
+- Chore: upgrade less version
+
 ## v6.2.8
 
 - Feat: support PHA multiple page dev urls

@@ -78,6 +78,8 @@ export default (api) => {
     // Set output dir
     const outputPath = path.resolve(rootDir, outputDir, target);
     config.output.path(outputPath);
+    // Set dev server contentBase
+    config.devServer.contentBase(path.resolve(rootDir, outputDir));
 
     config.plugin('document').use(DocumentPlugin, [
       {

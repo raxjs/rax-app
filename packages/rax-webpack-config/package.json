@@ -1,6 +1,6 @@
 {
   "name": "rax-webpack-config",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "rax base webpack config",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
@@ -19,8 +19,8 @@
     "case-sensitive-paths-webpack-plugin": "^2.3.0",
     "css-loader": "^3.0.0",
     "file-loader": "^5.0.2",
-    "less": "^3.10.3",
-    "less-loader": "^5.0.0",
+    "less": "^4.0.0",
+    "less-loader": "^7.0.0",
     "lodash.clonedeep": "^4.5.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "postcss-loader": "^3.0.0",
