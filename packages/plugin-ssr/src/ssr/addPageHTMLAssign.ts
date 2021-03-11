@@ -29,6 +29,7 @@ export default (useRunApp) => {
     setInitialData(data.initialData);
 
     function parseSearch (search) {
+      if (!search) return {};
       const results = search.substr(1).split('&');
       const query = {};
       results.forEach((result) => {
