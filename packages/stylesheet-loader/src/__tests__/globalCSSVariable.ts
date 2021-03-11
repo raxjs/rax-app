@@ -46,7 +46,6 @@ const mockStyleString = `let __globalObject = typeof window === 'object' ? windo
 describe('globalCSSVariable', () => {
   it('should build code to create writes and reads to runtime global css variables', () => {
     const styleString = ':root { --color-name: blue; }.text1 { color: var(--color-name); }';
-    console.log('loader=======>', loader)
     const createdString = loader(styleString);
 
     expect(createdString).toEqual(mockStyleString);
