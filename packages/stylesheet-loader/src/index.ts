@@ -191,4 +191,3 @@ const stringifyData = (data, theme?) => {
 };
 
 export default styleSheetLoader;
-module.exports = styleSheetLoader;
