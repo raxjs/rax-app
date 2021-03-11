@@ -17,7 +17,7 @@
     "rax-babel-config": "^1.0.0",
     "rax-jest-config": "^1.0.0",
     "rax-platform-loader": "^1.0.2",
-    "@builder/user-config": "^0.2.0",
+    "@builder/user-config": "^0.3.0",
     "@builder/app-helpers": "^2.1.0",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
