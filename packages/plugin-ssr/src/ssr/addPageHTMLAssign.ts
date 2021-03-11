@@ -10,7 +10,7 @@ export default (useRunApp) => {
     const { setInitialData } = require('rax-app-renderer');
     const raxServerRenderer = require('rax-app-renderer/lib/server').default;
     const { req, res } = ctx;
-    const search = req.search || '';
+    const search = req.search;
     const parsedQuery = parseSearch(search);
     const pathname = req.path;
     const location = { pathname, search, state: null };
@@ -29,6 +29,7 @@ export default (useRunApp) => {
     setInitialData(data.initialData);
 
     function parseSearch (search) {
+      if (!search) return {};
       const results = search.substr(1).split('&');
       const query = {};
       results.forEach((result) => {
