@@ -1,0 +1,30 @@
+{
+  "name": "rax-codemod",
+  "version": "1.0.0",
+  "description": "Rax codemod scripts",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-app.git"
+  },
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "execa": "^3.2.0",
+    "globby": "^10.0.1",
+    "is-git-clean": "^1.1.0",
+    "jscodeshift": "^0.11.0",
+    "meow": "^9.0.0",
+    "fs-extra": "^9.1.0"
+  },
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-app/issues"
+  },
+  "homepage": "https://github.com/raxjs/rax-app#readme",
+  "engines": {
+    "npm": ">=3.0.0"
+  },
+  "bin": {
+    "rax-app-codemod": "./bin/index.js"
+  }
+}
