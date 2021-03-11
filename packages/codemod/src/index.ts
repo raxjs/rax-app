@@ -104,6 +104,13 @@ function runTransform(options) {
   console.log();
   console.log(
     chalk.green(
+      'Please update your node_modules when migrated.',
+    ),
+  );
+
+  console.log();
+  console.log(
+    chalk.green(
       'Thanks for using rax-codemod, if you have any problem after migrating Rax related project, report it by https://github.com/alibaba/rax/issues.',
     ),
   );
