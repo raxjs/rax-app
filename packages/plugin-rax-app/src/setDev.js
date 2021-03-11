@@ -33,7 +33,7 @@ function watchAppJson(rootDir, log) {
 
 module.exports = function (api) {
   // eslint-disable-next-line global-require
-  const { context, onHook, getValue, log } = api;
+  const { context, onHook, getValue, log, applyMethod } = api;
   const { commandArgs, rootDir } = context;
   let webEntryKeys = [];
   let weexEntryKeys = [];
@@ -147,6 +147,9 @@ module.exports = function (api) {
         console.log('   ', chalk.underline.white(bytedanceOutputPath));
         console.log();
       }
+
+      const appConfig = getValue('staticConfig');
+      const needGenerateMultipleManifest = pha && !appConfig.tabBar;
       if (targets.includes(WEB)) {
         devInfo.urls.web = [];
         console.log(highlightPrint('  [Web] Development server at: '));
@@ -217,15 +220,27 @@ module.exports = function (api) {
         });
       }
 
+      /**
+       * @TODO: Delete it first, and then open it after the PHA supports it
+       */
       if (pha) {
-        // Use PHA App to scan ip address (mobile phone can't visit localhost).
         console.log(highlightPrint('  [PHA] Development server at: '));
-        const manifestUrl = `${urlPrefix}/manifest.json?pha=true`;
-        devInfo.urls.pha = [manifestUrl];
-        console.log(`  ${chalk.underline.white(manifestUrl)}`);
-        console.log();
-        qrcode.generate(manifestUrl, { small: true });
-        console.log();
+        if (needGenerateMultipleManifest) {
+          const devUrls = applyMethod('rax.getPHADevUrls');
+          devInfo.urls.pha = devUrls;
+          devUrls.forEach((url) => {
+            console.log(`  ${chalk.underline.white(url)}`);
+          });
+          console.log();
+        } else {
+          // Use PHA App to scan ip address (mobile phone can't visit localhost).
+          const manifestUrl = `${urlPrefix}/manifest.json?pha=true`;
+          devInfo.urls.pha = [manifestUrl];
+          console.log(`  ${chalk.underline.white(manifestUrl)}`);
+          console.log();
+          qrcode.generate(manifestUrl, { small: true });
+          console.log();
+        }
       }
 
       devInfo.compiledTime = Date.now();

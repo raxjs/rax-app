@@ -1,5 +1,13 @@
 ## Changelog
 
+### 3.4.2 (March 09 2021)
+
+- Feat: support multiple pages in PHA
+- Fix: SPA with document is invalid
+- Fix: document dev shouldn't block when hot reload
+- Fix: `.ts` file won't add babel JSX compiler
+- Chore: dev server should be applied to every webpack config
+
 ### 3.4.1 (March 04 2021)
 
 - Chore: update sass-loader
