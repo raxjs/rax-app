@@ -3,8 +3,10 @@ const setUserConfig = require('./config/user/setConfig');
 
 const build = require('./build');
 const dev = require('./dev');
+const tip = require('./tip');
 
 const pluginApp = (api, options = {}) => {
+  tip();
   if (typeof options.enterCheck === 'boolean' ? options.enterCheck : true) {
     enterCheck(api, options);
   }
