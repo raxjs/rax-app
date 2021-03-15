@@ -6,4 +6,4 @@ module.exports = () => {
   console.log(chalk.red('执行 npx rax-codemod 一键升级！'));
   console.log();
   console.log(chalk.red('升级指南：https://rax.js.org/docs/guide/migration-guide'));
-}
+};
