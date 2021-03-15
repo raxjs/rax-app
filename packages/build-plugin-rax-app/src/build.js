@@ -5,6 +5,7 @@ const { handleWebpackErr } = require('rax-compile-config');
 
 const getMpOuput = require('./config/miniapp/getOutputPath');
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
+const tip = require('./tip');
 
 module.exports = ({ registerTask, context, onHook }, options = {}) => {
   const { targets = [] } = options;
@@ -69,6 +70,7 @@ module.exports = ({ registerTask, context, onHook }, options = {}) => {
       return;
     }
     logBuildResult(targets, context);
+    tip();
   });
 };
 

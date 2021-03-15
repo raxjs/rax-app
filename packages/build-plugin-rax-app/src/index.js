@@ -3,8 +3,10 @@ const setUserConfig = require('./config/user/setConfig');
 
 const build = require('./build');
 const dev = require('./dev');
+const tip = require('./tip');
 
 const pluginApp = (api, options = {}) => {
+  tip();
   enterCheck(api, options);
 
   api.setValue('targets', options.targets);

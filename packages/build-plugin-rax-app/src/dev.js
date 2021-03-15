@@ -8,6 +8,7 @@ const getMpOuput = require('./config/miniapp/getOutputPath');
 const startJSX2MpDev = require('./config/miniapp/compile/dev');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM } = require('./constants');
+const tip = require('./tip');
 
 const asyncTask = [];
 
@@ -72,6 +73,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
       await Promise.all(asyncTask);
     }
     devCompileLog();
+    tip();
   });
 
   function devCompileLog() {
