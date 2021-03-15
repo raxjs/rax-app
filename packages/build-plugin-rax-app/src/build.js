@@ -7,6 +7,7 @@ const { setConfig } = require('rax-multi-pages-settings');
 
 const getMiniAppOutput = require('./config/miniapp/getOutputPath');
 const processRelativePublicPath = require('./config/processRelativePublicPath');
+const tip = require('./tip');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('./constants');
 
@@ -49,6 +50,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options
       return;
     }
     logBuildResult(targets, context);
+    tip();
   });
 };
 
