@@ -6,6 +6,7 @@ const { setConfig, setDevLog } = require('rax-multi-pages-settings');
 const { handleWebpackErr } = require('rax-compile-config');
 const checkQuickAppEnv = require('rax-quickapp-webpack-plugin');
 const { resolve } = require('path');
+const tip = require('./tip');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('./constants');
 
@@ -138,6 +139,7 @@ module.exports = ({ onGetWebpackConfig, registerTask, context, getValue, onHook 
       console.log('   ', chalk.underline.white(quickAppDist));
       console.log();
     }
+    tip();
   }
 };
 

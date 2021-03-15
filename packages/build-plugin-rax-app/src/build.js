@@ -8,6 +8,7 @@ const { setConfig } = require('rax-multi-pages-settings');
 const processRelativePublicPath = require('./config/processRelativePublicPath');
 
 const { WEB, WEEX, MINIAPP, KRAKEN, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, QUICKAPP } = require('./constants');
+const tip = require('./tip');
 
 module.exports = ({ onGetWebpackConfig, registerTask, context, onHook }, options = {}) => {
   const { targets = [], type = 'spa' } = options;
@@ -110,6 +111,8 @@ function logBuildResult(targets = [], context = {}) {
     console.log('   ', chalk.underline.white(quickAppDist));
     console.log();
   }
+
+  tip();
 }
 
 
