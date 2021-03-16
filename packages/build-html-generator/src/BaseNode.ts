@@ -1,6 +1,6 @@
 import { IPlaceholderOptions } from './types';
 
-export default class RootNode {
+export default class BaseNode {
   innerHTML = '';
   insertedAfterElements: string[] = [];
   insertedBeforeElements: string[] = [];
