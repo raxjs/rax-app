@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.3.7
+## v1.3.6
 
 - Fix: document hot reload
 - Chore: add root node default comment placeholder for ssr

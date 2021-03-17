@@ -6,6 +6,12 @@
 - Fix: pha dev mode error without pha-worker.js
 - Refactor: ssr html parser
 
+### 3.4.3 (March 12 2021)
+
+- Chore: upgrade less && less-loader
+- Fix: web dev server content base
+- Fix: ssr search default value
+
 ### 3.4.2 (March 09 2021)
 
 - Feat: support multiple pages in PHA
