@@ -51,8 +51,9 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
     spmB,
     injectedHTML: { links: customLinks = [], scripts: customScripts = [], metas: customMetas = [] },
     assets: { links: assetLinks = [], scripts: assetScripts = [] },
-    initialHTML,
+    initialHTML = '<!--__INNER_ROOT__-->',
   } = htmlInfo;
+
   return `
   ${doctype}
   <html>
@@ -66,7 +67,9 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
       ${addLinksBySource(assetLinks)}
     </head>
     <body ${addSpmB(spmB)}>
+      <!--__BEFORE_ROOT__-->
       <div id="root">${initialHTML}</div>
+      <!--__AFTER_ROOT__-->
       ${addStaticSource(customScripts)}
       ${addScriptsBySource(assetScripts)}
     </body>

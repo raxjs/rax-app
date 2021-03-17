@@ -19,6 +19,9 @@ module.exports = (api) => {
     ]);
   });
 
+  // Set get dev url api before appWorkerPath check
+  setRegisterMethod(api);
+
   if (!appWorkerPath) return;
 
   const getWebpackBase = getValue('getRaxAppWebpackConfig');
@@ -32,7 +35,6 @@ module.exports = (api) => {
   chainConfig.name(target);
 
   registerTask(target, chainConfig);
-  setRegisterMethod(api);
 
   onGetWebpackConfig(target, (config) => {
     setEntry({

@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.4
+
+- Chore: @builder/html-generator break change
+
 ## v1.3.3
 
 - Fix: compatible `request.search` without default value
