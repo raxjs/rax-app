@@ -38,8 +38,9 @@ export default class DocumentPlugin {
       const enableStatus: boolean = getEnableStatus();
       if (enableStatus) {
         updateEnableStatus(false);
-        localBuildTask.then(emitAssets);
-        localBuildTask = registerListenTask();
+        localBuildTask.then(emitAssets).then(() => {
+          localBuildTask = registerListenTask();
+        });
       } else {
         emitAssets(getAssets());
       }
@@ -65,11 +66,12 @@ export default class DocumentPlugin {
               title,
               pagePath,
             });
+
             const $ = cheerio.load(html, { decodeEntities: false });
             $('head').append(injectedHTML.scripts);
             html = $.html();
           } else {
-            let initialHTML = '';
+            let initialHTML;
 
             if (localBuildAssets[`${entryName}.js`]) {
               const bundleContent = localBuildAssets[`${entryName}.js`].source();

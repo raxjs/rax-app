@@ -1,5 +1,9 @@
 # Changelog
 
+## v6.2.10
+
+- Chore: rax-webpack-config update
+
 ## v6.2.9
 
 - Chore: upgrade less version
