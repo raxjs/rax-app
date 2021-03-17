@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.3
+
+- Chore: upgrade typescript/ts-loader version
+
 ## v2.0.2
 
 - Chore: upgrade less version
