@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.7
+
+- Fix: document hot reload
+- Chore: add root node default comment placeholder for ssr
+
 ## v1.3.5
 
 - Fix: web dev server content base

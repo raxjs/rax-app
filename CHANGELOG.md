@@ -1,5 +1,11 @@
 ## Changelog
 
+### 3.4.4 (March 17 2021)
+
+- Chore: update typescript/ts-loader version
+- Fix: pha dev mode error without pha-worker.js
+- Refactor: ssr html parser
+
 ### 3.4.2 (March 09 2021)
 
 - Feat: support multiple pages in PHA
