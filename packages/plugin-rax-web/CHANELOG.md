@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.7
+
+- Chore: ensure builtin scripts load order
+- Chore: remove comment node without ssr
+
 ## v1.3.6
 
 - Fix: document hot reload

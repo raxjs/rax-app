@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.5
+
+- - Chore: remove comment node when ssr compiled
+
 ## v1.3.4
 
 - Chore: @builder/html-generator break change

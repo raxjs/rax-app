@@ -1,5 +1,10 @@
 ## Changelog
 
+### 3.4.5 (March 18 2021)
+
+- Chore: ensure builtin scripts load order
+- Chore: remove comment node without ssr
+
 ### 3.4.4 (March 17 2021)
 
 - Chore: update typescript/ts-loader version

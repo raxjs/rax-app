@@ -27,7 +27,7 @@ export default class DocumentPlugin {
       documentPath,
       insertScript,
     } = this.options;
-    const { mpa, doctype = '<!DOCTYPE html>' } = webConfig || {};
+    const { mpa, doctype = '<!DOCTYPE html>', ssr } = webConfig || {};
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
     const publicPath = this.options.publicPath || compiler.options.output.publicPath;
     insertCommonElements(staticConfig);
@@ -68,7 +68,7 @@ export default class DocumentPlugin {
             });
 
             const $ = cheerio.load(html, { decodeEntities: false });
-            $('head').append(injectedHTML.scripts);
+            $('#root').after(injectedHTML.scripts);
             html = $.html();
           } else {
             let initialHTML;
@@ -87,7 +87,7 @@ export default class DocumentPlugin {
               initialHTML,
               spmA: staticConfig.spm,
               spmB: spm,
-            });
+            }, ssr);
           }
 
           compilation.assets[`${entryName}.html`] = new RawSource(html);
