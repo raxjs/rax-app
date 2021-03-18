@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.8
+
+- Fix: rax render won't override original content with initialHTML is undefined 
+
 ## v1.3.7
 
 - Chore: ensure builtin scripts load order
