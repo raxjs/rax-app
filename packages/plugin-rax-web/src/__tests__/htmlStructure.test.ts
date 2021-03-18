@@ -67,7 +67,7 @@ describe('generate html structure', () => {
     </head>
     <body data-spm="b1234">
       <!--__BEFORE_ROOT__-->
-      <div id=\"root\"></div>
+      <div id=\"root\"><!--__INNER_ROOT__--></div>
       <script src=\"https://g.alicdn.com/code/lib/rax/1.1.4/rax.min.js\"></script>
 <script src=\"https://g.alicdn.com/code/lib/react/17.0.0/react.min.js\"></script>
 <script src=\"https://g.alicdn.com/ali-lib/appear-polyfill/0.1.2/index.js\" ></script>

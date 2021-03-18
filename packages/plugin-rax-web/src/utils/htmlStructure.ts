@@ -53,9 +53,9 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo, ssr: boolean) {
     assets: { links: assetLinks = [], scripts: assetScripts = [] },
   } = htmlInfo;
 
-  let { initialHTML } = htmlInfo;
+  let { initialHTML = '' } = htmlInfo;
 
-  if (ssr && initialHTML === undefined) {
+  if (ssr) {
     initialHTML = '<!--__INNER_ROOT__-->';
   }
   return `
