@@ -47,7 +47,7 @@ describe('generate html structure', () => {
         },
         spmA: 'a1234',
         spmB: 'b1234',
-      }),
+      }, false),
     ).toEqual(`
   <!DOCTYPE html>
   <html>
@@ -66,9 +66,7 @@ describe('generate html structure', () => {
 
     </head>
     <body data-spm="b1234">
-      <!--__BEFORE_ROOT__-->
       <div id=\"root\"></div>
-      <!--__AFTER_ROOT__-->
       <script src=\"https://g.alicdn.com/code/lib/rax/1.1.4/rax.min.js\"></script>
 <script src=\"https://g.alicdn.com/code/lib/react/17.0.0/react.min.js\"></script>
 <script src=\"https://g.alicdn.com/ali-lib/appear-polyfill/0.1.2/index.js\" ></script>
