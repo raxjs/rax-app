@@ -13,7 +13,7 @@ const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR } = require('./constant
 module.exports = (api) => {
   const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
   const { userConfig } = context;
-  const { targets, inlineStyle } = userConfig;
+  const { targets, inlineStyle, vendor } = userConfig;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   targets.forEach((target) => {
@@ -74,6 +74,22 @@ module.exports = (api) => {
             entryPath: './src/app',
           });
         } else {
+          const { subPackages } = userConfig[target] || {};
+          if (vendor && subPackages) {
+            const originalSplitChunks = config.optimization.get('splitChunks');
+            config.optimization.splitChunks({
+              ...originalSplitChunks,
+              cacheGroups: {
+                ...originalSplitChunks.cacheGroups,
+                vendor: {
+                  ...(originalSplitChunks.cacheGroups || {}).vendor,
+                  chunks: 'all',
+                  name: 'vendors',
+                },
+              },
+            });
+          }
+
           setConfig(config, {
             api,
             target,
