@@ -1,8 +1,12 @@
 ## Changelog
 
-## 3.4.6 (March 18 2021)
+## 3.4.7 (March 19 2021)
 
 - Fix: rax render won't override original content with initialHTML is undefined 
+
+## 3.4.6 (March 18 2021)
+
+- Chore: invalid version 
 
 ### 3.4.5 (March 18 2021)
 
