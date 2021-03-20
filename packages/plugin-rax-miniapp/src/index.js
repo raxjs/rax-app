@@ -90,6 +90,20 @@ module.exports = (api) => {
             });
           }
 
+          const originalExternals = config.get('externals');
+
+          config.externals([
+            ...originalExternals,
+            function (ctx, request, callback) {
+              const commonDir = 'miniapp-native/common';
+              if (request.indexOf(commonDir) !== -1) {
+                const index = request.indexOf(commonDir);
+                return callback(null, `string getApp().requireModule('./${request.slice(index)}')`);
+              }
+              callback();
+            },
+          ]);
+
           setConfig(config, {
             api,
             target,
