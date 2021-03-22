@@ -95,9 +95,9 @@ module.exports = (api) => {
           config.externals([
             ...originalExternals,
             function (ctx, request, callback) {
-              const commonDir = 'miniapp-native/common';
-              if (request.indexOf(commonDir) !== -1) {
-                const index = request.indexOf(commonDir);
+              const sharedDir = 'miniapp-native/shared';
+              if (request.indexOf(sharedDir) !== -1) {
+                const index = request.indexOf(sharedDir);
                 return callback(null, `string getApp().requireModule('./${request.slice(index)}')`);
               }
               callback();
