@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.9
+
+- Fix: windows error with document
+
 ## v1.3.8
 
 - Fix: rax render won't override original content with initialHTML is undefined 

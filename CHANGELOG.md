@@ -1,5 +1,11 @@
 ## Changelog
 
+## 3.4.8 (March 23 2021)
+
+- Feat: support share memory with subpackages
+- Chore: reduce miniapp size with subPackages
+- Fix: windows error with document
+
 ## 3.4.7 (March 19 2021)
 
 - Fix: rax render won't override original content with initialHTML is undefined 

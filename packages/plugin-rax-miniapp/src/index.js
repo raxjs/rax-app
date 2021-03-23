@@ -13,7 +13,7 @@ const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR } = require('./constant
 module.exports = (api) => {
   const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
   const { userConfig } = context;
-  const { targets, inlineStyle } = userConfig;
+  const { targets, inlineStyle, vendor } = userConfig;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   targets.forEach((target) => {
@@ -49,13 +49,12 @@ module.exports = (api) => {
 
         const needCopyDirs = [];
 
-        // Copy src/miniapp-native dir
-        if (fs.existsSync(path.resolve(rootDir, 'src', 'miniapp-native'))) {
-          needCopyDirs.push({
-            from: path.resolve(rootDir, 'src', 'miniapp-native'),
-            to: path.resolve(rootDir, outputDir, target, 'miniapp-native'),
-          });
-        }
+        // Copy miniapp-native dir
+        needCopyDirs.push({
+          from: '**/miniapp-native/**',
+          to: path.resolve(rootDir, outputDir, target),
+          context: path.resolve(rootDir, 'src'),
+        });
 
         // Copy public dir
         if (config.plugins.has('CopyWebpackPlugin')) {
@@ -74,6 +73,36 @@ module.exports = (api) => {
             entryPath: './src/app',
           });
         } else {
+          const { subPackages } = userConfig[target] || {};
+          if (vendor && subPackages) {
+            const originalSplitChunks = config.optimization.get('splitChunks');
+            config.optimization.splitChunks({
+              ...originalSplitChunks,
+              cacheGroups: {
+                ...originalSplitChunks.cacheGroups,
+                vendor: {
+                  ...(originalSplitChunks.cacheGroups || {}).vendor,
+                  chunks: 'all',
+                  name: 'vendors',
+                },
+              },
+            });
+          }
+
+          const originalExternals = config.get('externals');
+
+          config.externals([
+            ...originalExternals,
+            function (ctx, request, callback) {
+              const sharedDir = 'miniapp-native/shared';
+              if (request.indexOf(sharedDir) !== -1) {
+                const index = request.indexOf(sharedDir);
+                return callback(null, `string getApp().requireModule('./${request.slice(index)}')`);
+              }
+              callback();
+            },
+          ]);
+
           setConfig(config, {
             api,
             target,

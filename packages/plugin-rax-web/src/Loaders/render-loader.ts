@@ -1,4 +1,5 @@
 import * as qs from 'qs';
+import { formatPath } from '@builder/app-helpers';
 
 function addPageDefine(entryPath: string): string {
   return `import Page from '${entryPath}';`;
@@ -11,12 +12,15 @@ function addRenderInitialHTML() {
 }
 
 export default function () {
-  const { documentPath, staticExport, entryPath } = qs.parse(this.query.substr(1));
+  const query = qs.parse(this.query.substr(1));
+  const { documentPath, staticExport } = query;
+  let { entryPath } = query;
+  entryPath = formatPath(entryPath as string);
   if (documentPath) {
     return `
       import { createElement } from 'rax';
-      import Document from '${documentPath}';
-      ${staticExport ? addPageDefine(entryPath as string) : ''}
+      import Document from '${formatPath(documentPath as string)}';
+      ${staticExport ? addPageDefine(entryPath) : ''}
       import renderer from 'rax-server-renderer';
 
       function renderPage(assets, { title, doctype, pagePath }) {
