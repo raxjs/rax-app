@@ -49,13 +49,12 @@ module.exports = (api) => {
 
         const needCopyDirs = [];
 
-        // Copy src/miniapp-native dir
-        if (fs.existsSync(path.resolve(rootDir, 'src', 'miniapp-native'))) {
-          needCopyDirs.push({
-            from: path.resolve(rootDir, 'src', 'miniapp-native'),
-            to: path.resolve(rootDir, outputDir, target, 'miniapp-native'),
-          });
-        }
+        // Copy miniapp-native dir
+        needCopyDirs.push({
+          from: '**/miniapp-native/**',
+          to: path.resolve(rootDir, outputDir, target),
+          context: path.resolve(rootDir, 'src'),
+        });
 
         // Copy public dir
         if (config.plugins.has('CopyWebpackPlugin')) {

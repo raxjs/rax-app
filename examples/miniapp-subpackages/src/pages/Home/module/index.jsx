@@ -13,23 +13,23 @@ export default function Home() {
   return (
     <View className={styles.homeContainer}>
       <Logo uri="//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png" />
-      <Text
-        className={styles.homeTitle}
-        onClick={() => {
-          setA(2);
-          console.log('home change a ====>', getA());
-          if (isMiniApp) {
-            my.navigateTo({
-              url: '/pages/About/module/index',
-            });
-          } else {
-            wx.navigateTo({
-              url: '/pages/About/module/index',
-            });
-          }
-        }}
-      >
-        点我去到子包页面
+        <Text
+          className={styles.homeTitle}
+          onClick={() => {
+            setA(2);
+            console.log('home change a ====>', getA());
+            if (isMiniApp) {
+              my.navigateTo({
+                url: '/pages/About/module/index',
+              });
+            } else {
+              wx.navigateTo({
+                url: '/pages/About/module/index',
+              });
+            }
+          }}
+        >
+          点我去到子包页面
       </Text>
       <Text className={styles.homeInfo}>More information about Rax</Text>
       <Text className={styles.homeInfo}>Visit https://rax.js.org</Text>
