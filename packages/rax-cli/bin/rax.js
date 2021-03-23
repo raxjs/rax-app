@@ -189,7 +189,7 @@ async function createProject(name, verbose, template, userAnswers) {
     process.chdir(rootDir);
   }
 
-  const { projectType = 'app', targets, appType, languageType } = userAnswers;
+  const { projectType = 'app', targets, appType, languageType, buildType } = userAnswers;
   const registry = 'https://registry.npm.taobao.org';
 
   console.log(
@@ -244,6 +244,7 @@ async function createProject(name, verbose, template, userAnswers) {
 
     const tempDir = path.join(rootDir, '.tmp');
     const materialTemplate = typeToTemplate[projectType][languageType] ? typeToTemplate[projectType][languageType] : typeToTemplate[projectType];
+    const isAliInternal = await checkAliInternal();
 
     await downloadMaterialTemplate(tempDir, materialTemplate, registry);
     await generateMaterial({
@@ -252,6 +253,8 @@ async function createProject(name, verbose, template, userAnswers) {
       templateOptions: {
         npmName: 'rax-example',
         projectTargets: targets,
+        buildType,
+        isAliInternal
       },
       materialType: 'component',
     });

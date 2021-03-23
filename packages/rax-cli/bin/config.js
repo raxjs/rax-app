@@ -113,6 +113,24 @@ function getPromptQuestion(appTemplate) {
       },
     ],
     default: 'ts',
+  }, {
+    type: 'list',
+    name: 'buildType',
+    message: 'Choose your component build type?',
+    when(answers) {
+      return (answers.projectType === 'component') && Array.isArray(answers.targets) && answers.targets.indexOf('miniapp') > -1 && !appTemplate;
+    },
+    choices: [
+      {
+        name: 'Runtime',
+        value: 'runtime',
+      },
+      {
+        name: 'Compile',
+        value: 'compile',
+      },
+    ],
+    default: 'runtime',
   }];
 
   return promptQuestion;
