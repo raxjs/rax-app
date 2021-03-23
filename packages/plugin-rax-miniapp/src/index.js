@@ -89,6 +89,20 @@ module.exports = (api) => {
             });
           }
 
+          const originalExternals = config.get('externals');
+
+          config.externals([
+            ...originalExternals,
+            function (ctx, request, callback) {
+              const sharedDir = 'miniapp-native/shared';
+              if (request.indexOf(sharedDir) !== -1) {
+                const index = request.indexOf(sharedDir);
+                return callback(null, `string getApp().requireModule('./${request.slice(index)}')`);
+              }
+              callback();
+            },
+          ]);
+
           setConfig(config, {
             api,
             target,
