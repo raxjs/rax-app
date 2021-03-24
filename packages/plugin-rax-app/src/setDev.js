@@ -168,16 +168,13 @@ module.exports = function (api) {
             const entryPath = webMpa ? `${entryKey}${web.ssr ? '' : '.html'}` : '';
             const lanUrl = `${urlPrefix}/${entryPath}`;
             devInfo.urls.web.push(lanUrl);
-            showLocalUrl && console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}${entryPath}`)}`);
             console.log(`  ${chalk.underline.white(lanUrl)}`);
-            console.log();
             if (shouldOpenBrowser && openEntries.includes(entryKey)) {
               openBrowser(`${urls.localUrlForBrowser}${entryPath}`);
             }
           });
         } else {
           devInfo.urls.web.push(`${urlPrefix}/`);
-          console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}`)}`);
           console.log(`  ${chalk.underline.white(`${urlPrefix}/`)}`);
           console.log();
 
