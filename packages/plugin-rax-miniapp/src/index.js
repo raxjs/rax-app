@@ -73,7 +73,7 @@ module.exports = (api) => {
             entryPath: './src/app',
           });
         } else {
-          const { subPackages } = userConfig[target] || {};
+          const { subPackages, disableCopyNpm = true } = userConfig[target] || {};
           if (vendor && subPackages) {
             const originalSplitChunks = config.optimization.get('splitChunks');
             config.optimization.splitChunks({
@@ -124,7 +124,7 @@ module.exports = (api) => {
 
             setComponentCompileConfig(
               compiledComponentsChainConfig,
-              { disableCopyNpm: true },
+              { disableCopyNpm: disableCopyNpm },
               {
                 target,
                 context,
