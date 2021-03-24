@@ -97,6 +97,9 @@ module.exports = (api) => {
               const sharedDir = 'miniapp-native/shared';
               if (request.indexOf(sharedDir) !== -1) {
                 const index = request.indexOf(sharedDir);
+                if (target === 'miniapp') {
+                  return callback(null, `string require('/${request.slice(index)}')`);
+                }
                 return callback(null, `string getApp().requireModule('./${request.slice(index)}')`);
               }
               callback();
