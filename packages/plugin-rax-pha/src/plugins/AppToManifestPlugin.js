@@ -75,8 +75,8 @@ module.exports = class {
           target: 'web',
           appJsonContent: appConfig,
         });
-        entries.filter(({ __frameIndex, __pageHeader }) => {
-          if ((typeof __frameIndex !== 'undefined' && __frameIndex !== 0) || __pageHeader) {
+        entries.filter(({ __frameIndex, __pageHeader, __tabBar }) => {
+          if ((typeof __frameIndex !== 'undefined' && __frameIndex !== 0) || __pageHeader || __tabBar) {
             return false;
           }
           return true;

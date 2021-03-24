@@ -3,5 +3,6 @@
   "web": {
     "pha": true
   },
-  "inlineStyle": true
+  "inlineStyle": true,
+  "plugins": ["@ali/build-plugin-rax-app-def"]
 }
