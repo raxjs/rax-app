@@ -170,7 +170,7 @@ module.exports = function (api) {
             devInfo.urls.web.push(lanUrl);
             console.log(`  ${chalk.underline.white(lanUrl)}`);
             if (shouldOpenBrowser && openEntries.includes(entryKey)) {
-              openBrowser(`${urls.localUrlForBrowser}${entryPath}`);
+              openBrowser(lanUrl);
             }
           });
         } else {
