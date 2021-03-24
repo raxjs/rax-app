@@ -124,7 +124,7 @@ module.exports = (api) => {
 
             setComponentCompileConfig(
               compiledComponentsChainConfig,
-              { disableCopyNpm: true },
+              { disableCopyNpm: subPackages && subPackages.disableCopyNpm },
               {
                 target,
                 context,
