@@ -4,7 +4,7 @@ import View from 'rax-view';
 import Text from 'rax-text';
 import Logo from '@/components/Logo';
 
-import './index.css';
+import styles from './index.module.css';
 
 export default function Home(props) {
   const { history } = props;
@@ -23,11 +23,11 @@ export default function Home(props) {
   });
 
   return (
-    <View className="home">
+    <View className={styles.home}>
       <Logo />
-      <Text className="title">{props?.data?.title || 'Welcome to Your Rax App'}</Text>
-      <Text className="info">{props?.data?.info || 'More information about Rax'}</Text>
-      <Text className="info" id="link" onClick={() => history.push('/about', { id: 1 })}>Go About</Text>
+      <Text className={styles.title}>{props?.data?.title || 'Welcome to Your Rax App'}</Text>
+      <Text className={styles.info}>{props?.data?.info || 'More information about Rax'}</Text>
+      <Text className={styles.info} id="link" onClick={() => history.push('/about', { id: 1 })}>Go About</Text>
     </View>
   );
 }

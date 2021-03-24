@@ -77,8 +77,11 @@ function setCSSRule(configRule, context, value) {
     configRule.uses.delete('postcss-loader');
     configRule.uses.delete('MiniCssExtractPlugin.loader');
     configRule
-      .use('null-loader')
-      .loader(require.resolve('null-loader'))
+      .use('css-loader')
+      .tap((options) => ({
+        ...options,
+        onlyLocals: true,
+      }))
       .end();
   }
 }
