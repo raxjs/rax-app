@@ -1,5 +1,18 @@
 # Changelog
 
+## v6.2.10
+
+- Chore: rax-webpack-config update
+
+## v6.2.9
+
+- Chore: upgrade less version
+
+## v6.2.8
+
+- Feat: support PHA multiple page dev urls
+- Chore: add `stylesheet-loader` as dependencies
+
 ## v6.2.7
 
 - Chore: update rax-webpack-config version

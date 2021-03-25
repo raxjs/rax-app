@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const { formatPath } = require('@builder/app-helpers');
 const setEntry = require('./setEntry');
 const AppToManifestPlugin = require('./plugins/AppToManifestPlugin');
+const setRegisterMethod = require('./setRegisterMethod');
 
 module.exports = (api) => {
   const { onGetWebpackConfig, context, registerTask, getValue } = api;
@@ -17,6 +18,9 @@ module.exports = (api) => {
       },
     ]);
   });
+
+  // Set get dev url api before appWorkerPath check
+  setRegisterMethod(api);
 
   if (!appWorkerPath) return;
 

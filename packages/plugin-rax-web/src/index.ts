@@ -62,19 +62,24 @@ export default (api) => {
     setLocalBuilder(api);
   }
 
+  onGetWebpackConfig((config) => {
+    const { command } = context;
+    if (command === 'start') {
+      setDev(config);
+    }
+  });
+
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { rootDir, command, userConfig } = context;
+    const { rootDir, userConfig } = context;
     const { outputDir } = userConfig;
     const staticConfig = getValue('staticConfig');
 
     // Set output dir
     const outputPath = path.resolve(rootDir, outputDir, target);
     config.output.path(outputPath);
-
-    if (command === 'start') {
-      setDev(config);
-    }
+    // Set dev server contentBase
+    config.devServer.contentBase(path.resolve(rootDir, outputDir));
 
     config.plugin('document').use(DocumentPlugin, [
       {
@@ -82,11 +87,7 @@ export default (api) => {
         staticConfig,
         documentPath,
         pages: webConfig.mpa ? [] : [
-          {
-            entryName: 'index',
-            entryPath: getAppEntry(rootDir),
-            path: '/',
-          },
+          getAppEntry(rootDir),
         ],
       },
     ]);
@@ -118,7 +119,7 @@ export default (api) => {
 };
 
 function getAbsolutePath(filepath: string): string | undefined {
-  const targetExt = ['.tsx', '.jsx'].find((ext) => fs.existsSync(`${filepath}${ext}`));
+  const targetExt = ['.tsx', '.jsx', '.js'].find((ext) => fs.existsSync(`${filepath}${ext}`));
   if (targetExt) {
     return `${filepath}${targetExt}`;
   }

@@ -1,17 +1,17 @@
 {
   "name": "stylesheet-loader",
-  "version": "0.8.5",
+  "version": "0.9.0",
   "description": "Stylesheet loader.",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/raxjs/rax-scripts.git"
+    "url": "git+https://github.com/raxjs/rax-app.git"
   },
   "bugs": {
-    "url": "https://github.com/raxjs/rax-scripts/issues"
+    "url": "https://github.com/raxjs/rax-app/issues"
   },
-  "homepage": "https://github.com/raxjs/rax-scripts#readme",
+  "homepage": "https://github.com/raxjs/rax-app#readme",
   "dependencies": {
     "camelcase": "^3.0.0",
     "chalk": "^1.1.3",

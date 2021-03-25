@@ -1,12 +1,10 @@
 import { IPlaceholderOptions } from './types';
 import wrapFunc from './wrapFunc';
+import BaseNode from './BaseNode';
 
 let count = 0;
 
-export default class Node {
-  innerHTML = '';
-  insertedAfterElements: string[] = [];
-  insertedBeforeElements: string[] = [];
+export default class Node extends BaseNode {
   tagName: string;
   attributes = '';
   attributePlaceholder: string;
@@ -15,11 +13,10 @@ export default class Node {
   private initInnerHTML = '';
   private initOuterHTML = '';
   private matchRegExp: RegExp;
-  private placeholderOptions: IPlaceholderOptions;
   private matched = false;
   constructor(html: string, tagName: string, matchRegx: RegExp, placeholderOptions?: IPlaceholderOptions) {
+    super(placeholderOptions);
     this.nodeId = `${tagName.toUpperCase()}_${++count}`;
-    this.placeholderOptions = placeholderOptions;
     this.tagName = tagName;
     this.matchRegExp = matchRegx;
 
@@ -69,22 +66,6 @@ export default class Node {
     );
   }
 
-  insertAfter(elements: string | string[]) {
-    if (Array.isArray(elements)) {
-      this.insertedAfterElements = [...this.insertedAfterElements, ...elements];
-    } else if (typeof elements === 'string') {
-      this.insertedAfterElements.push(elements);
-    }
-  }
-
-  insertBefore(elements: string | string[]) {
-    if (Array.isArray(elements)) {
-      this.insertedBeforeElements = [...this.insertedBeforeElements, ...elements];
-    } else if (typeof elements === 'string') {
-      this.insertedBeforeElements.push(elements);
-    }
-  }
-
   generate(html: string): string {
     if (this.placeholderOptions) {
       const { prependPlaceholder, placeholder, appendPlaceholder } = this.placeholderOptions;
@@ -111,12 +92,5 @@ export default class Node {
       return `${placeholder}${value}`;
     }
     return placeholder;
-  }
-
-  private replacePlaceholder(placeholder, value, html) {
-    if (placeholder) {
-      return html.replace(placeholder, value);
-    }
-    return html;
   }
 }

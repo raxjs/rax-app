@@ -1,6 +1,7 @@
 {
   "files": [],
   "references": [
+    { "path": "packages/codemod" },
     { "path": "packages/stylesheet-loader" },
     { "path": "packages/babel-plugin-transform-jsx-stylesheet" },
     { "path": "packages/build-html-generator" },

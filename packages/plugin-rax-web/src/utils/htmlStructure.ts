@@ -43,7 +43,7 @@ export function insertCommonElements(staticConfig) {
   }
 }
 
-export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
+export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo, ssr: boolean) {
   const {
     doctype,
     title,
@@ -51,8 +51,13 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
     spmB,
     injectedHTML: { links: customLinks = [], scripts: customScripts = [], metas: customMetas = [] },
     assets: { links: assetLinks = [], scripts: assetScripts = [] },
-    initialHTML,
   } = htmlInfo;
+
+  let { initialHTML = '' } = htmlInfo;
+
+  if (ssr) {
+    initialHTML = '<!--__INNER_ROOT__-->';
+  }
   return `
   ${doctype}
   <html>
@@ -66,8 +71,10 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo) {
       ${addLinksBySource(assetLinks)}
     </head>
     <body ${addSpmB(spmB)}>
+      ${ ssr ? '<!--__BEFORE_ROOT__-->' : '' }
       <div id="root">${initialHTML}</div>
       ${addStaticSource(customScripts)}
+      ${ ssr ? '<!--__AFTER_ROOT__-->' : '' }
       ${addScriptsBySource(assetScripts)}
     </body>
   </html>

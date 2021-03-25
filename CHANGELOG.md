@@ -1,5 +1,44 @@
 ## Changelog
 
+## 3.4.8 (March 23 2021)
+
+- Feat: support share memory with subpackages
+- Chore: reduce miniapp size with subPackages
+- Fix: windows error with document
+
+## 3.4.7 (March 19 2021)
+
+- Fix: rax render won't override original content with initialHTML is undefined 
+
+## 3.4.6 (March 18 2021)
+
+- Chore: invalid version 
+
+### 3.4.5 (March 18 2021)
+
+- Chore: ensure builtin scripts load order
+- Chore: remove comment node without ssr
+
+### 3.4.4 (March 17 2021)
+
+- Chore: update typescript/ts-loader version
+- Fix: pha dev mode error without pha-worker.js
+- Refactor: ssr html parser
+
+### 3.4.3 (March 12 2021)
+
+- Chore: upgrade less && less-loader
+- Fix: web dev server content base
+- Fix: ssr search default value
+
+### 3.4.2 (March 09 2021)
+
+- Feat: support multiple pages in PHA
+- Fix: SPA with document is invalid
+- Fix: document dev shouldn't block when hot reload
+- Fix: `.ts` file won't add babel JSX compiler
+- Chore: dev server should be applied to every webpack config
+
 ### 3.4.1 (March 04 2021)
 
 - Chore: update sass-loader

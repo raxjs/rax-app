@@ -8,6 +8,7 @@ const { codeFrameColumns } = require('@babel/code-frame');
 module.exports = function traverseImport(options, inputSource, sourceMapOption) {
   let specified; // Collector import specifiers
   let hasPlatformSpecified = false;
+  const { sourceFileName } = sourceMapOption;
 
   const platformMap = {
     weex: ['isWeex'],
@@ -84,8 +85,8 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
     ast = babelParser.parse(inputSource, {
       sourceType: 'module',
       plugins: [
-        'jsx',
-        'typescript',
+        /\.ts$/.test(sourceFileName) ? '' : 'jsx',
+        /\.tsx?$/.test(sourceFileName) ? 'typescript' : '',
         'classProperties',
         'objectRestSpread',
         'optionalCatchBinding',

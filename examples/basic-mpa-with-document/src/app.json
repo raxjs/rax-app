@@ -5,8 +5,7 @@
       "source": "pages/Home/index",
       "window": {
         "title": "home"
-      },
-      "spm": "b456"
+      }
     },
     {
       "path": "/about",
@@ -15,6 +14,5 @@
   ],
   "window": {
     "title": "Rax App"
-  },
-  "spm": "a123"
+  }
 }
