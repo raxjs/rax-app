@@ -11,7 +11,7 @@ export default function addCustomRenderComponentToHTML(
     useRunApp,
     doctype = '<!DOCTYPE html>',
     injectedHTML = { scripts: [] },
-    injectServerSideData,
+    disableServerData,
   }: ILoaderQuery,
 ) {
   const scripts = [];
@@ -71,9 +71,9 @@ export default function addCustomRenderComponentToHTML(
 
     $.insertScript(${JSON.stringify(injectedHTML.scripts || [])});
 
-    ${injectServerSideData ? `if (html.indexOf('window.__INITIAL_DATA__=') < 0) {
+    ${disableServerData ? '' : `if (html.indexOf('window.__INITIAL_DATA__=') < 0) {
       $.insertScript('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>')
-    }` : ''}
+    }`}
 
 
     return '${doctype || ''}' + $.html();
