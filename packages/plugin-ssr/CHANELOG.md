@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.6
+
+- Chore: only remove comment node with build command
+- Chore: change `injectServerSideData` to `updateDataInClient`
+
 ## v1.3.5
 
 - - Chore: remove comment node when ssr compiled

@@ -1,5 +1,11 @@
 # Changelog
 
+## v6.2.11
+
+- Feat: add cli options `--analyzer-target`
+- Feat: support ssr css-module
+- Chore: remove print local url in console
+
 ## v6.2.10
 
 - Chore: rax-webpack-config update
