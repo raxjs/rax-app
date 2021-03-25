@@ -18,7 +18,7 @@ describe('should start web devServer: ', () => {
     page = res.page;
     browser = res.browser;
     await page.waitForFunction(`document.getElementsByTagName('span').length > 0`);
-    expect(await page.$$text('#title')).toStrictEqual(['Welcome to Your Rax App']);
+    expect(await page.$$text('.title')).toStrictEqual(['Welcome to Your Rax App']);
     await page.click('#link');
     await page.waitForFunction(`document.getElementsByClassName('about').length > 0`);
   }, 120000);
