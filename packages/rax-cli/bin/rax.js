@@ -179,7 +179,7 @@ function askProjectInformaction(appTemplate) {
 
 async function createProject(name, verbose, template, userAnswers) {
   const projectName = name;
-
+  let isAliInternal;
   let rootDir = process.cwd();
   if (!createInCurrent) {
     rootDir = path.resolve(name);
@@ -246,13 +246,15 @@ async function createProject(name, verbose, template, userAnswers) {
     const materialTemplate = typeToTemplate[projectType][languageType] ? typeToTemplate[projectType][languageType] : typeToTemplate[projectType];
 
     await downloadMaterialTemplate(tempDir, materialTemplate, registry);
+    isAliInternal = await checkAliInternal();
     await generateMaterial({
       rootDir,
       materialTemplateDir: tempDir,
       templateOptions: {
         npmName: 'rax-example',
         projectTargets: targets,
-        miniappComponentBuildType
+        miniappComponentBuildType,
+        isAliInternal
       },
       materialType: 'component',
     });
@@ -264,7 +266,6 @@ async function createProject(name, verbose, template, userAnswers) {
     console.log(chalk.white(`   cd ${projectName}`));
   }
 
-  const isAliInternal = await checkAliInternal();
   let npmCommand = 'npm';
   let explanation = '';
   if (isAliInternal) {
