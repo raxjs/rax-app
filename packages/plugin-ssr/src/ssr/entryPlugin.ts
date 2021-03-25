@@ -29,17 +29,17 @@ export default class EntryPlugin {
     } = api;
     const { publicPath } = compiler.options.output;
     const staticConfig = getValue(STATIC_CONFIG);
-    const { disableServerData } = staticConfig;
+    const { updateDataInClient } = web.ssr;
     const pageConfig = getPageConfig(api, staticConfig);
 
-    if (!disableServerData) {
+    if (!updateDataInClient) {
       log.info('Enabled inject initial data into HTML.');
     }
 
     let query: ILoaderQuery = {
       tempPath: getValue(TEMP_PATH),
       useRunApp: !web.mpa,
-      disableServerData,
+      updateDataInClient,
     };
 
     if (documentPath) {

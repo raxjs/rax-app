@@ -1,7 +1,7 @@
 import { ILoaderQuery } from '../types';
 import addPageHTMLAssign from './addPageHTMLAssign';
 
-export default function addBuiltInRenderComponentToHTML({ useRunApp, disableServerData }: ILoaderQuery) {
+export default function addBuiltInRenderComponentToHTML({ useRunApp, updateDataInClient }: ILoaderQuery) {
   return `
   async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate = "__RAX_APP_SERVER_HTML_TEMPLATE__") {
     const $ = new Generator(htmlTemplate);
@@ -15,7 +15,7 @@ export default function addBuiltInRenderComponentToHTML({ useRunApp, disableServ
     // Assign pageHTML
     ${addPageHTMLAssign(useRunApp)}
     $.root.innerHTML = pageHTML;
-    ${disableServerData ? '' : '$.insertScript(\'<script data-from="server">window.__INITIAL_DATA__=\' + JSON.stringify(data) + \'</script>\');'}
+    ${updateDataInClient ? '' : '$.insertScript(\'<script data-from="server">window.__INITIAL_DATA__=\' + JSON.stringify(data) + \'</script>\');'}
     return $.html();
   };
   `;
