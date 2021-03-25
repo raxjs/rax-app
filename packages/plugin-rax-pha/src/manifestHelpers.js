@@ -76,7 +76,7 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
 }
 
 function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
-  const { source, name } = page;
+  const { source, name, query_params = '' } = page;
   let entryName;
   if (name) {
     entryName = name;
@@ -85,9 +85,18 @@ function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
     const dir = pathPackage.dirname(source);
     entryName = pathPackage.parse(dir).name.toLocaleLowerCase();
   }
+  let pageUrl = '';
+  if (entryName) {
+    pageUrl = `${urlPrefix + entryName + urlSuffix}`;
+  }
 
+  if (pageUrl && query_params) {
+    pageUrl = `${pageUrl}?${query_params}`;
+  }
+
+  delete page.source;
   return {
-    pageUrl: entryName ? `${urlPrefix + entryName + urlSuffix}` : '',
+    pageUrl,
     entryName,
   };
 }
@@ -129,7 +138,6 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
     }
   }
 
-  delete page.source;
   return page;
 }
 
@@ -148,10 +156,7 @@ function setRealUrlToManifest(options, manifest) {
   }
 
   if (tab_bar && tab_bar.source && !tab_bar.url) {
-    tab_bar.url = getRealPageInfo(options, {
-      source: tab_bar.source,
-      name: tab_bar.name,
-    }).pageUrl;
+    tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
   }
 
   if (pages && pages.length > 0) {
@@ -164,10 +169,7 @@ function setRealUrlToManifest(options, manifest) {
       }
 
       if (page.tab_header && page.tab_header.source) {
-        page.tab_header.url = getRealPageInfo(options, {
-          source: page.tab_header.source,
-          name: page.tab_header.name,
-        }).pageUrl;
+        page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
       }
       return changePageInfo(options, page, manifest);
     });

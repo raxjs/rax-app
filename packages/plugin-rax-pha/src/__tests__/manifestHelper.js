@@ -163,10 +163,12 @@ describe('setRealUrlToManifest', () => {
       },
       {
         tab_header: {
-          source: 'pages/Header/index'
+          source: 'pages/Header/index',
+          query_params: 'b=true'
         },
         path: '/home1',
         source: 'pages/Home1/index',
+        query_params: 'c=123'
       },
       {
         frames: [{
@@ -177,6 +179,7 @@ describe('setRealUrlToManifest', () => {
     ],
     tab_bar: {
       source: 'pages/TabBar/index',
+      query_params: 'a=2'
     }
   };
   const options = {
@@ -198,10 +201,10 @@ describe('setRealUrlToManifest', () => {
     expect(manifest.pages[0].key).toBe('home3');
     expect(manifest.pages[0].script).toBe('https://cdn.com/home3.js');
     expect(manifest.pages[0].stylesheet).toBe('https://cdn.com/home3.css');
-    expect(manifest.pages[1].path).toBe('https://abc.com/home1');
+    expect(manifest.pages[1].path).toBe('https://abc.com/home1?c=123');
     expect(manifest.pages[2].frames[0].path).toBe('https://abc.com/frame1');
-    expect(manifest.pages[1].tab_header.url).toBe('https://abc.com/header');
-    expect(manifest.tab_bar.url).toBe('https://abc.com/tabbar');
+    expect(manifest.pages[1].tab_header.url).toBe('https://abc.com/header?b=true');
+    expect(manifest.tab_bar.url).toBe('https://abc.com/tabbar?a=2');
   });
 
   it('should set document to manifest', () => {
