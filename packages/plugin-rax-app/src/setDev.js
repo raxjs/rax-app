@@ -86,7 +86,7 @@ module.exports = function (api) {
     logWebpackConfig(configs);
   });
 
-  onHook('after.start.compile', async ({ urls, stats }) => {
+  onHook('after.start.compile', async ({ stats }) => {
     const statsJson = stats.toJson({
       all: false,
       errors: true,
@@ -168,21 +168,18 @@ module.exports = function (api) {
             const entryPath = webMpa ? `${entryKey}${web.ssr ? '' : '.html'}` : '';
             const lanUrl = `${urlPrefix}/${entryPath}`;
             devInfo.urls.web.push(lanUrl);
-            showLocalUrl && console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}${entryPath}`)}`);
             console.log(`  ${chalk.underline.white(lanUrl)}`);
-            console.log();
             if (shouldOpenBrowser && openEntries.includes(entryKey)) {
-              openBrowser(`${urls.localUrlForBrowser}${entryPath}`);
+              openBrowser(lanUrl);
             }
           });
         } else {
           devInfo.urls.web.push(`${urlPrefix}/`);
-          console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}`)}`);
           console.log(`  ${chalk.underline.white(`${urlPrefix}/`)}`);
           console.log();
 
           if (shouldOpenBrowser) {
-            openBrowser(`${urls.localUrlForBrowser}`);
+            openBrowser(`${urlPrefix}/`);
           }
         }
       }
