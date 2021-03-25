@@ -162,6 +162,9 @@ describe('setRealUrlToManifest', () => {
         }],
       },
       {
+        tab_header: {
+          source: 'pages/Header/index'
+        },
         path: '/home1',
         source: 'pages/Home1/index',
       },
@@ -172,6 +175,9 @@ describe('setRealUrlToManifest', () => {
         }]
       }
     ],
+    tab_bar: {
+      source: 'pages/TabBar/index',
+    }
   };
   const options = {
     urlPrefix: 'https://abc.com/',
@@ -194,6 +200,8 @@ describe('setRealUrlToManifest', () => {
     expect(manifest.pages[0].stylesheet).toBe('https://cdn.com/home3.css');
     expect(manifest.pages[1].path).toBe('https://abc.com/home1');
     expect(manifest.pages[2].frames[0].path).toBe('https://abc.com/frame1');
+    expect(manifest.pages[1].tab_header.url).toBe('https://abc.com/header');
+    expect(manifest.tab_bar.url).toBe('https://abc.com/tabbar');
   });
 
   it('should set document to manifest', () => {

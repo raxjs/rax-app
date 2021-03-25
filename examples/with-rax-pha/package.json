@@ -10,6 +10,7 @@
     "rax-view": "^1.0.0"
   },
   "devDependencies": {
+    "@ali/build-plugin-rax-app-def": "^3.4.1",
     "@types/rax": "^1.0.0"
   },
   "scripts": {

@@ -75,6 +75,23 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
   return data;
 }
 
+function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
+  const { source, name } = page;
+  let entryName;
+  if (name) {
+    entryName = name;
+    page.key = name;
+  } else if (source) {
+    const dir = pathPackage.dirname(source);
+    entryName = pathPackage.parse(dir).name.toLocaleLowerCase();
+  }
+
+  return {
+    pageUrl: entryName ? `${urlPrefix + entryName + urlSuffix}` : '',
+    entryName,
+  };
+}
+
 /*
  * change page info
  */
@@ -85,17 +102,13 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
     return page;
   }
   const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
-  let entryName;
-  if (name) {
-    entryName = name;
-    page.key = name;
-  } else if (source) {
-    const dir = pathPackage.dirname(source);
-    entryName = pathPackage.parse(dir).name.toLocaleLowerCase();
-  }
+  const { entryName, pageUrl } = getRealPageInfo({
+    urlPrefix,
+    urlSuffix,
+  }, page);
   if (entryName) {
     if (!page.path || !page.path.startsWith('http')) {
-      page.path = `${urlPrefix + entryName + urlSuffix}`;
+      page.path = pageUrl;
     }
 
     if (isTemplate) {
@@ -129,12 +142,20 @@ function setRealUrlToManifest(options, manifest) {
     return manifest;
   }
 
-  if (manifest.app_worker && manifest.app_worker.url) {
-    manifest.app_worker.url = cdnPrefix + manifest.app_worker.url;
+  const { app_worker, tab_bar, pages } = manifest;
+  if (app_worker && app_worker.url) {
+    app_worker.url = cdnPrefix + app_worker.url;
   }
 
-  if (manifest.pages && manifest.pages.length > 0) {
-    manifest.pages = manifest.pages.map((page) => {
+  if (tab_bar && tab_bar.source && !tab_bar.url) {
+    tab_bar.url = getRealPageInfo(options, {
+      source: tab_bar.source,
+      name: tab_bar.name,
+    }).pageUrl;
+  }
+
+  if (pages && pages.length > 0) {
+    manifest.pages = pages.map((page) => {
       // has frames
       if (page.frames && page.frames.length > 0) {
         page.frames = page.frames.map((frame) => {
@@ -142,6 +163,12 @@ function setRealUrlToManifest(options, manifest) {
         });
       }
 
+      if (page.tab_header && page.tab_header.source) {
+        page.tab_header.url = getRealPageInfo(options, {
+          source: page.tab_header.source,
+          name: page.tab_header.name,
+        }).pageUrl;
+      }
       return changePageInfo(options, page, manifest);
     });
   }
