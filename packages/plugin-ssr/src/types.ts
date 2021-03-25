@@ -23,5 +23,5 @@ export interface ILoaderQuery {
   assetsProcessor?: string;
   pageConfig?: IPageConfig;
   doctype?: string;
-  disableServerSideData: boolean | string;
+  disableServerData: boolean | string;
 }
