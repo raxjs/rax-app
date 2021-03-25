@@ -201,7 +201,7 @@ module.exports = function (api) {
         krakenEntryKeys.forEach((entryKey) => {
           const krakenURL = `${urlPrefix}/kraken/${krakenMpa ? entryKey : 'index'}.js`;
           devInfo.urls.kraken.push(krakenURL);
-          console.log(`  ${chalk.underline.white(`kraken -u ${krakenURL}`)}`);
+          console.log(`  ${chalk.underline.white(`kraken ${krakenURL}`)}`);
           console.log();
         });
       }
