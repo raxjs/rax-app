@@ -59,7 +59,7 @@ export default function () {
   const appConfigPath = path.join(query.tempPath, 'appConfig.ts');
   query.useRunApp = query.useRunApp === 'true';
   query.needInjectStyle = query.needInjectStyle === 'true';
-  query.disableServerData = query.disableServerData === 'true';
+  query.updateDataInClient = query.updateDataInClient === 'true';
   let code = `
     import Generator from '@builder/html-generator';
     import { createElement } from 'rax';
