@@ -86,7 +86,7 @@ module.exports = function (api) {
     logWebpackConfig(configs);
   });
 
-  onHook('after.start.compile', async ({ urls, stats }) => {
+  onHook('after.start.compile', async ({ stats }) => {
     const statsJson = stats.toJson({
       all: false,
       errors: true,
@@ -179,7 +179,7 @@ module.exports = function (api) {
           console.log();
 
           if (shouldOpenBrowser) {
-            openBrowser(`${urls.localUrlForBrowser}`);
+            openBrowser(`${urlPrefix}/`);
           }
         }
       }
