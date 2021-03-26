@@ -179,7 +179,7 @@ function askProjectInformaction(appTemplate) {
 
 async function createProject(name, verbose, template, userAnswers) {
   const projectName = name;
-
+  const isAliInternal = await checkAliInternal();
   let rootDir = process.cwd();
   if (!createInCurrent) {
     rootDir = path.resolve(name);
@@ -189,7 +189,7 @@ async function createProject(name, verbose, template, userAnswers) {
     process.chdir(rootDir);
   }
 
-  const { projectType = 'app', targets, appType, languageType } = userAnswers;
+  const { projectType = 'app', targets, appType, languageType, miniappComponentBuildType = 'compile' } = userAnswers;
   const registry = 'https://registry.npm.taobao.org';
 
   console.log(
@@ -252,6 +252,8 @@ async function createProject(name, verbose, template, userAnswers) {
       templateOptions: {
         npmName: 'rax-example',
         projectTargets: targets,
+        miniappComponentBuildType,
+        isAliInternal
       },
       materialType: 'component',
     });
@@ -263,7 +265,6 @@ async function createProject(name, verbose, template, userAnswers) {
     console.log(chalk.white(`   cd ${projectName}`));
   }
 
-  const isAliInternal = await checkAliInternal();
   let npmCommand = 'npm';
   let explanation = '';
   if (isAliInternal) {
