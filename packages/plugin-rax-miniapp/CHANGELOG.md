@@ -3,6 +3,7 @@
 ## v1.2.3
 
 - Feat: support config `disableCopyNpm` when dual engine
+- Chore: ignore css order warning
 - Fix: require error in alibaba miniapp
 
 ## v1.2.2
