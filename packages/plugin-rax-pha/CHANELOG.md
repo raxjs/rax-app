@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.2
+
+- Feat: support build tabBar page
+
 ## v1.3.1
 
 - Fix: pha dev error without pha-worker.js

@@ -106,7 +106,7 @@ function getTitleByStaticConfig(staticConfig, { entryName, mpa, rootDir }): stri
       return [...prev, ...getEntriesByRoute(curr, rootDir)];
     }, [])
     .find(({ entryName: pageEntry }) => pageEntry === entryName);
-  return route.window?.title || staticConfig.window?.title;
+  return route?.window?.title || staticConfig.window?.title;
 }
 
 /**

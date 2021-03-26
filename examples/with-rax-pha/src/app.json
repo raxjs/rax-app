@@ -1,6 +1,10 @@
 {
   "routes": [
     {
+      "pageHeader": {
+        "source": "pages/Header/index",
+        "height": 150
+      },
       "frames": [
         {
           "path": "/",
@@ -16,15 +20,16 @@
       ]
     },
     {
-      "path": "/home-single",
-      "source": "pages/Home-Single/index"
-    },
-    {
       "path": "/about-single",
       "source": "pages/About-Single/index"
     }
   ],
   "window": {
     "title": "PHA Demo"
+  },
+  "tabBar": {
+    "source": "pages/Home-Single/index",
+    "height": 150,
+    "items": [{}, {}]
   }
 }
