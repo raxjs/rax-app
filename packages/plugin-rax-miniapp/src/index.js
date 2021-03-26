@@ -73,7 +73,7 @@ module.exports = (api) => {
             entryPath: './src/app',
           });
         } else {
-          const { subPackages } = userConfig[target] || {};
+          const { subPackages, disableCopyNpm = true } = userConfig[target] || {};
           if (vendor && subPackages) {
             const originalSplitChunks = config.optimization.get('splitChunks');
             config.optimization.splitChunks({
@@ -87,6 +87,14 @@ module.exports = (api) => {
                 },
               },
             });
+            if (config.plugins.has('MiniCssExtractPlugin')) {
+              config.plugin('MiniCssExtractPlugin').tap((options) => [
+                {
+                  ...options[0],
+                  ignoreOrder: true,
+                },
+              ]);
+            }
           }
 
           const originalExternals = config.get('externals');
@@ -97,6 +105,9 @@ module.exports = (api) => {
               const sharedDir = 'miniapp-native/shared';
               if (request.indexOf(sharedDir) !== -1) {
                 const index = request.indexOf(sharedDir);
+                if (target === 'miniapp') {
+                  return callback(null, `string require('/${request.slice(index)}')`);
+                }
                 return callback(null, `string getApp().requireModule('./${request.slice(index)}')`);
               }
               callback();
@@ -124,7 +135,7 @@ module.exports = (api) => {
 
             setComponentCompileConfig(
               compiledComponentsChainConfig,
-              { disableCopyNpm: true },
+              { disableCopyNpm },
               {
                 target,
                 context,

@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.10
+
+- Feat: support build tabBar page
+
 ## v1.3.9
 
 - Fix: windows error with document

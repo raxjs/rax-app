@@ -1,5 +1,13 @@
 ## Changelog
 
+## 3.4.9 (March 25 2021)
+
+ - Feat: add --analyzer-target=web to avoid port conflict with multiple task
+ - Feat: support build tabbar html when configured source in tabbar for PHA
+ - Chore: change injectServerSideData to updateDataInClient
+ - Chore: remove print local url in console
+ - Fix: alibaba miniapp subPackages error
+
 ## 3.4.8 (March 23 2021)
 
 - Feat: support share memory with subpackages
