@@ -87,6 +87,14 @@ module.exports = (api) => {
                 },
               },
             });
+            if (config.plugins.has('MiniCssExtractPlugin')) {
+              config.plugin('MiniCssExtractPlugin').tap((options) => [
+                {
+                  ...options[0],
+                  ignoreOrder: true,
+                },
+              ]);
+            }
           }
 
           const originalExternals = config.get('externals');
