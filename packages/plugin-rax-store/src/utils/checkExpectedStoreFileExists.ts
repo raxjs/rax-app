@@ -5,12 +5,24 @@ import { getAppStorePath, getRaxPagesName, getPageStorePath } from './getPath';
 
 function checkExpectedStoreFileExists({ rootDir, srcDir, projectType }) {
   const srcPath = path.join(rootDir, srcDir);
-  // check src/store.[js/ts] if it's expected
+
+  checkExpectedAppStore(srcPath, projectType);
+  checkExpectedPageStore(rootDir, srcPath, projectType);
+}
+
+/**
+ * check src/store.[js/ts] if it's expected
+ */
+function checkExpectedAppStore(srcPath, projectType) {
   const appStoreFilePath = getAppStorePath({ srcPath, projectType });
   const appStoreMatchingPaths = globby.sync(path.join(srcPath, 'store.*'));
   checkFileExists(appStoreMatchingPaths, appStoreFilePath);
+}
 
-  // check src/pages/Home/store.[js|ts] if's expected
+/**
+ * check src/pages/Home/store.[js|ts] if's expected
+ */
+function checkExpectedPageStore(rootDir, srcPath, projectType) {
   const pagesNames = getRaxPagesName(rootDir);
   pagesNames.forEach((pageName) => {
     const pageStorePath = getPageStorePath({ pageName, srcPath, projectType });
