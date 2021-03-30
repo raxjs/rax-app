@@ -28,7 +28,13 @@ export default async (api) => {
   const appStoreFilePath = formatPath(getAppStorePath({ srcPath, projectType }));
   const existsAppStoreFile = fse.pathExistsSync(appStoreFilePath);
 
-  applyMethod('addExport', { source: '@ice/store', specifier: '{ createStore }', exportName: 'createStore' });
+  applyMethod('addExport', {
+    source: '@ice/store',
+    specifier: '{ createStore }',
+    exportName: 'createStore',
+    importSource: '@ice/store',
+    exportMembers: ['createStore'],
+  });
 
   const mpa = checkIsMpa(userConfig);
   applyMethod(
