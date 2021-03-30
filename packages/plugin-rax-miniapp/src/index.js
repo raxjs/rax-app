@@ -79,12 +79,12 @@ module.exports = (api) => {
             const vendorTests = [];
             if (shareMemory) {
               config.optimization.runtimeChunk({ name: 'webpack-runtime' });
-              vendorTests.push('\.rax');
+              vendorTests.push('\\.rax');
             }
             const originalSplitChunks = config.optimization.get('splitChunks');
             const { vendor: originalVendor } = originalSplitChunks.cacheGroups || {};
             if (originalVendor.test) {
-              vendorTests.push(originalVendor.test);
+              vendorTests.push(originalVendor.test instanceof RegExp ? originalVendor.test.source : originalVendor.test);
             }
             config.optimization.splitChunks({
               ...originalSplitChunks,
@@ -95,10 +95,11 @@ module.exports = (api) => {
                   chunks: 'all',
                   name: 'vendors',
                   minChunks: 2,
-                  test: vendorTests.join('|'),
+                  test: new RegExp(vendorTests.join('|')),
                 },
               },
             });
+            console.log("vendorTests.join('|')====>", new RegExp(vendorTests.join('|')));
             if (config.plugins.has('MiniCssExtractPlugin')) {
               config.plugin('MiniCssExtractPlugin').tap((options) => [
                 {
