@@ -5,9 +5,9 @@ import { getAppStorePath, getRaxPagesName, getPageStorePath } from './getPath';
 
 function checkExpectedStoreFileExists({ rootDir, srcDir, projectType }) {
   const srcPath = path.join(rootDir, srcDir);
-
-  checkExpectedAppStore(srcPath, projectType);
-  checkExpectedPageStore(rootDir, srcPath, projectType);
+  const appStoreExists = checkExpectedAppStore(srcPath, projectType);
+  const pageStoreExists = checkExpectedPageStore(rootDir, srcPath, projectType);
+  return appStoreExists || pageStoreExists;
 }
 
 /**
@@ -16,7 +16,7 @@ function checkExpectedStoreFileExists({ rootDir, srcDir, projectType }) {
 function checkExpectedAppStore(srcPath, projectType) {
   const appStoreFilePath = getAppStorePath({ srcPath, projectType });
   const appStoreMatchingPaths = globby.sync(path.join(srcPath, 'store.*'));
-  checkFileExists(appStoreMatchingPaths, appStoreFilePath);
+  return checkFileExists(appStoreMatchingPaths, appStoreFilePath);
 }
 
 /**
@@ -24,16 +24,25 @@ function checkExpectedAppStore(srcPath, projectType) {
  */
 function checkExpectedPageStore(rootDir, srcPath, projectType) {
   const pagesNames = getRaxPagesName(rootDir);
-  pagesNames.forEach((pageName) => {
+
+  const existStorePageNames = pagesNames.filter((pageName) => {
     const pageStorePath = getPageStorePath({ pageName, srcPath, projectType });
     const pageStoreMatchingPaths = globby.sync(pageStorePath.replace(`store.${projectType}`, 'store.*'));
-    checkFileExists(pageStoreMatchingPaths, pageStorePath);
+    return checkFileExists(pageStoreMatchingPaths, pageStorePath);
   });
+
+  return !!existStorePageNames.length;
 }
 
 function checkFileExists(matchingPaths: string[], expectedFilePath: string) {
-  if (matchingPaths.length && !matchingPaths.find((matchingPath) => matchingPath === expectedFilePath)) {
-    console.log(chalk.yellow(chalk.black.bgYellow(' WARNING '), `Expect ${expectedFilePath}, but found ${matchingPaths.join(', ')}.`));
+  if (!matchingPaths.length) {
+    return false;
+  } else {
+    if (!matchingPaths.find((matchingPath) => matchingPath === expectedFilePath)) {
+      console.log(chalk.yellow(chalk.black.bgYellow(' WARNING '), `Expect ${expectedFilePath}, but found ${matchingPaths.join(', ')}.`));
+      return false;
+    }
+    return true;
   }
 }
 
