@@ -76,15 +76,15 @@ module.exports = (api) => {
           const { subPackages, disableCopyNpm = true } = userConfig[target] || {};
           if (vendor && subPackages) {
             const { shareMemory } = subPackages;
-            const vendorTests = [];
-            if (shareMemory) {
-              config.optimization.runtimeChunk({ name: 'webpack-runtime' });
-              vendorTests.push('\\.rax');
-            }
             const originalSplitChunks = config.optimization.get('splitChunks');
             const { vendor: originalVendor } = originalSplitChunks.cacheGroups || {};
+            let vendorTests = [];
             if (originalVendor.test) {
               vendorTests.push(originalVendor.test instanceof RegExp ? originalVendor.test.source : originalVendor.test);
+            }
+            if (shareMemory) {
+              config.optimization.runtimeChunk({ name: 'webpack-runtime' });
+              vendorTests = ['.*'];
             }
             config.optimization.splitChunks({
               ...originalSplitChunks,
@@ -99,7 +99,6 @@ module.exports = (api) => {
                 },
               },
             });
-            console.log("vendorTests.join('|')====>", new RegExp(vendorTests.join('|')));
             if (config.plugins.has('MiniCssExtractPlugin')) {
               config.plugin('MiniCssExtractPlugin').tap((options) => [
                 {
