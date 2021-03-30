@@ -5,10 +5,14 @@
   ],
   "miniapp": {
     "buildType": "runtime",
-    "subPackages": true
+    "subPackages": {
+      "shareMemory": true
+    }
   },
   "wechat-miniprogram": {
-    "buildType": "runtime",
-    "subPackages": true
+    "buildType": "runtime","subPackages": {
+      "shareMemory": true,
+      "shareFiles": ["\\/test\\.js|node_modules|.rax"]
+    }
   }
 }

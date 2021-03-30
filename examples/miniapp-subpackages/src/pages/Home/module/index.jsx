@@ -2,7 +2,7 @@ import { createElement } from 'rax';
 import View from 'rax-view';
 import Text from 'rax-text';
 import { isMiniApp } from 'universal-env';
-import { getA, setA } from '@/miniapp-native/shared/test';
+import { getA, setA } from '@/test';
 
 import styles from './index.module.css';
 

@@ -75,6 +75,7 @@ module.exports = (api) => {
         } else {
           const { subPackages, disableCopyNpm = true } = userConfig[target] || {};
           if (vendor && subPackages) {
+            const { shareMemory } = subPackages;
             const originalSplitChunks = config.optimization.get('splitChunks');
             config.optimization.splitChunks({
               ...originalSplitChunks,
@@ -95,24 +96,11 @@ module.exports = (api) => {
                 },
               ]);
             }
+
+            if (shareMemory) {
+              config.optimization.runtimeChunk({ name: 'webpack-runtime' });
+            }
           }
-
-          const originalExternals = config.get('externals');
-
-          config.externals([
-            ...originalExternals,
-            function (ctx, request, callback) {
-              const sharedDir = 'miniapp-native/shared';
-              if (request.indexOf(sharedDir) !== -1) {
-                const index = request.indexOf(sharedDir);
-                if (target === 'miniapp') {
-                  return callback(null, `string require('/${request.slice(index)}')`);
-                }
-                return callback(null, `string getApp().requireModule('./${request.slice(index)}')`);
-              }
-              callback();
-            },
-          ]);
 
           setConfig(config, {
             api,
