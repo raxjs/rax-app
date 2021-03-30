@@ -6,6 +6,7 @@ import {
   getRaxPagesPath,
 } from './utils/getPath';
 import { formatPath, checkExportDefaultDeclarationExists } from '@builder/app-helpers';
+import * as chalk from 'chalk';
 
 export interface IRenderPageParams {
   pageStoreFile: string;
@@ -62,10 +63,16 @@ export default class Generator {
         projectType: this.projectType,
       }));
       const existedStoreFile = fse.pathExistsSync(pageStoreFile);
-      if (!existedStoreFile || !checkExportDefaultDeclarationExists(pageComponentPath)) {
+      if (!existedStoreFile) {
         // don't generate .rax/pages/Home/index.tsx
         // 1. the page store does not exist
         // 2. the entry has no `export default`
+        return;
+      } else if (!checkExportDefaultDeclarationExists(pageComponentPath)) {
+        console.log(chalk.yellow(
+          chalk.black.bgYellow(' WARNING '),
+          `The page entry ${pageComponentPath} will not be wrapped <store.Provider> by framework. Please wrap the <store.Provider> in this page by yourself. For more detail, please see https://rax.js.org/docs/guide/store.`,
+        ));
         return;
       }
       const params = {

@@ -1,7 +1,8 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import CodeGenerator from './generator';
-import checkStoreExists from './utils/checkStoreExists';
+import isStoreExists from './utils/isStoreExists';
+import checkExpectedStoreFileExists from './utils/checkExpectedStoreFileExists';
 import { getAppStorePath } from './utils/getPath';
 import checkIsMpa from './utils/checkIsMpa';
 import { formatPath } from '@builder/app-helpers';
@@ -18,12 +19,14 @@ export default async (api) => {
   const tempPath = getValue('TEMP_PATH');
   const projectType = getValue('PROJECT_TYPE');
 
-  const storeExists = checkStoreExists({ rootDir, srcDir, projectType });
+  const storeExists = isStoreExists({ rootDir, srcDir, projectType });
   if (!storeExists) {
     applyMethod('addDisableRuntimePlugin', pluginName);
     return;
   }
   process.env.STORE_ENABLED = 'true';
+
+  checkExpectedStoreFileExists({ srcDir, rootDir, projectType });
 
   const appStoreFilePath = formatPath(getAppStorePath({ srcPath, projectType }));
   const existsAppStoreFile = fse.pathExistsSync(appStoreFilePath);
