@@ -75,5 +75,11 @@ export default async (api) => {
     applyMethod('watchFileChange', /models\/.*|model.*|pages\/\w+\/index(.jsx?|.tsx)/, () => {
       gen.render();
     });
+    applyMethod('watchFileChange', /store.*/, (event: string) => {
+      if (event === 'add') {
+        // when add store.ts, restart WDS
+        process.send({ type: 'RESTART_DEV' });
+      }
+    });
   });
 };
