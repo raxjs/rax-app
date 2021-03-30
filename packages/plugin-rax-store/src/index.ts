@@ -19,14 +19,14 @@ export default async (api) => {
   const tempPath = getValue('TEMP_PATH');
   const projectType = getValue('PROJECT_TYPE');
 
+  checkExpectedStoreFileExists({ srcDir, rootDir, projectType });
+
   const storeExists = isStoreExists({ rootDir, srcDir, projectType });
   if (!storeExists) {
     applyMethod('addDisableRuntimePlugin', pluginName);
     return;
   }
   process.env.STORE_ENABLED = 'true';
-
-  checkExpectedStoreFileExists({ srcDir, rootDir, projectType });
 
   const appStoreFilePath = formatPath(getAppStorePath({ srcPath, projectType }));
   const existsAppStoreFile = fse.pathExistsSync(appStoreFilePath);
