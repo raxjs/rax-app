@@ -76,15 +76,26 @@ module.exports = (api) => {
           const { subPackages, disableCopyNpm = true } = userConfig[target] || {};
           if (vendor && subPackages) {
             const { shareMemory } = subPackages;
+            const vendorTests = [];
+            if (shareMemory) {
+              config.optimization.runtimeChunk({ name: 'webpack-runtime' });
+              vendorTests.push('\.rax');
+            }
             const originalSplitChunks = config.optimization.get('splitChunks');
+            const { vendor: originalVendor } = originalSplitChunks.cacheGroups || {};
+            if (originalVendor.test) {
+              vendorTests.push(originalVendor.test);
+            }
             config.optimization.splitChunks({
               ...originalSplitChunks,
               cacheGroups: {
                 ...originalSplitChunks.cacheGroups,
                 vendor: {
-                  ...(originalSplitChunks.cacheGroups || {}).vendor,
+                  ...originalVendor,
                   chunks: 'all',
                   name: 'vendors',
+                  minChunks: 2,
+                  test: vendorTests.join('|'),
                 },
               },
             });
@@ -95,10 +106,6 @@ module.exports = (api) => {
                   ignoreOrder: true,
                 },
               ]);
-            }
-
-            if (shareMemory) {
-              config.optimization.runtimeChunk({ name: 'webpack-runtime' });
             }
           }
 
