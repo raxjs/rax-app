@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.1
+
+- Fix: vendor test
+
 ## v1.3.0
 
 - Feat: support share memory in every common files with miniapp subpackages
