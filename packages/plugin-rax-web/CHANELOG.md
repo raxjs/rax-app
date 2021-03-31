@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.0
+
+- Fix: csr html structure error with xtpl
+
 ## v1.3.10
 
 - Feat: support build tabBar page

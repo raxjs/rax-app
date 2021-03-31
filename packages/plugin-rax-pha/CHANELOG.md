@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.0
+
+- Feat: support set dataPrefetch for every single page in PHA
+
 ## v1.3.2
 
 - Feat: support build tabBar page
