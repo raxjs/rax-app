@@ -77,14 +77,10 @@ module.exports = (api) => {
           if (vendor && subPackages) {
             const { shareMemory } = subPackages;
             const originalSplitChunks = config.optimization.get('splitChunks');
-            const { vendor: originalVendor } = originalSplitChunks.cacheGroups || {};
-            let vendorTests = [];
-            if (originalVendor.test) {
-              vendorTests.push(originalVendor.test instanceof RegExp ? originalVendor.test.source : originalVendor.test);
-            }
+            const { vendor: originalVendor = {} } = originalSplitChunks.cacheGroups || {};
+
             if (shareMemory) {
               config.optimization.runtimeChunk({ name: 'webpack-runtime' });
-              vendorTests = ['.*'];
             }
             config.optimization.splitChunks({
               ...originalSplitChunks,
@@ -95,7 +91,21 @@ module.exports = (api) => {
                   chunks: 'all',
                   name: 'vendors',
                   minChunks: 2,
-                  test: new RegExp(vendorTests.join('|')),
+                  test(filepath) {
+                    if (shareMemory) {
+                      return /.*/.test(filepath);
+                    }
+                    if (typeof originalVendor.test === 'function') {
+                      return originalVendor.test(filepath);
+                    }
+                    if (originalVendor.test instanceof RegExp) {
+                      return originalVendor.test.test(filepath);
+                    }
+                    if (typeof originalVendor.test === 'string') {
+                      return new RegExp(originalVendor.test).test(filepath);
+                    }
+                    return false;
+                  },
                 },
               },
             });
