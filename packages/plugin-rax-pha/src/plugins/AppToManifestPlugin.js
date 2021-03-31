@@ -91,6 +91,13 @@ module.exports = class {
             }
           });
 
+          const { pages } = copyManifestJSON;
+          // take out the page data prefetch and assign it to the root node
+          if (pages && pages[0] && pages[0].data_prefetch) {
+            copyManifestJSON.data_prefetch = pages[0].data_prefetch;
+            delete pages[0].data_prefetch;
+          }
+
           copyManifestJSON = setRealUrlToManifest({
             urlPrefix: pagePrefix,
             urlSuffix: pageSuffix,

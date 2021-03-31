@@ -1,5 +1,11 @@
 ## Changelog
 
+## 3.4.10 (March 31 2021)
+
+- Feat: support set dataPrefetch for every single page in PHA
+- Feat: support share memory in every common files with miniapp subpackages
+- Fix: csr html structure error with xtpl
+
 ## 3.4.9 (March 25 2021)
 
  - Feat: add --analyzer-target=web to avoid port conflict with multiple task

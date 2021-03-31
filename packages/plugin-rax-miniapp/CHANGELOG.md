@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.0
+
+- Feat: support share memory in every common files with miniapp subpackages
+
 ## v1.2.3
 
 - Feat: support config `disableCopyNpm` when dual engine

@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as Module from 'module';
 import * as cheerio from 'cheerio';
+import * as htmlparser2 from 'htmlparser2';
 import { getEntriesByRoute } from '@builder/app-helpers';
 import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
@@ -66,8 +67,8 @@ export default class DocumentPlugin {
               title,
               pagePath,
             });
-
-            const $ = cheerio.load(html, { decodeEntities: false });
+            const parserOptions = { decodeEntities: false };
+            const $ = cheerio.load(htmlparser2.parseDOM(html, parserOptions), parserOptions);
             $('#root').after(injectedHTML.scripts);
             html = $.html();
           } else {

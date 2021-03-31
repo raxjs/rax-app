@@ -4,7 +4,7 @@ import Text from 'rax-text';
 import styles from './index.module.css';
 
 import Logo from '@/components/Logo';
-import { getA } from '@/miniapp-native/shared/test';
+import { getA } from '@/test';
 
 export default function Home() {
   const [count, setCount] = useState(0);

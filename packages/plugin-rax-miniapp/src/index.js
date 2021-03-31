@@ -75,15 +75,38 @@ module.exports = (api) => {
         } else {
           const { subPackages, disableCopyNpm = true } = userConfig[target] || {};
           if (vendor && subPackages) {
+            const { shareMemory } = subPackages;
             const originalSplitChunks = config.optimization.get('splitChunks');
+            const { vendor: originalVendor = {} } = originalSplitChunks.cacheGroups || {};
+
+            if (shareMemory) {
+              config.optimization.runtimeChunk({ name: 'webpack-runtime' });
+            }
             config.optimization.splitChunks({
               ...originalSplitChunks,
               cacheGroups: {
                 ...originalSplitChunks.cacheGroups,
                 vendor: {
-                  ...(originalSplitChunks.cacheGroups || {}).vendor,
+                  ...originalVendor,
                   chunks: 'all',
                   name: 'vendors',
+                  minChunks: 2,
+                  test(filepath) {
+                    // If shareMemory is true, every common files should be splited to vendors.js
+                    if (shareMemory) {
+                      return true;
+                    }
+                    if (typeof originalVendor.test === 'function') {
+                      return originalVendor.test(filepath);
+                    }
+                    if (originalVendor.test instanceof RegExp) {
+                      return originalVendor.test.test(filepath);
+                    }
+                    if (typeof originalVendor.test === 'string') {
+                      return new RegExp(originalVendor.test).test(filepath);
+                    }
+                    return false;
+                  },
                 },
               },
             });
@@ -96,23 +119,6 @@ module.exports = (api) => {
               ]);
             }
           }
-
-          const originalExternals = config.get('externals');
-
-          config.externals([
-            ...originalExternals,
-            function (ctx, request, callback) {
-              const sharedDir = 'miniapp-native/shared';
-              if (request.indexOf(sharedDir) !== -1) {
-                const index = request.indexOf(sharedDir);
-                if (target === 'miniapp') {
-                  return callback(null, `string require('/${request.slice(index)}')`);
-                }
-                return callback(null, `string getApp().requireModule('./${request.slice(index)}')`);
-              }
-              callback();
-            },
-          ]);
 
           setConfig(config, {
             api,
