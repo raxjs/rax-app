@@ -1,5 +1,8 @@
 ## Changelog
 
+## 3.4.11 (April 1 2021)
+
+- Fix: miniapp vendor test
 ## 3.4.10 (March 31 2021)
 
 - Feat: support set dataPrefetch for every single page in PHA

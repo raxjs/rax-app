@@ -91,7 +91,7 @@ module.exports = (api) => {
                   chunks: 'all',
                   name: 'vendors',
                   minChunks: 2,
-                  test(filepath) {
+                  test({ context: filepath }) {
                     // If shareMemory is true, every common files should be splited to vendors.js
                     if (shareMemory) {
                       return true;
