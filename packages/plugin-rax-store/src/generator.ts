@@ -1,10 +1,6 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import {
-  getPageStorePath,
-  getRaxPageName,
-  getRaxPagesPath,
-} from './utils/getPath';
+import { getPageStorePath, getRaxPageName } from './utils/getPath';
 import { formatPath, checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 
 export interface IRenderPageParams {
@@ -24,24 +20,29 @@ export default class Generator {
 
   private srcDir: string;
 
+  private pageEntries: string[];
+
   constructor({
     rootDir,
     tempPath,
     applyMethod,
     projectType,
     srcDir,
+    pageEntries,
   }: {
     rootDir: string;
     tempPath: string;
     projectType: string;
     applyMethod: Function;
     srcDir: string;
+    pageEntries: string[];
   }) {
     this.rootDir = rootDir;
     this.tempPath = tempPath;
     this.applyMethod = applyMethod;
     this.projectType = projectType;
     this.srcDir = srcDir;
+    this.pageEntries = pageEntries;
   }
 
   render() {
@@ -50,10 +51,9 @@ export default class Generator {
     // generate .rax/store/types.ts
     this.renderAppStoreTypes();
 
-    const pageEntries = getRaxPagesPath(this.rootDir);
     const srcPath = path.join(this.rootDir, this.srcDir);
 
-    pageEntries.forEach((pageEntry) => {
+    this.pageEntries.forEach((pageEntry) => {
       const pageName = getRaxPageName(pageEntry);
       const pageComponentPath = path.join(this.rootDir, this.srcDir, pageEntry);
       const pageStoreFile = formatPath(getPageStorePath({
