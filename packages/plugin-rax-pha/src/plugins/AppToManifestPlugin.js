@@ -18,14 +18,14 @@ module.exports = class {
   apply(compiler) {
     const {
       api,
-      isTemplate,
       builtInLibrary,
       appWorkerPath,
     } = this.options;
 
     const { context, getValue } = api;
     const { command, userConfig = {} } = context;
-    const { inlineStyle } = userConfig;
+    const { inlineStyle, web = {} } = userConfig;
+    const { template: isTemplate = true } = web;
     const isStart = command === 'start';
 
     let {
@@ -90,6 +90,13 @@ module.exports = class {
               return page.source === source;
             }
           });
+
+          const { pages } = copyManifestJSON;
+          // take out the page data prefetch and assign it to the root node
+          if (pages && pages[0] && pages[0].data_prefetch) {
+            copyManifestJSON.data_prefetch = pages[0].data_prefetch;
+            delete pages[0].data_prefetch;
+          }
 
           copyManifestJSON = setRealUrlToManifest({
             urlPrefix: pagePrefix,

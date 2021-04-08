@@ -4,11 +4,13 @@
     "wechat-miniprogram"
   ],
   "miniapp": {
-    "buildType": "runtime",
-    "subPackages": true
+    "subPackages": {
+      "shareMemory": true
+    }
   },
   "wechat-miniprogram": {
-    "buildType": "runtime",
-    "subPackages": true
+    "subPackages": {
+      "shareMemory": true,
+    }
   }
 }

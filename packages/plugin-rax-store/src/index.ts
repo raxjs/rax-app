@@ -2,8 +2,8 @@ import * as path from 'path';
 import * as fse from 'fs-extra';
 import chalk from 'chalk';
 import CodeGenerator from './generator';
-import checkStoreExists from './utils/checkStoreExists';
 import { getAppStorePath, getRaxPagesPath } from './utils/getPath';
+import checkExpectedStoreFileExists from './utils/checkExpectedStoreFileExists';
 import checkIsMpa from './utils/checkIsMpa';
 import { checkExportDefaultDeclarationExists, formatPath } from '@builder/app-helpers';
 import modifyStaticConfigRoutes from './utils/modifyStaticConfigRoutes';
@@ -19,7 +19,7 @@ export default async (api) => {
   const tempPath = getValue('TEMP_PATH');
   const projectType = getValue('PROJECT_TYPE');
 
-  const storeExists = checkStoreExists({ rootDir, srcDir, projectType });
+  const storeExists = checkExpectedStoreFileExists({ rootDir, srcDir, projectType });
   if (!storeExists) {
     applyMethod('addDisableRuntimePlugin', pluginName);
     return;

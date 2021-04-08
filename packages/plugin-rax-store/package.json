@@ -24,6 +24,7 @@
     "@ice/store": "^1.3.1",
     "chalk": "^4.1.0",
     "fs-extra": "^8.1.0",
+    "globby": "^11.0.3",
     "loader-utils": "^2.0.0",
     "rax-redux": "^1.0.0"
   }
