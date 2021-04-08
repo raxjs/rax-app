@@ -6,7 +6,7 @@ import {
   getRaxPagesPath,
 } from './utils/getPath';
 import { formatPath, checkExportDefaultDeclarationExists } from '@builder/app-helpers';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 export interface IRenderPageParams {
   pageStoreFile: string;
