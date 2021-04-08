@@ -6,6 +6,7 @@ import { getEntriesByRoute } from '@builder/app-helpers';
 import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
 import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
+import { setDocument } from '../utils/document';
 
 const PLUGIN_NAME = 'DocumentPlugin';
 const { RawSource } = webpackSources;
@@ -59,7 +60,10 @@ export default class DocumentPlugin {
             rootDir,
           });
           let html = '';
+          // PHA will consume document field
+          let customDocument = false;
           if (documentPath && localBuildAssets[`${entryName}.js`]) {
+            customDocument = true;
             const bundleContent = localBuildAssets[`${entryName}.js`].source();
             const mod = exec(bundleContent, entryPath);
             html = mod.renderPage(assets, {
@@ -75,6 +79,7 @@ export default class DocumentPlugin {
             let initialHTML;
 
             if (localBuildAssets[`${entryName}.js`]) {
+              customDocument = true;
               const bundleContent = localBuildAssets[`${entryName}.js`].source();
               const mod = exec(bundleContent, entryPath);
               initialHTML = mod.renderPage();
@@ -90,6 +95,8 @@ export default class DocumentPlugin {
               spmB: spm,
             }, ssr);
           }
+
+          setDocument(entryName, html, customDocument);
 
           compilation.assets[`${entryName}.html`] = new RawSource(html);
         });
