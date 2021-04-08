@@ -88,8 +88,7 @@ export default async (api) => {
     applyMethod('watchFileChange', /store.*/, (event: string, filePath: string) => {
       if (event === 'add') {
         if (mpa) {
-          const relativePagePath = path.dirname(filePath).replace(new RegExp(`${srcPath}/`), '');
-          console.log('srcPath', srcPath, 'relativePagePath', relativePagePath);
+          const relativePagePath = path.dirname(path.relative(srcPath, filePath));
           if (!shouldRestartDevServer(relativePagePath)) {
             return;
           }
@@ -104,7 +103,6 @@ export default async (api) => {
   });
 
   function shouldRestartDevServer(pagePath) {
-    console.log(pageEntries, pagePath);
     const currentPageEntry = pageEntries.find((pageEntry) => pageEntry.includes(pagePath));
     if (currentPageEntry) {
       const exportDefaultDeclarationExists = checkExportDefaultDeclarationExists(path.join(srcPath, currentPageEntry));
