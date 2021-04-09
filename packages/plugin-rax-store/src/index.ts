@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import CodeGenerator from './generator';
 import { getAppStorePath, getRaxPagesPath } from './utils/getPath';
 import checkExpectedStoreFileExists from './utils/checkExpectedStoreFileExists';
