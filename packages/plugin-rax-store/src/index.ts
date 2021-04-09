@@ -1,12 +1,13 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import chalk from 'chalk';
 import CodeGenerator from './generator';
 import { getAppStorePath, getRaxPagesPath } from './utils/getPath';
 import checkExpectedStoreFileExists from './utils/checkExpectedStoreFileExists';
 import checkIsMpa from './utils/checkIsMpa';
 import { checkExportDefaultDeclarationExists, formatPath } from '@builder/app-helpers';
 import modifyStaticConfigRoutes from './utils/modifyStaticConfigRoutes';
+// TODO use import declaration
+const chalk = require('chalk');
 
 const { name: pluginName } = require('../package.json');
 
