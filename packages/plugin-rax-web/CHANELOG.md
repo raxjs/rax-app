@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.1
+
+- Fix: `rax.setDocument` for PHA
+
 ## v1.4.0
 
 - Fix: csr html structure error with xtpl
