@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import * as chalk from 'chalk';
-import { getPageStorePath, getRaxPageName } from './utils/getPath';
 import { formatPath, checkExportDefaultDeclarationExists } from '@builder/app-helpers';
+import { getPageStorePath, getRaxPageName } from './utils/getPath';
 
 export interface IRenderPageParams {
   pageStoreFile: string;
