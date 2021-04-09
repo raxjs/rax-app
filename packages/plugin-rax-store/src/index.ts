@@ -1,10 +1,11 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
+import chalk from 'chalk';
 import CodeGenerator from './generator';
+import { getAppStorePath, getRaxPagesPath } from './utils/getPath';
 import checkExpectedStoreFileExists from './utils/checkExpectedStoreFileExists';
-import { getAppStorePath } from './utils/getPath';
 import checkIsMpa from './utils/checkIsMpa';
-import { formatPath } from '@builder/app-helpers';
+import { checkExportDefaultDeclarationExists, formatPath } from '@builder/app-helpers';
 import modifyStaticConfigRoutes from './utils/modifyStaticConfigRoutes';
 
 const { name: pluginName } = require('../package.json');
@@ -27,10 +28,17 @@ export default async (api) => {
 
   const appStoreFilePath = formatPath(getAppStorePath({ srcPath, projectType }));
   const existsAppStoreFile = fse.pathExistsSync(appStoreFilePath);
-
-  applyMethod('addExport', { source: '@ice/store', specifier: '{ createStore }', exportName: 'createStore' });
-
+  const pageEntries = getRaxPagesPath(rootDir);
   const mpa = checkIsMpa(userConfig);
+
+  applyMethod('addExport', {
+    source: '@ice/store',
+    specifier: '{ createStore }',
+    exportName: 'createStore',
+    importSource: '@ice/store',
+    exportMembers: ['createStore'],
+  });
+
   applyMethod(
     'rax.modifyStaticConfig',
     (staticConfig) => modifyStaticConfigRoutes(
@@ -67,6 +75,7 @@ export default async (api) => {
     applyMethod,
     projectType,
     srcDir,
+    pageEntries,
   });
 
   gen.render();
@@ -75,5 +84,32 @@ export default async (api) => {
     applyMethod('watchFileChange', /models\/.*|model.*|pages\/\w+\/index(.jsx?|.tsx)/, () => {
       gen.render();
     });
+
+    applyMethod('watchFileChange', /store.*/, (event: string, filePath: string) => {
+      if (event === 'add') {
+        if (mpa) {
+          const relativePagePath = path.dirname(path.relative(srcPath, filePath));
+          if (!shouldRestartDevServer(relativePagePath)) {
+            return;
+          }
+        }
+        // restart WDS
+        console.log('\n');
+        console.log(chalk.magenta(`${filePath} has been created`));
+        console.log(chalk.magenta('restart dev server'));
+        process.send({ type: 'RESTART_DEV' });
+      }
+    });
   });
+
+  function shouldRestartDevServer(pagePath) {
+    const currentPageEntry = pageEntries.find((pageEntry) => pageEntry.includes(pagePath));
+    if (currentPageEntry) {
+      const exportDefaultDeclarationExists = checkExportDefaultDeclarationExists(path.join(srcPath, currentPageEntry));
+      if (exportDefaultDeclarationExists) {
+        return true;
+      }
+    }
+    return false;
+  }
 };
