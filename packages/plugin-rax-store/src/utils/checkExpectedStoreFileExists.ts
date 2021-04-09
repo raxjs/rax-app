@@ -1,7 +1,8 @@
-import * as chalk from 'chalk';
 import * as path from 'path';
 import * as globby from 'globby';
 import { getAppStorePath, getRaxPagesName, getPageStorePath } from './getPath';
+// TODO use import declaration
+const chalk = require('chalk');
 
 function checkExpectedStoreFileExists({ rootDir, srcDir, projectType }) {
   const srcPath = path.join(rootDir, srcDir);

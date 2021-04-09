@@ -1,8 +1,9 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import * as chalk from 'chalk';
 import { formatPath, checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 import { getPageStorePath, getRaxPageName } from './utils/getPath';
+// TODO use import declaration
+const chalk = require('chalk');
 
 export interface IRenderPageParams {
   pageStoreFile: string;
