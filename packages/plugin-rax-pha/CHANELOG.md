@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.1
+
+- Chore: Use the `template` field directly
+
 ## v1.4.0
 
 - Feat: support set dataPrefetch for every single page in PHA
