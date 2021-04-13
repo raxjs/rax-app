@@ -13,6 +13,7 @@ const CopyJsx2mpRuntimePlugin = require('../plugins/miniapp/CopyJsx2mpRuntime');
 const CopyPublicFilePlugin = require('../plugins/miniapp/CopyPublicFile');
 const ProcessPluginJsonPlugin = require('../plugins/miniapp/ProcessPluginJson');
 const GenerateAppCssPlugin = require('../plugins/miniapp/GenerateAppCss');
+const CopyBuildResultPlugin = require('../plugins/miniapp/CopyBuildResult');
 
 const platformConfig = require('./platformConfig');
 const targetPlatformMap = require('./targetPlatformMap');
@@ -24,7 +25,7 @@ const FileLoader = require.resolve('jsx2mp-loader/src/file-loader');
 
 module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   const { platform = targetPlatformMap[target], mode = 'build', disableCopyNpm = false, turnOffSourceMap = false } = options[target] || {};
-  const { rootDir, command } = context;
+  const { rootDir } = context;
   const platformInfo = platformConfig[target];
   const entryPath = './src/index';
   const outputPath = getOutputPath(context, { target });
@@ -171,6 +172,7 @@ module.exports = (context, target, options = {}, onGetWebpackConfig) => {
   config.plugin('removeDefaultResult').use(RemoveDefaultResultPlugin);
   config.plugin('processPluginJson').use(ProcessPluginJsonPlugin, [{ outputPath, rootDir, target }]);
   config.plugin('generateAppCss').use(GenerateAppCssPlugin, [{ outputPath, platformInfo }]);
+  config.plugin('copyBuildResult').use(CopyBuildResultPlugin, [{ mode, outputPath, rootDir, target }]);
 
   if (isPublicFileExist) {
     config.plugin('copyFile').use(CopyPublicFilePlugin, [{ mode, outputPath, rootDir }]);
