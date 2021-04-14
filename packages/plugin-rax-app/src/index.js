@@ -8,7 +8,7 @@ const setBuild = require('./setBuild');
 const customConfigs = require('./config/user.config');
 const customOptionConfig = require('./config/options.config');
 const modifyTargets = require('./utils/modifyTargets');
-const setStaicConfig = require('./utils/setStaticConfig');
+const setStaticConfig = require('./utils/setStaticConfig');
 const setDevUrlPrefix = require('./utils/setDevUrlPrefix');
 const setRegisterMethod = require('./utils/setRegisterMethod');
 
@@ -21,7 +21,8 @@ module.exports = (api) => {
   setValue(GET_RAX_APP_WEBPACK_CONFIG, getBase);
   // Set dev url prefix
   setDevUrlPrefix(api);
-  setStaicConfig(api);
+  setStaticConfig(api);
+
   // register cli option
   applyCliOption(api, { customOptionConfig });
 

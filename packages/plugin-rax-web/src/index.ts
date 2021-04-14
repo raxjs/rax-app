@@ -36,12 +36,6 @@ export default (api) => {
     validation: 'object',
   });
 
-  // Set Entry
-  setEntry(chainConfig, context);
-  registerTask(target, chainConfig);
-  // Set global methods
-  setRegisterMethod(api);
-
   if (webConfig.pha) {
     // Modify mpa config
     modifyUserConfig(() => {
@@ -51,6 +45,12 @@ export default (api) => {
       return context.userConfig;
     });
   }
+
+  // Set Entry
+  setEntry(chainConfig, context);
+  registerTask(target, chainConfig);
+  // Set global methods
+  setRegisterMethod(api);
 
   if (documentPath) {
     setLocalBuilder(api, documentPath);
