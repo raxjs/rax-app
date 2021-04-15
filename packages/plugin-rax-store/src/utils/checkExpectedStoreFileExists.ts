@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as globby from 'globby';
-import { getAppStorePath, getRaxPagesName, getPageStorePath } from './getPath';
+import { getRaxPagesName, getPagePath } from './getPath';
 // TODO use import declaration
 const chalk = require('chalk');
 
@@ -15,9 +15,9 @@ function checkExpectedStoreFileExists({ rootDir, srcDir, projectType }) {
  * check src/store.[js/ts] if it's expected
  */
 function checkExpectedAppStore(srcPath, projectType) {
-  const appStoreFilePath = getAppStorePath({ srcPath, projectType });
-  const appStoreMatchingPaths = globby.sync(path.join(srcPath, 'store.*'));
-  return checkFileExists(appStoreMatchingPaths, appStoreFilePath);
+  const appStoreFilePath = `store.${projectType}`;
+  const appStoreMatchingPaths = globby.sync('store.*', { cwd: srcPath });
+  return checkFileExists(srcPath, appStoreMatchingPaths, appStoreFilePath);
 }
 
 /**
@@ -27,20 +27,24 @@ function checkExpectedPageStore(rootDir, srcPath, projectType) {
   const pagesNames = getRaxPagesName(rootDir);
 
   const existStorePageNames = pagesNames.filter((pageName) => {
-    const pageStorePath = getPageStorePath({ pageName, srcPath, projectType });
-    const pageStoreMatchingPaths = globby.sync(pageStorePath.replace(`store.${projectType}`, 'store.*'));
-    return checkFileExists(pageStoreMatchingPaths, pageStorePath);
+    const pagePath = getPagePath({ srcPath, pageName });
+    const pageStoreFilePath = `store.${projectType}`;
+    const pageStoreMatchingPaths = globby.sync('store.*', { cwd: pagePath });
+    return checkFileExists(pagePath, pageStoreMatchingPaths, pageStoreFilePath);
   });
 
   return !!existStorePageNames.length;
 }
 
-function checkFileExists(matchingPaths: string[], expectedFilePath: string) {
+function checkFileExists(absolutePath: string, matchingPaths: string[], expectedFilePath: string) {
   if (!matchingPaths.length) {
     return false;
   } else {
     if (!matchingPaths.find((matchingPath) => matchingPath === expectedFilePath)) {
-      console.log(chalk.yellow(chalk.black.bgYellow(' WARNING '), `Expect ${expectedFilePath}, but found ${matchingPaths.join(', ')}.`));
+      console.log(chalk.yellow(
+        chalk.black.bgYellow(' WARNING '),
+        `Expect ${path.join(absolutePath, expectedFilePath)}, but found ${matchingPaths.map((matchingPath) => path.join(absolutePath, matchingPath)).join(', ')}.`,
+      ));
       return false;
     }
     return true;

@@ -1,5 +1,11 @@
 ## Changelog
 
+## 3.5.0 (April 15 2021)
+
+- Feat: support custom tabbar in MPA
+- Fix: check store file fail in Windows
+- Chore: compatible with app.tsx export default some component
+
 ## 3.4.11 (April 1 2021)
 
 - Fix: miniapp vendor test
