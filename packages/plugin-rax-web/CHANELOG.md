@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.2
+
+- Fix: MPA should build success without `src/app.ts`
+
 ## v1.4.1
 
 - Fix: `rax.setDocument` for PHA
