@@ -20,6 +20,7 @@
       ]
     },
     {
+      "name": "about-single",
       "path": "/about-single",
       "source": "pages/About-Single/index"
     }
@@ -28,8 +29,7 @@
     "title": "PHA Demo"
   },
   "tabBar": {
-    "source": "pages/Home-Single/index",
-    "height": 150,
-    "items": [{}, {}]
+    "custom": true,
+    "list": ["about-single"]
   }
 }
