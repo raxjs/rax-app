@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
-const { platformMap } = require('miniapp-builder-shared');
+const { constants: { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM }, platformMap } = require('miniapp-builder-shared');
 const { setConfig } = require('miniapp-runtime-config');
 const {
   setAppConfig: setAppCompileConfig,
@@ -15,9 +15,17 @@ module.exports = (api) => {
   const { userConfig } = context;
   const { targets, inlineStyle, vendor } = userConfig;
 
+  const miniappStandardList = [
+    MINIAPP,
+    WECHAT_MINIPROGRAM,
+    BYTEDANCE_MICROAPP,
+    BAIDU_SMARTPROGRAM,
+    KUAISHOU_MINIPROGRAM,
+  ];
+
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   targets.forEach((target) => {
-    if (['miniapp', 'wechat-miniprogram', 'bytedance-microapp'].includes(target)) {
+    if (miniappStandardList.includes(target)) {
       const chainConfig = getWebpackBase(api, {
         target,
         babelConfigOptions: { styleSheet: inlineStyle, disableRegenerator: true },
