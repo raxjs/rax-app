@@ -14,4 +14,6 @@ module.exports = {
   QUICKAPP,
   GET_RAX_APP_WEBPACK_CONFIG: 'getRaxAppWebpackConfig',
   DEV_URL_PREFIX: 'devUrlPrefix',
+  STATIC_CONFIG: 'staticConfig',
+  CUSTOM_TAB_BAR: 'CUSTOM_TAB_BAR',
 };

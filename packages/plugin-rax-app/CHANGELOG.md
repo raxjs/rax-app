@@ -1,5 +1,9 @@
 # Changelog
 
+## v6.3.0
+
+- Feat: support custom tab bar in MPA
+
 ## v6.2.11
 
 - Feat: add cli options `--analyzer-target`

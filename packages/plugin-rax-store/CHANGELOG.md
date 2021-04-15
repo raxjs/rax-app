@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.1
+
+- Fix: fail to check store file path in Windows platform
+
 ## v1.2.0
 
 - Feat: add store warning

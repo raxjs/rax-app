@@ -7,10 +7,12 @@ export function getAppStorePath({ srcPath, projectType }) {
   return appStoreFilePath;
 }
 
-export function getPageStorePath({ srcPath, projectType, pageName }) {
-  const pagePath = path.join('pages', pageName);
+export function getPagePath({ srcPath, pageName }) {
+  return path.join(srcPath, 'pages', pageName);
+}
 
-  const pageNameDir = path.join(srcPath, pagePath);
+export function getPageStorePath({ srcPath, projectType, pageName }) {
+  const pageNameDir = getPagePath({ srcPath, pageName });
   // e.g: src/pages/${pageName}/store.ts
   const pageStoreFilePath = path.join(pageNameDir, `store.${projectType}`);
 
