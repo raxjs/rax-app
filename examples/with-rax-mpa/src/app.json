@@ -6,7 +6,8 @@
       "window": {
         "title": "home"
       },
-      "spm": "b456"
+      "spm": "b456",
+      "xxxx": 123
     },
     {
       "path": "/about",
