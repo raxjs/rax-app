@@ -127,10 +127,6 @@ export default function () {
       ctx.res.setHeader('Content-Type', 'text/html; charset=utf-8');
       ctx.res.send(html);
     }
-
-    function getTitle(info) {
-      return info.window && info.window.title;
-    }
   `;
 
   if (query.documentPath) {

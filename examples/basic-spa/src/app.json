@@ -2,8 +2,7 @@
   "routes": [
     {
       "path": "/",
-      "source": "pages/Home/index",
-      "xxxx": 3434
+      "source": "pages/Home/index"
     },
     {
       "path": "/about",
