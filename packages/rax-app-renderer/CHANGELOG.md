@@ -2,7 +2,7 @@
 
 ## v1.3.7
 
-- Feat: add `props.pageConfig` in Rax App SSR page component
+- Chore: remove `errorBoundary` when enable `ErrorBoundary`
 
 ## v1.3.6
 
