@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.3.1
+
+- Chore: use constants from miniapp-builder-shared
+
 ## v6.3.0
 
 - Feat: support custom tab bar in MPA
