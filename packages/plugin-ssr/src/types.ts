@@ -8,8 +8,9 @@ export interface IEntryPluginOptions {
 }
 
 export interface IPageConfig {
-  path: string;
-  title?: string;
+  path?: string;
+  window?: any;
+  [key: string]: any;
 }
 
 export interface ILoaderQuery {

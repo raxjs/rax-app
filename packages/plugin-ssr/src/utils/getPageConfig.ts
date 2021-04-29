@@ -1,5 +1,5 @@
-import { WEB } from '../constants';
 import { getMpaEntries } from '@builder/app-helpers';
+import { WEB } from '../constants';
 
 export default function (api, staticConfig) {
   const entries = getMpaEntries(api, {
@@ -7,12 +7,9 @@ export default function (api, staticConfig) {
     appJsonContent: staticConfig,
   });
   const map = {};
-  entries.forEach(({ path: pathname, entryName, window }) => {
+  entries.forEach(({ entryName, entryPath, ...pageConfig }) => {
     if (entryName) {
-      map[entryName] = {
-        path: pathname,
-        title: window?.title || staticConfig?.window?.title,
-      };
+      map[entryName] = pageConfig;
     }
   });
   return map;

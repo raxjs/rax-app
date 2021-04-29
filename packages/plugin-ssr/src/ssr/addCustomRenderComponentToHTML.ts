@@ -33,7 +33,12 @@ export default function addCustomRenderComponentToHTML(
     ${addPageHTMLAssign(useRunApp)}
 
     const documentData = await getInitialProps(Document, ctx);
-    const title = Component.__pageConfig.title;
+    const pageConfig = Component.__pageConfig;
+
+    function getTitle(config) {
+      return config.window && config.window.title
+    }
+    const title = getTitle(pageConfig) || getTitle(staticConfig);
 
     let scripts = ${JSON.stringify(scripts)};
     let styles = ${JSON.stringify(styles)};
@@ -66,7 +71,7 @@ export default function addCustomRenderComponentToHTML(
 
     const $ = new Generator(html);
     if (title) {
-      $.title.innerHTML = Component.__pageConfig.title;
+      $.title.innerHTML = title;
     }
 
     $.insertScript(${JSON.stringify(injectedHTML.scripts || [])});
