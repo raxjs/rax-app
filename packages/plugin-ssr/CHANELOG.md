@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.7
+
+- Feat: add `props.pageConfig` in Rax App SSR page component
+
 ## v1.3.6
 
 - Chore: only remove comment node with build command

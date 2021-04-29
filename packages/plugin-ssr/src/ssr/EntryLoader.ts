@@ -23,7 +23,8 @@ function addImportDocument(code, documentPath) {
 
 function addImportPageComponent(resourcePath, pageConfig) {
   return `import Page from '${formatPath(resourcePath)}';
-  Page.__pageConfig = ${JSON.stringify(pageConfig)};`;
+  Page.__pageConfig = ${JSON.stringify(pageConfig)};
+  `;
 }
 
 function addRunAppDependencies(resourcePath, tempPath) {
@@ -41,9 +42,7 @@ function addDefineInitialPage() {
   const routes = staticConfig.routes;
   const route = routes.find(({ path }) => path === pathname);
   const Page = route.component();
-  Page.__pageConfig = {
-    title: route.window && route.window.title,
-  };
+  Page.__pageConfig = route;
   `;
 }
 
