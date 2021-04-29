@@ -2,6 +2,7 @@ import { createElement } from 'rax';
 import { usePageShow, usePageHide, getSearchParams } from 'rax-app';
 import View from 'rax-view';
 import Text from 'rax-text';
+import { isNode } from 'universal-env';
 import Logo from '@/components/Logo';
 
 import styles from './index.module.css';
@@ -33,10 +34,12 @@ export default function Home(props) {
 }
 
 Home.getInitialProps = async () => {
-  return {
-    data: {
-      title: 'Welcome to Your Rax App with SSR',
-      info: 'More information about Rax',
-    },
-  };
+  if (isNode) {
+    return {
+      data: {
+        title: 'Welcome to Your Rax App with SSR',
+        info: 'More information about Rax',
+      },
+    };
+  }
 };
