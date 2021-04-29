@@ -2,7 +2,7 @@
 
 ## v1.3.7
 
-- Chore: remove `errorBoundary` when enable `ErrorBoundary`
+- Chore: `errorBoundary` default value changed to `true`
 
 ## v1.3.6
 
