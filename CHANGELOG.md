@@ -1,5 +1,11 @@
 ## Changelog
 
+## 3.5.1 (April 29 2021)
+
+- Feat: support pass `props.pageConfig` to page component
+- Feat: throw error when not using the BrowserRouter
+- Chore: `errorBoundary` default value changed to `true`
+
 ## 3.5.0 (April 15 2021)
 
 - Feat: support custom tabbar in MPA
