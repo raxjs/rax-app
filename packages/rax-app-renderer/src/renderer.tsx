@@ -161,7 +161,7 @@ async function renderInClient(options) {
 
 export function getRenderAppInstance(runtime, props, options) {
   const { ErrorBoundary, appConfig = {} } = options;
-  const { ErrorBoundaryFallback, onErrorBoundaryHander } = appConfig.app || {};
+  const { ErrorBoundaryFallback, onErrorBoundaryHander, errorBoundary = true } = appConfig.app || {};
   const AppProvider = runtime?.composeAppProvider?.();
   const RootComponent = () => {
     if (AppProvider) {
@@ -173,7 +173,7 @@ export function getRenderAppInstance(runtime, props, options) {
   };
   const Root = <RootComponent />;
 
-  if (ErrorBoundary) {
+  if (errorBoundary && ErrorBoundary) {
     return (<ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHander}>{Root}</ErrorBoundary>);
   } else {
     return Root;
