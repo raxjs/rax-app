@@ -1,7 +1,10 @@
 export default (useRunApp) => {
   if (!useRunApp) {
     return `
-    const contentElement = createElement(Component, pageInitialProps);
+    const contentElement = createElement(Component, {
+      pageConfig: Component.__pageConfig,
+      ...pageInitialProps,
+    });
     const pageHTML = renderer.renderToString(contentElement, {
       defaultUnit: 'rpx'
     });`;
@@ -10,7 +13,7 @@ export default (useRunApp) => {
     const { setInitialData } = require('rax-app-renderer');
     const raxServerRenderer = require('rax-app-renderer/lib/server').default;
     const { req, res } = ctx;
-    const search = req.search;
+    const search = req.search || '';
     const parsedQuery = parseSearch(search);
     const pathname = req.path;
     const location = { pathname, search, state: null };
