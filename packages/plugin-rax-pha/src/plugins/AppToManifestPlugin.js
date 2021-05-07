@@ -18,14 +18,14 @@ module.exports = class {
   apply(compiler) {
     const {
       api,
-      builtInLibrary,
+      builtInLibrary = [],
       appWorkerPath,
     } = this.options;
 
     const { context, getValue } = api;
     const { command, userConfig = {} } = context;
     const { inlineStyle, web = {} } = userConfig;
-    const { template: isTemplate = true } = web;
+    const { pha: { template: isTemplate = true } } = web;
     const isStart = command === 'start';
 
     let {
@@ -52,9 +52,7 @@ module.exports = class {
         }
       }
 
-      if (builtInLibrary && builtInLibrary.length > 0) {
-        manifestJSON.built_in_library = builtInLibrary;
-      }
+      manifestJSON.scripts = [...builtInLibrary, ...(manifestJSON.scripts || [])];
 
       // if has tabBar, do not generate multiple manifest.json
       if (manifestJSON.tab_bar) {
@@ -106,6 +104,7 @@ module.exports = class {
             inlineStyle,
             api,
           }, copyManifestJSON);
+
           compilation.assets[`${entryName}-manifest.json`] = new RawSource(JSON.stringify(copyManifestJSON, null, 2));
 
           devUrls.push(`${cdnPrefix}${entryName}-manifest.json?pha=true`);

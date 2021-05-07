@@ -104,7 +104,7 @@ function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
 /*
  * change page info
  */
-function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inlineStyle, api }, page, manifest) {
+function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inlineStyle, api }, page) {
   const { applyMethod } = api;
   const { source, name } = page;
   if (!source && !name) {
@@ -123,11 +123,6 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
     if (isTemplate) {
       if (custom) {
         page.document = document;
-
-        if (manifest.built_in_library) {
-          // remove when has document
-          delete manifest.built_in_library;
-        }
       } else {
         // add script and stylesheet
         page.script = `${cdnPrefix + entryName}.js`;
