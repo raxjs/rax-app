@@ -52,7 +52,7 @@ module.exports = class {
         }
       }
 
-      manifestJSON.scripts = [...builtInLibrary, ...(manifestJSON.scripts || [])];
+      manifestJSON.scripts = [...builtInLibrary.map(url => `<script crossorigin="anonymous" src="${url}"></script>`), ...(manifestJSON.scripts || [])];
 
       // if has tabBar, do not generate multiple manifest.json
       if (manifestJSON.tab_bar) {
