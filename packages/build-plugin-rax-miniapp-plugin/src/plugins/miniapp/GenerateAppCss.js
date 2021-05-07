@@ -1,6 +1,5 @@
 const { resolve } = require('path');
-const { copySync, outputFile } = require('fs-extra');
-const chokidar = require('chokidar');
+const { outputFileSync } = require('fs-extra');
 
 /**
  * In plugin mode, app.acss/wxss doesn't exist so that __rax-view can't be placed which will affect the page/component which uses rax-view
@@ -21,10 +20,10 @@ module.exports = class GenerateAppCssPlugin {
         const componentXML = '';
         const componentCSS = '.__rax-view {border: 0 solid black;display:flex;flex-direction:column;align-content:flex-start;flex-shrink:0;box-sizing:border-box;}';
 
-        outputFile(resolve(this.outputPath, '__app_css', 'index.js'), componentJS);
-        outputFile(resolve(this.outputPath, '__app_css', 'index.json'), componentJSON);
-        outputFile(resolve(this.outputPath, '__app_css', `index${this.platformInfo.extension.xml}`), componentXML);
-        outputFile(resolve(this.outputPath, '__app_css', `index${this.platformInfo.extension.css}`), componentCSS);
+        outputFileSync(resolve(this.outputPath, '__app_css', 'index.js'), componentJS);
+        outputFileSync(resolve(this.outputPath, '__app_css', 'index.json'), componentJSON);
+        outputFileSync(resolve(this.outputPath, '__app_css', `index${this.platformInfo.extension.xml}`), componentXML);
+        outputFileSync(resolve(this.outputPath, '__app_css', `index${this.platformInfo.extension.css}`), componentCSS);
         callback();
       }
     );
