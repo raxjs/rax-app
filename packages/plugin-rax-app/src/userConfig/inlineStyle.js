@@ -1,5 +1,5 @@
 const { resolve } = require('path');
-const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../constants');
+const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } = require('../constants');
 
 const configPath = resolve(__dirname, '../');
 
@@ -14,6 +14,9 @@ const inlineStandardList = [
 const miniappStandardList = [
   MINIAPP,
   WECHAT_MINIPROGRAM,
+  BYTEDANCE_MICROAPP,
+  BAIDU_SMARTPROGRAM,
+  KUAISHOU_MINIPROGRAM,
 ];
 
 const nodeStandardList = [

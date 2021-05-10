@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.0
+
+- Feat: support baidu and kuaishou miniapp env
+
 ## v1.3.1
 
 - Fix: vendor test
