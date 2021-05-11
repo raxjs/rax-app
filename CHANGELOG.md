@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.5.2 (May 11 2021)
+
+- Feat: support judge bytedance/baidu/kuaishou miniapp env
+
 ## 3.5.1 (April 29 2021)
 
 - Feat: support pass `props.pageConfig` to page component
