@@ -250,6 +250,7 @@ function conditionalMapping(conditionalMapping_, conditionNames) {
   /** @type {[ConditionalMapping, string[], number][]} */
   const lookup = [[conditionalMapping_, Object.keys(conditionalMapping_), 0]];
 
+  // eslint-disable-next-line
   loop: while (lookup.length > 0) {
     const [mapping, conditions, j] = lookup[lookup.length - 1];
     const last = conditions.length - 1;
@@ -268,6 +269,7 @@ function conditionalMapping(conditionalMapping_, conditionNames) {
         if (isConditionalMapping(innerMapping)) {
           lookup[lookup.length - 1][2] = i + 1;
           lookup.push([innerMapping, Object.keys(innerMapping), 0]);
+          // eslint-disable-next-line
           continue loop;
         }
 
@@ -280,6 +282,7 @@ function conditionalMapping(conditionalMapping_, conditionNames) {
         if (isConditionalMapping(innerMapping)) {
           lookup[lookup.length - 1][2] = i + 1;
           lookup.push([innerMapping, Object.keys(innerMapping), 0]);
+          // eslint-disable-next-line
           continue loop;
         }
 
