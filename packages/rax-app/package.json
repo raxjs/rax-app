@@ -30,7 +30,7 @@
     "create-cli-utils": "0.1.6",
     "detect-port": "^1.3.0",
     "inquirer": "^7.1.0",
-    "miniapp-builder-shared": "^0.2.4",
+    "miniapp-builder-shared": "0.2.4",
     "yargs-parser": "^18.1.2"
   },
   "files": [
