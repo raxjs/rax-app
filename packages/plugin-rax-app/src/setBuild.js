@@ -5,12 +5,7 @@ const { platformMap } = require('miniapp-builder-shared');
 
 const {
   MINIAPP_PLATFORMS,
-  MINIAPP,
   WEB,
-  WECHAT_MINIPROGRAM,
-  BYTEDANCE_MICROAPP,
-  BAIDU_SMARTPROGRAM,
-  KUAISHOU_MINIPROGRAM,
   WEEX,
   KRAKEN,
 } = require('./constants');
