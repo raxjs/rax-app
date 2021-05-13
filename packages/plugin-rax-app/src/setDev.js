@@ -119,7 +119,7 @@ module.exports = function (api) {
         );
       }
 
-      MINIAPP_PLATFORMS.forEach(miniappPlatform => {
+      MINIAPP_PLATFORMS.forEach((miniappPlatform) => {
         if (targets.includes(miniappPlatform)) {
           const miniappOutputPath = path.resolve(rootDir, outputDir, miniappPlatform);
           devInfo.urls[miniappPlatform === MINIAPP ? 'miniapp' : platformMap[miniappPlatform].type] = [miniappOutputPath];

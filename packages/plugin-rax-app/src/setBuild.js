@@ -64,7 +64,7 @@ module.exports = (api) => {
         console.log();
       }
 
-      MINIAPP_PLATFORMS.forEach(miniappPlatform => {
+      MINIAPP_PLATFORMS.forEach((miniappPlatform) => {
         if (targets.includes(miniappPlatform)) {
           console.log(highlightPrint(`[${platformMap[miniappPlatform].name}] Bundle at:`));
           console.log(
