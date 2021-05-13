@@ -2,7 +2,7 @@ import { IGetBuiltInPlugins, IPluginList, Json, IUserConfig } from '@alib/build-
 import * as miniappBuilderShared from 'miniapp-builder-shared';
 
 const { constants: { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } } = miniappBuilderShared;
-const miniappPlatforms = [ MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM ];
+const miniappPlatforms = [MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM];
 
 interface IRaxAppUserConfig extends IUserConfig {
   targets: string[];
