@@ -5,9 +5,10 @@ const qrcode = require('qrcode-terminal');
 const path = require('path');
 const fs = require('fs-extra');
 const chokidar = require('chokidar');
+const { platformMap } = require('miniapp-builder-shared');
 
 const logWebpackConfig = require('./utils/logWebpackConfig');
-const { MINIAPP, WEB, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX, KRAKEN, DEV_URL_PREFIX } = require('./constants');
+const { MINIAPP_PLATFORMS, MINIAPP, WEB, WEEX, KRAKEN, DEV_URL_PREFIX } = require('./constants');
 const generateTempFile = require('./utils/generateTempFile');
 
 const highlightPrint = chalk.hex('#F4AF3D');
@@ -118,35 +119,17 @@ module.exports = function (api) {
         );
       }
 
-      if (targets.includes(MINIAPP)) {
-        const miniappOutputPath = path.resolve(rootDir, outputDir, MINIAPP);
-        devInfo.urls.miniapp = [miniappOutputPath];
-        console.log(
-          highlightPrint('  [Alibaba Miniapp] Use ali miniapp developer tools to open the following folder:'),
-        );
-        console.log('   ', chalk.underline.white(miniappOutputPath));
-        console.log();
-      }
-
-      if (targets.includes(WECHAT_MINIPROGRAM)) {
-        const wechatOutputPath = path.resolve(rootDir, outputDir, WECHAT_MINIPROGRAM);
-        devInfo.urls.wechat = [wechatOutputPath];
-        console.log(
-          highlightPrint('  [WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'),
-        );
-        console.log('   ', chalk.underline.white(wechatOutputPath));
-        console.log();
-      }
-
-      if (targets.includes(BYTEDANCE_MICROAPP)) {
-        const bytedanceOutputPath = path.resolve(rootDir, outputDir, BYTEDANCE_MICROAPP);
-        devInfo.urls.bytedance = [bytedanceOutputPath];
-        console.log(
-          highlightPrint('  [Bytedance Microapp] Use bytedance microapp developer tools to open the following folder:'),
-        );
-        console.log('   ', chalk.underline.white(bytedanceOutputPath));
-        console.log();
-      }
+      MINIAPP_PLATFORMS.forEach((miniappPlatform) => {
+        if (targets.includes(miniappPlatform)) {
+          const miniappOutputPath = path.resolve(rootDir, outputDir, miniappPlatform);
+          devInfo.urls[miniappPlatform === MINIAPP ? 'miniapp' : platformMap[miniappPlatform].type] = [miniappOutputPath];
+          console.log(
+            highlightPrint(`  [${platformMap[miniappPlatform].name}] Use ${platformMap[miniappPlatform].name.toLowerCase()} developer tools to open the following folder:`),
+          );
+          console.log('   ', chalk.underline.white(miniappOutputPath));
+          console.log();
+        }
+      });
 
       const appConfig = getValue('staticConfig');
       const needGenerateMultipleManifest = pha && !appConfig.tabBar;

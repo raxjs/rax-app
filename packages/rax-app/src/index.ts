@@ -1,4 +1,8 @@
 import { IGetBuiltInPlugins, IPluginList, Json, IUserConfig } from '@alib/build-scripts';
+import * as miniappBuilderShared from 'miniapp-builder-shared';
+
+const { constants: { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } } = miniappBuilderShared;
+const miniappPlatforms = [MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM];
 
 interface IRaxAppUserConfig extends IUserConfig {
   targets: string[];
@@ -43,8 +47,7 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
   if (targets.includes('kraken')) {
     builtInPlugins.push('build-plugin-rax-kraken');
   }
-
-  if (targets.includes('miniapp') || targets.includes('wechat-miniprogram') || targets.includes('bytedance-microapp')) {
+  if (targets.some((target) => miniappPlatforms.includes(target))) {
     builtInPlugins.push('build-plugin-rax-miniapp');
   }
 

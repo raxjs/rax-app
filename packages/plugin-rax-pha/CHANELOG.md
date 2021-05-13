@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.2
+
+- Chore: add builtin library to `scripts` field
+- Chore: use `web.pha.template` instead of `web.template`
+
 ## v1.4.1
 
 - Chore: Use the `template` field directly

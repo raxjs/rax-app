@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.3.2
+
+- Feat: update dev and build log method for miniapps
+
 ## 6.3.1
 
 - Chore: use constants from miniapp-builder-shared
