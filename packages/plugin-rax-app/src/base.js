@@ -10,6 +10,8 @@ const ExportsFieldWebpackPlugin = require('@builder/exports-field-webpack-plugin
 module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNode }) => {
   const { context, onGetWebpackConfig } = api;
   const { rootDir, command, userConfig, webpack } = context;
+  const { experiments = {} } = userConfig;
+  const { exportsField } = experiments;
 
   const mode = command === 'start' ? 'development' : 'production';
   const babelConfig = getBabelConfig(babelConfigOptions);
@@ -75,17 +77,19 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
       });
     }
 
-    // Add condition names
-    if (/^5\./.test(webpack.version)) {
-      enhancedWebpackConfig.resolve.merge({
-        conditionNames: [target],
-      });
-    } else {
-      enhancedWebpackConfig.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
-        {
-          conditionNames: new Set([target]),
-        },
-      ]);
+    if (exportsField) {
+      // Add condition names
+      if (/^5\./.test(webpack.version)) {
+        enhancedWebpackConfig.resolve.merge({
+          conditionNames: [target],
+        });
+      } else {
+        enhancedWebpackConfig.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
+          {
+            conditionNames: [target],
+          },
+        ]);
+      }
     }
   });
 

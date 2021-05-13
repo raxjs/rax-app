@@ -5,7 +5,7 @@ const PLUGIN_NAME = 'ExportsFieldPlugin';
 export default class ExportsFieldPlugin {
   conditionNames: Set<string>;
   constructor(options) {
-    this.conditionNames = options.conditionNames || new Set();
+    this.conditionNames = new Set(options.conditionNames || []);
   }
   apply(compiler) {
     const { conditionNames } = this;
