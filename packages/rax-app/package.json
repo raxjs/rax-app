@@ -14,13 +14,13 @@
     "test": "__tests__"
   },
   "dependencies": {
-    "@alib/build-scripts": "^0.1.24",
-    "build-plugin-app-core": "1.4.4",
+    "@alib/build-scripts": "^0.1.31",
+    "build-plugin-app-core": "1.4.5",
     "build-plugin-ice-config": "1.8.0",
     "build-plugin-rax-app": "6.3.2",
     "build-plugin-rax-kraken": "1.1.1",
     "build-plugin-rax-miniapp": "1.4.0",
-    "build-plugin-rax-pha": "1.4.1",
+    "build-plugin-rax-pha": "1.4.2",
     "build-plugin-rax-store": "1.2.1",
     "build-plugin-rax-web": "1.4.2",
     "build-plugin-rax-weex": "1.1.1",
