@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.5.3 (May 12 2021)
+
+- Feat: support use build-plugin-rax-miniapp to config baidu/kuaishou miniapp
+
 ## 3.5.2 (May 11 2021)
 
 - Feat: support judge bytedance/baidu/kuaishou miniapp env
