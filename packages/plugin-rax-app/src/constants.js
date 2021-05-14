@@ -1,13 +1,18 @@
+const { constants: { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM, QUICKAPP } } = require('miniapp-builder-shared');
+
 module.exports = {
   WEB: 'web',
   DOCUMENT: 'document',
   SSR: 'ssr',
   WEEX: 'weex',
   KRAKEN: 'kraken',
-  MINIAPP: 'miniapp',
-  WECHAT_MINIPROGRAM: 'wechat-miniprogram',
-  BYTEDANCE_MICROAPP: 'bytedance-microapp',
-  QUICKAPP: 'quickapp',
+  MINIAPP,
+  WECHAT_MINIPROGRAM,
+  BYTEDANCE_MICROAPP,
+  BAIDU_SMARTPROGRAM,
+  KUAISHOU_MINIPROGRAM,
+  QUICKAPP,
+  MINIAPP_PLATFORMS: [MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM],
   GET_RAX_APP_WEBPACK_CONFIG: 'getRaxAppWebpackConfig',
   DEV_URL_PREFIX: 'devUrlPrefix',
   STATIC_CONFIG: 'staticConfig',

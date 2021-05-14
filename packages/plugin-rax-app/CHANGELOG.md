@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.3.2
+
+- Feat: update dev and build log method for miniapps
+
+## 6.3.1
+
+- Chore: use constants from miniapp-builder-shared
+
 ## v6.3.0
 
 - Feat: support custom tab bar in MPA
@@ -35,4 +43,3 @@
 
 - Fix: app.json watch
 - Chore: delete `MiniCssExtractPlugin` when `inlineStyle` mode
-

@@ -17,6 +17,9 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
     node: ['isNode'],
     miniapp: ['isMiniApp'],
     'wechat-miniprogram': ['isWeChatMiniProgram', 'isWeChatMiniprogram'],
+    'bytedance-microapp': ['isByteDanceMicroApp'],
+    'kuaishou-miniprogram': ['isKuaiShouMiniProgram'],
+    'baidu-smartprogram': ['isBaiduSmartProgram'],
   };
 
   /**
