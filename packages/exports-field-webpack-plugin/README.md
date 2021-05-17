@@ -17,7 +17,7 @@ const ExportsFieldWebpackPlugin = require('@builder/exports-field-webpack-plugin
 
 config.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
   {
-    conditionNames: new Set(['web']),
+    conditionNames: ['web'],
   },
 ]);
 ```
