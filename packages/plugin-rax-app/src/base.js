@@ -5,10 +5,13 @@ const ProgressPlugin = require('webpackbar');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const fs = require('fs-extra');
+const ExportsFieldWebpackPlugin = require('@builder/exports-field-webpack-plugin').default;
 
 module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNode }) => {
   const { context, onGetWebpackConfig } = api;
-  const { rootDir, command, userConfig } = context;
+  const { rootDir, command, userConfig, webpack } = context;
+  const { experiments = {} } = userConfig;
+  const { exportsField } = experiments;
 
   const mode = command === 'start' ? 'development' : 'production';
   const babelConfig = getBabelConfig(babelConfigOptions);
@@ -26,9 +29,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
 
   enhancedWebpackConfig
     .plugin('ProgressPlugin')
-    .use(ProgressPlugin, [
-      Object.assign({ color: '#F4AF3D' }, progressOptions),
-    ]);
+    .use(ProgressPlugin, [Object.assign({ color: '#F4AF3D' }, progressOptions)]);
 
   // Copy public dir
   if (fs.existsSync(path.resolve(rootDir, 'public'))) {
@@ -74,6 +75,21 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
           ]),
         ];
       });
+    }
+
+    if (exportsField) {
+      // Add condition names
+      if (/^5\./.test(webpack.version)) {
+        enhancedWebpackConfig.resolve.merge({
+          conditionNames: [target],
+        });
+      } else {
+        enhancedWebpackConfig.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
+          {
+            conditionNames: [target],
+          },
+        ]);
+      }
     }
   });
 
