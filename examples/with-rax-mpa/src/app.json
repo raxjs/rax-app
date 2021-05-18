@@ -16,7 +16,7 @@
     "items": [
       {
         "text": "Home Page",
-        "name": "index"
+        "pageName": "index"
       },
       {
         "path": "https://taobao.com",
