@@ -3,6 +3,7 @@
 ## 6.3.3
 
 - Chore: change custom tab bar path to `src/components/CustomTabBar/index`
+
 ## 6.3.2
 
 - Feat: update dev and build log method for miniapps
