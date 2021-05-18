@@ -4,6 +4,7 @@ import Text from 'rax-text';
 import './index.css';
 
 class About extends PureComponent {
+  static getInitialProps: any;
   render() {
     return (
       <View className="about">

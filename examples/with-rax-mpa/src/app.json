@@ -1,20 +1,27 @@
 {
   "routes": [
     {
-      "path": "/",
-      "source": "pages/Home/index",
-      "window": {
-        "title": "home"
-      },
-      "spm": "b456"
+      "name": "index",
+      "source": "pages/Home/index"
     },
     {
-      "path": "/about",
+      "name": "about",
       "source": "pages/About/index"
     }
   ],
-  "window": {
-    "title": "Rax App"
-  },
-  "spm": "a123"
+  "tabBar": {
+    "textColor": "#dddddd",
+    "selectedColor": "#49a9ee",
+    "backgroundColor": "#ffffff",
+    "items": [
+      {
+        "text": "Home Page",
+        "name": "index"
+      },
+      {
+        "path": "https://taobao.com",
+        "text": "TaoBao"
+      }
+    ]
+  }
 }
