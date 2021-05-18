@@ -1,14 +1,16 @@
 {
   "routes": [
     {
-      "name": "index",
-      "source": "pages/Home/index"
+      "name": "home",
+      "source": "pages/Home/index",
+      "spm": "b456"
     },
     {
       "name": "about",
       "source": "pages/About/index"
     }
   ],
+  "spm": "a123",
   "tabBar": {
     "textColor": "#dddddd",
     "selectedColor": "#49a9ee",
@@ -16,10 +18,10 @@
     "items": [
       {
         "text": "Home Page",
-        "pageName": "index"
+        "pageName": "home"
       },
       {
-        "path": "https://taobao.com",
+        "path": "https://m.taobao.com",
         "text": "TaoBao"
       }
     ]
