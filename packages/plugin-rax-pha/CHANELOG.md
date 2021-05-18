@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.3
+
+- Chore: compatible with item.name in tabBar config
 ## v1.4.2
 
 - Chore: add builtin library to `scripts` field
