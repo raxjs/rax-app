@@ -1,5 +1,12 @@
 ## Changelog
 
+## 3.6.0
+
+- Feat: support package.json `exports` field with webpack4
+- Feat: support bytedance microapp/ baidu smartprogram/kuaishou miniprogram
+- Feat: support default TabBar in MPA
+- Fix: `tschecker` error with default template
+
 ## 3.5.3 (May 12 2021)
 
 - Feat: support use build-plugin-rax-miniapp to config baidu/kuaishou miniapp
