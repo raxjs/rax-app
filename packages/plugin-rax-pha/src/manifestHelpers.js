@@ -57,6 +57,10 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
       data[transformKey] = value;
     } else if (Array.isArray(value)) {
       data[transformKey] = value.map((item) => {
+        if (parentKey === 'tabBar' && item.text) {
+          item.name = item.text;
+          delete item.text;
+        }
         if (typeof item === 'object') {
           if (key === 'dataPrefetch' && !item.header) {
             // hack: No header will crash in Android
