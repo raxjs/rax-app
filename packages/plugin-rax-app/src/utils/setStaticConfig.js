@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
-const { STATIC_CONFIG } = require('../constants');
+const { STATIC_CONFIG, CUSTOM_TAB_BAR_PATH } = require('../constants');
 
 module.exports = (api) => {
   const { setValue, context } = api;
@@ -13,14 +13,18 @@ module.exports = (api) => {
   }
 
   if (staticConfig.tabBar && staticConfig.tabBar.custom) {
-    const customTabBarPath = path.join(rootDir, 'src/components/CustomTabBar/index');
-    if (!checkComponentFileExists(customTabBarPath)) {
-      throw new Error(`There need custom tab bar implement in ${customTabBarPath}`);
+    let tabBarPath = path.join(rootDir, 'src/components/CustomTabBar/index');
+    if (!checkComponentFileExists(tabBarPath)) {
+      tabBarPath = path.join(rootDir, 'CustomTabBar/index');
+      if (!checkComponentFileExists(tabBarPath)) {
+        throw new Error('There need custom tab bar implement in src/components/CustomTabBar/index.jsx');
+      }
     }
     if (!Array.isArray(staticConfig.tabBar.list)) {
       throw new Error('There should have list field as array type to know which page need show tab bar');
     }
-    staticConfig.tabBar.source = 'CustomTabBar/index';
+    staticConfig.tabBar.source = tabBarPath.replace(`${rootDir}/src`, '');
+    setValue(CUSTOM_TAB_BAR_PATH, tabBarPath);
   }
   setValue(STATIC_CONFIG, staticConfig);
 };
