@@ -15,7 +15,7 @@ module.exports = (api) => {
   if (staticConfig.tabBar && staticConfig.tabBar.custom) {
     let tabBarPath = path.join(rootDir, 'src/components/CustomTabBar/index');
     if (!checkComponentFileExists(tabBarPath)) {
-      tabBarPath = path.join(rootDir, 'CustomTabBar/index');
+      tabBarPath = path.join(rootDir, 'src/CustomTabBar/index');
       if (!checkComponentFileExists(tabBarPath)) {
         throw new Error('There need custom tab bar implement in src/components/CustomTabBar/index.jsx');
       }
