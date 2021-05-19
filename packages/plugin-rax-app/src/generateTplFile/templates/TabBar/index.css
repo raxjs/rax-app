@@ -10,6 +10,7 @@
   justify-content: center;
   border: 1rpx solid #eee;
   background-color: #fff;
+  z-index: 999;
 }
 
 .rax-app-tab-bar-item {
