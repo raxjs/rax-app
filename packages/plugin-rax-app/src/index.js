@@ -11,9 +11,10 @@ const modifyTargets = require('./utils/modifyTargets');
 const setStaticConfig = require('./utils/setStaticConfig');
 const setDevUrlPrefix = require('./utils/setDevUrlPrefix');
 const setRegisterMethod = require('./utils/setRegisterMethod');
+const generateTplFile = require('./generateTplFile');
 
 module.exports = (api) => {
-  const { onGetWebpackConfig, context, setValue } = api;
+  const { onGetWebpackConfig, context, setValue, applyMethod } = api;
   const { command, rootDir } = context;
 
   setRegisterMethod(api);
@@ -31,6 +32,9 @@ module.exports = (api) => {
 
   // modify targets
   modifyTargets(api);
+
+  // generate template file
+  generateTplFile(applyMethod);
 
   // set webpack config
   onGetWebpackConfig((chainConfig) => {
