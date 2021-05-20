@@ -1,6 +1,7 @@
 import * as Module from 'module';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as url from 'url';
 import { NODE, STATIC_CONFIG, WEB } from '../constants';
 import { getChunkInfo } from '../utils/chunkInfo';
 
@@ -58,7 +59,7 @@ function render(res, req, next, api) {
     }
     pathname = 'index';
   }
-  
+
   if (req.path.endsWith('.html') && (typeof req.query.csr !== 'undefined')) {
     pathname = /\.html$/.test(pathname) ? pathname : `${pathname}.html`;
     const search = url.parse(req.url).search || '';
