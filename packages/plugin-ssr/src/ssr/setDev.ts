@@ -2,7 +2,7 @@ import * as Module from 'module';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as url from 'url';
-import { NODE, STATIC_CONFIG, WEB } from '../constants';
+import { STATIC_CONFIG } from '../constants';
 import { getChunkInfo } from '../utils/chunkInfo';
 
 export default function (api, config) {
@@ -20,8 +20,8 @@ export default function (api, config) {
         // wait until all compiler is done
         if (compilerDoneCount === server.compiler.compilers.length) {
           serverReady = true;
-          httpResponseQueue.forEach(([req, res, next]) => {
-            render(res, req, next, api);
+          httpResponseQueue.forEach(([req, res, next, server]) => {
+            render(res, req, next, server, api);
           });
           // empty httpResponseQueue
           httpResponseQueue = [];
@@ -32,15 +32,15 @@ export default function (api, config) {
     const pattern = /^\/?((?!\.(js|css|map|json|png|jpg|jpeg|gif|svg|eot|woff2|ttf|ico)).)*$/;
     app.get(pattern, async (req, res, next) => {
       if (serverReady) {
-        render(res, req, next, api);
+        render(res, req, next, server, api);
       } else {
-        httpResponseQueue.push([req, res, next]);
+        httpResponseQueue.push([req, res, next, server]);
       }
     });
   });
 }
 
-function render(res, req, next, api) {
+function render(res, req, next, server, api) {
   const {
     context: {
       userConfig: { outputDir, web = {} },
@@ -66,13 +66,20 @@ function render(res, req, next, api) {
     req.url = pathname + search;
     return next();
   }
+  
+  const nodeCompiler = server.compiler.compilers
+    .find(compiler => compiler.name === 'node');
+  const webCompiler = server.compiler.compilers
+    .find(compiler => compiler.name === 'web');
+  const nodeFS = nodeCompiler.outputFileSystem;
+  const webFS = webCompiler.outputFileSystem;
 
-  const nodeFilePath = path.join(outputPath, NODE, `${pathname.replace(/\.html$/, '')}.js`);
-  if (fs.existsSync(nodeFilePath)) {
-    const bundleContent = fs.readFileSync(nodeFilePath, 'utf-8');
+  const nodeFilePath = path.join(nodeCompiler.options.output.path, `${pathname.replace(/\.html$/, '')}.js`);
+  if(nodeFS.existsSync(nodeFilePath)) {
+    const bundleContent = nodeFS.readFileSync(nodeFilePath, 'utf-8');
     const mod = exec(bundleContent, nodeFilePath);
-    const htmlFilePath = path.join(outputPath, WEB, /\.html$/.test(pathname) ? pathname : `${pathname}.html`);
-    const htmlTemplate = fs.readFileSync(htmlFilePath, 'utf-8');
+    const htmlFilePath = path.join(webCompiler.options.output.path, /\.html$/.test(pathname) ? pathname : `${pathname}.html`);
+    const htmlTemplate = webFS.readFileSync(htmlFilePath, 'utf-8');
     mod.render({ req, res }, { htmlTemplate, chunkInfo: getChunkInfo() });
   }
 }
