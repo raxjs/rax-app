@@ -59,7 +59,7 @@ function render(res, req, next, api) {
     pathname = 'index';
   }
   
-  if (typeof req.query.csr !== 'undefined') {
+  if (req.path.endsWith('.html') && (typeof req.query.csr !== 'undefined')) {
     pathname = /\.html$/.test(pathname) ? pathname : `${pathname}.html`;
     const search = url.parse(req.url).search || '';
     req.url = pathname + search;
