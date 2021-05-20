@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.8
+
+- Feat: support query is `csr=true`  with request path end is `.html`, devServer will return CSR result
+
 ## v1.3.7
 
 - Feat: add `props.pageConfig` in Rax App SSR page component
