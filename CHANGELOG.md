@@ -5,6 +5,7 @@
 - Feat: support package.json `exports` field with webpack4
 - Feat: support bytedance microapp/ baidu smartprogram/kuaishou miniprogram
 - Feat: support default TabBar in MPA
+- Feat: support query is `csr=true`  with request path end is `.html`, devServer will return CSR result
 - Fix: `tschecker` error with default template
 
 ## 3.5.3 (May 12 2021)
