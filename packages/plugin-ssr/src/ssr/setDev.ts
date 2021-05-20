@@ -20,7 +20,7 @@ export default function (api, config) {
         // wait until all compiler is done
         if (compilerDoneCount === server.compiler.compilers.length) {
           serverReady = true;
-          httpResponseQueue.forEach(([req, res, next, server]) => {
+          httpResponseQueue.forEach(([req, res, next]) => {
             render(res, req, next, server, api);
           });
           // empty httpResponseQueue
@@ -34,7 +34,7 @@ export default function (api, config) {
       if (serverReady) {
         render(res, req, next, server, api);
       } else {
-        httpResponseQueue.push([req, res, next, server]);
+        httpResponseQueue.push([req, res, next]);
       }
     });
   });
