@@ -19,8 +19,8 @@ export default function (api, config) {
         // wait until all compiler is done
         if (compilerDoneCount === server.compiler.compilers.length) {
           serverReady = true;
-          httpResponseQueue.forEach(([req, res]) => {
-            serverRender(res, req, api);
+          httpResponseQueue.forEach(([req, res, next]) => {
+            render(res, req, next, api);
           });
           // empty httpResponseQueue
           httpResponseQueue = [];
@@ -29,17 +29,17 @@ export default function (api, config) {
     });
 
     const pattern = /^\/?((?!\.(js|css|map|json|png|jpg|jpeg|gif|svg|eot|woff2|ttf|ico)).)*$/;
-    app.get(pattern, async (req, res) => {
+    app.get(pattern, async (req, res, next) => {
       if (serverReady) {
-        serverRender(res, req, api);
+        render(res, req, next, api);
       } else {
-        httpResponseQueue.push([req, res]);
+        httpResponseQueue.push([req, res, next]);
       }
     });
   });
 }
 
-function serverRender(res, req, api) {
+function render(res, req, next, api) {
   const {
     context: {
       userConfig: { outputDir, web = {} },
@@ -58,6 +58,14 @@ function serverRender(res, req, api) {
     }
     pathname = 'index';
   }
+  
+  if (req.path.endsWith('.html') && (typeof req.query.csr !== 'undefined')) {
+    pathname = /\.html$/.test(pathname) ? pathname : `${pathname}.html`;
+    const search = url.parse(req.url).search || '';
+    req.url = pathname + search;
+    return next();
+  }
+
   const nodeFilePath = path.join(outputPath, NODE, `${pathname.replace(/\.html$/, '')}.js`);
   if (fs.existsSync(nodeFilePath)) {
     const bundleContent = fs.readFileSync(nodeFilePath, 'utf-8');
