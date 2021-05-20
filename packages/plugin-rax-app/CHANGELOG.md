@@ -1,7 +1,8 @@
 # Changelog
 
-## 6.3.3
+## 6.4.0
 
+- Feat: add `exportsField` polyfill
 - Chore: change custom tab bar path to `src/components/CustomTabBar/index`
 
 ## 6.3.2
