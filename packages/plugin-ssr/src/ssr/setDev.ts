@@ -42,8 +42,7 @@ export default function (api, config) {
 function render(res, req, next, server, api) {
   const {
     context: {
-      userConfig: { outputDir, web = {} },
-      rootDir,
+      userConfig: { web = {} },
     },
     getValue,
   } = api;
