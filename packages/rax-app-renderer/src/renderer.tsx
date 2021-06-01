@@ -44,7 +44,7 @@ function App(props) {
   if (isNode) {
     PageComponent = InitialComponent;
   } else {
-    PageComponent = useRouter(() => ({ history, routes, InitialComponent })).component;
+    PageComponent = useRouter({ history, routes, InitialComponent }).component;
   }
   // Return null directly if not matched
   if (_isNullableComponent(PageComponent)) return null;
@@ -144,7 +144,6 @@ async function renderInClient(options) {
       const { rootId } = app;
 
       const appInstance = getRenderAppInstance(runtime, props, options);;
-
       // Emit app launch cycle
       emitLifeCycles();
 
