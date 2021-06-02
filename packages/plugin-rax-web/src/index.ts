@@ -119,14 +119,11 @@ export default (api) => {
     if (command === 'start') {
       const webEntries = config.entryPoints.entries();
       Object.keys(webEntries).forEach((entryName) => {
-        const entryStore = webEntries[entryName].store;
-        Array.from(entryStore).forEach((entryFile, index) => {
-          if (index === entryStore.size - 1) {
-            // Add module.hot.accept() for entry file content
-            entryStore.add(`${require.resolve('./Loaders/hmr-loader')}!${entryFile}`);
-            entryStore.delete(entryFile);
-          }
-        });
+        const entrySet = config.entry(entryName);
+        const entryFiles = entrySet.values();
+        const finalEntryFile = entryFiles[entryFiles.length - 1];
+        entrySet.add(`${require.resolve('./Loaders/hmr-loader')}!${finalEntryFile}`);
+        entrySet.delete(finalEntryFile);
       });
     }
   });
