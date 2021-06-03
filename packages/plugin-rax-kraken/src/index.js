@@ -55,6 +55,11 @@ module.exports = (api) => {
       // Force disable HMR, kraken not support yet.
       config.devServer.inline(false);
       config.devServer.hot(false);
+
+      // Add webpack hot dev client
+      Object.keys(config.entryPoints.entries()).forEach((entryName) => {
+        config.entry(entryName).prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
+      });
     } else if (command === 'build') {
       // Set output dir
       outputPath = path.resolve(rootDir, outputDir, target);

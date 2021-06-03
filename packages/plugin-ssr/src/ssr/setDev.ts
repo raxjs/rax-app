@@ -1,5 +1,4 @@
 import * as Module from 'module';
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as url from 'url';
 import { STATIC_CONFIG } from '../constants';
@@ -43,12 +42,10 @@ export default function (api, config) {
 function render(res, req, next, server, api) {
   const {
     context: {
-      userConfig: { outputDir, web = {} },
-      rootDir,
+      userConfig: { web = {} },
     },
     getValue,
   } = api;
-  const outputPath = path.join(rootDir, outputDir);
   let pathname = req.path;
   const staticConfig = getValue(STATIC_CONFIG);
   if (!web.mpa) {
