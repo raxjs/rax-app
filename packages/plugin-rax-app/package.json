@@ -24,8 +24,6 @@
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.15",
     "miniapp-builder-shared": "^0.2.0",
-    "mkcert": "^1.2.0",
-    "path-exists": "^4.0.0",
     "react-dev-utils": "^10.2.1",
     "webpackbar": "^5.0.0-3",
     "qrcode-terminal": "^0.12.0",

@@ -54,6 +54,11 @@ module.exports = (api) => {
       outputPath = path.resolve(rootDir, outputDir);
       config.devServer.contentBase(outputPath);
       config.output.filename(`${target}/[name].js`);
+
+      // Add webpack hot dev client
+      Object.keys(config.entryPoints.entries()).forEach((entryName) => {
+        config.entry(entryName).prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
+      });
     } else if (command === 'build') {
       // Set output dir
       outputPath = path.resolve(rootDir, outputDir, target);
