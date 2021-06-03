@@ -20,8 +20,7 @@ module.exports = (api) => {
   setRegisterMethod(api);
 
   setValue(GET_RAX_APP_WEBPACK_CONFIG, getBase);
-  // Set dev url prefix
-  setDevUrlPrefix(api);
+
   setStaticConfig(api);
 
   // register cli option
@@ -29,6 +28,9 @@ module.exports = (api) => {
 
   // register user config
   applyUserConfig(api, { customConfigs });
+
+  // Set dev url prefix
+  setDevUrlPrefix(api);
 
   // modify targets
   modifyTargets(api);
