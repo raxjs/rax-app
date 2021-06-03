@@ -64,6 +64,7 @@ export default function () {
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
     import staticConfig from '${formatPath(path.join(query.tempPath, 'staticConfig.ts'))}';
+    import TabBar from '${formatPath(path.join(query.tempPath, 'TabBar'))}';
     import { getAppConfig } from '${formatPath(appConfigPath)}';
     ${
   query.useRunApp

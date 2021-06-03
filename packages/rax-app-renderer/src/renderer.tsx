@@ -1,6 +1,5 @@
 /* eslint-disable */
-import { render, createElement, useEffect, useState, Fragment, useLayoutEffect } from 'rax';
-import { createNavigation, createTabBar } from 'create-app-container';
+import { render, createElement, useState, Fragment, useLayoutEffect } from 'rax';
 import { createUseRouter } from 'create-use-router';
 import { isWeb, isWeex, isKraken, isNode } from 'universal-env';
 import UniversalDriver from 'driver-universal';
@@ -10,25 +9,17 @@ import parseSearch from './parseSearch';
 
 const useRouter = createUseRouter({ useState, useLayoutEffect });
 
-let AppNavigation;
-let TabBar;
-
-if (isWeb) {
-  AppNavigation = createNavigation({ createElement, useEffect, useState, Fragment });
-} else {
-  TabBar = createTabBar({ createElement, useEffect, useState, Fragment });
-}
-
 let driver = UniversalDriver;
+let AppTabBar;
 
 function _isNullableComponent(component) {
-  return !component || Array.isArray(component) && component.length === 0;
+  return !component || (Array.isArray(component) && component.length === 0);
 }
 
 function _matchInitialComponent(fullpath, routes) {
   let initialComponent = null;
   for (let i = 0, l = routes.length; i < l; i++) {
-    if (fullpath === routes[i].path || routes[i].regexp && routes[i].regexp.test(fullpath)) {
+    if (fullpath === routes[i].path || (routes[i].regexp && routes[i].regexp.test(fullpath))) {
       initialComponent = routes[i].component;
       if (typeof initialComponent === 'function') initialComponent = initialComponent();
       break;
@@ -44,22 +35,23 @@ function App(props) {
   if (isNode) {
     PageComponent = InitialComponent;
   } else {
-    PageComponent = useRouter(() => ({ history, routes, InitialComponent })).component;
+    PageComponent = useRouter({ history, routes, InitialComponent }).component;
   }
   // Return null directly if not matched
   if (_isNullableComponent(PageComponent)) return null;
 
-  if (isWeb) {
-    const navigationProps = { staticConfig, component: PageComponent, history, location: history.location, routes, ...pageInitialProps };
-    return <AppNavigation {...navigationProps} />;
-  }
-
   const pageProps = { history, location: history.location, ...pageInitialProps };
-  const tabBarProps = { history, config: staticConfig.tabBar };
+  const tabBarProps = {
+    config: staticConfig.tabBar,
+    currentPageName: history.location.pathname,
+    onClick(item) {
+      history.push(item.pageName);
+    }
+  };
   return (
     <Fragment>
       <PageComponent {...pageProps} />
-      <TabBar {...tabBarProps} />
+      {AppTabBar ? <AppTabBar {...tabBarProps} /> : null}
     </Fragment>
   );
 }
@@ -79,14 +71,7 @@ function raxAppRenderer(options) {
 }
 
 async function renderInClient(options) {
-  const {
-    appConfig,
-    buildConfig,
-    createBaseApp,
-    emitLifeCycles,
-    pathRedirect,
-    staticConfig,
-  } = options;
+  const { appConfig, buildConfig, createBaseApp, emitLifeCycles, pathRedirect, staticConfig } = options;
 
   const context: IContext = {};
   // ssr enabled and the server has returned data
@@ -98,22 +83,18 @@ async function renderInClient(options) {
     const query = parseSearch(search);
     const initialContext = {
       pathname,
-      query
+      query,
     };
     context.initialData = await appConfig.app.getInitialData(initialContext);
   }
 
-  const {
-    runtime,
-    appConfig: appDynamicConfig,
-    history,
-  } = createBaseApp(appConfig, buildConfig, context);
+  const { runtime, appConfig: appDynamicConfig, history } = createBaseApp(appConfig, buildConfig, context);
 
   setInitialData(context.initialData);
 
   const initialContext: IInitialContext = {
     pathname: '',
-    query: {}
+    query: {},
   };
 
   // Set custom driver
@@ -144,7 +125,6 @@ async function renderInClient(options) {
       const { rootId } = app;
 
       const appInstance = getRenderAppInstance(runtime, props, options);;
-
       // Emit app launch cycle
       emitLifeCycles();
 
@@ -160,13 +140,16 @@ async function renderInClient(options) {
 }
 
 export function getRenderAppInstance(runtime, props, options) {
-  const { ErrorBoundary, appConfig = {} } = options;
+  const { ErrorBoundary, TabBar, appConfig = {} } = options;
   const { ErrorBoundaryFallback, onErrorBoundaryHander, onErrorBoundaryHandler, errorBoundary = true } = appConfig.app || {};
+  AppTabBar = TabBar;
   const AppProvider = runtime?.composeAppProvider?.();
   const RootComponent = () => {
     if (AppProvider) {
       return (
-        <AppProvider><App {...props} /></AppProvider>
+        <AppProvider>
+          <App {...props} />
+        </AppProvider>
       );
     }
     return <App {...props} />;
@@ -180,11 +163,14 @@ export function getRenderAppInstance(runtime, props, options) {
   }
 
   if (errorBoundary && ErrorBoundary) {
-    return (<ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHandler || onErrorBoundaryHander}>{Root}</ErrorBoundary>);
+    return (
+      <ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHandler || onErrorBoundaryHander}>
+        {Root}
+      </ErrorBoundary>
+    );
   } else {
     return Root;
   }
 }
 
 export default raxAppRenderer;
-
