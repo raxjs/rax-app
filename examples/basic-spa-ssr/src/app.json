@@ -14,5 +14,20 @@
   ],
   "window": {
     "title": "Rax App"
+  },
+  "tabBar": {
+    "textColor": "#dddddd",
+    "selectedColor": "#49a9ee",
+    "backgroundColor": "#ffffff",
+    "items": [
+      {
+        "pageName": "/",
+        "name": "Home Page"
+      },
+      {
+        "pageName": "/about",
+        "text": "About"
+      }
+    ]
   }
 }
