@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { render, createElement, useEffect, useState, Fragment, useLayoutEffect } from 'rax';
+import { render, createElement, useState, Fragment, useLayoutEffect } from 'rax';
 import { createUseRouter } from 'create-use-router';
 import { isWeb, isWeex, isKraken, isNode } from 'universal-env';
 import UniversalDriver from 'driver-universal';
@@ -141,7 +141,7 @@ async function renderInClient(options) {
 
 export function getRenderAppInstance(runtime, props, options) {
   const { ErrorBoundary, TabBar, appConfig = {} } = options;
-  const { ErrorBoundaryFallback, onErrorBoundaryHander, errorBoundary = true } = appConfig.app || {};
+  const { ErrorBoundaryFallback, onErrorBoundaryHander, onErrorBoundaryHandler, errorBoundary = true } = appConfig.app || {};
   AppTabBar = TabBar;
   const AppProvider = runtime?.composeAppProvider?.();
   const RootComponent = () => {
@@ -156,9 +156,15 @@ export function getRenderAppInstance(runtime, props, options) {
   };
   const Root = <RootComponent />;
 
+  if (process.env.NODE_ENV === 'development') {
+    if (onErrorBoundaryHandler) {
+      console.error('Please use onErrorBoundaryHandler instead of onErrorBoundaryHander');
+    }
+  }
+
   if (errorBoundary && ErrorBoundary) {
     return (
-      <ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHander}>
+      <ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHandler || onErrorBoundaryHander}>
         {Root}
       </ErrorBoundary>
     );
