@@ -71,7 +71,7 @@ export default (api) => {
 
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { rootDir, userConfig } = context;
+    const { rootDir, userConfig, command } = context;
     const { outputDir } = userConfig;
     const staticConfig = getValue('staticConfig');
 
@@ -113,6 +113,17 @@ export default (api) => {
           target,
           appJsonContent: staticConfig,
         }),
+      });
+    }
+
+    if (command === 'start') {
+      const webEntries = config.entryPoints.entries();
+      Object.keys(webEntries).forEach((entryName) => {
+        const entrySet = config.entry(entryName);
+        const entryFiles = entrySet.values();
+        const finalEntryFile = entryFiles[entryFiles.length - 1];
+        entrySet.add(`${require.resolve('./Loaders/hmr-loader')}!${finalEntryFile}`);
+        entrySet.delete(finalEntryFile);
       });
     }
   });

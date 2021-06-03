@@ -35,7 +35,7 @@ function App(props) {
   if (isNode) {
     PageComponent = InitialComponent;
   } else {
-    PageComponent = useRouter(() => ({ history, routes, InitialComponent })).component;
+    PageComponent = useRouter({ history, routes, InitialComponent }).component;
   }
   // Return null directly if not matched
   if (_isNullableComponent(PageComponent)) return null;
@@ -107,32 +107,36 @@ async function renderInClient(options) {
   // Like https://xxx.com?_path=/page1, use `_path` to jump to a specific route.
   pathRedirect(history, routes);
 
-  return _matchInitialComponent(history.location.pathname, routes).then(async (InitialComponent) => {
-    const initialComponent = InitialComponent();
-    if (!context.pageInitialProps && initialComponent.getInitialProps) {
-      context.pageInitialProps = await initialComponent.getInitialProps(initialContext);
-    }
-    const props = {
-      staticConfig,
-      history,
-      routes,
-      InitialComponent,
-      pageInitialProps: context.pageInitialProps,
-    };
+  return _matchInitialComponent(history.location.pathname, routes)
+    .then(async (InitialComponent) => {
+      const initialComponent = InitialComponent();
+      if (!context.pageInitialProps && initialComponent.getInitialProps) {
+        context.pageInitialProps = await initialComponent.getInitialProps(initialContext);
+      }
+      const props = {
+        staticConfig,
+        history,
+        routes,
+        InitialComponent,
+        pageInitialProps: context.pageInitialProps
+      };
 
-    const { app = {} } = appDynamicConfig;
-    const { rootId } = app;
+      const { app = {} } = appDynamicConfig;
+      const { rootId } = app;
 
-    const appInstance = getRenderAppInstance(runtime, props, options);
+      const appInstance = getRenderAppInstance(runtime, props, options);;
+      // Emit app launch cycle
+      emitLifeCycles();
 
-    // Emit app launch cycle
-    emitLifeCycles();
-
-    const rootEl = isWeex || isKraken ? null : document.getElementById(rootId);
-    if (isWeb && rootId === null) console.warn('Error: Can not find #root element, please check which exists in DOM.');
-    const webConfig = buildConfig.web || {};
-    return render(appInstance, rootEl, { driver, hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr });
-  });
+      const rootEl = isWeex || isKraken ? null : document.getElementById(rootId);
+      if (isWeb && rootId === null) console.warn('Error: Can not find #root element, please check which exists in DOM.');
+      const webConfig = buildConfig.web || {};
+      return render(
+        appInstance,
+        rootEl,
+        { driver, hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr },
+      );
+    });
 }
 
 export function getRenderAppInstance(runtime, props, options) {

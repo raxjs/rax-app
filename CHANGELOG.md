@@ -1,5 +1,10 @@
 ## Changelog
 
+## 3.6.1
+
+- Fix: can not find html template file because output path is modified by `@ali/build-plugin-rax-faas` plugin
+- Fix: `No loader specified` error reported by webpack when set `postcssrc` to true in ssr scene
+
 ## 3.6.0
 
 - Feat: support package.json `exports` field with webpack4
