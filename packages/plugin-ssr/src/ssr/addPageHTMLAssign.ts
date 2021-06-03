@@ -49,11 +49,12 @@ export default (useRunApp) => {
         context: data,
         history: {
           location
-        }
+        },
     }, {
       appConfig,
       createBaseApp,
-      emitLifeCycles
+      emitLifeCycles,
+      TabBar,
     });
   `;
 };

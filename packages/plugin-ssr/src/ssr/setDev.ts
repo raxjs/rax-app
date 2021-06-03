@@ -66,16 +66,16 @@ function render(res, req, next, server, api) {
     req.url = pathname + search;
     return next();
   }
-  
+
   const nodeCompiler = server.compiler.compilers
-    .find(compiler => compiler.name === 'node');
+    .find((compiler) => compiler.name === 'node');
   const webCompiler = server.compiler.compilers
-    .find(compiler => compiler.name === 'web');
+    .find((compiler) => compiler.name === 'web');
   const nodeFS = nodeCompiler.outputFileSystem;
   const webFS = webCompiler.outputFileSystem;
 
   const nodeFilePath = path.join(nodeCompiler.options.output.path, `${pathname.replace(/\.html$/, '')}.js`);
-  if(nodeFS.existsSync(nodeFilePath)) {
+  if (nodeFS.existsSync(nodeFilePath)) {
     const bundleContent = nodeFS.readFileSync(nodeFilePath, 'utf-8');
     const mod = exec(bundleContent, nodeFilePath);
     const htmlFilePath = path.join(webCompiler.options.output.path, /\.html$/.test(pathname) ? pathname : `${pathname}.html`);

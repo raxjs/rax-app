@@ -25,8 +25,6 @@
     "error-stack-tracey": "^0.1.4",
     "fs-extra": "^9.0.1",
     "html-minifier": "^4.0.0",
-    "klaw-sync": "^6.0.0",
-    "node-hot-loader": "^1.21.0",
     "qs": "^6.9.4",
     "rax-server-renderer": "^1.2.0",
     "react-dev-utils": "^10.0.0",
