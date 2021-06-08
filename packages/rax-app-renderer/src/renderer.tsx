@@ -141,7 +141,7 @@ async function renderInClient(options) {
 
 export function getRenderAppInstance(runtime, props, options) {
   const { ErrorBoundary, TabBar, appConfig = {} } = options;
-  const { ErrorBoundaryFallback, onErrorBoundaryHander, onErrorBoundaryHandler, errorBoundary = true } = appConfig.app || {};
+  const { ErrorBoundaryFallback, onErrorBoundaryHander, onErrorBoundaryHandler, errorBoundary } = appConfig.app || {};
   AppTabBar = TabBar;
   const AppProvider = runtime?.composeAppProvider?.();
   const RootComponent = () => {
