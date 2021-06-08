@@ -71,15 +71,8 @@ export default (api) => {
 
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { rootDir, userConfig, command } = context;
-    const { outputDir } = userConfig;
+    const { rootDir, command } = context;
     const staticConfig = getValue('staticConfig');
-
-    // Set output dir
-    const outputPath = path.resolve(rootDir, outputDir, target);
-    config.output.path(outputPath);
-    // Set dev server contentBase
-    config.devServer.contentBase(path.resolve(rootDir, outputDir));
 
     config.plugin('document').use(DocumentPlugin, [
       {
