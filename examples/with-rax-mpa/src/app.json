@@ -25,5 +25,8 @@
         "text": "TaoBao"
       }
     ]
+  },
+  "window": {
+    "title": "Rax App"
   }
 }

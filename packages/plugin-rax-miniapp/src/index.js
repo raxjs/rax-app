@@ -51,9 +51,8 @@ module.exports = (api) => {
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const { rootDir, userConfig } = context;
         const { outputDir = 'build' } = userConfig;
-        // Set output dir
+        // Get output dir
         const outputPath = path.resolve(rootDir, outputDir, target);
-        config.output.path(outputPath);
 
         const needCopyDirs = [];
 
