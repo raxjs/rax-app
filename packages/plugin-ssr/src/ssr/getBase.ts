@@ -5,7 +5,7 @@ export default function (api) {
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const config = getWebpackBase(api, {
     target: 'ssr',
-    babelConfigOptions: { styleSheet: inlineStyle },
+    babelConfigOptions: { styleSheet: inlineStyle, jsxToHtml: true },
     progressOptions: {
       name: 'SSR',
     },
