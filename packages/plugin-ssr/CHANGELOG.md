@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.9
+
+- Feat: transform static node to html tag directly
+- Fix: read file content from compiler memfs
+
 ## v1.3.8
 
 - Feat: support query is `csr=true`  with request path end is `.html`, devServer will return CSR result

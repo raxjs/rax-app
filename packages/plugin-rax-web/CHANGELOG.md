@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.3
+
+- Chore: optimize hot reload experience
+
 ## v1.4.2
 
 - Fix: MPA should build success without `src/app.ts`
