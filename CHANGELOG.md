@@ -2,7 +2,13 @@
 
 ## 3.6.1
 
-- Fix: can not find html template file because output path is modified by `@ali/build-plugin-rax-faas` plugin
+- Feat: transform static node to html tag directly
+- Refactor: conditional inject SPA tabBar
+- Chore: optimize `devServer.contentBase` and `output.path` logic
+- Chore: optimize hot reload experience
+- Chore: optimize https cert generate logic
+- Fix: print `devServer.host` in console higher priority
+- Fix: read file content from compiler memfs
 - Fix: `No loader specified` error reported by webpack when set `postcssrc` to true in ssr scene
 
 ## 3.6.0
