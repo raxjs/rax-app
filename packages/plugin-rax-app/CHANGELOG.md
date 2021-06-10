@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.4.2
+
+- Fix: tabBar height in iphoneX
+
 ## 6.4.1
 
 - Chore: optimize `devServer.contentBase` and `output.path` logic
