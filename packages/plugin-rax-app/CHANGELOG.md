@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.4.1
+
+- Chore: optimize `devServer.contentBase` and `output.path` logic
+- Fix: print `devServer.host` in console higher priority
+
 ## 6.4.0
 
 - Feat: add `exportsField` polyfill

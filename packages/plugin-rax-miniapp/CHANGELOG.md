@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.1
+
+- Chore: optimize `output.path` logic
+
 ## v1.4.0
 
 - Feat: support baidu and kuaishou miniapp env

@@ -1,5 +1,16 @@
 ## Changelog
 
+## 3.6.1
+
+- Feat: transform static node to html tag directly
+- Refactor: conditional inject SPA tabBar
+- Chore: optimize `devServer.contentBase` and `output.path` logic
+- Chore: optimize hot reload experience
+- Chore: optimize https cert generate logic
+- Fix: print `devServer.host` in console higher priority
+- Fix: read file content from compiler memfs
+- Fix: `No loader specified` error reported by webpack when set `postcssrc` to true in ssr scene
+
 ## 3.6.0
 
 - Feat: support package.json `exports` field with webpack4

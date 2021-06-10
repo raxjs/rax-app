@@ -91,6 +91,12 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
         ]);
       }
     }
+
+    // Set dev server content base
+    config.devServer.contentBase(path.join(rootDir, outputDir));
+
+    // Set output path
+    config.output.path(path.resolve(rootDir, outputDir, target));
   });
 
   return enhancedWebpackConfig;

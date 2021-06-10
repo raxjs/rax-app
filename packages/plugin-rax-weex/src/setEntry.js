@@ -4,19 +4,14 @@ const path = require('path');
 module.exports = (config, context) => {
   const {
     rootDir,
-    command,
     userConfig: { weex = {} },
   } = context;
-  const isDev = command === 'start';
 
   if (!weex.mpa) {
     // SPA
     const appEntry = moduleResolve(formatPath(path.join(rootDir, './src/app')));
     const entryConfig = config.entry('index');
 
-    if (isDev) {
-      entryConfig.add(require.resolve('react-dev-utils/webpackHotDevClient'));
-    }
     entryConfig.add(appEntry);
   }
 };

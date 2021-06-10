@@ -71,15 +71,8 @@ export default (api) => {
 
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { rootDir, userConfig } = context;
-    const { outputDir } = userConfig;
+    const { rootDir, command } = context;
     const staticConfig = getValue('staticConfig');
-
-    // Set output dir
-    const outputPath = path.resolve(rootDir, outputDir, target);
-    config.output.path(outputPath);
-    // Set dev server contentBase
-    config.devServer.contentBase(path.resolve(rootDir, outputDir));
 
     config.plugin('document').use(DocumentPlugin, [
       {
@@ -113,6 +106,20 @@ export default (api) => {
           target,
           appJsonContent: staticConfig,
         }),
+      });
+    }
+
+    if (command === 'start') {
+      const webEntries = config.entryPoints.entries();
+      Object.keys(webEntries).forEach((entryName) => {
+        const entrySet = config.entry(entryName);
+        const entryFiles = entrySet.values();
+        const finalEntryFile = entryFiles[entryFiles.length - 1];
+        // Add webpack hot dev client
+        entrySet.prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
+        // Add module.hot.accept() to entry
+        entrySet.add(`${require.resolve('./Loaders/hmr-loader')}!${finalEntryFile}`);
+        entrySet.delete(finalEntryFile);
       });
     }
   });

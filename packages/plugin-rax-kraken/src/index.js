@@ -1,4 +1,3 @@
-const path = require('path');
 const setMPAConfig = require('@builder/mpa-config');
 const { getMpaEntries } = require('@builder/app-helpers');
 const setEntry = require('./setEntry');
@@ -30,8 +29,7 @@ module.exports = (api) => {
 
 
   onGetWebpackConfig(target, (config) => {
-    const { userConfig, rootDir, command } = context;
-    const { outputDir = 'build' } = userConfig;
+    const { userConfig, command } = context;
     const krakenConfig = userConfig.kraken || {};
     const staticConfig = getValue('staticConfig');
 
@@ -46,19 +44,15 @@ module.exports = (api) => {
       });
     }
 
-    let outputPath;
     if (command === 'start') {
-      // Set output dir
-      outputPath = path.resolve(rootDir, outputDir);
-      config.output.filename(`${target}/[name].js`);
-      config.devServer.contentBase(outputPath);
       // Force disable HMR, kraken not support yet.
       config.devServer.inline(false);
       config.devServer.hot(false);
-    } else if (command === 'build') {
-      // Set output dir
-      outputPath = path.resolve(rootDir, outputDir, target);
+
+      // Add webpack hot dev client
+      Object.keys(config.entryPoints.entries()).forEach((entryName) => {
+        config.entry(entryName).prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
+      });
     }
-    config.output.path(outputPath);
   });
 };
