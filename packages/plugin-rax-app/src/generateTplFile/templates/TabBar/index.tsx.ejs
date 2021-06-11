@@ -45,7 +45,8 @@ export default function TabBar(props) {
     setSelectedName(item.pageName);
     onClick(item);
   };
-  return <div className='rax-app-tab-bar' style={{ backgroundColor }}>
+  // TabBar default height is 98rpx
+  return <div className='rax-app-tab-bar' style={{ backgroundColor, height: 98 + safeAreaInsetBottom }}>
     {
       items.map((item, index) => {
         const itemTextColor = item.textColor || textColor;

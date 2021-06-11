@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.6.2
+
+- Fix: tabBar height in iphoneX
+
 ## 3.6.1
 
 - Feat: transform static node to html tag directly
