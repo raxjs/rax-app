@@ -51,7 +51,15 @@ function App(props) {
   return (
     <Fragment>
       <PageComponent {...pageProps} />
-      {AppTabBar ? <AppTabBar {...tabBarProps} /> : null}
+      {
+        AppTabBar && staticConfig.tabBar?.items.some(({ pageName, path }) => {
+          if (!pageName) {
+            pageName = path;
+          }
+          return pageName === history.location.pathname;
+        })
+       ? <AppTabBar {...tabBarProps} /> : null
+      }
     </Fragment>
   );
 }

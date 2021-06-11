@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.4
+
+- Fix: doesn't show tabBar in no configured page
+
 ## v2.0.3
 
 - Refactor: conditional inject SPA tabBar
