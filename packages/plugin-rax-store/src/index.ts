@@ -32,6 +32,11 @@ export default async (api) => {
   const pageEntries = getRaxPagesPath(rootDir);
   const mpa = checkIsMpa(userConfig);
 
+  if (!existsAppStoreFile) {
+    // set IStore to IAppConfig
+    applyMethod('addAppConfigTypes', { source: './store/types', specifier: '{ IStore }', exportName: 'store?: IStore' });
+  }
+
   applyMethod('addExport', {
     source: '@ice/store',
     specifier: '{ createStore }',

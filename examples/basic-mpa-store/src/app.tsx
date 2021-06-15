@@ -1,9 +1,12 @@
 import { createElement } from 'rax';
-import { runApp } from 'rax-app';
+import { runApp, IAppConfig } from 'rax-app';
 
-runApp({
+const appConfig: IAppConfig = {
   router: {
     type: 'browser',
+  },
+  store: {
+    initialStates: {}
   },
   app: {
     // ErrorBoundary
@@ -26,4 +29,6 @@ runApp({
       };
     },
   },
-});
+};
+
+runApp(appConfig);
