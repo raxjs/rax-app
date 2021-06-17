@@ -80,6 +80,49 @@ import Text from 'rax-text';
 })}></span>;"
 `;
 
+exports[`transform atomic components tansform rax-text with className boolean 1`] = `
+"var _toRaxTextProps = function (props) {
+  const {
+    className,
+    style = {},
+    numberOfLines,
+    ...rest
+  } = props;
+  const prefixCls = 'rax-text-v2';
+  const lines = typeof numberOfLines === 'string' ? parseInt(numberOfLines, 10) : numberOfLines;
+  let classNames = [prefixCls, className];
+
+  if (lines) {
+    classNames.push(prefixCls + '--overflow-hidden');
+
+    if (lines === 1) {
+      classNames.push(prefixCls + '--singleline');
+    } else {
+      classNames.push(prefixCls + '--multiline');
+    }
+  }
+
+  const lineClamp = lines > 1 ? lines : undefined;
+  return { ...rest,
+    className: classNames.filter(Boolean).join(' '),
+    style: { ...style,
+      WebkitLineClamp: lineClamp,
+      lineClamp: lineClamp
+    }
+  };
+};
+
+import Text from 'rax-text';
+<>
+          <span {..._toRaxTextProps({
+    \\"className\\": true
+  })}></span>
+          <span {..._toRaxTextProps({
+    \\"className\\": false
+  })}></span>
+        </>;"
+`;
+
 exports[`transform atomic components tansform rax-text with className expression 1`] = `
 "var _toRaxTextProps = function (props) {
   const {
@@ -115,6 +158,82 @@ exports[`transform atomic components tansform rax-text with className expression
 import Text from 'rax-text';
 <span {..._toRaxTextProps({
   \\"className\\": expr ? 'a' : b
+})}></span>;"
+`;
+
+exports[`transform atomic components tansform rax-text with className null 1`] = `
+"var _toRaxTextProps = function (props) {
+  const {
+    className,
+    style = {},
+    numberOfLines,
+    ...rest
+  } = props;
+  const prefixCls = 'rax-text-v2';
+  const lines = typeof numberOfLines === 'string' ? parseInt(numberOfLines, 10) : numberOfLines;
+  let classNames = [prefixCls, className];
+
+  if (lines) {
+    classNames.push(prefixCls + '--overflow-hidden');
+
+    if (lines === 1) {
+      classNames.push(prefixCls + '--singleline');
+    } else {
+      classNames.push(prefixCls + '--multiline');
+    }
+  }
+
+  const lineClamp = lines > 1 ? lines : undefined;
+  return { ...rest,
+    className: classNames.filter(Boolean).join(' '),
+    style: { ...style,
+      WebkitLineClamp: lineClamp,
+      lineClamp: lineClamp
+    }
+  };
+};
+
+import Text from 'rax-text';
+<span {..._toRaxTextProps({
+  \\"className\\": null
+})}></span>;"
+`;
+
+exports[`transform atomic components tansform rax-text with className only 1`] = `
+"var _toRaxTextProps = function (props) {
+  const {
+    className,
+    style = {},
+    numberOfLines,
+    ...rest
+  } = props;
+  const prefixCls = 'rax-text-v2';
+  const lines = typeof numberOfLines === 'string' ? parseInt(numberOfLines, 10) : numberOfLines;
+  let classNames = [prefixCls, className];
+
+  if (lines) {
+    classNames.push(prefixCls + '--overflow-hidden');
+
+    if (lines === 1) {
+      classNames.push(prefixCls + '--singleline');
+    } else {
+      classNames.push(prefixCls + '--multiline');
+    }
+  }
+
+  const lineClamp = lines > 1 ? lines : undefined;
+  return { ...rest,
+    className: classNames.filter(Boolean).join(' '),
+    style: { ...style,
+      WebkitLineClamp: lineClamp,
+      lineClamp: lineClamp
+    }
+  };
+};
+
+import Text from 'rax-text';
+<span {..._toRaxTextProps({
+  \\"className\\": true
 })}></span>;"
 `;
 
@@ -219,9 +338,27 @@ exports[`transform atomic components tansform rax-view with className 1`] = `
 <div className=\\"rax-view-v2 test\\"></div>;"
 `;
 
+exports[`transform atomic components tansform rax-view with className boolean 1`] = `
+"import View from 'rax-view';
+<>
+          <div className=\\"rax-view-v2\\"></div>
+          <div className=\\"rax-view-v2\\"></div>
+        </>;"
+`;
+
 exports[`transform atomic components tansform rax-view with className expression 1`] = `
 "import View from 'rax-view';
 <div className={\\"rax-view-v2 \\" + (expr ? 'a' : b)}></div>;"
+`;
+
+exports[`transform atomic components tansform rax-view with className null 1`] = `
+"import View from 'rax-view';
+<div className=\\"rax-view-v2\\"></div>;"
+`;
+
+exports[`transform atomic components tansform rax-view with className only 1`] = `
+"import View from 'rax-view';
+<div className=\\"rax-view-v2\\"></div>;"
 `;
 
 exports[`transform atomic components tansform rax-view with innerHTML 1`] = `

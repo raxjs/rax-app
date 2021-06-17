@@ -112,6 +112,85 @@ module.exports = function ({ types: t, template }) {
   };
 };
 
+// rax-view start
+function transformRaxView(path, t) {
+  changeTagName(path, 'div');
+
+  const attributes = path.get('openingElement.attributes');
+
+  if (attributes.length > 0) {
+    if (hasJSXSpreadAttribute(attributes)) {
+      addAtomicId(path, this._raxAtomicIds, TO_RAX_VIEW_PROPS);
+      spreadAttributes(path, t, this._raxAtomicIds.get(TO_RAX_VIEW_PROPS));
+    } else {
+      prefixClassName(path, t, 'rax-view-v2');
+    }
+  } else {
+    // no attribute
+    prefixClassName(path, t, 'rax-view-v2');
+  }
+}
+// rax-view end
+
+// rax-text start
+function transformRaxText(path, t) {
+  changeTagName(path, 'span');
+
+  const attributes = path.get('openingElement.attributes');
+
+  addAtomicId(path, this._raxAtomicIds, TO_RAX_TEXT_PROPS);
+
+  if (attributes.length > 0) {
+    if (hasJSXSpreadAttribute(attributes)) {
+      spreadAttributes(path, t, this._raxAtomicIds.get(TO_RAX_TEXT_PROPS));
+    } else {
+      // TODO: find numberOfLines -> toRaxTextProps
+      const names = ['className', 'style', 'numberOfLines'];
+      const {
+        object,
+      } = jsxAttributesToObjectExpression(path, t, {
+        only(name) {
+          return names.includes(name);
+        },
+      });
+
+      removeAttributes(attributes, names);
+
+      path.node.openingElement.attributes.unshift(
+        t.jsxSpreadAttribute(
+          t.callExpression(
+            this._raxAtomicIds.get(TO_RAX_TEXT_PROPS),
+            [
+              object,
+            ],
+          ),
+        ),
+      );
+    }
+  } else {
+    // no attribute
+    path.node.openingElement.attributes.unshift(
+      t.jsxSpreadAttribute(
+        t.callExpression(
+          this._raxAtomicIds.get(TO_RAX_TEXT_PROPS),
+          [
+            t.ObjectExpression([]),
+          ],
+        ),
+      ),
+    );
+  }
+
+  const children = path.get('children') || [];
+
+  children.forEach((child) => {
+    if (child.isJSXElement()) {
+      child.replaceWith(t.jsxText('[object Object]'));
+    }
+  });
+}
+// rax-text end
+
 function addAtomicId(path, ids, id) {
   if (!ids.has(id)) {
     ids.set(id, generateIdentifierInProgramScope(path, id));
@@ -142,7 +221,6 @@ function removeAttributes(attributes, names = []) {
 }
 
 function spreadAttributes(path, t, id) {
-  // exclude x-、dangerouslySetInnerHTML
   const {
     object,
     excludes,
@@ -163,6 +241,7 @@ function spreadAttributes(path, t, id) {
   ];
 }
 
+// exclude props: x-、dangerouslySetInnerHTML
 function excludeProp(propName = '') {
   return propName.startsWith('x-') ||
     propName === 'dangerouslySetInnerHTML';
@@ -238,84 +317,6 @@ function getJSXAttributeValueExpression(valuePath) {
   return valuePath.node;
 }
 
-// rax-text start
-function transformRaxText(path, t) {
-  changeTagName(path, 'span');
-
-  const attributes = path.get('openingElement.attributes');
-
-  addAtomicId(path, this._raxAtomicIds, TO_RAX_TEXT_PROPS);
-
-  if (attributes.length > 0) {
-    if (hasJSXSpreadAttribute(attributes)) {
-      spreadAttributes(path, t, this._raxAtomicIds.get(TO_RAX_TEXT_PROPS));
-    } else {
-      // TODO: find numberOfLines -> toRaxTextProps
-      const names = ['className', 'style', 'numberOfLines'];
-      const {
-        object,
-      } = jsxAttributesToObjectExpression(path, t, {
-        only(name) {
-          return names.includes(name);
-        },
-      });
-
-      removeAttributes(attributes, names);
-
-      path.node.openingElement.attributes.unshift(
-        t.jsxSpreadAttribute(
-          t.callExpression(
-            this._raxAtomicIds.get(TO_RAX_TEXT_PROPS),
-            [
-              object,
-            ],
-          ),
-        ),
-      );
-    }
-  } else {
-    // no attribute
-    path.node.openingElement.attributes.unshift(
-      t.jsxSpreadAttribute(
-        t.callExpression(
-          this._raxAtomicIds.get(TO_RAX_TEXT_PROPS),
-          [
-            t.ObjectExpression([]),
-          ],
-        ),
-      ),
-    );
-  }
-
-  const children = path.get('children') || [];
-
-  children.forEach((child) => {
-    if (child.isJSXElement()) {
-      child.replaceWith(t.jsxText('[object Object]'));
-    }
-  });
-}
-// rax-text end
-
-// rax-view start
-function transformRaxView(path, t) {
-  changeTagName(path, 'div');
-
-  const attributes = path.get('openingElement.attributes');
-
-  if (attributes.length > 0) {
-    if (hasJSXSpreadAttribute(attributes)) {
-      addAtomicId(path, this._raxAtomicIds, TO_RAX_VIEW_PROPS);
-      spreadAttributes(path, t, this._raxAtomicIds.get(TO_RAX_VIEW_PROPS));
-    } else {
-      prefixClassName(path, t, 'rax-view-v2');
-    }
-  } else {
-    // no attribute
-    prefixClassName(path, t, 'rax-view-v2');
-  }
-}
-
 function changeTagName(path, tagName = '') {
   if (!tagName) {
     return;
@@ -335,15 +336,16 @@ function changeTagName(path, tagName = '') {
 
 // - cannot find attribute "className" -> className="prefixedClassName"
 // - className (no value provided) -> className="prefixedClassName"
-// - className={ null } ("NullLiteral") -> className="prefixedClassName string"
 // - className="string" -> className="prefixedClassName string" }
+// - className={ null | boolean } ("NullLiteral"|"BooleanLiteral") -> className="prefixedClassName"
 // - className={ expression } -> className={ 'prefixedClassName' + ( expression ) }
-// - others: warning
+// - others: throw error
 function prefixClassName(path, t, className = '') {
-  const valuePath = findJSXAttributeValuePath(path, 'className');
+  const attributePath = findJSXAttributePath(path, 'className');
 
-  if (!valuePath) {
+  if (!attributePath) {
     path.node.openingElement.attributes = [
+      ...path.node.openingElement.attributes,
       t.jsxAttribute(
         t.jsxIdentifier('className'),
         t.stringLiteral(className),
@@ -352,31 +354,40 @@ function prefixClassName(path, t, className = '') {
     return;
   }
 
+  const valuePath = attributePath.get('value');
+
+  if (!valuePath || !valuePath.node) {
+    attributePath.node.value = t.stringLiteral(className);
+    return;
+  }
+
   if (valuePath.isStringLiteral()) {
     valuePath.replaceWith(
       t.stringLiteral(`${className } ${ valuePath.node.value}`),
     );
   } else if (valuePath.isJSXExpressionContainer()) {
-    valuePath.replaceWith(
-      t.jsxExpressionContainer(
-        t.binaryExpression(
-          '+',
-          t.stringLiteral(`${className } `),
-          valuePath.node.expression,
+    const expressionPath = valuePath.get('expression');
+    if (
+      expressionPath.isNullLiteral() ||
+      expressionPath.isBooleanLiteral()
+    ) {
+      valuePath.replaceWith(
+        t.stringLiteral(className),
+      );
+    } else {
+      valuePath.replaceWith(
+        t.jsxExpressionContainer(
+          t.binaryExpression(
+            '+',
+            t.stringLiteral(`${className } `),
+            valuePath.node.expression,
+          ),
         ),
-      ),
-    );
+      );
+    }
+  } else {
+    throw attributePath.buildCodeFrameError(`Unknown value type in className: ${valuePath.type}`);
   }
-}
-
-function findJSXAttributeValuePath(path, name) {
-  const jsxAttributePath = findJSXAttributePath(path, name);
-
-  if (!jsxAttributePath) {
-    return;
-  }
-
-  return jsxAttributePath.get('value');
 }
 
 function findJSXAttributePath(path, name) {
@@ -386,7 +397,6 @@ function findJSXAttributePath(path, name) {
       getJSXAttributeName(attributePath) === name;
   });
 }
-// rax-view end
 
 // 1. Got 'View'
 // 2. Find `import View from 'rax-view'` declaration by traversing parent scope

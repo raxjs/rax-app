@@ -15,9 +15,7 @@ function getTransfromCode(code) {
     ],
     plugins: [
       [require.resolve( '@babel/plugin-syntax-jsx' )],
-      [atomicComponentPlugin, {
-        useBuiltIns: true,
-      }],
+      [atomicComponentPlugin],
     ],
   }).code;
 }
@@ -38,6 +36,36 @@ describe('transform atomic components', () => {
       getTransfromCode( `
         import View from 'rax-view';
         <View className={ expr ? 'a' : b }></View>
+      ` )
+    ).toMatchSnapshot()
+  });
+
+  it('tansform rax-view with className only', () => {
+    expect(
+      getTransfromCode( `
+        import View from 'rax-view';
+        <View className></View>
+      ` )
+    ).toMatchSnapshot()
+  });
+
+  it('tansform rax-view with className null', () => {
+    expect(
+      getTransfromCode( `
+        import View from 'rax-view';
+        <View className={ null }></View>
+      ` )
+    ).toMatchSnapshot()
+  });
+
+  it('tansform rax-view with className boolean', () => {
+    expect(
+      getTransfromCode( `
+        import View from 'rax-view';
+        <>
+          <View className={ true }></View>
+          <View className={ false }></View>
+        </>
       ` )
     ).toMatchSnapshot()
   });
@@ -100,6 +128,36 @@ describe('transform atomic components', () => {
       getTransfromCode( `
         import Text from 'rax-text';
         <Text className={ expr ? 'a' : b }></Text>
+      ` )
+    ).toMatchSnapshot()
+  });
+
+  it('tansform rax-text with className only', () => {
+    expect(
+      getTransfromCode( `
+        import Text from 'rax-text';
+        <Text className></Text>
+      ` )
+    ).toMatchSnapshot()
+  });
+
+  it('tansform rax-text with className null', () => {
+    expect(
+      getTransfromCode( `
+        import Text from 'rax-text';
+        <Text className={ null }></Text>
+      ` )
+    ).toMatchSnapshot()
+  });
+
+  it('tansform rax-text with className boolean', () => {
+    expect(
+      getTransfromCode( `
+        import Text from 'rax-text';
+        <>
+          <Text className={ true }></Text>
+          <Text className={ false }></Text>
+        </>
       ` )
     ).toMatchSnapshot()
   });
