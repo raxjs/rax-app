@@ -1,0 +1,253 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`transform atomic components tansform rax-text with children 1`] = `
+"var _toRaxTextProps = function (props) {
+  const {
+    className,
+    style = {},
+    numberOfLines,
+    ...rest
+  } = props;
+  const prefixCls = 'rax-text-v2';
+  const lines = typeof numberOfLines === 'string' ? parseInt(numberOfLines, 10) : numberOfLines;
+  let classNames = [prefixCls, className];
+
+  if (lines) {
+    classNames.push(prefixCls + '--overflow-hidden');
+
+    if (lines === 1) {
+      classNames.push(prefixCls + '--singleline');
+    } else {
+      classNames.push(prefixCls + '--multiline');
+    }
+  }
+
+  const lineClamp = lines > 1 ? lines : undefined;
+  return { ...rest,
+    className: classNames.filter(Boolean).join(' '),
+    style: { ...style,
+      WebkitLineClamp: lineClamp,
+      lineClamp: lineClamp
+    }
+  };
+};
+
+import Text from 'rax-text';
+<span {..._toRaxTextProps({
+  \\"className\\": \\"klass\\"
+})}>
+          I am JSXText
+          [object Object]
+          {expr}
+        </span>;"
+`;
+
+exports[`transform atomic components tansform rax-text with className 1`] = `
+"var _toRaxTextProps = function (props) {
+  const {
+    className,
+    style = {},
+    numberOfLines,
+    ...rest
+  } = props;
+  const prefixCls = 'rax-text-v2';
+  const lines = typeof numberOfLines === 'string' ? parseInt(numberOfLines, 10) : numberOfLines;
+  let classNames = [prefixCls, className];
+
+  if (lines) {
+    classNames.push(prefixCls + '--overflow-hidden');
+
+    if (lines === 1) {
+      classNames.push(prefixCls + '--singleline');
+    } else {
+      classNames.push(prefixCls + '--multiline');
+    }
+  }
+
+  const lineClamp = lines > 1 ? lines : undefined;
+  return { ...rest,
+    className: classNames.filter(Boolean).join(' '),
+    style: { ...style,
+      WebkitLineClamp: lineClamp,
+      lineClamp: lineClamp
+    }
+  };
+};
+
+import Text from 'rax-text';
+<span {..._toRaxTextProps({
+  \\"className\\": \\"test\\"
+})}></span>;"
+`;
+
+exports[`transform atomic components tansform rax-text with className expression 1`] = `
+"var _toRaxTextProps = function (props) {
+  const {
+    className,
+    style = {},
+    numberOfLines,
+    ...rest
+  } = props;
+  const prefixCls = 'rax-text-v2';
+  const lines = typeof numberOfLines === 'string' ? parseInt(numberOfLines, 10) : numberOfLines;
+  let classNames = [prefixCls, className];
+
+  if (lines) {
+    classNames.push(prefixCls + '--overflow-hidden');
+
+    if (lines === 1) {
+      classNames.push(prefixCls + '--singleline');
+    } else {
+      classNames.push(prefixCls + '--multiline');
+    }
+  }
+
+  const lineClamp = lines > 1 ? lines : undefined;
+  return { ...rest,
+    className: classNames.filter(Boolean).join(' '),
+    style: { ...style,
+      WebkitLineClamp: lineClamp,
+      lineClamp: lineClamp
+    }
+  };
+};
+
+import Text from 'rax-text';
+<span {..._toRaxTextProps({
+  \\"className\\": expr ? 'a' : b
+})}></span>;"
+`;
+
+exports[`transform atomic components tansform rax-text with style 1`] = `
+"var _toRaxTextProps = function (props) {
+  const {
+    className,
+    style = {},
+    numberOfLines,
+    ...rest
+  } = props;
+  const prefixCls = 'rax-text-v2';
+  const lines = typeof numberOfLines === 'string' ? parseInt(numberOfLines, 10) : numberOfLines;
+  let classNames = [prefixCls, className];
+
+  if (lines) {
+    classNames.push(prefixCls + '--overflow-hidden');
+
+    if (lines === 1) {
+      classNames.push(prefixCls + '--singleline');
+    } else {
+      classNames.push(prefixCls + '--multiline');
+    }
+  }
+
+  const lineClamp = lines > 1 ? lines : undefined;
+  return { ...rest,
+    className: classNames.filter(Boolean).join(' '),
+    style: { ...style,
+      WebkitLineClamp: lineClamp,
+      lineClamp: lineClamp
+    }
+  };
+};
+
+import Text from 'rax-text';
+<span {..._toRaxTextProps({
+  \\"style\\": {
+    border: a ? b : c,
+    color: '#FFF',
+    backgroundColor: expr + 'string'
+  }
+})}>
+        </span>;"
+`;
+
+exports[`transform atomic components tansform rax-text with style and other props 1`] = `
+"var _toRaxTextProps = function (props) {
+  const {
+    className,
+    style = {},
+    numberOfLines,
+    ...rest
+  } = props;
+  const prefixCls = 'rax-text-v2';
+  const lines = typeof numberOfLines === 'string' ? parseInt(numberOfLines, 10) : numberOfLines;
+  let classNames = [prefixCls, className];
+
+  if (lines) {
+    classNames.push(prefixCls + '--overflow-hidden');
+
+    if (lines === 1) {
+      classNames.push(prefixCls + '--singleline');
+    } else {
+      classNames.push(prefixCls + '--multiline');
+    }
+  }
+
+  const lineClamp = lines > 1 ? lines : undefined;
+  return { ...rest,
+    className: classNames.filter(Boolean).join(' '),
+    style: { ...style,
+      WebkitLineClamp: lineClamp,
+      lineClamp: lineClamp
+    }
+  };
+};
+
+import Text from 'rax-text';
+<span {..._toRaxTextProps({
+  \\"className\\": \\"klass\\",
+  \\"style\\": {
+    border: a ? b : c,
+    color: '#FFF',
+    backgroundColor: expr + 'string'
+  }
+})} data-x=\\"a\\">
+        </span>;"
+`;
+
+exports[`transform atomic components tansform rax-view with children 1`] = `
+"import View from 'rax-view';
+<div className=\\"rax-view-v2 klass\\">
+          I am JSXText
+          <span className=\\"a\\">hello</span>
+          {expr}
+        </div>;"
+`;
+
+exports[`transform atomic components tansform rax-view with className 1`] = `
+"import View from 'rax-view';
+<div className=\\"rax-view-v2 test\\"></div>;"
+`;
+
+exports[`transform atomic components tansform rax-view with className expression 1`] = `
+"import View from 'rax-view';
+<div className={\\"rax-view-v2 \\" + (expr ? 'a' : b)}></div>;"
+`;
+
+exports[`transform atomic components tansform rax-view with innerHTML 1`] = `
+"import View from 'rax-view';
+<div className=\\"rax-view-v2 test\\" dangerouslySetInnerHTML={{
+  __html: \\"<div>a</div>\\"
+}}>
+        </div>;"
+`;
+
+exports[`transform atomic components tansform rax-view with style 1`] = `
+"import View from 'rax-view';
+<div className=\\"rax-view-v2 klass\\" style={{
+  border: a ? b : c,
+  color: '#FFF',
+  backgroundColor: expr + 'string'
+}}>
+        </div>;"
+`;
+
+exports[`transform atomic components tansform rax-view with style and other props 1`] = `
+"import View from 'rax-view';
+<div data-x=\\"a\\" className=\\"rax-view-v2 klass\\" style={{
+  border: a ? b : c,
+  color: '#FFF',
+  backgroundColor: expr + 'string'
+}}>
+        </div>;"
+`;
