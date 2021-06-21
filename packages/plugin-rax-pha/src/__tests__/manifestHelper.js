@@ -128,7 +128,7 @@ describe('transformAppConfig', () => {
       "requestHeaders": {
         "U-Tag": "${storage.uTag}"
       },
-    }, true);
+    }, false);
     expect(manifestJSON).toMatchObject({ request_headers: { 'U-Tag': '${storage.uTag}' } });
   });
 });
