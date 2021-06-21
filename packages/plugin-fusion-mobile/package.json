@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-fusion-mobile",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "app plugin for Fusion Mobile",
   "license": "MIT",
   "main": "lib/index.js",
@@ -11,10 +11,14 @@
   "peerDependencies": {
     "rax": "^1.0.0"
   },
-
   "dependencies": {
     "babel-plugin-import": "^1.13.0",
     "chalk": "^2.4.2",
+    "clean-css": "^5.1.2",
+    "fs-extra": "^10.0.0",
+    "postcss": "^8.3.5",
+    "postcss-css-variables": "^0.18.0",
+    "postcss-import": "^14.0.2",
     "webpack-merge": "^5.2.0"
   }
 }
