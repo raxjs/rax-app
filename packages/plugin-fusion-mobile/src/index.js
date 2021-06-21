@@ -35,7 +35,7 @@ module.exports = (api, options = {}) => {
 
               console.log(
                 chalk.yellow(
-                  `[plugin-fusion-mobile] removed css variables for: ${filePath}, (${Math.floor(
+                  `[plugin-fusion-mobile] tranformed css variables at: ${chalk.underline(filePath)} (${Math.floor(
                     originalFileStats.size / 1024,
                   )}kb → ${Math.floor(newFileStats.size / 1024)}kb)`,
                 ),
