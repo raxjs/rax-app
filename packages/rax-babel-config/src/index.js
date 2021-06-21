@@ -15,7 +15,6 @@ module.exports = (userOptions = {}) => {
     styleSheet,
     jsxPlus = true,
     jsxToHtml,
-    disableRegenerator = false,
     // preset-env modules options
     modules,
   } = options;
@@ -31,7 +30,6 @@ module.exports = (userOptions = {}) => {
           include: [
             'transform-computed-properties',
           ],
-          exclude: disableRegenerator ? ['transform-regenerator'] : [],
         },
       ],
       [
@@ -93,7 +91,7 @@ module.exports = (userOptions = {}) => {
     });
 
     if (logOnce) {
-      console.log(chalk.green('JSX+ enabled, documentation: https://rax.js.org/docs/guide/jsxplus'));
+      console.log(chalk.green('JSX+ enabled, documentation: https://rax.js.org/docs/guide/component'));
       logOnce = false;
     }
   }

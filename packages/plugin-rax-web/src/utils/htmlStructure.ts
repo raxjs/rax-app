@@ -1,25 +1,33 @@
-import * as cheerio from 'cheerio';
 import { IHtmlInfo } from '../types';
 
 let scripts = [];
 let links = [];
 let metas = [];
 
-export function getBuiltInHtmlTpl(htmlInfo) {
-  const { doctype = '<!DOCTYPE html>', title } = htmlInfo;
-  return `
-  ${doctype}
-  <html>
-    <head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover" />
-      <title>${title}</title>
-    </head>
-    <body>
-      <div id="root"></div>
-    </body>
-  </html>
-`;
+export function addSpmA(spmA) {
+  if (!spmA) return '';
+  return `<meta name="data-spm" content="${spmA}" />`;
+}
+
+export function addSpmB(spmB) {
+  if (!spmB) return '';
+  return `data-spm="${spmB}"`;
+}
+
+export function addStaticSource(sources: string[]) {
+  return sources.reduce((prev, current) => `${prev}${current}\n`, '');
+}
+
+export function addScriptsBySource(sources: string[]) {
+  return sources.reduce(
+    (prev, current) =>
+      `${prev}${`<script crossorigin="anonymous" type="application/javascript" src="${current}"></script>`}\n`,
+    '',
+  );
+}
+
+export function addLinksBySource(sources: string[]) {
+  return sources.reduce((prev, current) => `${prev}${`<link rel="stylesheet" href="${current}" />`}\n`, '');
 }
 
 export function insertCommonElements(staticConfig) {
@@ -35,34 +43,61 @@ export function insertCommonElements(staticConfig) {
   }
 }
 
-export function generateHtmlStructure(htmlStr, htmlInfo?: IHtmlInfo) {
-  const $ = cheerio.load(htmlStr);
-  const root = $('#root');
-  const title = $('title');
-  const { metas: pageMetas = [], links: pageLinks = [], scripts: pageScripts = [] } = htmlInfo || {};
-  title.before([...metas, ...pageMetas]);
-  title.after([...scripts, ...pageLinks]);
-  root.after([...scripts, ...pageScripts]);
-  return $;
+export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo, ssr: boolean) {
+  const {
+    doctype,
+    title,
+    spmA,
+    spmB,
+    injectedHTML: { links: customLinks = [], scripts: customScripts = [], metas: customMetas = [] },
+    assets: { links: assetLinks = [], scripts: assetScripts = [] },
+  } = htmlInfo;
+
+  let { initialHTML = '' } = htmlInfo;
+
+  if (ssr) {
+    initialHTML = '<!--__INNER_ROOT__-->';
+  }
+  return `
+  ${doctype}
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      ${addSpmA(spmA)}
+      <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover" />
+      ${addStaticSource(customMetas)}
+      <title>${title}</title>
+      ${addStaticSource(customLinks)}
+      ${addLinksBySource(assetLinks)}
+    </head>
+    <body ${addSpmB(spmB)}>
+      ${ ssr ? '<!--__BEFORE_ROOT__-->' : '' }
+      <div id="root">${initialHTML}</div>
+      ${addStaticSource(customScripts)}
+      ${ ssr ? '<!--__AFTER_ROOT__-->' : '' }
+      ${addScriptsBySource(assetScripts)}
+    </body>
+  </html>
+`;
 }
 
 export function insertScripts(customScripts) {
-  scripts = [...scripts, customScripts];
+  scripts = [...scripts, ...customScripts];
 }
 
 export function insertLinks(customLinks) {
-  links = [...links, customLinks];
+  links = [...links, ...customLinks];
 }
 
 export function insertMetas(customMetas) {
-  metas = [...metas, customMetas];
+  metas = [...metas, ...customMetas];
 }
 
 export function insertScriptsByInfo(customScripts) {
   insertScripts(
     customScripts.map((scriptInfo) => {
-      const attrStr = Object.keys(scriptInfo).reduce((curr, next) => `${curr} ${next}=${scriptInfo[next]} `, '');
-      return `<script${attrStr} />`;
+      const attrStr = Object.keys(scriptInfo).reduce((curr, next) => `${curr} ${next}="${scriptInfo[next]}" `, '');
+      return `<script${attrStr}></script>`;
     }),
   );
 }

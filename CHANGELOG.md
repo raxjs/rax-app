@@ -1,12 +1,150 @@
 ## Changelog
 
+## 3.6.2
+
+- Fix: tabBar height in iphoneX
+
+## 3.6.1
+
+- Feat: transform static node to html tag directly
+- Refactor: conditional inject SPA tabBar
+- Chore: optimize `devServer.contentBase` and `output.path` logic
+- Chore: optimize hot reload experience
+- Chore: optimize https cert generate logic
+- Fix: print `devServer.host` in console higher priority
+- Fix: read file content from compiler memfs
+- Fix: `No loader specified` error reported by webpack when set `postcssrc` to true in ssr scene
+
+## 3.6.0
+
+- Feat: support package.json `exports` field with webpack4
+- Feat: support bytedance microapp/ baidu smartprogram/kuaishou miniprogram
+- Feat: support default TabBar in MPA
+- Feat: support query is `csr=true`  with request path end is `.html`, devServer will return CSR result
+- Fix: `tschecker` error with default template
+
+## 3.5.3 (May 12 2021)
+
+- Feat: support use build-plugin-rax-miniapp to config baidu/kuaishou miniapp
+- Chore: change web.template to web.pha.template
+- Chore: add builtInLibaray: false
+- Fix: errorBoundary type define
+
+## 3.5.2 (May 11 2021)
+
+- Feat: support judge bytedance/baidu/kuaishou miniapp env
+
+## 3.5.1 (April 29 2021)
+
+- Feat: support pass `props.pageConfig` to page component
+- Feat: throw error when not using the BrowserRouter
+- Chore: `errorBoundary` default value changed to `true`
+
+## 3.5.0 (April 15 2021)
+
+- Feat: support custom tabbar in MPA
+- Fix: check store file fail in Windows
+- Chore: compatible with app.tsx export default some component
+
+## 3.4.11 (April 1 2021)
+
+- Fix: miniapp vendor test
+## 3.4.10 (March 31 2021)
+
+- Feat: support set dataPrefetch for every single page in PHA
+- Feat: support share memory in every common files with miniapp subpackages
+- Fix: csr html structure error with xtpl
+
+## 3.4.9 (March 25 2021)
+
+ - Feat: add --analyzer-target=web to avoid port conflict with multiple task
+ - Feat: support build tabbar html when configured source in tabbar for PHA
+ - Chore: change injectServerSideData to updateDataInClient
+ - Chore: remove print local url in console
+ - Fix: alibaba miniapp subPackages error
+
+## 3.4.8 (March 23 2021)
+
+- Feat: support share memory with subpackages
+- Chore: reduce miniapp size with subPackages
+- Fix: windows error with document
+
+## 3.4.7 (March 19 2021)
+
+- Fix: rax render won't override original content with initialHTML is undefined 
+
+## 3.4.6 (March 18 2021)
+
+- Chore: invalid version 
+
+### 3.4.5 (March 18 2021)
+
+- Chore: ensure builtin scripts load order
+- Chore: remove comment node without ssr
+
+### 3.4.4 (March 17 2021)
+
+- Chore: update typescript/ts-loader version
+- Fix: pha dev mode error without pha-worker.js
+- Refactor: ssr html parser
+
+### 3.4.3 (March 12 2021)
+
+- Chore: upgrade less && less-loader
+- Fix: web dev server content base
+- Fix: ssr search default value
+
+### 3.4.2 (March 09 2021)
+
+- Feat: support multiple pages in PHA
+- Fix: SPA with document is invalid
+- Fix: document dev shouldn't block when hot reload
+- Fix: `.ts` file won't add babel JSX compiler
+- Chore: dev server should be applied to every webpack config
+
+### 3.4.1 (March 04 2021)
+
+- Chore: update sass-loader
+- Chore: change data prefetch key in PHA
+- Fix: html generate in document mode
+
+### 3.3.9 (February 26 2021)
+
+- Fix: receive params passed by DEF plugin
+
+### 3.3.8 (February 26 2021)
+
+- Refactor: document. ([#618](https://github.com/raxjs/rax-app/pull/618))
+- Fix: app json content watch. ([#612](https://github.com/raxjs/rax-app/pull/612))
+- Fix: data prefetches do not decamelize in PHA. ([#616](https://github.com/raxjs/rax-app/pull/616))
+
+### 3.3.7 (February 20 2021)
+
+- Feat: PHA cross slide. ([#601](https://github.com/raxjs/rax-app/pull/601) [alibaba/ice#4059](https://github.com/alibaba/ice/pull/4059))
+- Feat: watch app.json change. ([#601](https://github.com/raxjs/rax-app/pull/601))
+- Refactor: SSR without cheerio. ([#607](https://github.com/raxjs/rax-app/pull/607))
+- Fix: escape problem during HTML generation. ([#607](https://github.com/raxjs/rax-app/pull/607))
+- Fix: browser history in MPA. ([#608](https://github.com/raxjs/rax-app/pull/608))
+- Fix: react alias with DEF plugin. ([#605](https://github.com/raxjs/rax-app/pull/605))
+
+### 3.2.5 (January 07 2021)
+
+- Feat: Support PHA template.
+- Feat: Wechat Miniprogram support `generator` syntactic suga.
+- Chore: `runApp` add type prompt.
+- Chore: PHA support without pha-worker.js
+- Fix: SSR build error.
+
 ### 3.2.2 (December 29 2020)
+
 - Fix: mpa insert all page bundle into html.
 
 ### 3.2.1 (December 25 2020)
+
 - Chore: `compileDependencies` default value is `['']`. 
 
 ### 3.2.0 (December 24 2020)
+
 - Feat: config store runtime automatically. ([alibaba/ice#3932](https://github.com/alibaba/ice/pull/3932))
 - Feat: support config hydrate in rax-app. ([alibaba/ice#3918](https://github.com/alibaba/ice/pull/3918) [#548](https://github.com/raxjs/rax-app/pull/548))
 - Feat: support set webpackLoaders and webpackPlugins through build.json.([alibaba/ice#3938]((https://github.com/alibaba/ice/pull/3938)))
@@ -18,13 +156,16 @@
 - Fix: kraken mpa error.([#541]((https://github.com/raxjs/rax-app/pull/541)))
 
 ### 3.1.2 & 3.1.3 (December 15 2020)
+
 For v3.1.1 patch version.
 ### 3.1.1 (December 14 2020)
+
 - Feat: support use name specifies MPA page name and output path.([alibaba/ice#3906](https://github.com/alibaba/ice/pull/3906))
 - Feat: support set html info by app.json.([#525](https://github.com/raxjs/rax-app/pull/525))
 - Feat: support snapshot in Web and optimize build PHA.([#516](https://github.com/raxjs/rax-app/pull/516))
 
 ### 3.1.0 (December 04 2020)
+
 - Feat: support build pha app.([#507](https://github.com/raxjs/rax-app/pull/507))
 - Feat: support use `--dev-targets` specified build targets in development.([#508](https://github.com/raxjs/rax-app/pull/508))
 - Feat: support http request mock.([#506](https://github.com/raxjs/rax-app/pull/506))
@@ -33,6 +174,7 @@ For v3.1.1 patch version.
 - Fix: `withPageLifeCycle` makes `componentWillUnmount` invalid and `runApp({ app: { onShareAppMessage() {} } })` is invalid.([alibaba/ice#3880](https://github.com/alibaba/ice/pull/3880) [alibaba/ice#3890](https://github.com/alibaba/ice/pull/3890))
 
 ### 3.0.9 (November 23, 2020)
+
 - Feat: support CSS Modules.([#488](https://github.com/raxjs/rax-app/pull/488)) 
 - Refactor: change mpa entry to `.rax` temp dir.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3825))
 - Fix: user couldn't custom `outputDir`.([#494](https://github.com/raxjs/rax-app/pull/494))
@@ -42,6 +184,7 @@ For v3.1.1 patch version.
 - Fix: compact react plugin targets is undefined.([#490](https://github.com/raxjs/rax-app/pull/490))
 
 ### 3.0.8 (November 13, 2020)
+
 - Fix: mpa restart logic.([#3817](https://github.com/alibaba/ice/pull/3817))
 - Fix: kraken error.([#3817](https://github.com/alibaba/ice/pull/3817))
 

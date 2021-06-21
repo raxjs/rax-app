@@ -1,80 +1,90 @@
-import * as path from 'path';
 import * as Module from 'module';
-import * as fs from 'fs';
-import * as errorStackTracey from 'error-stack-tracey';
-import { getMpaEntries } from '@builder/app-helpers';
-import getEntryName from './getEntryName';
+import * as path from 'path';
+import * as url from 'url';
+import { STATIC_CONFIG } from '../constants';
+import { getChunkInfo } from '../utils/chunkInfo';
 
-const { parse, print } = errorStackTracey;
+export default function (api, config) {
+  let serverReady = false;
+  let httpResponseQueue = [];
 
-function exec(code, filename, filePath) {
-  const module: any = new Module(filename, this);
-  module.paths = (Module as any)._nodeModulePaths(filePath);
-  module.filename = filename;
-  module._compile(code, filename);
-  return module.exports;
-}
-
-export default (config, api) => {
-  const { context, getValue } = api;
-  const { rootDir, userConfig } = context;
-  const { web: webConfig = {}, outputDir } = userConfig;
-  const distDir = path.join(rootDir, outputDir, 'node');
-
-  config.mode('development');
-  const staticConfig = getValue('staticConfig');
-  const { routes } = staticConfig;
-
-  if (webConfig.mpa) {
-    const entries = getMpaEntries(api, { target: 'web', appJsonContent: staticConfig });
-    routes.forEach((route) => {
-      const { entryName } = entries.find(({ source }) => source === route.source);
-      route.path = `/${entryName}.html`;
-      route.entryName = entryName;
-      route.componentPath = path.join(distDir, `${entryName}.js`);
-    });
-  } else {
-    routes.forEach((route) => {
-      const entryName = getEntryName(route.path);
-      route.entryName = entryName;
-      route.componentPath = path.join(distDir, `${entryName}.js`);
-    });
-  }
-
-  // enable inline soucremap for get error stack
-  config.devtool('eval-cheap-source-map');
-
+  config.devServer.inline(false);
   config.devServer.hot(false);
-  const originalBeforeDevFunc = config.devServer.get('before');
-
-  // There can only be one `before` config, this config will overwrite `before` config in web plugin.
-  config.devServer.set('before', (app, devServer) => {
-    if (originalBeforeDevFunc) {
-      originalBeforeDevFunc(app, devServer);
-    }
-    // outputFileSystem in devServer is MemoryFileSystem by defalut, but it can also be custom with other file systems.
-    const outputFs = devServer.compiler.compilers[0].outputFileSystem;
-    routes.forEach((route) => {
-      app.get(route.path, async (req, res) => {
-        const bundleContent = outputFs.readFileSync(route.componentPath, 'utf8');
-
-        process.once('unhandledRejection', async (error: Error) => {
-          const errorStack = await parse(error, bundleContent);
-          print(error.message, errorStack);
-        });
-
-        try {
-          const mod = exec(bundleContent, route.componentPath, route.componentPath);
-          mod.render(req, res);
-        } catch (error) {
-          console.log('exec error');
-          fs.writeFileSync(path.resolve(rootDir, 'build', 'index.js'), bundleContent);
-          const errorStack = await parse(error, bundleContent);
-          print(error.message, errorStack);
+  // It will override all devServer before func, because ssr need hijack route
+  config.devServer.set('before', (app, server) => {
+    let compilerDoneCount = 0;
+    server.compiler.compilers.forEach((compiler) => {
+      compiler.hooks.done.tap('ssrServer', () => {
+        compilerDoneCount++;
+        // wait until all compiler is done
+        if (compilerDoneCount === server.compiler.compilers.length) {
+          serverReady = true;
+          httpResponseQueue.forEach(([req, res, next]) => {
+            render(res, req, next, server, api);
+          });
+          // empty httpResponseQueue
+          httpResponseQueue = [];
         }
       });
     });
-  });
 
-  return config;
-};
+    const pattern = /^\/?((?!\.(js|css|map|json|png|jpg|jpeg|gif|svg|eot|woff2|ttf|ico)).)*$/;
+    app.get(pattern, async (req, res, next) => {
+      if (serverReady) {
+        render(res, req, next, server, api);
+      } else {
+        httpResponseQueue.push([req, res, next]);
+      }
+    });
+  });
+}
+
+function render(res, req, next, server, api) {
+  const {
+    context: {
+      userConfig: { web = {} },
+    },
+    getValue,
+  } = api;
+  let pathname = req.path;
+  const staticConfig = getValue(STATIC_CONFIG);
+  if (!web.mpa) {
+    if (!staticConfig.routes.find(({ path: routePath }) => routePath === pathname)) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send('Cannot find target page.');
+      return;
+    }
+    pathname = 'index';
+  }
+
+  if (req.path.endsWith('.html') && (typeof req.query.csr !== 'undefined')) {
+    pathname = /\.html$/.test(pathname) ? pathname : `${pathname}.html`;
+    const search = url.parse(req.url).search || '';
+    req.url = pathname + search;
+    return next();
+  }
+
+  const nodeCompiler = server.compiler.compilers
+    .find((compiler) => compiler.name === 'node');
+  const webCompiler = server.compiler.compilers
+    .find((compiler) => compiler.name === 'web');
+  const nodeFS = nodeCompiler.outputFileSystem;
+  const webFS = webCompiler.outputFileSystem;
+
+  const nodeFilePath = path.join(nodeCompiler.options.output.path, `${pathname.replace(/\.html$/, '')}.js`);
+  if (nodeFS.existsSync(nodeFilePath)) {
+    const bundleContent = nodeFS.readFileSync(nodeFilePath, 'utf-8');
+    const mod = exec(bundleContent, nodeFilePath);
+    const htmlFilePath = path.join(webCompiler.options.output.path, /\.html$/.test(pathname) ? pathname : `${pathname}.html`);
+    const htmlTemplate = webFS.readFileSync(htmlFilePath, 'utf-8');
+    mod.render({ req, res }, { htmlTemplate, chunkInfo: getChunkInfo() });
+  }
+}
+
+function exec(code, filePath) {
+  const module: any = new Module(filePath, this);
+  module.paths = (Module as any)._nodeModulePaths(filePath);
+  module.filename = filePath;
+  module._compile(code, filePath);
+  return module.exports;
+}

@@ -1,0 +1,7 @@
+{
+  "targets": ["web"],
+  "web": {
+    "ssr": true,
+    "mpa": true
+  }
+}

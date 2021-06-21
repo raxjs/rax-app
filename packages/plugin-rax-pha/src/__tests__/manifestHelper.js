@@ -1,20 +1,56 @@
 
 
-const { transformAppConfig, getPageManifestByPath } = require('../manifestHelpers')
+const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers');
+const cloneDeep = require('lodash.clonedeep');
 
 describe('transformAppConfig', () => {
-  it('should transform dataPrefetches', () => {
+  it('should transform document fields', () => {
     const manifestJSON = transformAppConfig({
-      dataPrefetches: [{
+      spm: 'A-123',
+      metas: [
+        '<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />'
+      ],
+      links: [
+        '<link rel=\"dns-prefetch\" href=\"//g.alicdn.com\" />'
+      ],
+      scripts: [
+        '<script defer src=\"xxx/index.js\"></script>'
+      ],
+      'offlineResources': ["//g.alicdn.com/.*"]
+    }, true);
+    expect(manifestJSON.spm).toBe('A-123');
+    expect(manifestJSON.metas[0]).toBe('<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />');
+    expect(manifestJSON.links[0]).toBe('<link rel=\"dns-prefetch\" href=\"//g.alicdn.com\" />');
+    expect(manifestJSON.scripts[0]).toBe('<script defer src=\"xxx/index.js\"></script>');
+    expect(manifestJSON.offline_resources[0]).toBe('//g.alicdn.com/.*');
+  });
+
+  it('should transform dataPrefetch', () => {
+    const manifestJSON = transformAppConfig({
+      dataPrefetch: [{
         url: '/a.com',
         data: {
           id: 123,
+          taskId: 233,
+          cId: {
+            dId: true
+          }
         },
+        header: {
+          taskId: 455
+        }
       }],
     }, true);
-    expect(manifestJSON.data_prefetches.length).toBe(1);
-    expect(manifestJSON.data_prefetches[0].data).toMatchObject({
+    expect(manifestJSON.data_prefetch.length).toBe(1);
+    expect(manifestJSON.data_prefetch[0].data).toMatchObject({
       id: 123,
+      taskId: 233,
+      cId: {
+        dId: true
+      }
+    });
+    expect(manifestJSON.data_prefetch[0].header).toMatchObject({
+      taskId: 455,
     });
   });
 
@@ -55,7 +91,7 @@ describe('transformAppConfig', () => {
           path: '/',
           name: 'home',
           source: 'pages/Home/index',
-          dataPrefetches: [{
+          dataPrefetch: [{
             url: '/a.com',
             data: {
               id: 123,
@@ -70,7 +106,13 @@ describe('transformAppConfig', () => {
       ],
     }, true);
     expect(manifestJSON.pages.length).toBe(2);
-    expect(manifestJSON.pages[0].data_prefetches).toMatchObject([{ url: '/a.com', data: { id: 123 } }]);
+    expect(manifestJSON.pages[0].data_prefetch).toMatchObject([{
+      url: '/a.com',
+      data: {
+        id: 123
+      },
+      header: {}
+    }]);
   });
 
   it('should not filter whitelist fields', () => {
@@ -89,7 +131,7 @@ describe('getPageManifestByPath', () => {
         path: '/',
         name: 'home',
         source: 'pages/Home/index',
-        data_prefetches: [{
+        data_prefetch: [{
           url: '/a.com',
           data: {
             id: 123,
@@ -103,46 +145,103 @@ describe('getPageManifestByPath', () => {
       },
     ],
   };
+});
 
-  it('should get empty object when no path', () => {
-    const manifest = getPageManifestByPath({});
+describe('setRealUrlToManifest', () => {
+  const config = {
+    pages: [
+      {
+        path: '/',
+        name: 'home3',
+        source: 'pages/Home/index',
+        data_prefetch: [{
+          url: '/a.com',
+          data: {
+            id: 123,
+          },
+        }],
+      },
+      {
+        tab_header: {
+          source: 'pages/Header/index',
+          query_params: 'b=true'
+        },
+        path: '/home1',
+        source: 'pages/Home1/index',
+        query_params: 'c=123'
+      },
+      {
+        frames: [{
+          path: '/frame1',
+          source: 'pages/frame1/index',
+        }]
+      }
+    ],
+    tab_bar: {
+      source: 'pages/TabBar/index',
+      query_params: 'a=2'
+    }
+  };
+  const options = {
+    urlPrefix: 'https://abc.com/',
+    cdnPrefix: 'https://cdn.com/',
+    isTemplate: true,
+    inlineStyle: false,
+    api: {
+      applyMethod: () => {
+        return {};
+      }
+    },
+  };
 
-    expect(manifest).toMatchObject({});
+  it('should change real url to manifest', () => {
+    const manifest = setRealUrlToManifest(options, cloneDeep(config));
+
+    expect(manifest.pages[0].path).toBe('https://abc.com/home3');
+    expect(manifest.pages[0].key).toBe('home3');
+    expect(manifest.pages[0].script).toBe('https://cdn.com/home3.js');
+    expect(manifest.pages[0].stylesheet).toBe('https://cdn.com/home3.css');
+    expect(manifest.pages[1].path).toBe('https://abc.com/home1?c=123');
+    expect(manifest.pages[2].frames[0].path).toBe('https://abc.com/frame1');
+    expect(manifest.pages[1].tab_header.url).toBe('https://abc.com/header?b=true');
+    expect(manifest.tab_bar.url).toBe('https://abc.com/tabbar?a=2');
   });
 
-  it('should get first page manifest', () => {
-    const manifest = getPageManifestByPath({
-      decamelizeAppConfig: config,
-    });
+  it('should set document to manifest', () => {
+    const manifest = setRealUrlToManifest({
+      ...options,
+      api: {
+        applyMethod: () => {
+          return {
+            custom: true,
+            document: '<html>123</html>'
+          };
+        }
+      },
+    }, cloneDeep(config));
 
-    expect(manifest).toMatchObject({
-      path: '/',
-      name: 'home',
-      data_prefetches: [
-        { url: '/a.com', data: { id: 123 } },
-      ],
-    });
+    expect(manifest.pages[0].document).toBe('<html>123</html>');
+    expect(manifest.pages[1].document).toBe('<html>123</html>');
+    expect(manifest.pages[2].frames[0].document).toBe('<html>123</html>');
   });
 
-  it('should generate nsr script', () => {
-    const manifest = getPageManifestByPath({
-      decamelizeAppConfig: config,
-      nsr: true,
-    });
+  it('should not add stylesheet to page', () => {
+    const manifest = setRealUrlToManifest({
+      ...options,
+      inlineStyle: true,
+    }, cloneDeep(config));
+
+    expect(manifest.pages[0].stylesheet).toBeUndefined();
   });
 
-  it('should delete fields when frame page', () => {
-    const copyConfig = { ...config };
-    copyConfig.pages[0].frame = true;
-    copyConfig.pages[0].tab_bar = {
-      background_color: '#ff0000',
-    };
+  it('should not support template', () => {
+    const manifest = setRealUrlToManifest({
+      ...options,
+      isTemplate: false,
+    }, cloneDeep(config));
 
-    const manifest = getPageManifestByPath({
-      decamelizeAppConfig: copyConfig,
-    });
-
-    expect(manifest.pages.length).toBe(2);
-    expect(manifest.tab_bar).toMatchObject({ background_color: '#ff0000' });
+    expect(manifest.pages[0].script).toBeUndefined();
+    expect(manifest.pages[0].stylesheet).toBeUndefined();
+    expect(manifest.pages[0].document).toBeUndefined();
   });
 });

@@ -7,7 +7,7 @@
     "mpa": true
   },
   "web": {
-    "mpa": true
-  },
-  "inlineStyle": true
+    "mpa": true,
+    "staticExport": true
+  }
 }

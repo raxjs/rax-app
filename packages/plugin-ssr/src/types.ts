@@ -1,17 +1,28 @@
-export interface IInjectedHTML {
-  scripts: string[];
-  links: string[];
-  metas: string[];
-}
+export interface IEntryPluginOptions {
+  api: any;
 
-export interface IEntryLoaderQuery {
-  styles: string[];
-  scripts: string[];
-  absoluteAppConfigPath: string;
-  entryPath: string;
+  entries: any;
+  documentPath: string;
+
   assetsProcessor?: string;
-  documentPath?: string;
-  builtInHTML?: string;
-  injectedHTML?: IInjectedHTML;
 }
 
+export interface IPageConfig {
+  path?: string;
+  window?: any;
+  [key: string]: any;
+}
+
+export interface ILoaderQuery {
+  documentPath?: string;
+  entryName?: string;
+  needInjectStyle?: boolean | string;
+  useRunApp: boolean | string;
+  publicPath?: string;
+  tempPath: string;
+  injectedHTML?: any;
+  assetsProcessor?: string;
+  pageConfig?: IPageConfig;
+  doctype?: string;
+  updateDataInClient: boolean | string;
+}

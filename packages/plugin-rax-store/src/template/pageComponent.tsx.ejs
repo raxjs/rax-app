@@ -1,0 +1,21 @@
+import { createElement } from 'rax';
+
+<%- pageStoreImport %>
+
+<%- pageComponentImport %>
+
+const PageComponentName = <%= pageComponentExport %>;
+
+const PageProvider = store.Provider;
+const StoreWrapperedPage = (props) => {
+  return (
+    <PageProvider>
+      <PageComponentName {...props} />
+    </PageProvider>
+  )
+}
+
+StoreWrapperedPage.getInitialProps = PageComponentName.getInitialProps;
+
+export default StoreWrapperedPage;
+export { store };

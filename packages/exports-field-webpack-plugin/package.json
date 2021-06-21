@@ -1,0 +1,15 @@
+{
+  "name": "@builder/exports-field-webpack-plugin",
+  "version": "1.0.0",
+  "description": "webpack plugin for exports field",
+  "license": "BSD-3-Clause",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-app/issues"
+  },
+  "homepage": "https://github.com/raxjs/rax-app#readme"
+}

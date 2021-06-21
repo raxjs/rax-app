@@ -1,4 +1,5 @@
 const { decamelize } = require('humps');
+const pathPackage = require('path');
 
 // appConfig keys need transform to manifest
 const retainKeys = [
@@ -13,114 +14,163 @@ const retainKeys = [
   'icons',
   'appWorker',
   'window',
+  'pageHeader',
   'tabHeader',
   'tabBar',
   'pages',
-  'dataPrefetches',
+  'dataPrefetch',
+  'spm',
+  'metas',
+  'links',
+  'scripts',
+  'offlineResources',
+  'manifestPrefetchExpires',
+  'manifestPrefetchMaxAge',
+  'queryParamsPassKeys',
+  'queryParamsPassIgnoreKeys',
+  'splashViewTimeout',
+  'swiperThreshold',
 ];
 
 // transform app config to decamelize
-function transformAppConfig(appConfig, isRoot = true) {
+function transformAppConfig(appConfig, isRoot = true, parentKey) {
   const data = {};
 
   if (isRoot && appConfig.routes) {
     appConfig.pages = appConfig.routes;
   }
-  for (const key in appConfig) {
+  for (let key in appConfig) {
     // filter not need key
     if (isRoot && retainKeys.indexOf(key) === -1) {
       continue;
     }
-    const transformKey = decamelize(key);
     const value = appConfig[key];
+
+    // compatible tabHeader
+    if (key === 'pageHeader') {
+      key = 'tabHeader';
+    }
+    const transformKey = decamelize(key);
     if (key === 'window') {
       Object.assign(data, transformAppConfig(value, false));
     } else if (typeof value === 'string' || typeof value === 'number') {
       data[transformKey] = value;
     } else if (Array.isArray(value)) {
       data[transformKey] = value.map((item) => {
-        return transformAppConfig(item, false);
+        if (parentKey === 'tabBar' && item.text) {
+          item.name = item.text;
+          delete item.text;
+        }
+        if (typeof item === 'object') {
+          if (key === 'dataPrefetch' && !item.header) {
+            // hack: No header will crash in Android
+            item.header = {};
+          }
+          return transformAppConfig(item, false, key);
+        }
+        return item;
       });
-    } else if (typeof value === 'object') {
-      data[transformKey] = transformAppConfig(value, false);
+    } else if (typeof value === 'object' && !(parentKey === 'dataPrefetch' && (key === 'header' || key === 'data'))) {
+      data[transformKey] = transformAppConfig(value, false, key);
     } else {
       data[transformKey] = value;
     }
   }
-
   return data;
 }
 
-// get every page manifest
-function getPageManifestByPath(options) {
-  const { path = '/', decamelizeAppConfig = {} } = options;
-  let manifestData = {};
-  const { pages = [] } = decamelizeAppConfig;
-  const page = pages.find((item) => {
-    return item.path === path;
-  });
-
-  if (!page) {
-    return manifestData;
+function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
+  const { source, name, query_params = '' } = page;
+  let entryName;
+  if (name) {
+    entryName = name;
+    page.key = name;
+  } else if (source) {
+    const dir = pathPackage.dirname(source);
+    entryName = pathPackage.parse(dir).name.toLocaleLowerCase();
+  }
+  let pageUrl = '';
+  if (entryName) {
+    pageUrl = `${urlPrefix + entryName + urlSuffix}`;
   }
 
-  manifestData = {
-    ...decamelizeAppConfig,
-    ...page,
+  if (pageUrl && query_params) {
+    pageUrl = `${pageUrl}?${query_params}`;
+  }
+
+  delete page.source;
+  return {
+    pageUrl,
+    entryName,
   };
-
-  // if current page is not frame page
-  // delete tabbar/tabHeader/pages
-  if (!page.frame) {
-    delete manifestData.tab_bar;
-    delete manifestData.tab_header;
-    delete manifestData.pages;
-  }
-  delete manifestData.source;
-
-  return manifestData;
 }
 
-function getEntryName(string) {
-  return string.charAt(0).toLowerCase() + string.slice(1);
-}
-
-function changePageUrl(urlPrefix, page) {
-  if (page.path.startsWith('http')) {
+/*
+ * change page info
+ */
+function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inlineStyle, api }, page) {
+  const { applyMethod } = api;
+  const { source, name } = page;
+  if (!source && !name) {
     return page;
   }
-  const { source } = page;
-  if (source && source.length > 0) {
-    const match = source.match(/pages\/(.+)\//);
-
-    if (match && match[1]) {
-      page.path = `${urlPrefix + getEntryName(match[1]) }.html`;
+  const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
+  const { entryName, pageUrl } = getRealPageInfo({
+    urlPrefix,
+    urlSuffix,
+  }, page);
+  if (entryName) {
+    if (!page.path || !page.path.startsWith('http')) {
+      page.path = pageUrl;
     }
-    delete page.source;
+
+    if (isTemplate) {
+      if (custom) {
+        page.document = document;
+      } else {
+        // add script and stylesheet
+        page.script = `${cdnPrefix + entryName}.js`;
+        if (!inlineStyle) {
+          page.stylesheet = `${cdnPrefix + entryName}.css`;
+        }
+      }
+    }
   }
 
   return page;
 }
 
-function setRealUrlToManifest(urlPrefix, manifest) {
+/**
+ * set real url to manifest
+ */
+function setRealUrlToManifest(options, manifest) {
+  const { urlPrefix, cdnPrefix } = options;
   if (!urlPrefix) {
     return manifest;
   }
 
-  if (manifest.app_worker && manifest.app_worker.url) {
-    manifest.app_worker.url = urlPrefix + manifest.app_worker.url;
+  const { app_worker, tab_bar, pages } = manifest;
+  if (app_worker && app_worker.url) {
+    app_worker.url = cdnPrefix + app_worker.url;
   }
 
-  if (manifest.pages && manifest.pages.length > 0) {
-    manifest.pages = manifest.pages.map((page) => {
+  if (tab_bar && tab_bar.source && !tab_bar.url) {
+    tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
+  }
+
+  if (pages && pages.length > 0) {
+    manifest.pages = pages.map((page) => {
       // has frames
       if (page.frames && page.frames.length > 0) {
         page.frames = page.frames.map((frame) => {
-          return changePageUrl(urlPrefix, frame);
+          return changePageInfo(options, frame, manifest);
         });
       }
 
-      return changePageUrl(urlPrefix, page);
+      if (page.tab_header && page.tab_header.source) {
+        page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
+      }
+      return changePageInfo(options, page, manifest);
     });
   }
 
@@ -129,6 +179,5 @@ function setRealUrlToManifest(urlPrefix, manifest) {
 
 module.exports = {
   transformAppConfig,
-  getPageManifestByPath,
   setRealUrlToManifest,
 };

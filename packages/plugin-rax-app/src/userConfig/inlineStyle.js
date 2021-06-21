@@ -1,6 +1,5 @@
 const { resolve } = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM } = require('../constants');
+const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } = require('../constants');
 
 const configPath = resolve(__dirname, '../');
 
@@ -15,11 +14,18 @@ const inlineStandardList = [
 const miniappStandardList = [
   MINIAPP,
   WECHAT_MINIPROGRAM,
+  BYTEDANCE_MICROAPP,
+  BAIDU_SMARTPROGRAM,
+  KUAISHOU_MINIPROGRAM,
+];
+
+const nodeStandardList = [
+  DOCUMENT,
+  SSR,
 ];
 
 module.exports = (config, value, context) => {
-  const { taskName, command } = context;
-  const isDev = command === 'start';
+  const { taskName } = context;
 
   const cssRule = config.module.rule('css');
   const cssModuleRule = config.module.rule('css-module');
@@ -35,12 +41,9 @@ module.exports = (config, value, context) => {
   const sassModuleRule = config.module.rule('scss-module');
   setCSSRule(sassRule, context, value);
   setCSSRule(sassModuleRule, context, value);
-  if ((webStandardList.includes(taskName) || miniappStandardList.includes(taskName)) && !value) {
-    config.plugin('MiniCssExtractPlugin')
-      .use(MiniCssExtractPlugin, [{
-        filename: isDev ? `${taskName}/[name].css` : '[name].css',
-        ignoreOrder: true,
-      }]);
+
+  if (value || inlineStandardList.includes(taskName) || nodeStandardList.includes(taskName)) {
+    config.plugins.delete('MiniCssExtractPlugin');
   }
 };
 
@@ -49,8 +52,7 @@ function setCSSRule(configRule, context, value) {
   const isInlineStandard = inlineStandardList.includes(taskName);
   const isWebStandard = webStandardList.includes(taskName);
   const isMiniAppStandard = miniappStandardList.includes(taskName);
-  const isNodeStandard = taskName === DOCUMENT || taskName === SSR;
-
+  const isNodeStandard = nodeStandardList.includes(taskName);
   // When taskName is weex or kraken, inlineStyle should be true
   if (isInlineStandard) {
     value = true;
@@ -78,8 +80,11 @@ function setCSSRule(configRule, context, value) {
     configRule.uses.delete('postcss-loader');
     configRule.uses.delete('MiniCssExtractPlugin.loader');
     configRule
-      .use('null-loader')
-      .loader(require.resolve('null-loader'))
+      .use('css-loader')
+      .tap((options) => ({
+        ...options,
+        onlyLocals: true,
+      }))
       .end();
   }
 }

@@ -1,12 +1,16 @@
 import * as path from 'path';
+import * as chalk from 'chalk';
+import * as fs from 'fs-extra';
 import setMPAConfig from '@builder/mpa-config';
 import * as appHelpers from '@builder/app-helpers';
 import setDev from './setDev';
 import setEntry from './setEntry';
-import DocumentPlugin from './DocumentPlugin';
+import DocumentPlugin from './Plugins/DocumentPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
-import SnapshotPlugin from './SnapshotPlugin';
+import SnapshotPlugin from './Plugins/SnapshotPlugin';
 import setRegisterMethod from './utils/setRegisterMethod';
+import setLocalBuilder from './setLocalBuilder';
+import getAppEntry from './utils/getAppEntry';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
@@ -15,8 +19,9 @@ export default (api) => {
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
   const target = 'web';
-  const { userConfig = {} } = context;
+  const { userConfig = {}, rootDir } = context;
   const webConfig = userConfig.web || {};
+  const documentPath = getAbsolutePath(path.join(rootDir, 'src/document/index'));
   const chainConfig = getWebpackBase(api, {
     target,
     babelConfigOptions: { styleSheet: userConfig.inlineStyle },
@@ -31,66 +36,52 @@ export default (api) => {
     validation: 'object',
   });
 
+  if (webConfig.pha) {
+    // Modify mpa config must before than set entry, because entry check depends on mpa config
+    modifyUserConfig(() => {
+      if (!context.userConfig.web) context.userConfig.web = {};
+      context.userConfig.web.mpa = true;
+      delete context.userConfig.plugins;
+      return context.userConfig;
+    });
+  }
+
   // Set Entry
   setEntry(chainConfig, context);
   registerTask(target, chainConfig);
   // Set global methods
   setRegisterMethod(api);
 
-  if (webConfig.pha) {
-    // Modify mpa config
-    modifyUserConfig(() => {
-      if (!context.userConfig.web) context.userConfig.web = {};
-      context.userConfig.web.mpa = true;
-      return context.userConfig;
-    });
+  if (documentPath) {
+    setLocalBuilder(api, documentPath);
+  } else if (webConfig.staticExport) {
+    if (!webConfig.mpa) {
+      console.log(chalk.red("SPA doesn't support staticExport!"));
+      return;
+    }
+    setLocalBuilder(api);
   }
 
-  onGetWebpackConfig(target, (config) => {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { rootDir, command, userConfig } = context;
-    const { outputDir } = userConfig;
-    const staticConfig = getValue('staticConfig');
-
-    // Set output dir
-    const outputPath = path.resolve(rootDir, outputDir, target);
-    config.output.path(outputPath);
-
+  onGetWebpackConfig((config) => {
+    const { command } = context;
     if (command === 'start') {
       setDev(config);
     }
+  });
 
-    const webpackConfig = config.toConfig();
-
-    webpackConfig.target = 'node';
-
-    webpackConfig.output.libraryTarget = 'commonjs2';
-    // do not generate vendor.js when compile document
-    // deep copy webpackConfig optimization, because the toConfig method is shallow copy
-    webpackConfig.optimization = {
-      ...webpackConfig.optimization,
-      splitChunks: {
-        ...webpackConfig.optimization.splitChunks,
-        cacheGroups: {},
-      },
-    };
+  onGetWebpackConfig(target, (config) => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const { rootDir, command } = context;
+    const staticConfig = getValue('staticConfig');
 
     config.plugin('document').use(DocumentPlugin, [
       {
-        context,
-        pages: [
-          {
-            entryName: 'index',
-            path: '/',
-          },
-        ],
-        staticExport: webConfig.staticExport,
-        webpackConfig,
+        api,
         staticConfig,
-        htmlInfo: {
-          title: staticConfig.window && staticConfig.window.title,
-          doctype: webConfig.doctype,
-        },
+        documentPath,
+        pages: webConfig.mpa ? [] : [
+          getAppEntry(rootDir),
+        ],
       },
     ]);
     if (webConfig.snapshot) {
@@ -113,9 +104,30 @@ export default (api) => {
         targetDir: tempDir,
         entries: getMpaEntries(api, {
           target,
-          appJsonPath: path.join(rootDir, 'src/app.json'),
+          appJsonContent: staticConfig,
         }),
+      });
+    }
+
+    if (command === 'start') {
+      const webEntries = config.entryPoints.entries();
+      Object.keys(webEntries).forEach((entryName) => {
+        const entrySet = config.entry(entryName);
+        const entryFiles = entrySet.values();
+        const finalEntryFile = entryFiles[entryFiles.length - 1];
+        // Add webpack hot dev client
+        entrySet.prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
+        // Add module.hot.accept() to entry
+        entrySet.add(`${require.resolve('./Loaders/hmr-loader')}!${finalEntryFile}`);
+        entrySet.delete(finalEntryFile);
       });
     }
   });
 };
+
+function getAbsolutePath(filepath: string): string | undefined {
+  const targetExt = ['.tsx', '.jsx', '.js'].find((ext) => fs.existsSync(`${filepath}${ext}`));
+  if (targetExt) {
+    return `${filepath}${targetExt}`;
+  }
+}

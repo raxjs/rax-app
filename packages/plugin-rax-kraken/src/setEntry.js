@@ -2,12 +2,15 @@ const fs = require('fs-extra');
 const path = require('path');
 
 module.exports = (config, context) => {
-  const { rootDir } = context;
-  // SPA
-  const appEntry = moduleResolve(formatPath(path.join(rootDir, './src/app')));
-  const entryConfig = config.entry('index');
+  const { rootDir, userConfig: { kraken = {} } } = context;
 
-  entryConfig.add(appEntry);
+  if (!kraken.mpa) {
+    // SPA
+    const appEntry = moduleResolve(formatPath(path.join(rootDir, './src/app')));
+    const entryConfig = config.entry('index');
+
+    entryConfig.add(appEntry);
+  }
 };
 
 function moduleResolve(filePath) {

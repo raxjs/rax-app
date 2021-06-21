@@ -1,11 +1,11 @@
 const path = require('path');
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
 const chalk = require('chalk');
+const { platformMap } = require('miniapp-builder-shared');
+
 const {
-  MINIAPP,
+  MINIAPP_PLATFORMS,
   WEB,
-  WECHAT_MINIPROGRAM,
-  BYTEDANCE_MICROAPP,
   WEEX,
   KRAKEN,
 } = require('./constants');
@@ -64,32 +64,16 @@ module.exports = (api) => {
         console.log();
       }
 
-      if (targets.includes(MINIAPP)) {
-        console.log(highlightPrint('[Alibaba MiniApp] Bundle at:'));
-        console.log(
-          '   ',
-          chalk.underline.white(path.resolve(rootDir, outputDir, MINIAPP)),
-        );
-        console.log();
-      }
-
-      if (targets.includes(WECHAT_MINIPROGRAM)) {
-        console.log(highlightPrint('[WeChat MiniProgram] Bundle at:'));
-        console.log(
-          '   ',
-          chalk.underline.white(path.resolve(rootDir, outputDir, WECHAT_MINIPROGRAM)),
-        );
-        console.log();
-      }
-
-      if (targets.includes(BYTEDANCE_MICROAPP)) {
-        console.log(highlightPrint('[ByteDance MicroApp] Bundle at:'));
-        console.log(
-          '   ',
-          chalk.underline.white(path.resolve(rootDir, outputDir, BYTEDANCE_MICROAPP)),
-        );
-        console.log();
-      }
+      MINIAPP_PLATFORMS.forEach((miniappPlatform) => {
+        if (targets.includes(miniappPlatform)) {
+          console.log(highlightPrint(`[${platformMap[miniappPlatform].name}] Bundle at:`));
+          console.log(
+            '   ',
+            chalk.underline.white(path.resolve(rootDir, outputDir, miniappPlatform)),
+          );
+          console.log();
+        }
+      });
     }
   });
 };

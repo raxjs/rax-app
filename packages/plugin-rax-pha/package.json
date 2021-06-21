@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-pha",
-  "version": "1.0.1",
+  "version": "1.4.3",
   "description": "Rax PHA plugins",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
@@ -9,6 +9,7 @@
     "fs-extra": "^8.1.0",
     "humps": "^2.0.1",
     "webpack-sources": "^1.4.3",
-    "@builder/app-helpers": "^2.0.0"
+    "@builder/app-helpers": "^2.1.0",
+    "lodash.clonedeep": "^4.5.0"
   }
 }
