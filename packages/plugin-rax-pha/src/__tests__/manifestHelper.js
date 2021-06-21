@@ -122,6 +122,15 @@ describe('transformAppConfig', () => {
 
     expect(manifestJSON).toMatchObject({ a: 123 });
   });
+
+  it('should not transform requestHeaders', () => {
+    const manifestJSON = transformAppConfig({
+      "requestHeaders": {
+        "U-Tag": "${storage.uTag}"
+      },
+    }, true);
+    expect(manifestJSON).toMatchObject({ request_headers: { 'U-Tag': '${storage.uTag}' } });
+  });
 });
 
 describe('getPageManifestByPath', () => {

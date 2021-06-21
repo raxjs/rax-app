@@ -70,6 +70,8 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
         }
         return item;
       });
+    } else if (key === 'requestHeaders') { // requestHeaders 下指定的 Key 无需大小写转换处理
+      data[transformKey] = value;
     } else if (typeof value === 'object' && !(parentKey === 'dataPrefetch' && (key === 'header' || key === 'data'))) {
       data[transformKey] = transformAppConfig(value, false, key);
     } else {
