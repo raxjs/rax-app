@@ -38,7 +38,8 @@ module.exports = (config, value, context) => {
   });
 
   // delete `MiniCssExtractPlugin` when `forceEnableCSS` is false
-  if (!value.forceEnableCSS || inlineStandardList.includes(taskName) || nodeStandardList.includes(taskName)) {
+  // value = true | { forceEnableCSS }
+  if ((value && !value.forceEnableCSS) || inlineStandardList.includes(taskName) || nodeStandardList.includes(taskName)) {
     config.plugins.delete('MiniCssExtractPlugin');
   }
 };
@@ -60,6 +61,7 @@ function setCSSRule(config, configRule, context, value, type) {
   }
 
   if (isWebStandard || isMiniAppStandard) {
+    // value = { forceEnableCSS: true }
     if (value && value.forceEnableCSS) {
       if (type === 'module') {
         // extract `*.module.(c|le|sa|sc)ss`
@@ -80,6 +82,7 @@ function setCSSRule(config, configRule, context, value, type) {
         const enableCSSRule = config.module.rule(`enable-${type}`);
         setEnableCSSRule(enableCSSRule, type, isWebStandard);
       }
+    // value = true | { forceEnableCSS: false }
     } else if (value && !value.forceEnableCSS) {
       // process style sheets inline when `inlineStyle` is an object
       // but `forceEnableCSS` is false
@@ -87,6 +90,7 @@ function setCSSRule(config, configRule, context, value, type) {
       configInlineStyle(configRule)
         .use('postcss-loader')
         .tap(getPostCssConfig.bind(null, 'web-inline'));
+    // value = false
     } else {
       configRule
         .use('postcss-loader')
