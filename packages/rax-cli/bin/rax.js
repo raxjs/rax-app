@@ -236,7 +236,7 @@ async function createProject(name, verbose, template, userAnswers) {
     const typeToTemplate = {
       component: {
         ts: '@icedesign/template-rax',
-        js: '@icedesign/template-rax',
+        js: '@icedesign/template-rax-js',
       },
       api: '@icedesign/template-rax-api',
       plugin: '@icedesign/template-rax-miniapp-plugin',
