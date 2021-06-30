@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.4.3
+
+- Feat: add config option `forceEnableCSS` support
+
 ## 6.4.2
 
 - Fix: tabBar height in iphoneX

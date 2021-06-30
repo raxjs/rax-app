@@ -1,5 +1,6 @@
 const { resolve } = require('path');
 const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } = require('../constants');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const configPath = resolve(__dirname, '../');
 
@@ -24,58 +25,78 @@ const nodeStandardList = [
   SSR,
 ];
 
+const cssGlobalReg = /global\.(c|le|sa|sc)ss$/;
+
 module.exports = (config, value, context) => {
   const { taskName } = context;
 
-  const cssRule = config.module.rule('css');
-  const cssModuleRule = config.module.rule('css-module');
-  setCSSRule(cssRule, context, value);
-  setCSSRule(cssModuleRule, context, value);
+  ['css', 'less', 'scss'].forEach((style) => {
+    const cssRule = config.module.rule(style);
+    const cssModuleRule = config.module.rule(`${style}-module`);
+    setCSSRule(config, cssRule, context, value, style);
+    setCSSRule(config, cssModuleRule, context, value, 'module');
+  });
 
-  const lessRule = config.module.rule('less');
-  const lessModuleRule = config.module.rule('less-module');
-  setCSSRule(lessRule, context, value);
-  setCSSRule(lessModuleRule, context, value);
-
-  const sassRule = config.module.rule('scss');
-  const sassModuleRule = config.module.rule('scss-module');
-  setCSSRule(sassRule, context, value);
-  setCSSRule(sassModuleRule, context, value);
-
-  if (value || inlineStandardList.includes(taskName) || nodeStandardList.includes(taskName)) {
+  // delete `MiniCssExtractPlugin` when `forceEnableCSS` is false
+  if (!value.forceEnableCSS || inlineStandardList.includes(taskName) || nodeStandardList.includes(taskName)) {
     config.plugins.delete('MiniCssExtractPlugin');
   }
 };
 
-function setCSSRule(configRule, context, value) {
+function setCSSRule(config, configRule, context, value, type) {
   const { taskName } = context;
   const isInlineStandard = inlineStandardList.includes(taskName);
   const isWebStandard = webStandardList.includes(taskName);
   const isMiniAppStandard = miniappStandardList.includes(taskName);
   const isNodeStandard = nodeStandardList.includes(taskName);
-  // When taskName is weex or kraken, inlineStyle should be true
+
+  // `inlineStyle` should be enabled when target is weex or kraken
   if (isInlineStandard) {
-    value = true;
+    configRule.uses.delete('MiniCssExtractPlugin.loader');
+    configInlineStyle(configRule)
+      .use('postcss-loader')
+      .tap(getPostCssConfig.bind(null, 'normal'));
+    return;
   }
 
-  if (value) {
-    configRule.uses.delete('MiniCssExtractPlugin.loader');
-    // enbale inlineStyle
-    if (isInlineStandard || isMiniAppStandard) {
-      configInlineStyle(configRule)
-        .use('postcss-loader')
-        .tap(getPostCssConfig.bind(null, 'normal'));
-    } else {
+  if (isWebStandard || isMiniAppStandard) {
+    if (value && value.forceEnableCSS) {
+      if (type === 'module') {
+        // extract `*.module.(c|le|sa|sc)ss`
+        configRule
+          .use('postcss-loader')
+          .tap(getPostCssConfig.bind(null, isWebStandard ? 'web' : 'normal'))
+          .end();
+      } else {
+        // exclude `global.(c|le|sa|sc)ss`
+        configRule.exclude.add(cssGlobalReg);
+        configRule.uses.delete('MiniCssExtractPlugin.loader');
+        configInlineStyle(configRule)
+          .use('postcss-loader')
+          .tap(getPostCssConfig.bind(null, 'web-inline'))
+          .end();
+
+        // create new rule to process `global.(c|le|sa|sc)ss`
+        const enableCSSRule = config.module.rule(`enable-${type}`);
+        setEnableCSSRule(enableCSSRule, type, isWebStandard);
+      }
+    } else if (value && !value.forceEnableCSS) {
+      // process style sheets inline when `inlineStyle` is an object
+      // but `forceEnableCSS` is false
+      configRule.uses.delete('MiniCssExtractPlugin.loader');
       configInlineStyle(configRule)
         .use('postcss-loader')
         .tap(getPostCssConfig.bind(null, 'web-inline'));
+    } else {
+      configRule
+        .use('postcss-loader')
+        .tap(getPostCssConfig.bind(null, isWebStandard ? 'web' : 'normal'))
+        .end();
     }
-  } else if (isWebStandard || isMiniAppStandard) {
-    configRule
-      .use('postcss-loader')
-      .tap(getPostCssConfig.bind(null, isWebStandard ? 'web' : 'normal'))
-      .end();
-  } else if (isNodeStandard) {
+    return;
+  }
+
+  if (isNodeStandard) {
     // Do not generate CSS file, it will be built by web complier
     configRule.uses.delete('postcss-loader');
     configRule.uses.delete('MiniCssExtractPlugin.loader');
@@ -108,4 +129,49 @@ function getPostCssConfig(type, options) {
       },
     },
   };
+}
+
+/**
+ * create new rule to process `global.(c|le|sa|sc)ss`
+ * when `target` is `web`
+ * @param {*} configRule webpack config of webpack-chain
+ * @param {string} style type of style in ['css', 'less', 'scss']
+ * @param {boolean} isWebStandard is web standard
+ */
+function setEnableCSSRule(configRule, style, isWebStandard) {
+  const enableCSSReg = new RegExp(`global\\.${style}$`);
+  const cssLoaderOpts = {
+    sourceMap: true,
+  };
+
+  configRule
+    .test(enableCSSReg)
+    .use('MiniCssExtractPlugin.loader')
+    .loader(MiniCssExtractPlugin.loader)
+    .options({
+      esModule: false,
+    })
+    .end()
+    .use('css-loader')
+    .loader(require.resolve('css-loader'))
+    .options(cssLoaderOpts)
+    .end()
+    .use('postcss-loader')
+    .loader(require.resolve('postcss-loader'))
+    .options(cssLoaderOpts)
+    .tap(getPostCssConfig.bind(null, isWebStandard ? 'web' : 'normal'))
+    .end();
+
+  const loaderMap = {
+    css: [],
+    scss: [['sass-loader', require.resolve('sass-loader')]],
+    less: [['less-loader', require.resolve('less-loader'), { lessOptions: { javascriptEnabled: true } }]],
+  };
+
+  loaderMap[style].forEach((loader) => {
+    const [loaderName, loaderPath, loaderOpts = {}] = loader;
+    configRule.use(loaderName)
+      .loader(loaderPath)
+      .options({ ...cssLoaderOpts, ...loaderOpts });
+  });
 }

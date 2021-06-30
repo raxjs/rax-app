@@ -1,0 +1,6 @@
+{
+  "inlineStyle": {
+    "forceEnableCSS": true
+  },
+  "targets": ["web", "weex"]
+}
