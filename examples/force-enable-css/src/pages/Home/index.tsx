@@ -13,7 +13,7 @@ import './global.css';
 export default function Home() {
   const source = '//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png';
   return (
-    <View>
+    <View id="container" className="container">
       <Logo uri={source} />
       <Logo2 uri={source} />
       <Logo3 uri={source} />

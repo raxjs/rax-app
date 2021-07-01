@@ -2,5 +2,5 @@
   "inlineStyle": {
     "forceEnableCSS": true
   },
-  "targets": ["web", "weex"]
+  "targets": ["web", "weex", "miniapp"]
 }
