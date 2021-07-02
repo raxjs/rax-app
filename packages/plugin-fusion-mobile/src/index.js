@@ -42,9 +42,9 @@ module.exports = (api, options = {}) => {
 
               console.log(
                 chalk.green(
-                  `[plugin-fusion-mobile] tranformed css variables at: ${chalk.underline(filePath)} (${Math.floor(
-                    originalFileStats.size / 1024,
-                  )}kb → ${Math.floor(newFileStats.size / 1024)}kb)`,
+                  `[build-plugin-fusion-mobile] tranformed css variables successfully at: ${chalk.underline(
+                    filePath,
+                  )} (${Math.floor(originalFileStats.size / 1024)}kb → ${Math.floor(newFileStats.size / 1024)}kb)`,
                 ),
               );
             });
