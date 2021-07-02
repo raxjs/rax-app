@@ -1,35 +1,3 @@
-
-
-@keyframes shake {
-  0% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(50rpx);
-  }
-  50% {
-    transform: translateX(0);
-  }
-  75% {
-    transform: translateX(-50rpx);
-  }
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-#container {
-  font-weight: bolder;
-  /* should remove to test `spin` */
-  animation: shake 1s infinite ease-in-out;
-}
-
 .container {
-  animation: spin 1s infinite ease-in-out;
+  font-weight: lighter;
 }

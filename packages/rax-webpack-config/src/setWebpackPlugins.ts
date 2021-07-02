@@ -1,9 +1,9 @@
 /* eslint-disable indent */
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
-const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
+import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import * as FilterWarningsPlugin from 'webpack-filter-warnings-plugin';
+import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 
-module.exports = (config) => {
+export default (config, options) => {
   config
     .plugin('MiniCssExtractPlugin')
     .use(MiniCssExtractPlugin, [

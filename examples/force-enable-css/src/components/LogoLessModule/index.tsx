@@ -2,10 +2,7 @@ import { createElement } from 'rax';
 import Image from 'rax-image';
 import View from 'rax-view';
 import Text from 'rax-text';
-// import './index.css';
 import styles from './index.module.less';
-
-// console.log(222, styles)
 
 interface LogoProps {
   uri: string;

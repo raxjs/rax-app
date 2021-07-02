@@ -1,0 +1,15 @@
+@keyframes shake {
+  25% {
+    transform: translateX(-50rpx);
+  }
+  75% {
+    transform: translateX(50rpx);
+  }
+}
+
+.container {
+  font-weight: bolder;
+  padding: 50rpx 50rpx !important;
+  animation: shake 1s infinite linear;
+  background-color: #696969;
+}
