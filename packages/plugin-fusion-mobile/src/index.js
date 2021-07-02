@@ -18,7 +18,11 @@ module.exports = (api, options = {}) => {
   // try to remove all css-vars to reduce css bundle size
   if (transformCssVariables !== false) {
     onHook('after.build.compile', (multiStats) => {
-      const stats = multiStats?.stats?.stats || [];
+      let stats = [];
+
+      if (multiStats && multiStats.stats && multiStats.stats.stats) {
+        stats = multiStats.stats.stats;
+      }
 
       stats.forEach((stat) => {
         const { compilation } = stat;
