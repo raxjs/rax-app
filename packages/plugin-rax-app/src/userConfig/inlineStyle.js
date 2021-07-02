@@ -52,12 +52,12 @@ function setCSSRule(config, configRule, context, value, type) {
     return;
   }
 
-  if (isWebStandard) {
+  if (isWebStandard || isMiniAppStandard) {
     // value is `true || { forceEnableCSS: true } || { forceEnableCSS: false }`
     if (value) {
       // value is `{ forceEnableCSS: true }`
       if (value.forceEnableCSS) {
-        setCSSGlobalRule(config, configRule, type, 'web');
+        setCSSGlobalRule(config, configRule, type, isWebStandard ? 'web' : 'normal');
       } else {
         configRule.uses.delete('MiniCssExtractPlugin.loader');
         configInlineStyle(configRule);
@@ -65,25 +65,7 @@ function setCSSRule(config, configRule, context, value, type) {
       }
     // value is `false`
     } else {
-      configPostCssLoader(configRule, 'web');
-    }
-    return;
-  }
-
-  if (isMiniAppStandard) {
-    // value is `true || { forceEnableCSS: true } || { forceEnableCSS: false }`
-    if (value) {
-      // value is `{ forceEnableCSS: true }`
-      if (value.forceEnableCSS) {
-        setCSSGlobalRule(config, configRule, type, 'normal');
-      } else {
-        configRule.uses.delete('MiniCssExtractPlugin.loader');
-        configInlineStyle(configRule);
-        configPostCssLoader(configRule, 'web-inline');
-      }
-    // value is `false`
-    } else {
-      configPostCssLoader(configRule, 'web');
+      configPostCssLoader(configRule, isWebStandard ? 'web' : 'normal');
     }
     return;
   }
@@ -111,22 +93,18 @@ function configInlineStyle(configRule) {
     }).end();
 }
 
-function getPostCssConfig(type, options) {
-  return {
-    ...options,
-    config: {
-      path: configPath,
-      ctx: {
-        type,
-      },
-    },
-  };
-}
-
 function configPostCssLoader(rule, type) {
   rule
     .use('postcss-loader')
-    .tap(getPostCssConfig.bind(null, type));
+    .tap((options) => ({
+      ...options,
+      config: {
+        path: configPath,
+        ctx: {
+          type,
+        },
+      },
+    }));
 }
 
 function setCSSGlobalRule(config, configRule, type, postCssType) {
