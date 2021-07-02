@@ -2,6 +2,8 @@
 
 Plugin for rax app using [Fusion Mobile](https://www.npmjs.com/package/@alifd/meet)
 
+[中文文档](./README_zh-CN.md)
+
 ## Usage
 
 `build.json`
@@ -12,8 +14,8 @@ Plugin for rax app using [Fusion Mobile](https://www.npmjs.com/package/@alifd/me
     [
       "build-plugin-fusion-mobile",
       {
-        "transformCssVariables": true, // tranform css variables into static values for miniapp css bundles, such as bundle.css.wxss, bundle.css.acss. default: false
-        "extractModules": true // use babel-plugin-import to extract component code for @alifd/meet, @alifd/meet-react, default:true
+        "transformCssVariables": true,
+        "extractModules": true
       }
     ]
   ]
@@ -30,6 +32,7 @@ Plugin for rax app using [Fusion Mobile](https://www.npmjs.com/package/@alifd/me
 import { createElement } from 'rax';
 import { Button } from '@alifd/meet';
 
+// import theme manually
 import '@alifd/meet/es/core/index.css';
 
 export default () => {
@@ -39,4 +42,38 @@ export default () => {
     </Button>
   );
 };
+```
+
+## config
+
+###extractModules
+
+use [babel-plugin-import](https://www.npmjs.com/package/babel-plugin-import) to extract component code for @alifd/meet, @alifd/meet-react
+
+default: `true`
+
+### transformCssVariables
+
+tranform css variables into static values for miniapp css bundles, such as bundle.css.wxss, bundle.css.acss.
+
+default: `false`
+
+eg：
+
+```css
+:root {
+  --color-brand-3: #209bfa;
+}
+
+.mt-button {
+  background-color: var(--color-brand-3);
+}
+```
+
+will get
+
+```css
+.mt-button {
+  background-color: #209bfa;
+}
 ```
