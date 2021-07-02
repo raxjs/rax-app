@@ -56,7 +56,7 @@ export default () => {
 
 默认值: `false`
 
-eg：
+如：
 
 ```css
 :root {
