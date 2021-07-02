@@ -1,13 +1,19 @@
 const postcss = require('postcss');
 const fs = require('fs-extra');
 const CleanCSS = require('clean-css');
-const page2root = require('../css-plugins/replace-root');
-const removeInvalidDecls = require('../css-plugins/remove-invalid-decls');
+const page2root = require('../css-plugins/replaceRoot');
+const removeInvalidDecls = require('../css-plugins/removeInvalidDecls');
 
-module.exports = (filePath, callback) => {
-  const contents = fs.readFileSync(filePath, {
+module.exports = (filePath, themePath, callback) => {
+  const cssContents = fs.readFileSync(filePath, {
     encoding: 'utf8',
   });
+
+  let themeContents = '';
+
+  if (themePath && fs.existsSync(themePath)) {
+    themeContents = fs.readFileSync(themePath, 'utf8');
+  }
 
   (async () => {
     const result = await postcss([
@@ -16,7 +22,7 @@ module.exports = (filePath, callback) => {
       page2root,
       require('postcss-css-variables'),
       removeInvalidDecls,
-    ]).process(contents, {});
+    ]).process(`${cssContents} \n ${themeContents}`, {});
 
     const r = new CleanCSS({
       level: 2,

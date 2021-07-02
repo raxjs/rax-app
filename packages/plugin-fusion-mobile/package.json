@@ -9,7 +9,8 @@
     "url": "git@github.com:raxjs/rax-app.git"
   },
   "peerDependencies": {
-    "rax": "^1.0.0"
+    "rax": "^1.0.0",
+    "@alifd/meet": "^2.0.0"
   },
   "dependencies": {
     "babel-plugin-import": "^1.13.0",

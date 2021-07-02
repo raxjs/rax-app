@@ -1,11 +1,13 @@
-const setImport = require('./utils/set-import');
-const removeCssVar = require('./utils/remove-css-var');
 const fs = require('fs-extra');
 const chalk = require('chalk');
+const setImport = require('./utils/setImport');
+const removeCssVar = require('./utils/removeCssVar');
+const getThemeFilePath = require('./utils/getThemeFilePath');
 
 module.exports = (api, options = {}) => {
-  const { onGetWebpackConfig, onHook } = api;
-  const { transformCssVariables = false, extractModules = true } = options;
+  const { onGetWebpackConfig, context, log, onHook } = api;
+  const { rootDir } = context;
+  const { transformCssVariables = false, extractModules = true, injectTheme = false, themePackage = '' } = options;
 
   // use babel-plugin-import to extract code
   if (extractModules !== false) {
@@ -28,17 +30,18 @@ module.exports = (api, options = {}) => {
         const { compilation } = stat;
         const { assets } = compilation;
         const bundleCSSFileNames = Object.keys(assets).filter((filename) => /bundle.css\.[a-z]{2}ss$/.test(filename));
+        const themeFilePath = injectTheme ? getThemeFilePath(rootDir, themePackage) : '';
 
         if (bundleCSSFileNames && bundleCSSFileNames.length > 0) {
           const filePath = assets[bundleCSSFileNames[0]].existsAt;
           const originalFileStats = fs.statSync(filePath);
 
           if (fs.existsSync(filePath)) {
-            removeCssVar(filePath, () => {
+            removeCssVar(filePath, themeFilePath, () => {
               const newFileStats = fs.statSync(filePath);
 
               console.log(
-                chalk.yellow(
+                chalk.green(
                   `[plugin-fusion-mobile] tranformed css variables at: ${chalk.underline(filePath)} (${Math.floor(
                     originalFileStats.size / 1024,
                   )}kb → ${Math.floor(newFileStats.size / 1024)}kb)`,
