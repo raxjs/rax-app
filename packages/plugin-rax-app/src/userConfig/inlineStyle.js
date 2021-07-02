@@ -32,6 +32,9 @@ module.exports = (config, value, context) => {
     setCSSRule(config, cssRule, context, value, style);
     setCSSRule(config, cssModuleRule, context, value, 'module');
   });
+
+  const { taskName } = context;
+  deleteExtractCSSPlugin(config, value, taskName);
 };
 
 function setCSSRule(config, configRule, context, value, type) {
@@ -40,12 +43,6 @@ function setCSSRule(config, configRule, context, value, type) {
   const isWebStandard = webStandardList.includes(taskName);
   const isMiniAppStandard = miniappStandardList.includes(taskName);
   const isNodeStandard = nodeStandardList.includes(taskName);
-
-  // value is `true || { forceEnableCSS: false }`
-  // delete `MiniCssExtractPlugin` when `forceEnableCSS` is false
-  if ((value && !value.forceEnableCSS) || isInlineStandard || isNodeStandard) {
-    config.plugins.delete('MiniCssExtractPlugin');
-  }
 
   // `inlineStyle` should be enabled when target is `weex` or `kraken`
   if (isInlineStandard) {
@@ -60,7 +57,7 @@ function setCSSRule(config, configRule, context, value, type) {
     if (value) {
       // value is `{ forceEnableCSS: true }`
       if (value.forceEnableCSS) {
-        setCSSGlobalRule(config, configRule, type, isWebStandard);
+        setCSSGlobalRule(config, configRule, type, 'web');
       } else {
         configRule.uses.delete('MiniCssExtractPlugin.loader');
         configInlineStyle(configRule);
@@ -78,7 +75,7 @@ function setCSSRule(config, configRule, context, value, type) {
     if (value) {
       // value is `{ forceEnableCSS: true }`
       if (value.forceEnableCSS) {
-        setCSSGlobalRule(config, configRule, type, isWebStandard);
+        setCSSGlobalRule(config, configRule, type, 'normal');
       } else {
         configRule.uses.delete('MiniCssExtractPlugin.loader');
         configInlineStyle(configRule);
@@ -126,21 +123,17 @@ function getPostCssConfig(type, options) {
   };
 }
 
-function createCSSGlobalRule(config, type, reg) {
-  return createCSSRule(config, `${type}-global`, reg, []);
-}
-
 function configPostCssLoader(rule, type) {
-  return rule
+  rule
     .use('postcss-loader')
     .tap(getPostCssConfig.bind(null, type));
 }
 
-function setCSSGlobalRule(config, configRule, type, isWebStandard) {
+function setCSSGlobalRule(config, configRule, type, postCssType) {
   // rule is `css-module`
   // extract `*.module.(c|le|sa|sc)ss`
   if (type === 'module') {
-    configPostCssLoader(configRule, 'web');
+    configPostCssLoader(configRule, postCssType);
   // rule is `css`
   // exclude `global.(c|le|sa|sc)ss`
   } else {
@@ -152,7 +145,20 @@ function setCSSGlobalRule(config, configRule, type, isWebStandard) {
     configPostCssLoader(configRule, 'web-inline');
 
     // create rule to process `global.(c|le|sa|sc)ss`
-    const cssGlobalRule = createCSSGlobalRule(config, type, cssGlobalReg);
-    configPostCssLoader(cssGlobalRule, isWebStandard ? 'web' : 'normal');
+    const cssGlobalRule = createCSSRule(config, `${type}-global`, cssGlobalReg, []);
+    configPostCssLoader(cssGlobalRule, postCssType);
+  }
+}
+
+function deleteExtractCSSPlugin(config, value, taskName) {
+  const isInlineStandard = inlineStandardList.includes(taskName);
+  const isNodeStandard = nodeStandardList.includes(taskName);
+
+  // value is `true || { forceEnableCSS: false }`
+  // delete `MiniCssExtractPlugin` when `forceEnableCSS` is false
+  if (value) {
+    if (!value.forceEnableCSS || isInlineStandard || isNodeStandard) {
+      config.plugins.delete('MiniCssExtractPlugin');
+    }
   }
 }

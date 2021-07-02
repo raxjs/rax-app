@@ -12,11 +12,4 @@ export default (options) => {
   return config;
 };
 
-export {
-  addExtractLoader,
-  addCssLoader,
-  addStyleSheetLoader,
-  addPostCssLoader,
-  addCssPreprocessorLoader,
-  createCSSRule,
-} from './setWebpackLoaders';
+export { createCSSRule } from './setWebpackLoaders';

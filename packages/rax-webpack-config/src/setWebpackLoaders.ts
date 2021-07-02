@@ -45,7 +45,7 @@ export const createCSSRule = (config, ruleName, reg, excludeRegs = []) => {
   return rule;
 };
 
-export const addExtractLoader = (rule) => {
+const addExtractLoader = (rule) => {
   return rule
     .use('MiniCssExtractPlugin.loader')
     .loader(MiniCssExtractPlugin.loader)
@@ -55,7 +55,7 @@ export const addExtractLoader = (rule) => {
     .end();
 };
 
-export const addCssLoader = (rule, isCSSModule) => {
+const addCssLoader = (rule, isCSSModule) => {
   const cssLoaderOpts = {
     sourceMap: true,
   };
@@ -74,21 +74,11 @@ export const addCssLoader = (rule, isCSSModule) => {
     .end();
 };
 
-export const addStyleSheetLoader = (rule) => {
-  return rule
-    .use('css-loader')
-    .loader(require.resolve('stylesheet-loader'))
-    .options({
-      transformDescendantCombinator: true,
-    })
-    .end();
-};
-
-export const addPostCssLoader = (rule) => {
+const addPostCssLoader = (rule) => {
   return rule.use('postcss-loader').loader(require.resolve('postcss-loader')).options({ sourceMap: true }).end();
 };
 
-export const addCssPreprocessorLoader = (rule, loader) => {
+const addCssPreprocessorLoader = (rule, loader) => {
   const [loaderName, loaderPath, loaderOpts = {}] = loader;
 
   return rule
