@@ -63,7 +63,7 @@
 
 ### injectTheme
 
-是否自动注入默认主题
+是否自动注入主题（默认注入：`@alifd/meet/es/core/index.css`）
 
 默认值： `true`
 
@@ -88,6 +88,6 @@ export default () => {
 
 ### themePackage
 
-指定注入主题包，可在 Fusion 平台上创建
+`injectTheme=true`时生效，指定要注入主题包，此可在 [Fusion](https://fusion.alibaba-inc.com/mobile/component) 站点上创建
 
 默认值: `''`
