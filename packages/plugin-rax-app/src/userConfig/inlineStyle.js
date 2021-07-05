@@ -29,15 +29,16 @@ module.exports = (config, value, context) => {
   ['css', 'less', 'scss'].forEach((style) => {
     const cssRule = config.module.rule(style);
     const cssModuleRule = config.module.rule(`${style}-module`);
-    setCSSRule(config, cssRule, context, value, style);
-    setCSSRule(config, cssModuleRule, context, value, 'module');
+    setCSSRule(config, { configRule: cssRule, context, value, type: style });
+    setCSSRule(config, { configRule: cssModuleRule, context, value, type: 'module' });
   });
 
   const { taskName } = context;
   deleteExtractCSSPlugin(config, value, taskName);
 };
 
-function setCSSRule(config, configRule, context, value, type) {
+function setCSSRule(config, options) {
+  const { configRule, context, value, type } = options;
   const { taskName } = context;
   const isInlineStandard = inlineStandardList.includes(taskName);
   const isWebStandard = webStandardList.includes(taskName);
@@ -76,8 +77,8 @@ function setCSSRule(config, configRule, context, value, type) {
     configRule.uses.delete('MiniCssExtractPlugin.loader');
     configRule
       .use('css-loader')
-      .tap((options) => ({
-        ...options,
+      .tap((loaderOptions) => ({
+        ...loaderOptions,
         onlyLocals: true,
       }))
       .end();
