@@ -244,7 +244,7 @@ export default function ({ types: t, template }, opts = {}) {
         // Set skip flag when `import styles from '*.module.(c|le|sa|sc)ss'`
         if (node.specifiers.length && cssIndex > -1) {
           const cssModuleReg = /\.module\.(c|le|sa|sc)ss$/;
-          shouldSkipConvert = forceEnableCSS && cssModuleReg.test(sourceValue);
+          shouldSkipConvert = (forceEnableCSS && cssModuleReg.test(sourceValue)) || shouldSkipConvert;
         }
       },
     },
