@@ -132,11 +132,16 @@ function deleteExtractCSSPlugin(config, value, taskName) {
   const isInlineStandard = inlineStandardList.includes(taskName);
   const isNodeStandard = nodeStandardList.includes(taskName);
 
+  // taskName is `weex` `kraken` `ssr` or `document`
+  // delete `MiniCssExtractPlugin`
+  if (isInlineStandard || isNodeStandard) {
+    config.plugins.delete('MiniCssExtractPlugin');
+    return;
+  }
+
   // value is `true || { forceEnableCSS: false }`
   // delete `MiniCssExtractPlugin` when `forceEnableCSS` is false
-  if (value) {
-    if (!value.forceEnableCSS || isInlineStandard || isNodeStandard) {
-      config.plugins.delete('MiniCssExtractPlugin');
-    }
+  if (value && !value.forceEnableCSS) {
+    config.plugins.delete('MiniCssExtractPlugin');
   }
 }
