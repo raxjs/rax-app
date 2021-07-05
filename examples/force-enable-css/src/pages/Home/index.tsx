@@ -8,12 +8,13 @@ import Logo4 from '../../components/LogoLessModule';
 import Logo5 from '../../components/LogoSass';
 import Logo6 from '../../components/LogoSassModule';
 
-import './global.css';
+import styles from './index.module.css';
+import globalStyle from './global.css';
 
 export default function Home() {
   const source = '//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png';
   return (
-    <View className="container">
+    <View className={[styles.container, 'container']} style={globalStyle.container}>
       <Logo uri={source} />
       <Logo2 uri={source} />
       <Logo3 uri={source} />
