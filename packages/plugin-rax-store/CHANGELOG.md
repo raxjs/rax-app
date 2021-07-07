@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.0
+
+- Fix: use PROJECT_TYPE to get store file path
+
 ## v1.2.1
 
 - Fix: fail to check store file path in Windows platform
