@@ -10,7 +10,7 @@ import getStoreFileType from './getStoreFileType';
 export function getAppStorePath(srcPath: string) {
   const storeFileType = getStoreFileType(srcPath);
   // e.g: src/store.ts
-  return path.join(srcPath, `store.${storeFileType}`);
+  return path.join(srcPath, `store${storeFileType}`);
 }
 
 function getPagePath(srcPath: string, pageName: string) {
@@ -21,7 +21,7 @@ export function getPageStorePath(srcPath: string, pageName: string) {
   const pageNameDir = getPagePath(srcPath, pageName);
   const storeFileType = getStoreFileType(pageNameDir);
   // e.g: src/pages/Home/store.ts
-  return path.join(pageNameDir, `store.${storeFileType}`);
+  return path.join(pageNameDir, `store${storeFileType}`);
 }
 
 export function getRaxPagesName(rootDir: string) {
