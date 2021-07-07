@@ -13,7 +13,7 @@ export function getAppStorePath(srcPath: string) {
   return path.join(srcPath, `store.${storeFileType}`);
 }
 
-export function getPagePath(srcPath: string, pageName: string) {
+function getPagePath(srcPath: string, pageName: string) {
   return path.join(srcPath, 'pages', pageName);
 }
 

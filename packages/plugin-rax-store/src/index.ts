@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as fse from 'fs-extra';
 import CodeGenerator from './generator';
 import { getAppStorePath, getRaxPagesPath } from './utils/getPath';
 import checkExpectedStoreFileExists from './utils/checkExpectedStoreFileExists';
@@ -27,8 +26,6 @@ export default async (api) => {
   }
   process.env.STORE_ENABLED = 'true';
 
-  const appStorePath = getAppStorePath(srcPath);
-  const existsAppStoreFile = fse.pathExistsSync(appStorePath);
   const pageEntries = getRaxPagesPath(rootDir);
   const mpa = checkIsMpa(userConfig);
 
@@ -61,9 +58,16 @@ export default async (api) => {
         mpa,
       });
 
+    let storeAlias: string;
+    try {
+      const appStorePath = getAppStorePath(srcPath);
+      storeAlias = appStorePath;
+    } catch {
+      storeAlias = path.join(tempPath, 'store', 'index.ts');
+    }
     // Set alias to run @ice/store
     config.resolve.alias
-      .set('$store', existsAppStoreFile ? appStorePath : path.join(tempPath, 'store', 'index.ts'))
+      .set('$store', storeAlias)
       .set('react-redux', require.resolve('rax-redux'))
       .set('react', path.join(rootDir, 'node_modules', 'rax/lib/compat'));
   });

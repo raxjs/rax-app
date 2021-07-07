@@ -6,8 +6,10 @@ import * as globby from 'globby';
  */
 function getStoreFileType(dirPath: string): string {
   const matchingPaths = globby.sync('store.*', { cwd: dirPath });
-
-  return matchingPaths.length > 0 ? path.extname(matchingPaths[0]).replace('.', '') : '';
+  if (matchingPaths.length) {
+    return path.extname(matchingPaths[0]).replace('.', '');
+  }
+  throw new Error(`Store file in ${dirPath} doesn't exist.`);
 }
 
 export default getStoreFileType;
