@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fse from 'fs-extra';
 import { formatPath, checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 import { getPageStorePath, getRaxPageName } from './utils/getPath';
 // TODO use import declaration
@@ -52,18 +53,14 @@ export default class Generator {
     this.pageEntries.forEach((pageEntry) => {
       const pageName = getRaxPageName(pageEntry);
       const pageComponentPath = path.join(this.rootDir, this.srcDir, pageEntry);
-      let pageStoreFile: string;
+      const pageStoreFile = getPageStorePath(srcPath, pageName);
 
       // don't generate .rax/pages/Home/index.tsx
       // 1. the page store does not exist
       // 2. the entry has no `export default`
-      try {
-        pageStoreFile = getPageStorePath(srcPath, pageName);
-      } catch {
+      if (!fse.pathExistsSync(pageStoreFile)) {
         return;
-      }
-
-      if (!checkExportDefaultDeclarationExists(pageComponentPath)) {
+      } else if (!checkExportDefaultDeclarationExists(pageComponentPath)) {
         console.log(chalk.yellow(
           chalk.black.bgYellow(' WARNING '),
           `The page entry ${pageComponentPath} will not be wrapped <store.Provider> by framework. Please wrap the <store.Provider> in this page by yourself. For more detail, please see https://rax.js.org/docs/guide/store.`,

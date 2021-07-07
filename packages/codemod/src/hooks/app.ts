@@ -11,7 +11,7 @@ export function beforeTransform(args, options) {
   args.push('--ignore-pattern=**/src/!(app.json|app.@(t|j)s?(x))/**');
   const rootDir = path.join(process.cwd(), files[0]);
   try {
-    const pkgJSON = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
+    const pkgJSON = JSON.parse(fs.readJSONSync(path.join(rootDir, 'package.json')));
     const customConfigPaths = [];
     Object.keys(pkgJSON.scripts).forEach((script) => {
       const matched = pkgJSON.scripts[script].match(/build-scripts (?:start|build) --config\s(\S*)/);
