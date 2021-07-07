@@ -1,9 +1,5 @@
 # Changelog
 
-## v1.0.5
+## 1.0.3
 
 - Feat: add config option `forceEnableCSS` support
-
-## v1.0.4
-
-- Fix: JSX Plus docs url in console
