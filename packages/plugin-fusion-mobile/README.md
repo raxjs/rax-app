@@ -72,7 +72,7 @@ default: `true`
 import { createElement } from 'rax';
 import { Button } from '@alifd/meet';
 
-// 强制手动引入
+// force manual introduction
 import '@alifd/meet/es/core/index.css';
 
 export default () => {
