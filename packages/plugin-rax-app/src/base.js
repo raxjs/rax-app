@@ -1,5 +1,5 @@
 const { getEnhancedWebpackConfig } = require('@builder/user-config');
-const getWebpackConfig = require('rax-webpack-config');
+const getWebpackConfig = require('rax-webpack-config').default;
 const getBabelConfig = require('rax-babel-config');
 const ProgressPlugin = require('webpackbar');
 const path = require('path');

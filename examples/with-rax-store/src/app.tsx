@@ -1,7 +1,7 @@
 import { createElement } from 'rax';
-import { runApp } from 'rax-app';
+import { runApp, IAppConfig } from 'rax-app';
 
-runApp({
+const appConfig: IAppConfig = {
   app: {
     onShow() {
       console.log('app show...');
@@ -10,4 +10,9 @@ runApp({
       console.log('app hide...');
     },
   },
-});
+  store: {
+    initialStates: {}
+  }
+};
+
+runApp(appConfig);

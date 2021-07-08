@@ -6,11 +6,11 @@ import { run } from './fn/shell';
 (async () => {
   await run('npm run clean');
 
-  const fileParten = '*/src/**/!(*.ts|*.tsx)';
-  console.log(`[COPY]: ${fileParten}`);
+  const filePatten = '*/src/**/!(*.ts|*.tsx)';
+  console.log(`[COPY]: ${filePatten}`);
 
   const cwd = path.join(__dirname, '../packages');
-  const files = glob.sync(fileParten, { cwd, nodir: true });
+  const files = glob.sync(filePatten, { cwd, nodir: true });
   // eslint-disable-next-line
   for (const file of files) {
     const from = path.join(cwd, file);

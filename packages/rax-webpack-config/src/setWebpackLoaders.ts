@@ -1,13 +1,61 @@
-const path = require('path');
-const deepClone = require('lodash.clonedeep');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+import * as path from 'path';
+import * as deepClone from 'lodash.clonedeep';
+import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 const URL_LOADER_LIMIT = 8192;
 const EXCLUDE_REGX = /node_modules/;
 // config css rules
-const configCSSRule = (config, style, mode, loaders = []) => {
+const configCSSRule = (config, style) => {
   const cssModuleReg = new RegExp(`\\.module\\.${style}$`);
   const styleReg = new RegExp(`\\.${style}$`);
+
+  // add both rule of css and css module
+  ['css', 'module'].forEach((type) => {
+    if (type === 'module') {
+      createCSSRule(config, `${style}-module`, cssModuleReg, []);
+    } else {
+      createCSSRule(config, style, styleReg, [cssModuleReg]);
+    }
+  });
+};
+
+export const createCSSRule = (config, ruleName, reg, excludeRegs = []) => {
+  const isCSSModule = /\-module$/.test(ruleName);
+  const extName = ruleName.replace(/\-(module|global)$/, '');
+  const rule = config.module.rule(ruleName).test(reg);
+
+  excludeRegs.forEach((excludeReg) => {
+    rule.exclude.add(excludeReg);
+  });
+
+  addExtractLoader(rule);
+  addCssLoader(rule, isCSSModule);
+  addPostCssLoader(rule);
+
+  const loaderMap = {
+    css: [],
+    scss: [['sass-loader', require.resolve('sass-loader')]],
+    less: [['less-loader', require.resolve('less-loader'), { lessOptions: { javascriptEnabled: true } }]],
+  };
+
+  loaderMap[extName].forEach((loader) => {
+    addCssPreprocessorLoader(rule, loader);
+  });
+
+  return rule;
+};
+
+const addExtractLoader = (rule) => {
+  return rule
+    .use('MiniCssExtractPlugin.loader')
+    .loader(MiniCssExtractPlugin.loader)
+    .options({
+      esModule: false,
+    })
+    .end();
+};
+
+const addCssLoader = (rule, isCSSModule) => {
   const cssLoaderOpts = {
     sourceMap: true,
   };
@@ -19,43 +67,32 @@ const configCSSRule = (config, style, mode, loaders = []) => {
     },
   };
 
-  // add both rule of css and css module
-  ['css', 'module'].forEach((ruleKey) => {
-    let rule;
-    if (ruleKey === 'module') {
-      rule = config.module.rule(`${style}-module`)
-        .test(cssModuleReg);
-    } else {
-      rule = config.module.rule(style)
-        .test(styleReg)
-        .exclude.add(cssModuleReg).end();
-    }
-    rule
-      .use('MiniCssExtractPlugin.loader')
-      .loader(MiniCssExtractPlugin.loader)
-      .options({
-        esModule: false,
-      })
-      .end()
-      .use('css-loader')
-      .loader(require.resolve('css-loader'))
-      .options(ruleKey === 'module' ? cssModuleLoaderOpts : cssLoaderOpts)
-      .end()
-      .use('postcss-loader')
-      .loader(require.resolve('postcss-loader'))
-      .options({ ...cssLoaderOpts });
+  return rule
+    .use('css-loader')
+    .loader(require.resolve('css-loader'))
+    .options(isCSSModule ? cssModuleLoaderOpts : cssLoaderOpts)
+    .end();
+};
 
-    loaders.forEach((loader) => {
-      const [loaderName, loaderPath, loaderOpts = {}] = loader;
-      rule.use(loaderName)
-        .loader(loaderPath)
-        .options({ ...cssLoaderOpts, ...loaderOpts });
-    });
-  });
+const addPostCssLoader = (rule) => {
+  return rule.use('postcss-loader').loader(require.resolve('postcss-loader')).options({ sourceMap: true }).end();
+};
+
+const addCssPreprocessorLoader = (rule, loader) => {
+  const [loaderName, loaderPath, loaderOpts = {}] = loader;
+
+  return rule
+    .use(loaderName)
+    .loader(loaderPath)
+    .options({ sourceMap: true, ...loaderOpts })
+    .end();
 };
 
 const configAssetsRule = (config, type, testReg, loaderOpts = {}) => {
-  config.module.rule(type).test(testReg).use(type)
+  config.module
+    .rule(type)
+    .test(testReg)
+    .use(type)
     .loader(require.resolve('url-loader'))
     .options({
       name: '[hash].[ext]',
@@ -64,7 +101,7 @@ const configAssetsRule = (config, type, testReg, loaderOpts = {}) => {
     });
 };
 
-module.exports = (config, { rootDir, mode, babelConfig }) => {
+export default (config, { rootDir, babelConfig }) => {
   config.resolve.alias
     .set('babel-runtime-jsx-plus', require.resolve('babel-runtime-jsx-plus'))
     // @babel/runtime has no index
@@ -90,12 +127,8 @@ module.exports = (config, { rootDir, mode, babelConfig }) => {
   ]);
 
   // css loader
-  [
-    ['css'],
-    ['scss', [['sass-loader', require.resolve('sass-loader')]]],
-    ['less', [['less-loader', require.resolve('less-loader'), { lessOptions: { javascriptEnabled: true } }]]],
-  ].forEach(([style, loaders]) => {
-    configCSSRule(config, style, mode, loaders || []);
+  ['css', 'scss', 'less'].forEach((style) => {
+    configCSSRule(config, style);
   });
 
   [
@@ -111,20 +144,20 @@ module.exports = (config, { rootDir, mode, babelConfig }) => {
   const babelLoader = require.resolve('babel-loader');
 
   // js loader
-  config.module.rule('jsx')
+  config.module
+    .rule('jsx')
     .test(/\.jsx?$/)
-    .exclude
-    .add(EXCLUDE_REGX)
+    .exclude.add(EXCLUDE_REGX)
     .end()
     .use('babel-loader')
     .loader(babelLoader)
     .options({ ...deepClone(babelConfig), cacheDirectory: true });
 
   // ts loader
-  config.module.rule('tsx')
+  config.module
+    .rule('tsx')
     .test(/\.tsx?$/)
-    .exclude
-    .add(EXCLUDE_REGX)
+    .exclude.add(EXCLUDE_REGX)
     .end()
     .use('babel-loader')
     .loader(babelLoader)
