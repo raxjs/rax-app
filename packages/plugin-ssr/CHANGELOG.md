@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.10
+
+- Fix: pass context when generate html
+
 ## v1.3.9
 
 - Feat: transform static node to html tag directly

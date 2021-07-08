@@ -30,6 +30,7 @@ const retainKeys = [
   'queryParamsPassIgnoreKeys',
   'splashViewTimeout',
   'swiperThreshold',
+  'requestHeaders',
 ];
 
 // transform app config to decamelize
