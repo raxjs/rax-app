@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.4
+
+- Fix: keys of requestHeaders should not be transformed
+
 ## 1.4.3
 
 - Chore: compatible with item.name in tabBar config

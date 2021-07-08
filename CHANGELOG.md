@@ -1,5 +1,13 @@
 ## Changelog
 
+## 3.6.3
+
+- Feat: use outline css with inlineStyle: true
+- Chore: optimize dev url
+- Fix: store types
+- Fix: doctype is null
+- Fix: use PROJECT_TYPE to get the store file path
+
 ## 3.6.2
 
 - Fix: tabBar height in iphoneX

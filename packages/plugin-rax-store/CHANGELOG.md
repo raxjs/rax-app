@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.0
+
+- Fix: use PROJECT_TYPE to get store file path
+- Fix: IStore type not in the IAppConfig
+
 ## v1.2.1
 
 - Fix: fail to check store file path in Windows platform

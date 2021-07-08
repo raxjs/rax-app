@@ -1,8 +1,8 @@
-const Config = require('webpack-chain');
-const setWebpackLoaders = require('./setWebpackLoaders');
-const setWebpackPlugins = require('./setWebpackPlugins');
+import * as Config from 'webpack-chain';
+import setWebpackLoaders from './setWebpackLoaders';
+import setWebpackPlugins from './setWebpackPlugins';
 
-module.exports = (options) => {
+export default (options) => {
   const config = new Config();
 
   config.mode(options.mode);

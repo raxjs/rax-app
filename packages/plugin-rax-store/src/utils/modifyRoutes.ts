@@ -3,7 +3,7 @@ import * as fse from 'fs-extra';
 import { checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 import { getPageStorePath } from './getPath';
 
-function modifyRoute(route, tempPath, srcPath, projectType, mpa) {
+function modifyRoute(route: any, tempPath: string, srcPath: string, mpa: boolean) {
   const pageSource = route.source;
   if (mpa) {
     const exportDefaultDeclarationExists = checkExportDefaultDeclarationExists(path.join(srcPath, pageSource));
@@ -14,8 +14,9 @@ function modifyRoute(route, tempPath, srcPath, projectType, mpa) {
 
   const dir = path.dirname(pageSource);
   const pageName = path.parse(dir).name;
-  const pageStorePath = getPageStorePath({ srcPath, projectType, pageName });
+  const pageStorePath = getPageStorePath(srcPath, pageName);
   if (!fse.pathExistsSync(pageStorePath)) {
+    // if page store doesn't exist, return the origin route
     return route;
   }
 
@@ -32,23 +33,21 @@ function modifyRoute(route, tempPath, srcPath, projectType, mpa) {
  * @param routes the routes in staticConfig
  * @param tempPath the path of .rax/ dir
  * @param srcPath the project source path  e.g.: /Users/project/src
- * @param projectType typescript or javascript
- * @param mpa wheather MPA
+ * @param mpa whether or not MPA
  */
 export default function modifyRoutes(
   routes: any[],
   tempPath: string,
   srcPath: string,
-  projectType: string,
   mpa: boolean,
 ) {
   return routes.map((route) => {
     if (route.pageHeader) {
-      route.pageHeader = modifyRoute(route.pageHeader, tempPath, srcPath, projectType, mpa);
+      route.pageHeader = modifyRoute(route.pageHeader, tempPath, srcPath, mpa);
     }
     if (route.frames) {
-      route.frames = modifyRoutes(route.frames, tempPath, srcPath, projectType, mpa);
+      route.frames = modifyRoutes(route.frames, tempPath, srcPath, mpa);
     }
-    return modifyRoute(route, tempPath, srcPath, projectType, mpa);
+    return modifyRoute(route, tempPath, srcPath, mpa);
   });
 }

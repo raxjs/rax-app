@@ -1,3 +1,5 @@
+const { validation } = require('@builder/app-helpers');
+
 /* eslint global-require: 0 */
 module.exports = [
   {
@@ -39,7 +41,9 @@ module.exports = [
     name: 'inlineStyle',
     defaultValue: false,
     configWebpack: require('../userConfig/inlineStyle'),
-    validation: 'boolean',
+    validation: (val) => {
+      return validation('inlineStyle', val, 'boolean|object');
+    },
   },
   {
     name: 'polyfill',

@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.4
+
+- Fix: `doctype: null`
+
 ## v1.4.3
 
 - Chore: optimize hot reload experience

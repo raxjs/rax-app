@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.4
+
+- Chore: update `fs-extra`
+
 ## v1.0.3
 
 - Fix: `tschecker: true` error
