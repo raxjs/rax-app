@@ -72,16 +72,21 @@ function setCSSRule(config, options) {
   }
 
   if (isNodeStandard) {
-    // Do not generate CSS file, it will be built by web complier
-    configRule.uses.delete('postcss-loader');
     configRule.uses.delete('MiniCssExtractPlugin.loader');
-    configRule
-      .use('css-loader')
-      .tap((loaderOptions) => ({
-        ...loaderOptions,
-        onlyLocals: true,
-      }))
-      .end();
+    if (value) {
+      configInlineStyle(configRule);
+      configPostCssLoader(configRule, 'web-inline');
+    } else {
+      // Do not generate CSS file, it will be built by web complier
+      configRule.uses.delete('postcss-loader');
+      configRule
+        .use('css-loader')
+        .tap((loaderOptions) => ({
+          ...loaderOptions,
+          onlyLocals: true,
+        }))
+        .end();
+    }
   }
 }
 
