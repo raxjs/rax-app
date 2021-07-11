@@ -14,7 +14,7 @@ function checkStoreFileExists(rootDir: string, srcDir: string) {
  */
 function checkAppStoreExists(srcPath: string) {
   const appStorePath = getAppStorePath(srcPath);
-  return fse.pathExistsSync(appStorePath);
+  return appStorePath && fse.pathExistsSync(appStorePath);
 }
 
 /**
@@ -24,7 +24,7 @@ function checkPageStoreExists(rootDir: string, srcPath: string) {
   const pagesName = getRaxPagesName(rootDir);
   return pagesName.some((pageName: string) => {
     const pageStorePath = getPageStorePath(srcPath, pageName);
-    return fse.pathExistsSync(pageStorePath);
+    return pageStorePath && fse.pathExistsSync(pageStorePath);
   });
 }
 
