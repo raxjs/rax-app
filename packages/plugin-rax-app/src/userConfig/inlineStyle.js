@@ -62,7 +62,7 @@ function setCSSRule(config, options) {
       } else {
         configRule.uses.delete('MiniCssExtractPlugin.loader');
         configInlineStyle(configRule);
-        configPostCssLoader(configRule, 'web-inline');
+        configPostCssLoader(configRule, isWebStandard ? 'web-inline' : 'normal');
       }
     // value is `false`
     } else {
