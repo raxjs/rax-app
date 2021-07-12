@@ -101,7 +101,8 @@ function configInlineStyle(configRule, type) {
     .loader(require.resolve('stylesheet-loader'))
     .options({
       transformDescendantCombinator: true,
-    }).end();
+    })
+    .end();
 }
 
 function configPostCssLoader(configRule, type) {
