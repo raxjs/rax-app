@@ -1,6 +1,8 @@
 {
-  "inlineStyle": true,
-  "targets": ["web"],
+  "inlineStyle": {
+    "forceEnableCSS": true
+  },
+  "targets": ["web", "weex", "miniapp"],
   "web": {
     "ssr": true,
     "mpa": true

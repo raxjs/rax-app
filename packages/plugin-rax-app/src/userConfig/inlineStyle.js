@@ -48,8 +48,7 @@ function setCSSRule(config, options) {
   // `inlineStyle` should be enabled when target is `weex` or `kraken`
   if (isInlineStandard) {
     configRule.uses.delete('MiniCssExtractPlugin.loader');
-    configInlineStyle(configRule);
-    configPostCssLoader(configRule, 'normal');
+    configInlineStyle(configRule, 'normal');
     return;
   }
 
@@ -61,8 +60,7 @@ function setCSSRule(config, options) {
         setCSSGlobalRule(config, { configRule, type, postCssType: isWebStandard ? 'web' : 'normal' });
       } else {
         configRule.uses.delete('MiniCssExtractPlugin.loader');
-        configInlineStyle(configRule);
-        configPostCssLoader(configRule, isWebStandard ? 'web-inline' : 'normal');
+        configInlineStyle(configRule, isWebStandard ? 'web-inline' : 'normal');
       }
     // value is `false`
     } else {
@@ -81,16 +79,14 @@ function setCSSRule(config, options) {
           const cssGlobalReg = new RegExp(`src\\/global\\.${type}`);
 
           configRule.exclude.add(cssGlobalReg);
-          configInlineStyle(configRule);
-          configPostCssLoader(configRule, 'web-inline');
+          configInlineStyle(configRule, 'web-inline');
 
           const cssGlobalRule = createCSSRule(config, `${type}-global`, cssGlobalReg);
           cssGlobalRule.uses.delete('MiniCssExtractPlugin.loader');
           configLoadersInSSR(cssGlobalRule);
         }
       } else {
-        configInlineStyle(configRule);
-        configPostCssLoader(configRule, 'web-inline');
+        configInlineStyle(configRule, 'web-inline');
       }
     } else {
       // Do not generate CSS file, it will be built by web complier
@@ -99,8 +95,8 @@ function setCSSRule(config, options) {
   }
 }
 
-function configInlineStyle(configRule) {
-  return configRule
+function configInlineStyle(configRule, type) {
+  return configPostCssLoader(configRule, type)
     .use('css-loader')
     .loader(require.resolve('stylesheet-loader'))
     .options({
@@ -108,8 +104,8 @@ function configInlineStyle(configRule) {
     }).end();
 }
 
-function configPostCssLoader(rule, type) {
-  rule
+function configPostCssLoader(configRule, type) {
+  return configRule
     .use('postcss-loader')
     .tap((options) => ({
       ...options,
@@ -119,7 +115,8 @@ function configPostCssLoader(rule, type) {
           type,
         },
       },
-    }));
+    }))
+    .end();
 }
 
 function configLoadersInSSR(configRule) {
