@@ -149,7 +149,7 @@ function setCSSGlobalRule(config, options) {
     configRule.exclude.add(cssGlobalReg);
     configRule.uses.delete('MiniCssExtractPlugin.loader');
     configInlineStyle(configRule);
-    configPostCssLoader(configRule, postCssType === 'web' ? 'web-inline' : 'normal');
+    configPostCssLoader(configRule, postCssType === 'web' ? 'web-inline' : postCssType);
 
     // create rule to process `global.(c|le|sa|sc)ss`
     const cssGlobalRule = createCSSRule(config, `${type}-global`, cssGlobalReg);
