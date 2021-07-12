@@ -18,6 +18,8 @@ export default function ({ types: t, template }, opts = {}) {
     setStyleSheetName(injectedStyleName);
   }
 
+  let shouldSkipConvert = false;
+
   const mergeStylesFunctionTemplate = template(mergeStylesFunctionString());
   const getClassNameFunctionTemplate = template(getClassNameFunctionString());
   const getStyleFunctionTemplete = template(getStyleFunctionString());
@@ -113,7 +115,7 @@ export default function ({ types: t, template }, opts = {}) {
         // skip attribute convert when use css module
         // `import styles from '*.module.(c|le|sa|sc)ss'`
         // should not convert attribute `className` to `style`
-        if (file.get('shouldSkipConvert')) return;
+        if (shouldSkipConvert) return;
 
         // Check if has "style"
         let hasStyleAttribute = false;
@@ -242,8 +244,7 @@ export default function ({ types: t, template }, opts = {}) {
         // Set skip flag when `import styles from '*.module.(c|le|sa|sc)ss'`
         if (node.specifiers.length && cssIndex > -1) {
           const cssModuleReg = /\.module\.(c|le|sa|sc)ss$/;
-          const a = (forceEnableCSS && cssModuleReg.test(sourceValue)) || file.get('shouldSkipConvert');
-          file.set('shouldSkipConvert', a);
+          shouldSkipConvert = (forceEnableCSS && cssModuleReg.test(sourceValue)) || shouldSkipConvert;
         }
       },
     },
