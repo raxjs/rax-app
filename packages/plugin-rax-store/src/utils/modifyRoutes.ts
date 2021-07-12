@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as fse from 'fs-extra';
 import { checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 import { getPageStorePath } from './getPath';
 
@@ -15,7 +14,7 @@ function modifyRoute(route: any, tempPath: string, srcPath: string, mpa: boolean
   const dir = path.dirname(pageSource);
   const pageName = path.parse(dir).name;
   const pageStorePath = getPageStorePath(srcPath, pageName);
-  if (!pageStorePath || !fse.pathExistsSync(pageStorePath)) {
+  if (!pageStorePath) {
     // if page store doesn't exist, return the origin route
     return route;
   }
