@@ -17,7 +17,7 @@
     "@alib/build-scripts": "^0.1.31",
     "build-plugin-app-core": "1.4.8",
     "build-plugin-ice-config": "1.8.0",
-    "build-plugin-rax-app": "6.4.3",
+    "build-plugin-rax-app": "6.4.4",
     "build-plugin-rax-kraken": "1.1.2",
     "build-plugin-rax-miniapp": "1.4.1",
     "build-plugin-rax-pha": "1.4.4",

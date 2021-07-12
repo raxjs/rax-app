@@ -3,6 +3,7 @@
 ## 3.6.4
 
 - Fix: store file check
+- Fix: ssr inline style
 
 ## 3.6.3
 
@@ -83,11 +84,11 @@
 
 ## 3.4.7 (March 19 2021)
 
-- Fix: rax render won't override original content with initialHTML is undefined 
+- Fix: rax render won't override original content with initialHTML is undefined
 
 ## 3.4.6 (March 18 2021)
 
-- Chore: invalid version 
+- Chore: invalid version
 
 ### 3.4.5 (March 18 2021)
 
@@ -153,7 +154,7 @@
 
 ### 3.2.1 (December 25 2020)
 
-- Chore: `compileDependencies` default value is `['']`. 
+- Chore: `compileDependencies` default value is `['']`.
 
 ### 3.2.0 (December 24 2020)
 
@@ -187,7 +188,7 @@ For v3.1.1 patch version.
 
 ### 3.0.9 (November 23, 2020)
 
-- Feat: support CSS Modules.([#488](https://github.com/raxjs/rax-app/pull/488)) 
+- Feat: support CSS Modules.([#488](https://github.com/raxjs/rax-app/pull/488))
 - Refactor: change mpa entry to `.rax` temp dir.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3825))
 - Fix: user couldn't custom `outputDir`.([#494](https://github.com/raxjs/rax-app/pull/494))
 - Feat: support config `sourceMap` and `minify` when dev mode.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3835) [raxjs/miniapp](https://github.com/raxjs/miniapp/pull/45))
