@@ -58,7 +58,7 @@ function setCSSRule(config, options) {
     if (value) {
       // value is `{ forceEnableCSS: true }`
       if (value.forceEnableCSS) {
-        setCSSGlobalRule(config, configRule, type, isWebStandard ? 'web' : 'normal');
+        setCSSGlobalRule(config, { configRule, type, postCssType: isWebStandard ? 'web' : 'normal' });
       } else {
         configRule.uses.delete('MiniCssExtractPlugin.loader');
         configInlineStyle(configRule);
@@ -74,18 +74,27 @@ function setCSSRule(config, options) {
   if (isNodeStandard) {
     configRule.uses.delete('MiniCssExtractPlugin.loader');
     if (value) {
-      configInlineStyle(configRule);
-      configPostCssLoader(configRule, 'web-inline');
+      if (value.forceEnableCSS) {
+        if (type === 'module') {
+          configLoadersInSSR(configRule);
+        } else {
+          const cssGlobalReg = new RegExp(`src\\/global\\.${type}`);
+
+          configRule.exclude.add(cssGlobalReg);
+          configInlineStyle(configRule);
+          configPostCssLoader(configRule, 'web-inline');
+
+          const cssGlobalRule = createCSSRule(config, `${type}-global`, cssGlobalReg);
+          cssGlobalRule.uses.delete('MiniCssExtractPlugin.loader');
+          configLoadersInSSR(cssGlobalRule);
+        }
+      } else {
+        configInlineStyle(configRule);
+        configPostCssLoader(configRule, 'web-inline');
+      }
     } else {
       // Do not generate CSS file, it will be built by web complier
-      configRule.uses.delete('postcss-loader');
-      configRule
-        .use('css-loader')
-        .tap((loaderOptions) => ({
-          ...loaderOptions,
-          onlyLocals: true,
-        }))
-        .end();
+      configLoadersInSSR(configRule);
     }
   }
 }
@@ -113,7 +122,21 @@ function configPostCssLoader(rule, type) {
     }));
 }
 
-function setCSSGlobalRule(config, configRule, type, postCssType) {
+function configLoadersInSSR(configRule) {
+  return configRule
+    .uses
+    .delete('postcss-loader')
+    .end()
+    .use('css-loader')
+    .tap((loaderOptions) => ({
+      ...loaderOptions,
+      onlyLocals: true,
+    }))
+    .end();
+}
+
+function setCSSGlobalRule(config, options) {
+  const { configRule, type, postCssType } = options;
   // rule is `css-module`
   // extract `*.module.(c|le|sa|sc)ss`
   if (type === 'module') {
@@ -126,10 +149,10 @@ function setCSSGlobalRule(config, configRule, type, postCssType) {
     configRule.exclude.add(cssGlobalReg);
     configRule.uses.delete('MiniCssExtractPlugin.loader');
     configInlineStyle(configRule);
-    configPostCssLoader(configRule, 'web-inline');
+    configPostCssLoader(configRule, postCssType === 'web' ? 'web-inline' : 'normal');
 
     // create rule to process `global.(c|le|sa|sc)ss`
-    const cssGlobalRule = createCSSRule(config, `${type}-global`, cssGlobalReg, []);
+    const cssGlobalRule = createCSSRule(config, `${type}-global`, cssGlobalReg);
     configPostCssLoader(cssGlobalRule, postCssType);
   }
 }

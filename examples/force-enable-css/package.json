@@ -5,6 +5,7 @@
     "lint": "eslint --ext .js --ext .jsx ./"
   },
   "dependencies": {
+    "clsx": "^1.1.1",
     "rax": "^1.1.0",
     "rax-document": "^0.1.0",
     "rax-image": "^2.0.0",
