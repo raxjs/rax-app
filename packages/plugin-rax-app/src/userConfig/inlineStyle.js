@@ -52,45 +52,63 @@ function setCSSRule(config, options) {
     return;
   }
 
+  const postCssType = isWebStandard ? 'web' : 'normal';
+
   if (isWebStandard || isMiniAppStandard) {
-    // value is `true || { forceEnableCSS: true } || { forceEnableCSS: false }`
     if (value) {
-      // value is `{ forceEnableCSS: true }`
+      // value is `true || { forceEnableCSS: true } || { forceEnableCSS: false }`
       if (value.forceEnableCSS) {
-        setCSSGlobalRule(config, { configRule, type, postCssType: isWebStandard ? 'web' : 'normal' });
+        // value is `{ forceEnableCSS: true }`
+        if (type === 'module') {
+          // rule is `css-module`
+          // extract `*.module.(c|le|sc)ss`
+          configPostCssLoader(configRule, postCssType);
+        } else {
+          // rule is `css`
+          // exclude `global.(c|le|sc)ss`
+          // create new rule to transform `global.(c|le|sc)ss`
+          setCSSGlobalRule(config, { configRule, type, postCssType });
+        }
       } else {
         configRule.uses.delete('MiniCssExtractPlugin.loader');
         configInlineStyle(configRule, isWebStandard ? 'web-inline' : 'normal');
       }
-    // value is `false`
     } else {
-      configPostCssLoader(configRule, isWebStandard ? 'web' : 'normal');
+      // value is `false`
+      configPostCssLoader(configRule, postCssType);
     }
     return;
   }
 
   if (isNodeStandard) {
+    // should not extract css when `isNodeStandard`
     configRule.uses.delete('MiniCssExtractPlugin.loader');
     if (value) {
       if (value.forceEnableCSS) {
+        // value is `{ forceEnableCSS: true }`
         if (type === 'module') {
-          configLoadersInSSR(configRule);
+          // rule is `css-module`
+          // transform `*.module.(c|le|sc)ss`
+          configLoadersInNode(configRule);
         } else {
+          // rule is `css`
+          // exclude `global.(c|le|sc)ss`
           const cssGlobalReg = new RegExp(`src\\/global\\.${type}`);
 
           configRule.exclude.add(cssGlobalReg);
           configInlineStyle(configRule, 'web-inline');
 
+          // create new rule to transform `global.(c|le|sc)ss`
           const cssGlobalRule = createCSSRule(config, `${type}-global`, cssGlobalReg);
           cssGlobalRule.uses.delete('MiniCssExtractPlugin.loader');
-          configLoadersInSSR(cssGlobalRule);
+          configLoadersInNode(cssGlobalRule);
         }
       } else {
         configInlineStyle(configRule, 'web-inline');
       }
     } else {
       // Do not generate CSS file, it will be built by web complier
-      configLoadersInSSR(configRule);
+      configLoadersInNode(configRule);
     }
   }
 }
@@ -120,7 +138,7 @@ function configPostCssLoader(configRule, type) {
     .end();
 }
 
-function configLoadersInSSR(configRule) {
+function configLoadersInNode(configRule) {
   return configRule
     .uses
     .delete('postcss-loader')
@@ -135,24 +153,15 @@ function configLoadersInSSR(configRule) {
 
 function setCSSGlobalRule(config, options) {
   const { configRule, type, postCssType } = options;
-  // rule is `css-module`
-  // extract `*.module.(c|le|sa|sc)ss`
-  if (type === 'module') {
-    configPostCssLoader(configRule, postCssType);
-  // rule is `css`
-  // exclude `global.(c|le|sa|sc)ss`
-  } else {
-    const cssGlobalReg = new RegExp(`src\\/global\\.${type}`);
+  const cssGlobalReg = new RegExp(`src\\/global\\.${type}`);
 
-    configRule.exclude.add(cssGlobalReg);
-    configRule.uses.delete('MiniCssExtractPlugin.loader');
-    configInlineStyle(configRule);
-    configPostCssLoader(configRule, postCssType === 'web' ? 'web-inline' : postCssType);
+  configRule.exclude.add(cssGlobalReg);
+  configRule.uses.delete('MiniCssExtractPlugin.loader');
+  configInlineStyle(configRule, postCssType === 'web' ? 'web-inline' : postCssType);
 
-    // create rule to process `global.(c|le|sa|sc)ss`
-    const cssGlobalRule = createCSSRule(config, `${type}-global`, cssGlobalReg);
-    configPostCssLoader(cssGlobalRule, postCssType);
-  }
+  // create rule to process `global.(c|le|sa|sc)ss`
+  const cssGlobalRule = createCSSRule(config, `${type}-global`, cssGlobalReg);
+  configPostCssLoader(cssGlobalRule, postCssType);
 }
 
 function deleteExtractCSSPlugin(config, value, taskName) {
