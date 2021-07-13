@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.4.4
+
+- Fix: ssr inline style
+
 ## 6.4.3
 
 - Feat: add config option `forceEnableCSS` support
