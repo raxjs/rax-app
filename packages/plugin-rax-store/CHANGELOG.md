@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.1
+
+- Fix: store file check
+
 ## v1.3.0
 
 - Fix: use PROJECT_TYPE to get store file path

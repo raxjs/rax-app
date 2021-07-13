@@ -14,7 +14,7 @@ import globalStyle from './global.css';
 export default function Home() {
   const source = '//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png';
   return (
-    <View className={[styles.container, 'container']} style={globalStyle.container}>
+    <View className={styles.container} style={globalStyle.container}>
       <Logo uri={source} />
       <Logo2 uri={source} />
       <Logo3 uri={source} />

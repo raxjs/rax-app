@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.6.4
+
+- Fix: store file check
+
 ## 3.6.3
 
 - Feat: use outline css with inlineStyle: true
