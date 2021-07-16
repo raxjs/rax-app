@@ -99,6 +99,24 @@ function getPromptQuestion(appTemplate) {
     ],
   }, {
     type: 'list',
+    name: 'miniappPluginBuildType',
+    default: 'compile',
+    message: 'What\'s your plugin build type for miniapp ?',
+    when(answers) {
+      return answers.projectType === 'plugin';
+    },
+    choices: [
+      {
+        name: 'compile mode (high performance, support page/component/js api)',
+        value: 'compile',
+      },
+      {
+        name: 'runtime mode (with no syntax constraints, support page)',
+        value: 'runtime',
+      },
+    ],
+  }, {
+    type: 'list',
     name: 'appType',
     message: 'What\'s your application type? ',
     when(answers) {
