@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { render, createElement, useState, Fragment, useLayoutEffect } from 'rax';
+import { render, createElement, useState, Fragment, useLayoutEffect, useEffect } from 'rax';
 import { createUseRouter } from 'create-use-router';
 import { isWeb, isWeex, isKraken, isNode } from 'universal-env';
 import UniversalDriver from 'driver-universal';
@@ -8,6 +8,7 @@ import { setInitialData } from './initialData';
 import parseSearch from './parseSearch';
 
 const useRouter = createUseRouter({ useState, useLayoutEffect });
+const tabBarCache = {};
 
 let driver = UniversalDriver;
 let AppTabBar;
@@ -29,6 +30,17 @@ function _matchInitialComponent(fullpath, routes) {
   return Promise.resolve(initialComponent);
 }
 
+function checkNeedTabBar(staticConfig, history): boolean {
+  const current = history.location.pathname;
+  if (tabBarCache[current] !== undefined) return tabBarCache[current];
+  return tabBarCache[current] = AppTabBar && staticConfig.tabBar?.items.some(({ pageName, path }) => {
+    if (!pageName) {
+      pageName = path;
+    }
+    return pageName === current;
+  });
+}
+
 function App(props) {
   const { staticConfig, history, routes, InitialComponent, pageInitialProps } = props;
   let PageComponent;
@@ -39,29 +51,46 @@ function App(props) {
   }
   // Return null directly if not matched
   if (_isNullableComponent(PageComponent)) return null;
-
   const pageProps = { history, location: history.location, ...pageInitialProps };
-  const tabBarProps = {
-    config: staticConfig.tabBar,
-    currentPageName: history.location.pathname,
-    onClick(item) {
-      history.push(item.pageName);
-    }
-  };
-  return (
-    <Fragment>
-      <PageComponent {...pageProps} />
-      {
-        AppTabBar && staticConfig.tabBar?.items.some(({ pageName, path }) => {
-          if (!pageName) {
-            pageName = path;
-          }
-          return pageName === history.location.pathname;
-        })
-       ? <AppTabBar {...tabBarProps} /> : null
+
+  // TabBar page
+  if (checkNeedTabBar(staticConfig, history)) {
+    const [currentPageName, setCurrentPageName] = useState(history.location.pathname);
+
+    const tabBarProps = {
+      config: staticConfig.tabBar,
+      currentPageName: currentPageName,
+      onClick(item) {
+        history.push(item.pageName);
       }
-    </Fragment>
-  );
+    };
+    // Listen history pathname change
+    useEffect(() => {
+      const unListen = history.listen((location) => {
+        setCurrentPageName(location.pathname);
+      });
+
+      // remove listener
+      return () => {
+        unListen();
+      };
+    }, []);
+    return (
+      <Fragment>
+        <PageComponent {...pageProps} />
+        {
+          AppTabBar && staticConfig.tabBar?.items.some(({ pageName, path }) => {
+            if (!pageName) {
+              pageName = path;
+            }
+            return pageName === history.location.pathname;
+          })
+        ? <AppTabBar {...tabBarProps} /> : null
+        }
+      </Fragment>
+    );
+  }
+  return <PageComponent {...pageProps} />;
 }
 
 function raxAppRenderer(options) {
