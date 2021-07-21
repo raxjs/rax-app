@@ -41,6 +41,35 @@ function checkNeedTabBar(staticConfig, history): boolean {
   });
 }
 
+function WrapperTabBar({ history, tabBarConfig, children }) {
+  const [currentPageName, setCurrentPageName] = useState(history.location.pathname);
+
+  // Listen history pathname change
+  useEffect(() => {
+    const unListen = history.listen((location) => {
+      setCurrentPageName(location.pathname);
+    });
+
+    // remove listener
+    return () => {
+      unListen();
+    };
+  }, []);
+
+  const tabBarProps = {
+    config: tabBarConfig,
+    currentPageName: currentPageName,
+    onClick(item) {
+      history.push(item.pageName);
+    }
+  };
+
+  return <Fragment>
+    {children}
+    <AppTabBar {...tabBarProps} />
+  </Fragment>;
+}
+
 function App(props) {
   const { staticConfig, history, routes, InitialComponent, pageInitialProps } = props;
   let PageComponent;
@@ -55,31 +84,10 @@ function App(props) {
 
   // Add TabBar
   if (checkNeedTabBar(staticConfig, history)) {
-    const [currentPageName, setCurrentPageName] = useState(history.location.pathname);
-
-    const tabBarProps = {
-      config: staticConfig.tabBar,
-      currentPageName: currentPageName,
-      onClick(item) {
-        history.push(item.pageName);
-      }
-    };
-    // Listen history pathname change
-    useEffect(() => {
-      const unListen = history.listen((location) => {
-        setCurrentPageName(location.pathname);
-      });
-
-      // remove listener
-      return () => {
-        unListen();
-      };
-    }, []);
     return (
-      <Fragment>
+      <WrapperTabBar history={history} tabBarConfig={staticConfig.tabBar}>
         <PageComponent {...pageProps} />
-        <AppTabBar {...tabBarProps} />
-      </Fragment>
+      </WrapperTabBar>
     );
   }
   return <PageComponent {...pageProps} />;
