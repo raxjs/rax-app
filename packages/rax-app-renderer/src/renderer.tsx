@@ -33,7 +33,7 @@ function _matchInitialComponent(fullpath, routes) {
 function checkNeedTabBar(staticConfig, history): boolean {
   const current = history.location.pathname;
   if (tabBarCache[current] !== undefined) return tabBarCache[current];
-  return tabBarCache[current] = AppTabBar && staticConfig.tabBar?.items.some(({ pageName, path }) => {
+  return tabBarCache[current] = AppTabBar !== undefined && staticConfig.tabBar?.items.some(({ pageName, path }) => {
     if (!pageName) {
       pageName = path;
     }
@@ -53,7 +53,7 @@ function App(props) {
   if (_isNullableComponent(PageComponent)) return null;
   const pageProps = { history, location: history.location, ...pageInitialProps };
 
-  // TabBar page
+  // Add TabBar
   if (checkNeedTabBar(staticConfig, history)) {
     const [currentPageName, setCurrentPageName] = useState(history.location.pathname);
 
