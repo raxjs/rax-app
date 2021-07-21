@@ -41,7 +41,7 @@ function checkNeedTabBar(staticConfig, history): boolean {
   });
 }
 
-function WrapperTabBar({ history, tabBarConfig, children }) {
+function TabBarWrapper({ history, tabBarConfig, children }) {
   const [currentPageName, setCurrentPageName] = useState(history.location.pathname);
 
   // Listen history pathname change
@@ -85,9 +85,9 @@ function App(props) {
   // Add TabBar
   if (checkNeedTabBar(staticConfig, history)) {
     return (
-      <WrapperTabBar history={history} tabBarConfig={staticConfig.tabBar}>
+      <TabBarWrapper history={history} tabBarConfig={staticConfig.tabBar}>
         <PageComponent {...pageProps} />
-      </WrapperTabBar>
+      </TabBarWrapper>
     );
   }
   return <PageComponent {...pageProps} />;
