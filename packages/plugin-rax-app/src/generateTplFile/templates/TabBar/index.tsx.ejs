@@ -1,4 +1,4 @@
-import { createElement, useState } from 'rax';
+import { createElement, useState, useEffect } from 'rax';
 import { isWeex } from 'universal-env';
 
 import './index.css';
@@ -45,6 +45,9 @@ export default function TabBar(props) {
     setSelectedName(item.pageName);
     onClick(item);
   };
+  useEffect(() => {
+    setSelectedName(currentPageName);
+  }, [currentPageName])
   // TabBar default height is 98rpx
   return <div className='rax-app-tab-bar' style={{ backgroundColor, height: 98 + safeAreaInsetBottom }}>
     {
