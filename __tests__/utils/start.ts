@@ -19,7 +19,7 @@ export const startFixture = async function (example: string) {
   const port = await getPort();
   const rootDir = path.join(__dirname, `../../examples/${example}`);
   executeCommand('rm -rf node_modules', rootDir);
-  executeCommand('npm install --registry=https://registry.npm.taobao.org/', rootDir);
+  executeCommand('npm install', rootDir);
   const devServer = await start({
     args: {
       config: path.join(rootDir, 'build.json'),
