@@ -33,12 +33,14 @@ function _matchInitialComponent(fullpath, routes) {
 function checkNeedTabBar(staticConfig, history): boolean {
   const current = history.location.pathname;
   if (tabBarCache[current] !== undefined) return tabBarCache[current];
-  return tabBarCache[current] = AppTabBar !== undefined && staticConfig.tabBar?.items.some(({ pageName, path }) => {
-    if (!pageName) {
-      pageName = path;
-    }
-    return pageName === current;
-  });
+  return (tabBarCache[current] =
+    AppTabBar !== undefined &&
+    staticConfig.tabBar?.items.some(({ pageName, path }) => {
+      if (!pageName) {
+        pageName = path;
+      }
+      return pageName === current;
+    }));
 }
 
 function TabBarWrapper({ history, tabBarConfig, children }) {
@@ -61,13 +63,15 @@ function TabBarWrapper({ history, tabBarConfig, children }) {
     currentPageName: currentPageName,
     onClick(item) {
       history.push(item.pageName);
-    }
+    },
   };
 
-  return <Fragment>
-    {children}
-    <AppTabBar {...tabBarProps} />
-  </Fragment>;
+  return (
+    <Fragment>
+      {children}
+      <AppTabBar {...tabBarProps} />
+    </Fragment>
+  );
 }
 
 function App(props) {
@@ -144,36 +148,31 @@ async function renderInClient(options) {
   // Like https://xxx.com?_path=/page1, use `_path` to jump to a specific route.
   pathRedirect(history, routes);
 
-  return _matchInitialComponent(history.location.pathname, routes)
-    .then(async (InitialComponent) => {
-      const initialComponent = InitialComponent();
-      if (!context.pageInitialProps && initialComponent.getInitialProps) {
-        context.pageInitialProps = await initialComponent.getInitialProps(initialContext);
-      }
-      const props = {
-        staticConfig,
-        history,
-        routes,
-        InitialComponent,
-        pageInitialProps: context.pageInitialProps
-      };
+  return _matchInitialComponent(history.location.pathname, routes).then(async (InitialComponent) => {
+    const initialComponent = InitialComponent();
+    if (!context.pageInitialProps && initialComponent.getInitialProps) {
+      context.pageInitialProps = await initialComponent.getInitialProps(initialContext);
+    }
+    const props = {
+      staticConfig,
+      history,
+      routes,
+      InitialComponent,
+      pageInitialProps: context.pageInitialProps,
+    };
 
-      const { app = {} } = appDynamicConfig;
-      const { rootId } = app;
+    const { app = {} } = appDynamicConfig;
+    const { rootId } = app;
 
-      const appInstance = getRenderAppInstance(runtime, props, options);;
-      // Emit app launch cycle
-      emitLifeCycles();
+    const appInstance = getRenderAppInstance(runtime, props, options);
+    // Emit app launch cycle
+    emitLifeCycles();
 
-      const rootEl = isWeex || isKraken ? null : document.getElementById(rootId);
-      if (isWeb && rootId === null) console.warn('Error: Can not find #root element, please check which exists in DOM.');
-      const webConfig = buildConfig.web || {};
-      return render(
-        appInstance,
-        rootEl,
-        { driver, hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr },
-      );
-    });
+    const rootEl = isWeex || isKraken ? null : document.getElementById(rootId);
+    if (isWeb && rootId === null) console.warn('Error: Can not find #root element, please check which exists in DOM.');
+    const webConfig = buildConfig.web || {};
+    return render(appInstance, rootEl, { driver, hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr });
+  });
 }
 
 export function getRenderAppInstance(runtime, props, options) {
