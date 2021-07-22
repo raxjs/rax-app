@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.4.5
+
+- Fix: tabbar state update
+
 ## 6.4.4
 
 - Fix: ssr inline style

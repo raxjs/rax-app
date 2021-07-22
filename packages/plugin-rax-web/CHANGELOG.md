@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.5
+
+- Fix: throw document build error
+
 ## v1.4.4
 
 - Fix: `doctype: null`
@@ -30,7 +34,7 @@
 
 ## v1.3.8
 
-- Fix: rax render won't override original content with initialHTML is undefined 
+- Fix: rax render won't override original content with initialHTML is undefined
 
 ## v1.3.7
 

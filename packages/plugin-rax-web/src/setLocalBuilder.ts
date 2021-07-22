@@ -55,7 +55,7 @@ export default (api, documentPath?: string | undefined) => {
     let entries;
     if (webConfig.mpa) {
       entries = getMpaEntries(api, {
-        target: 'document',
+        target: 'web',
         appJsonContent: staticConfig,
       });
     } else {
