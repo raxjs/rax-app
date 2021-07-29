@@ -5,7 +5,12 @@ import * as htmlparser2 from 'htmlparser2';
 import { getEntriesByRoute } from '@builder/app-helpers';
 import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
-import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
+import {
+  getInjectedHTML,
+  getBuiltInHtmlTpl,
+  insertCommonElements,
+  genComboedScript,
+} from '../utils/htmlStructure';
 import { setDocument } from '../utils/document';
 
 const PLUGIN_NAME = 'DocumentPlugin';
@@ -61,9 +66,8 @@ export default class DocumentPlugin {
           });
           let html = '';
           // PHA will consume document field
-          let customDocument = false;
+          let customDocument;
           if (documentPath && localBuildAssets[`${entryName}.js`]) {
-            customDocument = true;
             const bundleContent = localBuildAssets[`${entryName}.js`].source();
             const mod = exec(bundleContent, entryPath);
 
@@ -80,13 +84,14 @@ export default class DocumentPlugin {
 
             const parserOptions = { decodeEntities: false };
             const $ = cheerio.load(htmlparser2.parseDOM(html, parserOptions), parserOptions);
-            $('#root').after(injectedHTML.scripts);
+            $('#root').after([genComboedScript(injectedHTML.comboScripts), ...injectedHTML.scripts]);
             html = $.html();
+            $('.__combo_script__').replaceWith(injectedHTML.comboScripts.map(({ script }) => script));
+            customDocument = $.html();
           } else {
             let initialHTML;
 
             if (localBuildAssets[`${entryName}.js`]) {
-              customDocument = true;
               const bundleContent = localBuildAssets[`${entryName}.js`].source();
               const mod = exec(bundleContent, entryPath);
 
@@ -109,7 +114,7 @@ export default class DocumentPlugin {
             }, ssr);
           }
 
-          setDocument(entryName, html, customDocument);
+          setDocument(entryName, customDocument);
 
           compilation.assets[`${entryName}.html`] = new RawSource(html);
         });

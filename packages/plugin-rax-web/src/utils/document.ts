@@ -3,10 +3,10 @@ import * as path from 'path';
 // entryName => { document, custom }
 const documentMap = {};
 
-export function setDocument(entryName: string, content: string, custom: boolean) {
+export function setDocument(entryName: string, content: string) {
   documentMap[entryName] = {
     document: content,
-    custom,
+    custom: !!content,
   };
 }
 
