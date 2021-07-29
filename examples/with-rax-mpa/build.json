@@ -9,6 +9,5 @@
   "web": {
     "mpa": true,
     "staticExport": true
-  },
-  "plugins": ["@ali/build-plugin-rax-app-def"]
+  }
 }
