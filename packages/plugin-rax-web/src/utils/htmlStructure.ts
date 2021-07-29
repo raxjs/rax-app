@@ -76,7 +76,7 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo, ssr: boolean) {
     <body ${addSpmB(spmB)}>
       ${ ssr ? '<!--__BEFORE_ROOT__-->' : '' }
       <div id="root">${initialHTML}</div>
-      ${addStaticSource([genComboedScript(customComboScripts), ...customScripts])}
+      ${addStaticSource(customComboScripts.length ? [genComboedScript(customComboScripts), ...customScripts] : customScripts)}
       ${ ssr ? '<!--__AFTER_ROOT__-->' : '' }
       ${addScriptsBySource(assetScripts)}
     </body>
