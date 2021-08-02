@@ -84,10 +84,18 @@ export default class DocumentPlugin {
 
             const parserOptions = { decodeEntities: false };
             const $ = cheerio.load(htmlparser2.parseDOM(html, parserOptions), parserOptions);
-            $('#root').after([genComboedScript(injectedHTML.comboScripts), ...injectedHTML.scripts]);
-            html = $.html();
-            $('.__combo_script__').replaceWith(injectedHTML.comboScripts.map(({ script }) => script));
-            customDocument = $.html();
+            if (injectedHTML.comboScripts.length) {
+              // Insert comboed script
+              $('#root').after([genComboedScript(injectedHTML.comboScripts), ...injectedHTML.scripts]);
+              html = $.html();
+              // Remove comboed script and insert decomboed scripts
+              $('.__combo_script__').replaceWith(injectedHTML.comboScripts.map(({ script }) => script));
+              customDocument = $.html();
+            } else {
+              $('#root').after(injectedHTML.scripts);
+              html = $.html();
+              customDocument = html;
+            }
           } else {
             let initialHTML;
 
