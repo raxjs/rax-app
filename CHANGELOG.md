@@ -1,5 +1,12 @@
 ## Changelog
 
+## 3.6.5
+
+- Fix: mpa entries
+- Fix: tabbar state update
+- Feat: support release report
+- Fix: throw document build error
+
 ## 3.6.4
 
 - Fix: store file check

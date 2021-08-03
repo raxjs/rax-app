@@ -25,7 +25,8 @@
     "lint:fix": "npm run lint -- --fix",
     "test": "jest --forceExit",
     "test:watch": "jest --watch",
-    "coverage": "codecov"
+    "coverage": "codecov",
+    "release": "ts-node ./scripts/release"
   },
   "husky": {
     "hooks": {
@@ -59,7 +60,8 @@
     "typescript": "^3.7.4",
     "@types/puppeteer": "^5.4.2",
     "puppeteer": "^5.5.0",
-    "get-port": "^5.1.1"
+    "get-port": "^5.1.1",
+    "axios": "^0.21.1"
   },
   "dependencies": {
     "core-js": "^3.6.4",

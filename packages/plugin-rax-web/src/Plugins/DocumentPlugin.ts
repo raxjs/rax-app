@@ -66,11 +66,18 @@ export default class DocumentPlugin {
             customDocument = true;
             const bundleContent = localBuildAssets[`${entryName}.js`].source();
             const mod = exec(bundleContent, entryPath);
-            html = mod.renderPage(assets, {
-              doctype,
-              title,
-              pagePath,
-            });
+
+            try {
+              html = mod.renderPage(assets, {
+                doctype,
+                title,
+                pagePath,
+              });
+            } catch (error) {
+              compilation.errors.push(error);
+              throw new Error(error.message);
+            }
+
             const parserOptions = { decodeEntities: false };
             const $ = cheerio.load(htmlparser2.parseDOM(html, parserOptions), parserOptions);
             $('#root').after(injectedHTML.scripts);
@@ -82,7 +89,13 @@ export default class DocumentPlugin {
               customDocument = true;
               const bundleContent = localBuildAssets[`${entryName}.js`].source();
               const mod = exec(bundleContent, entryPath);
-              initialHTML = mod.renderPage();
+
+              try {
+                initialHTML = mod.renderPage();
+              } catch (error) {
+                compilation.errors.push(error);
+                throw new Error(error.message);
+              }
             }
 
             html = getBuiltInHtmlTpl({
