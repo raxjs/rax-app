@@ -1,5 +1,7 @@
-import { IGetBuiltInPlugins, IPluginList, Json, IUserConfig } from '@alib/build-scripts';
+import { IGetBuiltInPlugins, IPluginList, Json, IUserConfig } from 'build-scripts';
 import * as miniappBuilderShared from 'miniapp-builder-shared';
+import { init } from '@builder/pack/deps/webpack/webpack';
+import { hijackWebpack } from './require-hook';
 
 const { constants: { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } } = miniappBuilderShared;
 const miniappPlatforms = [MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM];
@@ -16,6 +18,11 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
     framework: 'rax',
     alias: 'rax-app',
   };
+
+  // enable webpack 5 by default
+  const useWebpack5 = true;
+  init(useWebpack5);
+  hijackWebpack();
 
   // built-in plugins for rax app
   const builtInPlugins: IPluginList = [

@@ -74,8 +74,9 @@ export default class DocumentPlugin {
                 pagePath,
               });
             } catch (error) {
-              compilation.errors.push(error);
-              throw new Error(error.message);
+              console.log('entryPath=====>', entryPath);
+              // compilation.errors.push(error);
+              // throw new Error(error.message);
             }
 
             const parserOptions = { decodeEntities: false };

@@ -8,7 +8,8 @@ export default function (api, config) {
   let serverReady = false;
   let httpResponseQueue = [];
 
-  config.devServer.inline(false);
+  // TODO: webpack5
+  // config.devServer.inline(false);
   config.devServer.hot(false);
   // It will override all devServer before func, because ssr need hijack route
   config.devServer.set('before', (app, server) => {

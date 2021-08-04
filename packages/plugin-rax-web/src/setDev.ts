@@ -8,10 +8,16 @@ function getHTMLFromCompilation(compilation, filename) {
 }
 
 export default (config) => {
-  const devServerBeforeHook = config.devServer.get('before');
-  config.devServer.set('before', (app, devServer) => {
+  // TODO: webpack5 before has been changed to onBeforeSetupMiddleware
+  const devServerBeforeHook = config.devServer.get('onBeforeSetupMiddleware');
+  config.devServer.set('onBeforeSetupMiddleware', (app, devServer) => {
+    if (!devServer) {
+      // In webpack5, the first argument is devServer instance
+      devServer = app;
+      app = devServer.app;
+    }
     if (typeof devServerBeforeHook === 'function') {
-      devServerBeforeHook(app, devServer);
+      devServerBeforeHook(devServer);
     }
     // Get web compiler for intercept AppHistoryFallback
     const compiler = devServer.compiler.compilers[0];

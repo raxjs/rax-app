@@ -13,7 +13,7 @@
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "@alib/build-scripts": "^0.1.0",
+    "build-scripts": "1.0.0",
     "rax": "^1.0.0"
   },
   "dependencies": {

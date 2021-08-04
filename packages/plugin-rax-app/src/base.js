@@ -93,7 +93,13 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     }
 
     // Set dev server content base
-    config.devServer.contentBase(path.join(rootDir, outputDir));
+    // TODO: webpack5
+    // config.devServer.contentBase(path.join(rootDir, outputDir));
+    config.devServer.merge({
+      static: {
+        directory: path.join(rootDir, outputDir),
+      },
+    });
 
     // Set output path
     config.output.path(path.resolve(rootDir, outputDir, target));

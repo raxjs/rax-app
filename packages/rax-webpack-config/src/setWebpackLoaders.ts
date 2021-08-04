@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as deepClone from 'lodash.clonedeep';
+import { cloneDeep } from '@builder/pack/deps/lodash';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 const URL_LOADER_LIMIT = 8192;
@@ -32,10 +32,11 @@ export const createCSSRule = (config, ruleName, reg, excludeRegs = []) => {
   addCssLoader(rule, isCSSModule);
   addPostCssLoader(rule);
 
+  // TODO: webpack5
   const loaderMap = {
     css: [],
-    scss: [['sass-loader', require.resolve('sass-loader')]],
-    less: [['less-loader', require.resolve('less-loader'), { lessOptions: { javascriptEnabled: true } }]],
+    scss: [['sass-loader', require.resolve('@builder/pack/deps/sass-loader')]],
+    less: [['less-loader', require.resolve('@builder/pack/deps/less-loader'), { lessOptions: { javascriptEnabled: true } }]],
   };
 
   loaderMap[extName].forEach((loader) => {
@@ -69,13 +70,13 @@ const addCssLoader = (rule, isCSSModule) => {
 
   return rule
     .use('css-loader')
-    .loader(require.resolve('css-loader'))
+    .loader(require.resolve('@builder/pack/deps/css-loader'))
     .options(isCSSModule ? cssModuleLoaderOpts : cssLoaderOpts)
     .end();
 };
 
 const addPostCssLoader = (rule) => {
-  return rule.use('postcss-loader').loader(require.resolve('postcss-loader')).options({ sourceMap: true }).end();
+  return rule.use('postcss-loader').loader(require.resolve('@builder/pack/deps/postcss-loader')).options({ sourceMap: true }).end();
 };
 
 const addCssPreprocessorLoader = (rule, loader) => {
@@ -89,6 +90,7 @@ const addCssPreprocessorLoader = (rule, loader) => {
 };
 
 const configAssetsRule = (config, type, testReg, loaderOpts = {}) => {
+  // TODO: webpack5
   config.module
     .rule(type)
     .test(testReg)
@@ -141,31 +143,19 @@ export default (config, { rootDir, babelConfig }) => {
     configAssetsRule(config, type, reg, opts || {});
   });
 
-  const babelLoader = require.resolve('babel-loader');
+  const babelLoader = require.resolve('@builder/pack/deps/babel-loader');
 
-  // js loader
-  config.module
-    .rule('jsx')
-    .test(/\.jsx?$/)
-    .exclude.add(EXCLUDE_REGX)
-    .end()
-    .use('babel-loader')
-    .loader(babelLoader)
-    .options({ ...deepClone(babelConfig), cacheDirectory: true });
-
-  // ts loader
-  config.module
-    .rule('tsx')
-    .test(/\.tsx?$/)
-    .exclude.add(EXCLUDE_REGX)
-    .end()
-    .use('babel-loader')
-    .loader(babelLoader)
-    .options({ ...deepClone(babelConfig), cacheDirectory: true })
-    .end()
-    .use('ts-loader')
-    .loader(require.resolve('ts-loader'))
-    .options({ transpileOnly: true });
+  ['jsx', 'tsx'].forEach((ruleName) => {
+    const testRegx = new RegExp(`\\.${ruleName}?$`);
+    config.module
+      .rule(ruleName)
+      .test(testRegx)
+      .exclude.add(EXCLUDE_REGX)
+      .end()
+      .use('babel-loader')
+      .loader(babelLoader)
+      .options({ ...cloneDeep(babelConfig), cacheDirectory: true });
+  });
 
   return config;
 };

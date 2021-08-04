@@ -5,20 +5,36 @@ module.exports = [
   {
     name: 'devServer',
     defaultValue: {
-      disableHostCheck: true,
       compress: true,
       // Use 'ws' instead of 'sockjs-node' on server since webpackHotDevClient is using native websocket
-      transportMode: 'ws',
-      logLevel: 'silent',
-      clientLogLevel: 'none',
+      // TODO: webpack5
+      // disableHostCheck: true,
+      // logLevel: 'silent',
+      // transportMode: 'ws',
+      // quiet: false,
+      // publicPath: '/',
+      // clientLogLevel: 'none',
       hot: true,
-      publicPath: '/',
-      quiet: false,
-      watchOptions: {
-        ignored: /node_modules/,
-        aggregateTimeout: 600,
+      // TODO: webpack5
+      // watchOptions: {
+      //   ignored: /node_modules/,
+      //   aggregateTimeout: 600,
+      // },
+      // TODO: webpack5
+      // before(app) {
+      //   app.use((req, res, next) => {
+      //     // set cros for all served files
+      //     res.set('Access-Control-Allow-Origin', '*');
+      //     next();
+      //   });
+      // },
+      static: {
+        watch: {
+          ignored: /node_modules/,
+          aggregateTimeout: 600,
+        },
       },
-      before(app) {
+      onBeforeSetupMiddleware(app) {
         app.use((req, res, next) => {
           // set cros for all served files
           res.set('Access-Control-Allow-Origin', '*');
@@ -26,7 +42,11 @@ module.exports = [
         });
       },
       // For mutilple task, web will occupy the server root route
-      writeToDisk: true,
+      // TODO: webpack5
+      devMiddleware: {
+        writeToDisk: true,
+        publicPath: '/',
+      },
       historyApiFallback: true,
     },
   },

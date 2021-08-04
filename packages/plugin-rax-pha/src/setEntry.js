@@ -12,6 +12,7 @@ module.exports = ({ context, config, appWorkerPath }) => {
     .libraryTarget('umd')
     .globalObject('this')
     .end()
-    .devServer.inline(false)
+    // TODO: webpack5
+    // .devServer.inline(false)
     .hot(false);
 };

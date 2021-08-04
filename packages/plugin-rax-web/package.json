@@ -13,12 +13,12 @@
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "@alib/build-scripts": "^0.1.0",
+    "build-scripts": "1.0.0",
     "rax": "^1.0.0"
   },
   "dependencies": {
     "@builder/app-helpers": "^2.1.0",
-    "@builder/mpa-config": "^3.0.0",
+    "@builder/mpa-config": "next",
     "chalk": "^4.1.0",
     "cheerio": "1.0.0-rc.3",
     "htmlparser2": "^6.0.1",
