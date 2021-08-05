@@ -45,13 +45,16 @@ module.exports = (api) => {
     }
 
     if (command === 'start') {
-      // Force disable HMR, kraken not support yet.
-      config.devServer.inline(false);
-      config.devServer.hot(false);
-
-      // Add webpack hot dev client
-      Object.keys(config.entryPoints.entries()).forEach((entryName) => {
-        config.entry(entryName).prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
+      const webEntries = config.entryPoints.entries();
+      Object.keys(webEntries).forEach((entryName) => {
+        const entrySet = config.entry(entryName);
+        const entryFiles = entrySet.values();
+        const finalEntryFile = entryFiles[entryFiles.length - 1];
+        // Add webpack hot dev client
+        entrySet.prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
+        // Add module.hot.accept() to entry
+        entrySet.add(`${require.resolve('./Loaders/hmr-loader')}!${finalEntryFile}`);
+        entrySet.delete(finalEntryFile);
       });
     }
   });
