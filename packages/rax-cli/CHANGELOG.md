@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.4.0 (2021-08-10)
+
+- Feat: support creating miniapp midway projects
+
 ## 3.3.0 (2021-07-16)
 
 - Feat: support creating runtime miniapp plugins
