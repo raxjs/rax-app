@@ -133,7 +133,7 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
       } else {
         // add script and stylesheet
         page.script = `${cdnPrefix + entryName}.js`;
-        if (!inlineStyle) {
+        if (!inlineStyle || (typeof inlineStyle === 'object' && inlineStyle.forceEnableCSS)) {
           page.stylesheet = `${cdnPrefix + entryName}.css`;
         }
       }
