@@ -27,8 +27,9 @@
     "html-minifier": "^4.0.0",
     "qs": "^6.9.4",
     "rax-server-renderer": "^1.2.0",
-    "react-dev-utils": "^10.0.0",
+    "react-dev-utils": "^11.0.0",
     "webpack-sources": "^2.0.0",
-    "chokidar": "^3.5.1"
+    "chokidar": "^3.5.1",
+    "@builder/compat-webpack4": "^1.0.0"
   }
 }

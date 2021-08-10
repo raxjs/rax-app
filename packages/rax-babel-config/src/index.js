@@ -111,7 +111,5 @@ module.exports = (userOptions = {}) => {
     ]);
   }
 
-  console.log(baseConfig.plugins);
-
   return baseConfig;
 };

@@ -34,15 +34,13 @@ export interface RenderOptions<T = RenderAppConfig, P = any> {
   router?: boolean;
 }
 
-export interface IInitialContext {
-  pathname: string;
-  query: {
-    [key: string]: string;
-  };
-}
-
 export interface IContext {
   initialData?: any;
   pageInitialProps?: any;
-  initialContext?: IInitialContext;
+  initialContext?: {
+    pathname: string;
+    query: {
+      [key: string]: string;
+    };
+  };
 }

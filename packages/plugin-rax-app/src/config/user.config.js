@@ -4,6 +4,7 @@ const { validation } = require('@builder/app-helpers');
 module.exports = [
   {
     name: 'devServer',
+    validation: 'object',
     defaultValue: {
       compress: true,
       // Use 'ws' instead of 'sockjs-node' on server since webpackHotDevClient is using native websocket
@@ -14,7 +15,6 @@ module.exports = [
       // quiet: false,
       // publicPath: '/',
       // clientLogLevel: 'none',
-      hot: true,
       // TODO: webpack5
       // watchOptions: {
       //   ignored: /node_modules/,
@@ -28,13 +28,18 @@ module.exports = [
       //     next();
       //   });
       // },
+      hot: true,
       static: {
         watch: {
           ignored: /node_modules/,
           aggregateTimeout: 600,
         },
       },
-      onBeforeSetupMiddleware(app) {
+      client: {
+        overlay: false,
+        logging: 'none',
+      },
+      onBeforeSetupMiddleware({ app }) {
         app.use((req, res, next) => {
           // set cros for all served files
           res.set('Access-Control-Allow-Origin', '*');
@@ -47,7 +52,7 @@ module.exports = [
         writeToDisk: true,
         publicPath: '/',
       },
-      historyApiFallback: true,
+      liveReload: false,
     },
   },
   {

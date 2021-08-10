@@ -1,5 +1,6 @@
 import renderer from 'rax-server-renderer';
-import { getRenderAppInstance } from './renderer';
+import { createElement } from 'rax';
+import { getRenderApp } from './renderer';
 
 function renderInServer(context, props, options) {
   const { appConfig, buildConfig = {}, createBaseApp, emitLifeCycles } = options;
@@ -8,11 +9,12 @@ function renderInServer(context, props, options) {
   // Emit app launch cycle
   emitLifeCycles();
 
-  const App = getRenderAppInstance(runtime, props, {
-    ...options,
-    appConfig: modifiedAppConfig,
-  });
-  return renderer.renderToString(App, {
+  // TODO SSR
+  // const App = getRenderApp(runtime, props, {
+  //   ...options,
+  //   appConfig: modifiedAppConfig,
+  // });
+  return renderer.renderToString(<div>123</div>, {
     defaultUnit: 'rpx',
   });
 }
