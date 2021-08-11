@@ -6,7 +6,7 @@ const documentMap = {};
 export function setDocument(entryName: string, content: string) {
   documentMap[entryName] = {
     document: content,
-    custom: !!content,
+    custom: Boolean(content),
   };
 }
 

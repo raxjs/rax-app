@@ -149,7 +149,15 @@ export function genScript(scriptAttrs: object): string {
 }
 
 export function genComboedScript(targets: IComboScript[]): string {
-  return targets.length ? `<script class="__combo_script__" crossorigin="anonymous" src="${targets.map(({ src }) => src).reduce(
-    (curr, next, index) => (index === 0 ? `${curr}${next}` : `${curr},${next}`), `${CDN_URL}??`,
-  )}"></script>` : '';
+  if (!targets.length) return '';
+
+  const comboedSrc =
+   targets
+     .map(({ src }) => src)
+     .reduce(
+       (curr, next, index) =>
+         (index === 0 ? `${curr}${next}` : `${curr},${next}`), `${CDN_URL}??`,
+     );
+
+  return `<script class="__combo_script__" crossorigin="anonymous" src="${comboedSrc}"></script>`;
 }
