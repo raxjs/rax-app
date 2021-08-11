@@ -27,9 +27,5 @@
   ],
   "window": {
     "title": "PHA Demo"
-  },
-  "tabBar": {
-    "custom": true,
-    "list": ["about-single"]
   }
 }
