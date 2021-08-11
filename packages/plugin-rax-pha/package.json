@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-pha",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Rax PHA plugins",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
