@@ -198,7 +198,16 @@ async function createProject(name, verbose, template, userAnswers) {
   );
 
   if (projectType === 'app') {
-    const appTemplate = template || (languageType === 'ts' ? '@rax-materials/scaffolds-app-ts' : '@rax-materials/scaffolds-app-js');
+    let appTemplate;
+    if (template) {
+      appTemplate = template;
+    } else if (appType === 'midway-miniapp') {
+      appTemplate = '@rax-materials/scaffolds-app-midway-miniapp';
+    } else if (languageType === 'ts') {
+      appTemplate = '@rax-materials/scaffolds-app-ts';
+    } else {
+      appTemplate = '@rax-materials/scaffolds-app-js';
+    }
 
     let projectTargets = [];
     let enableMPA = false;
@@ -218,6 +227,8 @@ async function createProject(name, verbose, template, userAnswers) {
       projectTargets = ['web', 'weex'];
     } else if (appType === 'web-spa') {
       projectTargets = ['web'];
+    } else if (appType === 'midway-miniapp') {
+      projectTargets = ['wechat-miniprogram']; // Only support wechat for now
     }
 
     await downloadAndGenerateProject(
