@@ -153,7 +153,7 @@ function setRealUrlToManifest(options, manifest) {
   }
 
   const { app_worker, tab_bar, pages } = manifest;
-  if (app_worker && app_worker.url) {
+  if (app_worker && app_worker.url && !app_worker.url.startsWith('http')) {
     app_worker.url = cdnPrefix + app_worker.url;
   }
 
