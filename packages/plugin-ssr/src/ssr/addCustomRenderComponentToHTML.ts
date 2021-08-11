@@ -1,5 +1,6 @@
 import { ILoaderQuery } from '../types';
 import addPageHTMLAssign from './addPageHTMLAssign';
+import genComboedScript from '../utils/genComboedScript';
 
 export default function addCustomRenderComponentToHTML(
   {
@@ -20,6 +21,11 @@ export default function addCustomRenderComponentToHTML(
     styles.push(`${publicPath}__${entryName}_FILE__.css`);
   }
   scripts.push(`${publicPath}__${entryName}_FILE__.js`);
+  const injectedScripts = (injectedHTML.scripts || []);
+
+  if (injectedHTML.comboScripts) {
+    injectedScripts.unshift(genComboedScript(injectedHTML.comboScripts));
+  }
   return `
   async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate, chunkInfo = {}) {
     const pageInitialProps = await getInitialProps(Component, ctx);
@@ -74,12 +80,11 @@ export default function addCustomRenderComponentToHTML(
       $.title.innerHTML = title;
     }
 
-    $.insertScript(${JSON.stringify(injectedHTML.scripts || [])});
+    $.insertScript(${JSON.stringify(injectedScripts)});
 
     ${updateDataInClient ? '' : `if (html.indexOf('window.__INITIAL_DATA__=') < 0) {
       $.insertScript('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>')
     }`}
-
 
     return '${doctype || ''}' + $.html();
   };
