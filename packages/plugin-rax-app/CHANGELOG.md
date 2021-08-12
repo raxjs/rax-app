@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.4.6
+
+- Feat: merge postcssOptions support
+
 ## 6.4.5
 
 - Fix: tabbar state update
