@@ -158,6 +158,9 @@ describe('getPageManifestByPath', () => {
 
 describe('setRealUrlToManifest', () => {
   const config = {
+    app_worker: {
+      url: 'pha-worker.js'
+    },
     pages: [
       {
         path: '/',
@@ -214,6 +217,7 @@ describe('setRealUrlToManifest', () => {
     expect(manifest.pages[2].frames[0].path).toBe('https://abc.com/frame1');
     expect(manifest.pages[1].tab_header.url).toBe('https://abc.com/header?b=true');
     expect(manifest.tab_bar.url).toBe('https://abc.com/tabbar?a=2');
+    expect(manifest.app_worker.url).toBe('https://cdn.com/pha-worker.js');
   });
 
   it('should set document to manifest', () => {
