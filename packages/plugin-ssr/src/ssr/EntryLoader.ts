@@ -48,7 +48,7 @@ export default function () {
     import '${formatPath(this.resourcePath)}';
     import app from '${formatPath(query.runAppPath)}';
 
-    const { createBaseApp, staticConfig } = app;
+    const { createBaseApp, staticConfig, pageConfig } = app;
 
     const appConfig = getAppConfig() || {};
 

@@ -9,6 +9,7 @@ module.exports = getESLintConfig('rax-ts', {
     '@iceworks/best-practices/no-js-in-ts-project': 'off',
     'no-param-reassign': 'off',
     'max-len': 'off',
-    '@typescript-eslint/restrict-plus-operands': 'off'
+    '@typescript-eslint/restrict-plus-operands': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
   }
 });

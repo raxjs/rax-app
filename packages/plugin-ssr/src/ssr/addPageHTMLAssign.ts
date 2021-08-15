@@ -33,6 +33,7 @@ export default () => {
     }
 
     const pageHTML = raxServerRenderer({ initialContext }, {
+        pageConfig,
         history: {
           location
         },

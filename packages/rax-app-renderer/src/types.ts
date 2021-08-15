@@ -32,6 +32,7 @@ export interface RenderOptions<T = RenderAppConfig, P = any> {
   appConfig: T;
   appLifecycle: AppLifecycle;
   router?: boolean;
+  pageConfig?: any;
 }
 
 export interface IContext {

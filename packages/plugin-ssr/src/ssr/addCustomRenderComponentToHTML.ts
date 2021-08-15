@@ -25,7 +25,7 @@ export default function addCustomRenderComponentToHTML(
     const data = {
       __SSR_ENABLED__: true,
       initialData,
-      pageInitialProps
+      pageInitialProps,
     };
 
     // Assign pageHTML

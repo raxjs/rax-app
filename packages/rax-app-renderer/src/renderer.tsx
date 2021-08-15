@@ -48,10 +48,11 @@ async function raxAppRenderer(options) {
 }
 
 function _render(runtime: RuntimeModule, context: IContext, options: RenderOptions) {
-  const { appConfig = {}, buildConfig } = options;
+  const { appConfig = {}, buildConfig, pageConfig } = options;
   const { rootId, mountNode } = appConfig.app;
   const webConfig = buildConfig.web || {};
   const App = getRenderApp(runtime, {
+    pageConfig,
     ...context.pageInitialProps
   }, options);
 
