@@ -34,6 +34,7 @@ function addDefineInitialPage() {
  * rax render: createElement/renderer
  * Component: Page/Document
  * generated in .rax: appConfig/staticConfig/createBaseApp/emitLifeCycles
+ * MPA: pageConfig
  */
 export default function () {
   const query = (qs.parse(this.query.substr(1)) as unknown) as ILoaderQuery;

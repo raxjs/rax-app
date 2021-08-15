@@ -51,16 +51,6 @@ export default (api) => {
   // Set global methods
   setRegisterMethod(api);
 
-  if (documentPath) {
-    setLocalBuilder(api, documentPath);
-  } else if (webConfig.staticExport) {
-    if (!webConfig.mpa) {
-      console.log(chalk.red("SPA doesn't support staticExport!"));
-      return;
-    }
-    setLocalBuilder(api);
-  }
-
   // onGetWebpackConfig((config) => {
   //   const { command } = context;
   //   if (command === 'start') {
@@ -122,6 +112,16 @@ export default (api) => {
       });
     }
   });
+
+  if (documentPath) {
+    setLocalBuilder(api, documentPath);
+  } else if (webConfig.staticExport) {
+    if (!webConfig.mpa) {
+      console.log(chalk.red("SPA doesn't support staticExport!"));
+      return;
+    }
+    setLocalBuilder(api);
+  }
 };
 
 function getAbsolutePath(filepath: string): string | undefined {
