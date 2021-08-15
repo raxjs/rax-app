@@ -31,7 +31,7 @@ export default class DocumentPlugin {
       documentPath,
       insertScript,
     } = this.options;
-    const { mpa, doctype = '<!DOCTYPE html>', ssr } = webConfig || {};
+    const { mpa, doctype = '<!DOCTYPE html>', ssr, staticExport } = webConfig || {};
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
     const publicPath = this.options.publicPath || compiler.options.output.publicPath;
     insertCommonElements(staticConfig);
@@ -43,7 +43,7 @@ export default class DocumentPlugin {
       pluginName: PLUGIN_NAME,
     }, ({ compilation, callback }) => {
       const enableStatus: boolean = getEnableStatus();
-      if (enableStatus) {
+      if (enableStatus || (staticExport && !documentPath)) {
         updateEnableStatus(false);
         localBuildTask.then(emitAssets).then(() => {
           localBuildTask = registerListenTask();

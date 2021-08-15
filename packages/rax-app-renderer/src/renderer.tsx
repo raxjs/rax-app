@@ -1,6 +1,6 @@
 /* eslint-disable */
-import { render, createElement, useState, Fragment, useLayoutEffect, useEffect } from 'rax';
-import { isWeb, isWeex, isKraken, isNode } from 'universal-env';
+import { render, createElement } from 'rax';
+import { isWeb, isWeex, isKraken } from 'universal-env';
 import UniversalDriver from 'driver-universal';
 import { IContext, RenderOptions } from './types';
 import { setInitialData } from './initialData';
@@ -14,7 +14,7 @@ async function raxAppRenderer(options) {
     options.appConfig = {};
   }
 
-  const { appConfig, buildConfig, staticConfig = {}, appLifecycle } = options;
+  const { appConfig, buildConfig, appLifecycle } = options;
   const { createBaseApp, emitLifeCycles, initAppLifeCycles } = appLifecycle;
 
   const context: IContext = {};
@@ -41,17 +41,19 @@ async function raxAppRenderer(options) {
   // emit app launch cycle
   emitLifeCycles();
 
-  return _render(runtime, {
+  return _render(runtime, context, {
     ...options,
     appConfig: modifiedAppConfig,
   });
 }
 
-function _render(runtime: RuntimeModule, options: RenderOptions) {
+function _render(runtime: RuntimeModule, context: IContext, options: RenderOptions) {
   const { appConfig = {}, buildConfig } = options;
   const { rootId, mountNode } = appConfig.app;
   const webConfig = buildConfig.web || {};
-  const App = getRenderApp(runtime, options);
+  const App = getRenderApp(runtime, {
+    ...context.pageInitialProps
+  }, options);
 
   const appMountNode = _getAppMountNode(mountNode, rootId);
   if (runtime?.modifyDOMRender) {
@@ -70,13 +72,13 @@ function _getAppMountNode(mountNode: HTMLElement, rootId: string) {
   return mountNode || document.getElementById(rootId) || document.getElementById('root');
 }
 
-export function getRenderApp(runtime: RuntimeModule, options: RenderOptions) {
+export function getRenderApp(runtime: RuntimeModule, initialProps, options: RenderOptions) {
   const { ErrorBoundary, appConfig = { app: {} } } = options;
   const { ErrorBoundaryFallback, onErrorBoundaryHandler, errorBoundary } = appConfig.app;
   const AppProvider = runtime?.composeAppProvider?.();
   const AppComponent = runtime?.getAppComponent?.();
   function App() {
-    const appComponent = <AppComponent />;
+    const appComponent = <AppComponent {...initialProps} />;
     const rootApp = AppProvider ? <AppProvider>{appComponent}</AppProvider> : appComponent;
     if (errorBoundary) {
       return (

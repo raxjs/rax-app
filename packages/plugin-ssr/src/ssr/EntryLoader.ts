@@ -15,35 +15,16 @@ function addExport(code) {
   };`;
 }
 
-function addImportDocument(code, documentPath) {
-  return `
-    import Document from '${formatPath(documentPath)}';
-    ${code}
-    `;
-}
-
-function addImportPageComponent(resourcePath, pageConfig) {
-  return `import Page from '${formatPath(resourcePath)}';
-  Page.__pageConfig = ${JSON.stringify(pageConfig)};
-  `;
-}
-
-function addRunAppDependencies(resourcePath, tempPath) {
-  return `
-  import '${resourcePath}';
-  import app from '${path.join(tempPath, 'runApp.ts')}';
-
-  const { createBaseApp, emitLifeCycles } = app;
-  `;
-}
-
 function addDefineInitialPage() {
   return `
   const pathname = req.path;
-  const routes = staticConfig.routes;
-  const route = routes.find(({ path }) => path === pathname);
-  const Page = route.component();
-  Page.__pageConfig = route;
+  let Page = appConfig.renderComponent;
+  if (!Page) {
+    const routes = staticConfig.routes;
+    const route = routes.find(({ path }) => path === pathname);
+    Page = route.component();
+    Page.__pageConfig = route;
+  }
   `;
 }
 
@@ -56,22 +37,18 @@ function addDefineInitialPage() {
  */
 export default function () {
   const query = (qs.parse(this.query.substr(1)) as unknown) as ILoaderQuery;
-  const appConfigPath = path.join(query.tempPath, 'appConfig.ts');
-  query.useRunApp = query.useRunApp === 'true';
+  const corePath = path.join(query.tempPath, 'core');
   query.needInjectStyle = query.needInjectStyle === 'true';
   query.updateDataInClient = query.updateDataInClient === 'true';
   let code = `
     import Generator from '@builder/html-generator';
     import { createElement } from 'rax';
-    import renderer from 'rax-server-renderer';
-    import staticConfig from '${formatPath(path.join(query.tempPath, 'staticConfig.ts'))}';
-    import TabBar from '${formatPath(path.join(query.tempPath, 'TabBar'))}';
-    import { getAppConfig } from '${formatPath(appConfigPath)}';
-    ${
-  query.useRunApp
-    ? addRunAppDependencies(this.resourcePath, query.tempPath)
-    : addImportPageComponent(this.resourcePath, query.pageConfig)
-}
+    import { getAppConfig } from '${formatPath(path.join(corePath, 'appConfig'))}';
+    import { emitLifeCycles } from '${formatPath(path.join(corePath, 'publicAPI'))}';
+    import '${formatPath(this.resourcePath)}';
+    import app from '${formatPath(query.runAppPath)}';
+
+    const { createBaseApp, staticConfig } = app;
 
     const appConfig = getAppConfig() || {};
 
@@ -90,14 +67,14 @@ export default function () {
 
     async function renderToHTML(req, res, options = {}) {
       const { initialData, htmlTemplate, chunkInfo } = options;
-      ${query.useRunApp ? addDefineInitialPage() : ''}
+      ${addDefineInitialPage()}
       const html = await renderComponentToHTML(Page, { req, res }, initialData, htmlTemplate, chunkInfo);
       return html;
     }
 
     async function renderToHTMLWithContext(ctx, options = {}) {
       const { initialData, htmlTemplate, chunkInfo } = options;
-      ${query.useRunApp ? addDefineInitialPage() : ''}
+      ${addDefineInitialPage()}
       const html = await renderComponentToHTML(Page, ctx, initialData, htmlTemplate, chunkInfo);
       return html;
     }
@@ -105,7 +82,7 @@ export default function () {
     async function renderWithContext(ctx, options = {}) {
       const { res, req } = ctx;
       const { initialData, htmlTemplate } = options;
-      ${query.useRunApp ? addDefineInitialPage() : ''}
+      ${addDefineInitialPage()}
       let html;
       try {
         html = await renderComponentToHTML(Page, ctx, initialData);
@@ -139,7 +116,8 @@ export default function () {
   `;
 
   if (query.documentPath) {
-    code = addImportDocument(code, query.documentPath);
+    code = `import Document from '${formatPath(query.documentPath)}';
+    ${code}`;
   }
 
   return addExport(code);
