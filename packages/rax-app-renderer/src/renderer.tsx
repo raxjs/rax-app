@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { render, createElement } from 'rax';
+import { render, createElement, Fragment } from 'rax';
 import { isWeb, isWeex, isKraken } from 'universal-env';
 import UniversalDriver from 'driver-universal';
 import { IContext, RenderOptions } from './types';
@@ -51,10 +51,14 @@ function _render(runtime: RuntimeModule, context: IContext, options: RenderOptio
   const { appConfig = {}, buildConfig, pageConfig } = options;
   const { rootId, mountNode } = appConfig.app;
   const webConfig = buildConfig.web || {};
-  const App = getRenderApp(runtime, {
-    pageConfig,
-    ...context.pageInitialProps
-  }, options);
+  const App = getRenderApp(
+    runtime,
+    {
+      pageConfig,
+      ...context.pageInitialProps,
+    },
+    options,
+  );
 
   const appMountNode = _getAppMountNode(mountNode, rootId);
   if (runtime?.modifyDOMRender) {
@@ -64,7 +68,7 @@ function _render(runtime: RuntimeModule, context: IContext, options: RenderOptio
   // add process.env.SSR for tree-shaking
   render(<App />, appMountNode, {
     driver,
-    hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr || webConfig.staticExport
+    hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr || webConfig.staticExport,
   });
 }
 
@@ -74,13 +78,21 @@ function _getAppMountNode(mountNode: HTMLElement, rootId: string) {
 }
 
 export function getRenderApp(runtime: RuntimeModule, initialProps, options: RenderOptions) {
-  const { ErrorBoundary, appConfig = { app: {} } } = options;
+  const { ErrorBoundary, appConfig = { app: {} }, TabBar } = options;
   const { ErrorBoundaryFallback, onErrorBoundaryHandler, errorBoundary } = appConfig.app;
   const AppProvider = runtime?.composeAppProvider?.();
   const AppComponent = runtime?.getAppComponent?.();
   function App() {
     const appComponent = <AppComponent {...initialProps} />;
-    const rootApp = AppProvider ? <AppProvider>{appComponent}</AppProvider> : appComponent;
+    let rootApp = AppProvider ? <AppProvider>{appComponent}</AppProvider> : appComponent;
+    if (TabBar) {
+      rootApp = (
+        <Fragment>
+          {rootApp}
+          <TabBar />
+        </Fragment>
+      );
+    }
     if (errorBoundary) {
       return (
         <ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHandler}>
@@ -92,6 +104,5 @@ export function getRenderApp(runtime: RuntimeModule, initialProps, options: Rend
   }
   return App;
 }
-
 
 export default raxAppRenderer;

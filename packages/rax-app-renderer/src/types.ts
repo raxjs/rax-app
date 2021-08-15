@@ -33,6 +33,7 @@ export interface RenderOptions<T = RenderAppConfig, P = any> {
   appLifecycle: AppLifecycle;
   router?: boolean;
   pageConfig?: any;
+  TabBar?: ComponentType;
 }
 
 export interface IContext {

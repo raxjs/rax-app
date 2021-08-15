@@ -8,6 +8,7 @@ function getInitialHTML(staticExport): string {
     appConfig,
     createBaseApp,
     emitLifeCycles,
+    TabBar,
   })`;
 }
 
@@ -21,7 +22,7 @@ function addSSGDefine(staticExport, { entryPath, runAppPath, tempPath }) {
 
   const appConfig = getAppConfig();
   const raxServerRenderer = require('rax-app-renderer/lib/server').default;
-  const { createBaseApp, staticConfig, pageConfig } = app;`;
+  const { createBaseApp, staticConfig, pageConfig, TabBar } = app;`;
 }
 
 export default function () {
