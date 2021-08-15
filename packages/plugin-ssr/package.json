@@ -34,6 +34,6 @@
     "rax-app-renderer": "^2.0.3",
     "@builder/html-generator": "^2.0.0",
     "chalk": "^4.0.0",
-    "@buider/compat-webpack4": "^1.0.0"
+    "@builder/compat-webpack4": "^1.0.0"
   }
 }
