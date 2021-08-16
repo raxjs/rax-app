@@ -14,5 +14,8 @@
   "homepage": "https://github.com/raxjs/rax-app#readme",
   "engines": {
     "npm": ">=3.0.0"
+  },
+  "peerDependencies": {
+    "webpack": "^4.0.0"
   }
 }

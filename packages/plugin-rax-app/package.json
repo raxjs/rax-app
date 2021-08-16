@@ -34,7 +34,10 @@
     "address": "^1.1.2",
     "chokidar": "^3.5.1",
     "stylesheet-loader": "^0.9.0",
-    "@builder/exports-field-webpack-plugin": "^1.0.0"
+    "@builder/exports-field-webpack-plugin": "^1.0.0",
+    "@builder/compat-webpack4": "^1.0.0",
+    "postcss-plugin-rpx2vw": "^0.0.2"
+
   },
   "devDependencies": {
     "webpack": "^4.41.1"

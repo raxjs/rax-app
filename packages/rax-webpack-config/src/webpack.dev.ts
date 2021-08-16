@@ -1,4 +1,4 @@
-import * as TimeFixPlugin from 'time-fix-plugin';
+import * as TimeFixPlugin from '@builder/pack/deps/time-fix-plugin';
 
 export default (config) => {
   // TODO webpack5 确认下会不会影响 webpack4 的日志输出
