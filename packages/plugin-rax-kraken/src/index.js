@@ -46,8 +46,9 @@ module.exports = (api) => {
 
     if (command === 'start') {
       // Force disable HMR, kraken not support yet.
-      config.devServer.inline(false);
-      config.devServer.hot(false);
+      // TODO: webpack5
+      // config.devServer.inline(false);
+      // config.devServer.hot(false);
 
       // Add webpack hot dev client
       Object.keys(config.entryPoints.entries()).forEach((entryName) => {

@@ -17,7 +17,6 @@ export interface ILoaderQuery {
   documentPath?: string;
   entryName?: string;
   needInjectStyle?: boolean | string;
-  useRunApp: boolean | string;
   publicPath?: string;
   tempPath: string;
   injectedHTML?: any;
@@ -25,4 +24,5 @@ export interface ILoaderQuery {
   pageConfig?: IPageConfig;
   doctype?: string;
   updateDataInClient: boolean | string;
+  runAppPath?: string;
 }

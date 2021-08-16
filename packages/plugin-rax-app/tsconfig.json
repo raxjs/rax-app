@@ -5,5 +5,4 @@
     "rootDir": "src",
     "outDir": "lib"
   },
-  "exclude": ["bin"]
 }

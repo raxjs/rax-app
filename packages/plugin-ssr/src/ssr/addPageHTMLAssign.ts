@@ -1,14 +1,4 @@
-export default (useRunApp) => {
-  if (!useRunApp) {
-    return `
-    const contentElement = createElement(Component, {
-      pageConfig: Component.__pageConfig,
-      ...pageInitialProps,
-    });
-    const pageHTML = renderer.renderToString(contentElement, {
-      defaultUnit: 'rpx'
-    });`;
-  }
+export default () => {
   return `
     const { setInitialData } = require('rax-app-renderer');
     const raxServerRenderer = require('rax-app-renderer/lib/server').default;
@@ -43,13 +33,12 @@ export default (useRunApp) => {
     }
 
     const pageHTML = raxServerRenderer({ initialContext }, {
-        staticConfig,
-        routes: staticConfig.routes,
-        InitialComponent: Component,
-        context: data,
+        pageConfig,
         history: {
           location
         },
+        location,
+        ...data.pageInitialProps,
     }, {
       appConfig,
       createBaseApp,

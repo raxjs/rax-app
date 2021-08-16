@@ -5,11 +5,12 @@ import * as htmlparser2 from 'htmlparser2';
 import { getEntriesByRoute } from '@builder/app-helpers';
 import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
+import { processAssets, emitAsset } from '@builder/compat-webpack4';
 import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
 import { setDocument } from '../utils/document';
 
 const PLUGIN_NAME = 'DocumentPlugin';
-const { RawSource } = webpackSources;
+
 export default class DocumentPlugin {
   options: any;
   init: boolean;
@@ -24,21 +25,25 @@ export default class DocumentPlugin {
         context: {
           userConfig: { web: webConfig },
           rootDir,
+          webpack,
         },
       },
       documentPath,
       insertScript,
     } = this.options;
-    const { mpa, doctype = '<!DOCTYPE html>', ssr } = webConfig || {};
+    const { mpa, doctype = '<!DOCTYPE html>', ssr, staticExport } = webConfig || {};
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
     const publicPath = this.options.publicPath || compiler.options.output.publicPath;
     insertCommonElements(staticConfig);
 
     let localBuildTask = registerListenTask();
 
-    compiler.hooks.emit.tapAsync(PLUGIN_NAME, async (compilation, callback) => {
+    processAssets({
+      compiler,
+      pluginName: PLUGIN_NAME,
+    }, ({ compilation, callback }) => {
       const enableStatus: boolean = getEnableStatus();
-      if (enableStatus) {
+      if (enableStatus || (staticExport && !documentPath)) {
         updateEnableStatus(false);
         localBuildTask.then(emitAssets).then(() => {
           localBuildTask = registerListenTask();
@@ -46,6 +51,7 @@ export default class DocumentPlugin {
       } else {
         emitAssets(getAssets());
       }
+
       function emitAssets(localBuildAssets) {
         const injectedHTML = getInjectedHTML();
         if (insertScript) {
@@ -53,7 +59,7 @@ export default class DocumentPlugin {
         }
         pages.forEach(({ entryName, entryPath, path: pagePath, spm }) => {
           const buildResult = compilation.entrypoints.get(entryName).getFiles();
-          const assets = getAssetsForPage(buildResult, publicPath);
+          const pageAssets = getAssetsForPage(buildResult, publicPath);
           const title = getTitleByStaticConfig(staticConfig, {
             entryName,
             mpa,
@@ -68,7 +74,7 @@ export default class DocumentPlugin {
             const mod = exec(bundleContent, entryPath);
 
             try {
-              html = mod.renderPage(assets, {
+              html = mod.renderPage(pageAssets, {
                 doctype,
                 title,
                 pagePath,
@@ -102,7 +108,7 @@ export default class DocumentPlugin {
               doctype,
               title,
               injectedHTML,
-              assets,
+              assets: pageAssets,
               initialHTML,
               spmA: staticConfig.spm,
               spmB: spm,
@@ -110,8 +116,8 @@ export default class DocumentPlugin {
           }
 
           setDocument(entryName, html, customDocument);
-
-          compilation.assets[`${entryName}.html`] = new RawSource(html);
+          const { RawSource } = webpack.sources || webpackSources;
+          emitAsset(compilation, `${entryName}.html`, new RawSource(html));
         });
 
         callback();
@@ -136,7 +142,7 @@ function getTitleByStaticConfig(staticConfig, { entryName, mpa, rootDir }): stri
  * @param {*} publicPath
  */
 function getAssetsForPage(files, publicPath) {
-  const jsFiles = files.filter((v) => /\.js$/i.test(v));
+  const jsFiles = files.filter((v) => /\.js$/i.test(v) && !/\.hot-update\.js$/i.test(v));
   const cssFiles = files.filter((v) => /\.css$/i.test(v));
 
   return {

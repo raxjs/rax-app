@@ -6,10 +6,11 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const fs = require('fs-extra');
 const ExportsFieldWebpackPlugin = require('@builder/exports-field-webpack-plugin').default;
+const { isWebpack4 } = require('@builder/compat-webpack4');
 
 module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNode }) => {
   const { context, onGetWebpackConfig } = api;
-  const { rootDir, command, userConfig, webpack } = context;
+  const { rootDir, command, userConfig } = context;
   const { experiments = {} } = userConfig;
   const { exportsField } = experiments;
 
@@ -59,6 +60,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     config.plugin('DefinePlugin').tap((args) => [
       Object.assign({}, ...args, {
         'process.env.PUBLIC_URL': JSON.stringify(publicUrl),
+        'process.env.WDS_SOCKET_PATH': '"/ws"',
       }),
     ]);
 
@@ -79,21 +81,27 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
 
     if (exportsField) {
       // Add condition names
-      if (/^5\./.test(webpack.version)) {
-        enhancedWebpackConfig.resolve.merge({
-          conditionNames: [target],
-        });
-      } else {
+      if (isWebpack4()) {
         enhancedWebpackConfig.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
           {
             conditionNames: [target],
           },
         ]);
+      } else {
+        enhancedWebpackConfig.resolve.merge({
+          conditionNames: [target],
+        });
       }
     }
 
     // Set dev server content base
-    config.devServer.contentBase(path.join(rootDir, outputDir));
+    // TODO: webpack5
+    // config.devServer.contentBase(path.join(rootDir, outputDir));
+    config.devServer.merge({
+      static: {
+        directory: path.join(rootDir, outputDir),
+      },
+    });
 
     // Set output path
     config.output.path(path.resolve(rootDir, outputDir, target));

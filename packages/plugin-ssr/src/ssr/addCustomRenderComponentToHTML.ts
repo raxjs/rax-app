@@ -8,7 +8,6 @@ export default function addCustomRenderComponentToHTML(
     pageConfig = { path: '/' },
     publicPath,
     assetsProcessor = '',
-    useRunApp,
     doctype = '<!DOCTYPE html>',
     injectedHTML = { scripts: [] },
     updateDataInClient,
@@ -26,11 +25,11 @@ export default function addCustomRenderComponentToHTML(
     const data = {
       __SSR_ENABLED__: true,
       initialData,
-      pageInitialProps
+      pageInitialProps,
     };
 
     // Assign pageHTML
-    ${addPageHTMLAssign(useRunApp)}
+    ${addPageHTMLAssign()}
 
     const documentData = await getInitialProps(Document, ctx);
     const pageConfig = Component.__pageConfig;

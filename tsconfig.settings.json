@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "jsx": "react",
+    "jsx": "preserve",
     "experimentalDecorators": true,
     "declaration": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": true
   },
 }

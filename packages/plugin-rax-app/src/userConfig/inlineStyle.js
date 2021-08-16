@@ -1,8 +1,6 @@
-const { resolve } = require('path');
 const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } = require('../constants');
 const { createCSSRule } = require('rax-webpack-config');
-
-const configPath = resolve(__dirname, '../');
+const getPostCssPlugin = require('../getPostCssPlugin');
 
 const webStandardList = [
   WEB,
@@ -126,15 +124,21 @@ function configInlineStyle(configRule, type) {
 function configPostCssLoader(configRule, type) {
   return configRule
     .use('postcss-loader')
-    .tap((options) => ({
-      ...options,
-      config: {
-        path: configPath,
-        ctx: {
-          type,
+    .tap((options) => {
+      return {
+        ...options,
+        // TODO: webpack5 not support config field
+        // config: {
+        //   path: configPath,
+        //   ctx: {
+        //     type,
+        //   },
+        // },
+        postcssOptions: {
+          plugins: (options.plugins || []).concat(getPostCssPlugin(type)),
         },
-      },
-    }))
+      };
+    })
     .end();
 }
 
@@ -146,7 +150,11 @@ function configLoadersInNode(configRule) {
     .use('css-loader')
     .tap((loaderOptions) => ({
       ...loaderOptions,
-      onlyLocals: true,
+      // TODO: webpack5 onlyLocals => module.exportOnlyLocals
+      modules: {
+        ...(loaderOptions.modules || {}),
+        exportOnlyLocals: true,
+      },
     }))
     .end();
 }

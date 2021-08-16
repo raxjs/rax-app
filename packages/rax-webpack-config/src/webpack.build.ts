@@ -1,6 +1,6 @@
-import * as TerserPlugin from 'terser-webpack-plugin';
-import * as OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
-import * as safeParser from 'postcss-safe-parser';
+import * as TerserPlugin from '@builder/pack/deps/terser-webpack-plugin';
+import * as CssMinimizerPlugin from '@builder/pack/deps/css-minimizer-webpack-plugin';
+import * as safeParser from '@builder/pack/deps/postcss-safe-parser';
 
 export default (config) => {
   // disable devtool of mode prod build
@@ -26,12 +26,19 @@ export default (config) => {
 
   // optimize css file
   config.optimization
-    .minimizer('OptimizeCSSAssetsPlugin')
-    .use(OptimizeCSSAssetsPlugin, [{
-      cssProcessorOptions: {
-        cssDeclarationSorter: false,
-        reduceIdents: false,
-        parser: safeParser,
+    .minimizer('CssMinimizerPlugin')
+    .use(CssMinimizerPlugin, [{
+      parallel: false,
+      minimizerOptions: {
+        preset: [
+          'default',
+          {
+            discardComments: { removeAll: true },
+          },
+        ],
+        processorOptions: {
+          parser: safeParser,
+        },
       },
     }]);
 };

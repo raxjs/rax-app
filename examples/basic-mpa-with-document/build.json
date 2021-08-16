@@ -1,8 +1,7 @@
 {
   "targets": ["web", "weex", "kraken"],
   "weex": {
-    "mpa": true,
-    "staticExport": true
+    "mpa": true
   },
   "kraken": {
     "mpa": true

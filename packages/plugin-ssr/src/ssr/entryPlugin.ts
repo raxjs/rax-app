@@ -1,4 +1,7 @@
 import * as qs from 'qs';
+import * as path from 'path';
+import * as fs from 'fs-extra';
+import { modifyEntry } from '@builder/compat-webpack4';
 import { IEntryPluginOptions, ILoaderQuery } from '../types';
 import { STATIC_CONFIG, TEMP_PATH } from '../constants';
 import getPageConfig from '../utils/getPageConfig';
@@ -38,7 +41,6 @@ export default class EntryPlugin {
 
     let query: ILoaderQuery = {
       tempPath: getValue(TEMP_PATH),
-      useRunApp: !web.mpa,
       updateDataInClient,
     };
 
@@ -55,14 +57,27 @@ export default class EntryPlugin {
     }
 
     Object.keys(entries).forEach((entryName) => {
-      query.entryName = entryName;
-      if (web.mpa) {
-        query.pageConfig = pageConfig[entryName];
-      }
       const entryPaths = entries[entryName];
-      compiler.options.entry[entryName] = `${EntryLoader}?${qs.stringify(query || {})}!${
-        entryPaths[entryPaths.length - 1]
-      }`;
+      // Transform hmr-loader.js!entryPath to [hmr-loader, entryPath]
+      const entrySeparatedLoader = entryPaths[entryPaths.length - 1].split('!');
+      // Get the real entry path
+      const entry = entrySeparatedLoader[entrySeparatedLoader.length - 1];
+      if (web.mpa) {
+        query.entryName = entryName;
+        query.pageConfig = pageConfig[entryName];
+        const entryFolder = path.dirname(entry);
+        // Check runApp path
+        let runAppPath = path.join(entryFolder, 'runApp');
+        if (!fs.existsSync(`${runAppPath}.ts`)) {
+          // Use core runApp path as default runApp implement
+          runAppPath = path.join(query.tempPath, 'core/runApp');
+        }
+        query.runAppPath = runAppPath;
+      }
+      modifyEntry(compiler, {
+        entryName,
+        entryPath: `${EntryLoader}?${qs.stringify(query || {})}!${entry}`,
+      });
     });
   }
 }

@@ -3,7 +3,6 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import setMPAConfig from '@builder/mpa-config';
 import * as appHelpers from '@builder/app-helpers';
-import setDev from './setDev';
 import setEntry from './setEntry';
 import DocumentPlugin from './Plugins/DocumentPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
@@ -52,22 +51,12 @@ export default (api) => {
   // Set global methods
   setRegisterMethod(api);
 
-  if (documentPath) {
-    setLocalBuilder(api, documentPath);
-  } else if (webConfig.staticExport) {
-    if (!webConfig.mpa) {
-      console.log(chalk.red("SPA doesn't support staticExport!"));
-      return;
-    }
-    setLocalBuilder(api);
-  }
-
-  onGetWebpackConfig((config) => {
-    const { command } = context;
-    if (command === 'start') {
-      setDev(config);
-    }
-  });
+  // onGetWebpackConfig((config) => {
+  //   const { command } = context;
+  //   if (command === 'start') {
+  //     setDev(config);
+  //   }
+  // });
 
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -123,6 +112,16 @@ export default (api) => {
       });
     }
   });
+
+  if (documentPath) {
+    setLocalBuilder(api, documentPath);
+  } else if (webConfig.staticExport) {
+    if (!webConfig.mpa) {
+      console.log(chalk.red("SPA doesn't support staticExport!"));
+      return;
+    }
+    setLocalBuilder(api);
+  }
 };
 
 function getAbsolutePath(filepath: string): string | undefined {

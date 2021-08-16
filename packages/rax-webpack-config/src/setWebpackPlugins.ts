@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import * as FilterWarningsPlugin from 'webpack-filter-warnings-plugin';
-import * as CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
+import * as FilterWarningsPlugin from '@builder/pack/deps/webpack-filter-warnings-plugin';
+import * as CaseSensitivePathsPlugin from '@builder/pack/deps/case-sensitive-paths-webpack-plugin';
 
 // eslint-disable-next-line
 export default (config, options) => {

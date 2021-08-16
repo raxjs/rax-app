@@ -1,6 +1,7 @@
 import * as Module from 'module';
 import * as path from 'path';
 import * as url from 'url';
+import { compatDevServer } from '@builder/compat-webpack4';
 import { STATIC_CONFIG } from '../constants';
 import { getChunkInfo } from '../utils/chunkInfo';
 
@@ -8,10 +9,9 @@ export default function (api, config) {
   let serverReady = false;
   let httpResponseQueue = [];
 
-  config.devServer.inline(false);
-  config.devServer.hot(false);
   // It will override all devServer before func, because ssr need hijack route
-  config.devServer.set('before', (app, server) => {
+  compatDevServer(config.devServer).setValue('onBeforeSetupMiddleware', (server) => {
+    const { app } = server;
     let compilerDoneCount = 0;
     server.compiler.compilers.forEach((compiler) => {
       compiler.hooks.done.tap('ssrServer', () => {

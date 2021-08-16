@@ -4,21 +4,42 @@ const { validation } = require('@builder/app-helpers');
 module.exports = [
   {
     name: 'devServer',
+    validation: 'object',
     defaultValue: {
-      disableHostCheck: true,
       compress: true,
       // Use 'ws' instead of 'sockjs-node' on server since webpackHotDevClient is using native websocket
-      transportMode: 'ws',
-      logLevel: 'silent',
-      clientLogLevel: 'none',
+      // TODO: webpack5
+      // disableHostCheck: true,
+      // logLevel: 'silent',
+      // transportMode: 'ws',
+      // quiet: false,
+      // publicPath: '/',
+      // clientLogLevel: 'none',
+      // TODO: webpack5
+      // watchOptions: {
+      //   ignored: /node_modules/,
+      //   aggregateTimeout: 600,
+      // },
+      // TODO: webpack5
+      // before(app) {
+      //   app.use((req, res, next) => {
+      //     // set cros for all served files
+      //     res.set('Access-Control-Allow-Origin', '*');
+      //     next();
+      //   });
+      // },
       hot: true,
-      publicPath: '/',
-      quiet: false,
-      watchOptions: {
-        ignored: /node_modules/,
-        aggregateTimeout: 600,
+      static: {
+        watch: {
+          ignored: /node_modules/,
+          aggregateTimeout: 600,
+        },
       },
-      before(app) {
+      client: {
+        overlay: false,
+        logging: 'none',
+      },
+      onBeforeSetupMiddleware({ app }) {
         app.use((req, res, next) => {
           // set cros for all served files
           res.set('Access-Control-Allow-Origin', '*');
@@ -26,8 +47,12 @@ module.exports = [
         });
       },
       // For mutilple task, web will occupy the server root route
-      writeToDisk: true,
-      historyApiFallback: true,
+      // TODO: webpack5
+      devMiddleware: {
+        writeToDisk: true,
+        publicPath: '/',
+      },
+      liveReload: false,
     },
   },
   {

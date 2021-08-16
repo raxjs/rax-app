@@ -8,8 +8,8 @@
   "author": "Rax Team",
   "license": "MIT",
   "scripts": {
-    "setup": "rm -rf node_modules && yarn install --no-lockfile && npm run bootstrap",
-    "bootstrap": "SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/ npm run clean && lerna bootstrap && npm run build",
+    "setup": "rm -rf node_modules && yarn install && npm run build",
+    "setup:skip": "rm -rf node_modules && PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true yarn install && npm run build",
     "watch": "ts-node ./scripts/watch.ts",
     "build": "ts-node ./scripts/build.ts",
     "version": "ts-node ./scripts/tag-version.ts",
