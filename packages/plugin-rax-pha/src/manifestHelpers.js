@@ -43,7 +43,7 @@ const retainKeys = [
 ];
 
 // do not decamelize list
-const doNotDecamelizeKeys = [
+const camelizeKeys = [
   'appKey',
   'dataType',
   'valueType',
@@ -75,7 +75,7 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
     }
 
     let transformKey = key;
-    if (doNotDecamelizeKeys.indexOf(key) === -1) {
+    if (camelizeKeys.indexOf(key) === -1) {
       transformKey = decamelize(key);
     }
     if (key === 'window') {
