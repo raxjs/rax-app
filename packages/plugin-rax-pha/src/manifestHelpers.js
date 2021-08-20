@@ -24,13 +24,35 @@ const retainKeys = [
   'links',
   'scripts',
   'offlineResources',
+  'packageResources',
   'manifestPrefetchExpires',
   'manifestPrefetchMaxAge',
+  'maxAge',
+  'expires',
   'queryParamsPassKeys',
   'queryParamsPassIgnoreKeys',
   'splashViewTimeout',
   'swiperThreshold',
   'requestHeaders',
+  'enablePoplayer',
+  'disableCapture',
+  'enablePullRefresh',
+  'pullRefreshBackgroundColor',
+  'pullRefreshColorScheme',
+  'pullRefresh',
+];
+
+// do not decamelize list
+const camelizeKeys = [
+  'appKey',
+  'dataType',
+  'valueType',
+  'isSec',
+  'LoginRequest',
+  'sessionOption',
+  'AntiCreep',
+  'AntiFlood',
+  'needLogin',
 ];
 
 // transform app config to decamelize
@@ -51,7 +73,11 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
     if (key === 'pageHeader') {
       key = 'tabHeader';
     }
-    const transformKey = decamelize(key);
+
+    let transformKey = key;
+    if (camelizeKeys.indexOf(key) === -1) {
+      transformKey = decamelize(key);
+    }
     if (key === 'window') {
       Object.assign(data, transformAppConfig(value, false));
     } else if (typeof value === 'string' || typeof value === 'number') {
