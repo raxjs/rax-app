@@ -170,6 +170,18 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
 }
 
 /**
+ * change tab header info (html)
+ * @param {*} options api
+ * @param {*} source tab header source path
+ */
+function changeTabHeaderInfo({ api }, source) {
+  const { applyMethod } = api;
+  const { document } = applyMethod('rax.getDocument', { source }) || {};
+
+  return document;
+}
+
+/**
  * set real url to manifest
  */
 function setRealUrlToManifest(options, manifest) {
@@ -197,6 +209,7 @@ function setRealUrlToManifest(options, manifest) {
       }
 
       if (page.tab_header && page.tab_header.source) {
+        page.tab_header.html = changeTabHeaderInfo(options, page.tab_header.source);
         page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
       }
       return changePageInfo(options, page, manifest);

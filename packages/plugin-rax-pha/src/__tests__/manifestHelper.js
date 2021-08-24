@@ -249,6 +249,22 @@ describe('setRealUrlToManifest', () => {
     expect(manifest.pages[2].frames[0].document).toBe('<html>123</html>');
   });
 
+  it('should set html to manifest in tab header', () => {
+    const manifest = setRealUrlToManifest({
+      ...options,
+      api: {
+        applyMethod() {
+          return {
+            custom: true,
+            document: '<html>123</html>'
+          }
+        }
+      }
+    }, cloneDeep(config));
+
+    expect(manifest.pages[1].tab_header.html).toBe('<html>123</html>');
+  })
+
   it('should not add stylesheet to page', () => {
     const manifest = setRealUrlToManifest({
       ...options,
