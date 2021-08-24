@@ -16,8 +16,6 @@ describe('should start web devServer: ', () => {
     const res = await setupBrowser({ port, defaultHtml: 'home.html' });
     page = res.page;
     browser = res.browser;
-    expect(await page.$$attr('[name="data-spm"]', 'content')).toEqual(['a123']);
-    expect(await page.$$attr('body', 'data-spm')).toEqual(['b456']);
     expect(await page.$$text('.title')).toStrictEqual(['Welcome to Your Rax App']);
   }, 120000);
 

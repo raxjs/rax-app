@@ -5,9 +5,10 @@ const qrcode = require('qrcode-terminal');
 const path = require('path');
 const fs = require('fs-extra');
 const chokidar = require('chokidar');
+const { platformMap } = require('miniapp-builder-shared');
 
 const logWebpackConfig = require('./utils/logWebpackConfig');
-const { MINIAPP, WEB, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX, KRAKEN, DEV_URL_PREFIX } = require('./constants');
+const { MINIAPP_PLATFORMS, MINIAPP, WEB, WEEX, KRAKEN, DEV_URL_PREFIX } = require('./constants');
 const generateTempFile = require('./utils/generateTempFile');
 
 const highlightPrint = chalk.hex('#F4AF3D');
@@ -33,7 +34,7 @@ function watchAppJson(rootDir, log) {
 
 module.exports = function (api) {
   // eslint-disable-next-line global-require
-  const { context, onHook, getValue, log } = api;
+  const { context, onHook, getValue, log, applyMethod } = api;
   const { commandArgs, rootDir } = context;
   let webEntryKeys = [];
   let weexEntryKeys = [];
@@ -86,7 +87,7 @@ module.exports = function (api) {
     logWebpackConfig(configs);
   });
 
-  onHook('after.start.compile', async ({ urls, stats }) => {
+  onHook('after.start.compile', async ({ stats }) => {
     const statsJson = stats.toJson({
       all: false,
       errors: true,
@@ -118,35 +119,20 @@ module.exports = function (api) {
         );
       }
 
-      if (targets.includes(MINIAPP)) {
-        const miniappOutputPath = path.resolve(rootDir, outputDir, MINIAPP);
-        devInfo.urls.miniapp = [miniappOutputPath];
-        console.log(
-          highlightPrint('  [Alibaba Miniapp] Use ali miniapp developer tools to open the following folder:'),
-        );
-        console.log('   ', chalk.underline.white(miniappOutputPath));
-        console.log();
-      }
+      MINIAPP_PLATFORMS.forEach((miniappPlatform) => {
+        if (targets.includes(miniappPlatform)) {
+          const miniappOutputPath = path.resolve(rootDir, outputDir, miniappPlatform);
+          devInfo.urls[miniappPlatform === MINIAPP ? 'miniapp' : platformMap[miniappPlatform].type] = [miniappOutputPath];
+          console.log(
+            highlightPrint(`  [${platformMap[miniappPlatform].name}] Use ${platformMap[miniappPlatform].name.toLowerCase()} developer tools to open the following folder:`),
+          );
+          console.log('   ', chalk.underline.white(miniappOutputPath));
+          console.log();
+        }
+      });
 
-      if (targets.includes(WECHAT_MINIPROGRAM)) {
-        const wechatOutputPath = path.resolve(rootDir, outputDir, WECHAT_MINIPROGRAM);
-        devInfo.urls.wechat = [wechatOutputPath];
-        console.log(
-          highlightPrint('  [WeChat MiniProgram] Use wechat miniprogram developer tools to open the following folder:'),
-        );
-        console.log('   ', chalk.underline.white(wechatOutputPath));
-        console.log();
-      }
-
-      if (targets.includes(BYTEDANCE_MICROAPP)) {
-        const bytedanceOutputPath = path.resolve(rootDir, outputDir, BYTEDANCE_MICROAPP);
-        devInfo.urls.bytedance = [bytedanceOutputPath];
-        console.log(
-          highlightPrint('  [Bytedance Microapp] Use bytedance microapp developer tools to open the following folder:'),
-        );
-        console.log('   ', chalk.underline.white(bytedanceOutputPath));
-        console.log();
-      }
+      const appConfig = getValue('staticConfig');
+      const needGenerateMultipleManifest = pha && !appConfig.tabBar;
       if (targets.includes(WEB)) {
         devInfo.urls.web = [];
         console.log(highlightPrint('  [Web] Development server at: '));
@@ -165,21 +151,18 @@ module.exports = function (api) {
             const entryPath = webMpa ? `${entryKey}${web.ssr ? '' : '.html'}` : '';
             const lanUrl = `${urlPrefix}/${entryPath}`;
             devInfo.urls.web.push(lanUrl);
-            showLocalUrl && console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}${entryPath}`)}`);
             console.log(`  ${chalk.underline.white(lanUrl)}`);
-            console.log();
             if (shouldOpenBrowser && openEntries.includes(entryKey)) {
-              openBrowser(`${urls.localUrlForBrowser}${entryPath}`);
+              openBrowser(lanUrl);
             }
           });
         } else {
           devInfo.urls.web.push(`${urlPrefix}/`);
-          console.log(`  ${chalk.underline.white(`${urls.localUrlForBrowser}`)}`);
           console.log(`  ${chalk.underline.white(`${urlPrefix}/`)}`);
           console.log();
 
           if (shouldOpenBrowser) {
-            openBrowser(`${urls.localUrlForBrowser}`);
+            openBrowser(`${urlPrefix}/`);
           }
         }
       }
@@ -198,7 +181,7 @@ module.exports = function (api) {
         krakenEntryKeys.forEach((entryKey) => {
           const krakenURL = `${urlPrefix}/kraken/${krakenMpa ? entryKey : 'index'}.js`;
           devInfo.urls.kraken.push(krakenURL);
-          console.log(`  ${chalk.underline.white(`kraken -u ${krakenURL}`)}`);
+          console.log(`  ${chalk.underline.white(`kraken ${krakenURL}`)}`);
           console.log();
         });
       }
@@ -217,15 +200,27 @@ module.exports = function (api) {
         });
       }
 
+      /**
+       * @TODO: Delete it first, and then open it after the PHA supports it
+       */
       if (pha) {
-        // Use PHA App to scan ip address (mobile phone can't visit localhost).
         console.log(highlightPrint('  [PHA] Development server at: '));
-        const manifestUrl = `${urlPrefix}/manifest.json?pha=true`;
-        devInfo.urls.pha = [manifestUrl];
-        console.log(`  ${chalk.underline.white(manifestUrl)}`);
-        console.log();
-        qrcode.generate(manifestUrl, { small: true });
-        console.log();
+        if (needGenerateMultipleManifest) {
+          const devUrls = applyMethod('rax.getPHADevUrls');
+          devInfo.urls.pha = devUrls;
+          devUrls.forEach((url) => {
+            console.log(`  ${chalk.underline.white(url)}`);
+          });
+          console.log();
+        } else {
+          // Use PHA App to scan ip address (mobile phone can't visit localhost).
+          const manifestUrl = `${urlPrefix}/manifest.json?pha=true`;
+          devInfo.urls.pha = [manifestUrl];
+          console.log(`  ${chalk.underline.white(manifestUrl)}`);
+          console.log();
+          qrcode.generate(manifestUrl, { small: true });
+          console.log();
+        }
       }
 
       devInfo.compiledTime = Date.now();

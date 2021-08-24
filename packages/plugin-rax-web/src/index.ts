@@ -36,14 +36,8 @@ export default (api) => {
     validation: 'object',
   });
 
-  // Set Entry
-  setEntry(chainConfig, context);
-  registerTask(target, chainConfig);
-  // Set global methods
-  setRegisterMethod(api);
-
   if (webConfig.pha) {
-    // Modify mpa config
+    // Modify mpa config must before than set entry, because entry check depends on mpa config
     modifyUserConfig(() => {
       if (!context.userConfig.web) context.userConfig.web = {};
       context.userConfig.web.mpa = true;
@@ -51,6 +45,12 @@ export default (api) => {
       return context.userConfig;
     });
   }
+
+  // Set Entry
+  setEntry(chainConfig, context);
+  registerTask(target, chainConfig);
+  // Set global methods
+  setRegisterMethod(api);
 
   if (documentPath) {
     setLocalBuilder(api, documentPath);
@@ -62,19 +62,17 @@ export default (api) => {
     setLocalBuilder(api);
   }
 
-  onGetWebpackConfig(target, (config) => {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { rootDir, command, userConfig } = context;
-    const { outputDir } = userConfig;
-    const staticConfig = getValue('staticConfig');
-
-    // Set output dir
-    const outputPath = path.resolve(rootDir, outputDir, target);
-    config.output.path(outputPath);
-
+  onGetWebpackConfig((config) => {
+    const { command } = context;
     if (command === 'start') {
       setDev(config);
     }
+  });
+
+  onGetWebpackConfig(target, (config) => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const { rootDir, command } = context;
+    const staticConfig = getValue('staticConfig');
 
     config.plugin('document').use(DocumentPlugin, [
       {
@@ -82,11 +80,7 @@ export default (api) => {
         staticConfig,
         documentPath,
         pages: webConfig.mpa ? [] : [
-          {
-            entryName: 'index',
-            entryPath: getAppEntry(rootDir),
-            path: '/',
-          },
+          getAppEntry(rootDir),
         ],
       },
     ]);
@@ -114,11 +108,25 @@ export default (api) => {
         }),
       });
     }
+
+    if (command === 'start') {
+      const webEntries = config.entryPoints.entries();
+      Object.keys(webEntries).forEach((entryName) => {
+        const entrySet = config.entry(entryName);
+        const entryFiles = entrySet.values();
+        const finalEntryFile = entryFiles[entryFiles.length - 1];
+        // Add webpack hot dev client
+        entrySet.prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
+        // Add module.hot.accept() to entry
+        entrySet.add(`${require.resolve('./Loaders/hmr-loader')}!${finalEntryFile}`);
+        entrySet.delete(finalEntryFile);
+      });
+    }
   });
 };
 
 function getAbsolutePath(filepath: string): string | undefined {
-  const targetExt = ['.tsx', '.jsx'].find((ext) => fs.existsSync(`${filepath}${ext}`));
+  const targetExt = ['.tsx', '.jsx', '.js'].find((ext) => fs.existsSync(`${filepath}${ext}`));
   if (targetExt) {
     return `${filepath}${targetExt}`;
   }

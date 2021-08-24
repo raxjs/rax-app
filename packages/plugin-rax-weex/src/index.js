@@ -1,4 +1,3 @@
-const path = require('path');
 const setMPAConfig = require('@builder/mpa-config');
 const { getMpaEntries } = require('@builder/app-helpers');
 const setEntry = require('./setEntry');
@@ -7,7 +6,7 @@ const WeexFrameworkBannerPlugin = require('./WeexFrameworkBannerPlugin');
 
 module.exports = (api) => {
   const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
-  const { userConfig, rootDir, command } = context;
+  const { userConfig, command } = context;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
@@ -33,7 +32,7 @@ module.exports = (api) => {
   });
 
   onGetWebpackConfig(target, (config) => {
-    const { outputDir = 'build', weex = {} } = userConfig;
+    const { weex = {} } = userConfig;
     const staticConfig = getValue('staticConfig');
     // set mpa config
     if (weex.mpa) {
@@ -48,17 +47,11 @@ module.exports = (api) => {
       });
     }
 
-    let outputPath;
     if (command === 'start') {
-      // Set output dir
-      outputPath = path.resolve(rootDir, outputDir);
-      config.devServer.contentBase(outputPath);
-      config.output.filename(`${target}/[name].js`);
-    } else if (command === 'build') {
-      // Set output dir
-      outputPath = path.resolve(rootDir, outputDir, target);
+      // Add webpack hot dev client
+      Object.keys(config.entryPoints.entries()).forEach((entryName) => {
+        config.entry(entryName).prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
+      });
     }
-
-    config.output.path(outputPath);
   });
 };

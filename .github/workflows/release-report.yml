@@ -1,0 +1,24 @@
+name: ci
+on:
+  release:
+    types:
+      - created
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.x
+          registry-url: https://registry.npmjs.org
+      - name: Set branch name
+        run: echo >>$GITHUB_ENV BRANCH_NAME=${GITHUB_REF#refs/heads/}
+      - name: Output branch name
+        run: echo ${BRANCH_NAME}
+      - run: npm install
+      - name: Publish And Notify
+        run: npm run release
+        env:
+          DING_WEBHOOK: ${{secrets.DING_WEBHOOK}}

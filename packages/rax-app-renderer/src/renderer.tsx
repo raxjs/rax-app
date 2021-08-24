@@ -1,6 +1,5 @@
 /* eslint-disable */
-import { render, createElement, useEffect, useState, Fragment, useLayoutEffect } from 'rax';
-import { createNavigation, createTabBar } from 'create-app-container';
+import { render, createElement, useState, Fragment, useLayoutEffect, useEffect } from 'rax';
 import { createUseRouter } from 'create-use-router';
 import { isWeb, isWeex, isKraken, isNode } from 'universal-env';
 import UniversalDriver from 'driver-universal';
@@ -9,26 +8,19 @@ import { setInitialData } from './initialData';
 import parseSearch from './parseSearch';
 
 const useRouter = createUseRouter({ useState, useLayoutEffect });
-
-let AppNavigation;
-let TabBar;
-
-if (isWeb) {
-  AppNavigation = createNavigation({ createElement, useEffect, useState, Fragment });
-} else {
-  TabBar = createTabBar({ createElement, useEffect, useState, Fragment });
-}
+const tabBarCache = {};
 
 let driver = UniversalDriver;
+let AppTabBar;
 
 function _isNullableComponent(component) {
-  return !component || Array.isArray(component) && component.length === 0;
+  return !component || (Array.isArray(component) && component.length === 0);
 }
 
 function _matchInitialComponent(fullpath, routes) {
   let initialComponent = null;
   for (let i = 0, l = routes.length; i < l; i++) {
-    if (fullpath === routes[i].path || routes[i].regexp && routes[i].regexp.test(fullpath)) {
+    if (fullpath === routes[i].path || (routes[i].regexp && routes[i].regexp.test(fullpath))) {
       initialComponent = routes[i].component;
       if (typeof initialComponent === 'function') initialComponent = initialComponent();
       break;
@@ -38,30 +30,71 @@ function _matchInitialComponent(fullpath, routes) {
   return Promise.resolve(initialComponent);
 }
 
+function checkNeedTabBar(staticConfig, history): boolean {
+  const current = history.location.pathname;
+  if (tabBarCache[current] !== undefined) return tabBarCache[current];
+  return (tabBarCache[current] =
+    AppTabBar !== undefined &&
+    staticConfig.tabBar?.items.some(({ pageName, path }) => {
+      if (!pageName) {
+        pageName = path;
+      }
+      return pageName === current;
+    }));
+}
+
+function TabBarWrapper({ history, tabBarConfig, children }) {
+  const [currentPageName, setCurrentPageName] = useState(history.location.pathname);
+
+  // Listen history pathname change
+  useEffect(() => {
+    const unListen = history.listen((location) => {
+      setCurrentPageName(location.pathname);
+    });
+
+    // remove listener
+    return () => {
+      unListen();
+    };
+  }, []);
+
+  const tabBarProps = {
+    config: tabBarConfig,
+    currentPageName: currentPageName,
+    onClick(item) {
+      history.push(item.pageName);
+    },
+  };
+
+  return (
+    <Fragment>
+      {children}
+      <AppTabBar {...tabBarProps} />
+    </Fragment>
+  );
+}
+
 function App(props) {
   const { staticConfig, history, routes, InitialComponent, pageInitialProps } = props;
   let PageComponent;
   if (isNode) {
     PageComponent = InitialComponent;
   } else {
-    PageComponent = useRouter(() => ({ history, routes, InitialComponent })).component;
+    PageComponent = useRouter({ history, routes, InitialComponent }).component;
   }
   // Return null directly if not matched
   if (_isNullableComponent(PageComponent)) return null;
-
-  if (isWeb) {
-    const navigationProps = { staticConfig, component: PageComponent, history, location: history.location, routes, ...pageInitialProps };
-    return <AppNavigation {...navigationProps} />;
-  }
-
   const pageProps = { history, location: history.location, ...pageInitialProps };
-  const tabBarProps = { history, config: staticConfig.tabBar };
-  return (
-    <Fragment>
-      <PageComponent {...pageProps} />
-      <TabBar {...tabBarProps} />
-    </Fragment>
-  );
+
+  // Add TabBar
+  if (checkNeedTabBar(staticConfig, history)) {
+    return (
+      <TabBarWrapper history={history} tabBarConfig={staticConfig.tabBar}>
+        <PageComponent {...pageProps} />
+      </TabBarWrapper>
+    );
+  }
+  return <PageComponent {...pageProps} />;
 }
 
 function raxAppRenderer(options) {
@@ -79,14 +112,7 @@ function raxAppRenderer(options) {
 }
 
 async function renderInClient(options) {
-  const {
-    appConfig,
-    buildConfig,
-    createBaseApp,
-    emitLifeCycles,
-    pathRedirect,
-    staticConfig,
-  } = options;
+  const { appConfig, buildConfig, createBaseApp, emitLifeCycles, pathRedirect, staticConfig } = options;
 
   const context: IContext = {};
   // ssr enabled and the server has returned data
@@ -98,22 +124,18 @@ async function renderInClient(options) {
     const query = parseSearch(search);
     const initialContext = {
       pathname,
-      query
+      query,
     };
     context.initialData = await appConfig.app.getInitialData(initialContext);
   }
 
-  const {
-    runtime,
-    appConfig: appDynamicConfig,
-    history,
-  } = createBaseApp(appConfig, buildConfig, context);
+  const { runtime, appConfig: appDynamicConfig, history } = createBaseApp(appConfig, buildConfig, context);
 
   setInitialData(context.initialData);
 
   const initialContext: IInitialContext = {
     pathname: '',
-    query: {}
+    query: {},
   };
 
   // Set custom driver
@@ -126,59 +148,65 @@ async function renderInClient(options) {
   // Like https://xxx.com?_path=/page1, use `_path` to jump to a specific route.
   pathRedirect(history, routes);
 
-  return _matchInitialComponent(history.location.pathname, routes)
-    .then(async (InitialComponent) => {
-      const initialComponent = InitialComponent();
-      if (!context.pageInitialProps && initialComponent.getInitialProps) {
-        context.pageInitialProps = await initialComponent.getInitialProps(initialContext);
-      }
-      const props = {
-        staticConfig,
-        history,
-        routes,
-        InitialComponent,
-        pageInitialProps: context.pageInitialProps
-      };
+  return _matchInitialComponent(history.location.pathname, routes).then(async (InitialComponent) => {
+    const initialComponent = InitialComponent();
+    if (!context.pageInitialProps && initialComponent.getInitialProps) {
+      context.pageInitialProps = await initialComponent.getInitialProps(initialContext);
+    }
+    const props = {
+      staticConfig,
+      history,
+      routes,
+      InitialComponent,
+      pageInitialProps: context.pageInitialProps,
+    };
 
-      const { app = {} } = appDynamicConfig;
-      const { rootId } = app;
+    const { app = {} } = appDynamicConfig;
+    const { rootId } = app;
 
-      const appInstance = getRenderAppInstance(runtime, props, options);;
+    const appInstance = getRenderAppInstance(runtime, props, options);
+    // Emit app launch cycle
+    emitLifeCycles();
 
-      // Emit app launch cycle
-      emitLifeCycles();
-
-      const rootEl = isWeex || isKraken ? null : document.getElementById(rootId);
-      if (isWeb && rootId === null) console.warn('Error: Can not find #root element, please check which exists in DOM.');
-      const webConfig = buildConfig.web || {};
-      return render(
-        appInstance,
-        rootEl,
-        { driver, hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr },
-      );
-    });
+    const rootEl = isWeex || isKraken ? null : document.getElementById(rootId);
+    if (isWeb && rootId === null) console.warn('Error: Can not find #root element, please check which exists in DOM.');
+    const webConfig = buildConfig.web || {};
+    return render(appInstance, rootEl, { driver, hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr });
+  });
 }
 
 export function getRenderAppInstance(runtime, props, options) {
-  const { ErrorBoundary, appConfig = {} } = options;
-  const { ErrorBoundaryFallback, onErrorBoundaryHander, errorBoundary } = appConfig.app || {};
+  const { ErrorBoundary, TabBar, appConfig = {} } = options;
+  const { ErrorBoundaryFallback, onErrorBoundaryHander, onErrorBoundaryHandler, errorBoundary } = appConfig.app || {};
+  AppTabBar = TabBar;
   const AppProvider = runtime?.composeAppProvider?.();
   const RootComponent = () => {
     if (AppProvider) {
       return (
-        <AppProvider><App {...props} /></AppProvider>
+        <AppProvider>
+          <App {...props} />
+        </AppProvider>
       );
     }
     return <App {...props} />;
   };
   const Root = <RootComponent />;
 
+  if (process.env.NODE_ENV === 'development') {
+    if (onErrorBoundaryHandler) {
+      console.error('Please use onErrorBoundaryHandler instead of onErrorBoundaryHander');
+    }
+  }
+
   if (errorBoundary && ErrorBoundary) {
-    return (<ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHander}>{Root}</ErrorBoundary>);
+    return (
+      <ErrorBoundary Fallback={ErrorBoundaryFallback} onError={onErrorBoundaryHandler || onErrorBoundaryHander}>
+        {Root}
+      </ErrorBoundary>
+    );
   } else {
     return Root;
   }
 }
 
 export default raxAppRenderer;
-

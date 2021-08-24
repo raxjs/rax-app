@@ -24,12 +24,35 @@ const retainKeys = [
   'links',
   'scripts',
   'offlineResources',
+  'packageResources',
   'manifestPrefetchExpires',
   'manifestPrefetchMaxAge',
+  'maxAge',
+  'expires',
   'queryParamsPassKeys',
   'queryParamsPassIgnoreKeys',
   'splashViewTimeout',
   'swiperThreshold',
+  'requestHeaders',
+  'enablePoplayer',
+  'disableCapture',
+  'enablePullRefresh',
+  'pullRefreshBackgroundColor',
+  'pullRefreshColorScheme',
+  'pullRefresh',
+];
+
+// do not decamelize list
+const camelizeKeys = [
+  'appKey',
+  'dataType',
+  'valueType',
+  'isSec',
+  'LoginRequest',
+  'sessionOption',
+  'AntiCreep',
+  'AntiFlood',
+  'needLogin',
 ];
 
 // transform app config to decamelize
@@ -50,13 +73,21 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
     if (key === 'pageHeader') {
       key = 'tabHeader';
     }
-    const transformKey = decamelize(key);
+
+    let transformKey = key;
+    if (camelizeKeys.indexOf(key) === -1) {
+      transformKey = decamelize(key);
+    }
     if (key === 'window') {
       Object.assign(data, transformAppConfig(value, false));
     } else if (typeof value === 'string' || typeof value === 'number') {
       data[transformKey] = value;
     } else if (Array.isArray(value)) {
       data[transformKey] = value.map((item) => {
+        if (parentKey === 'tabBar' && item.text) {
+          item.name = item.text;
+          delete item.text;
+        }
         if (typeof item === 'object') {
           if (key === 'dataPrefetch' && !item.header) {
             // hack: No header will crash in Android
@@ -66,6 +97,8 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
         }
         return item;
       });
+    } else if (key === 'requestHeaders') { // keys of requestHeaders should not be transformed
+      data[transformKey] = value;
     } else if (typeof value === 'object' && !(parentKey === 'dataPrefetch' && (key === 'header' || key === 'data'))) {
       data[transformKey] = transformAppConfig(value, false, key);
     } else {
@@ -75,16 +108,8 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
   return data;
 }
 
-/*
- * change page info
- */
-function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inlineStyle, api }, page, manifest) {
-  const { applyMethod } = api;
-  const { source, name } = page;
-  if (!source && !name) {
-    return page;
-  }
-  const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
+function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
+  const { source, name, query_params = '' } = page;
   let entryName;
   if (name) {
     entryName = name;
@@ -93,30 +118,54 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
     const dir = pathPackage.dirname(source);
     entryName = pathPackage.parse(dir).name.toLocaleLowerCase();
   }
+  let pageUrl = '';
+  if (entryName) {
+    pageUrl = `${urlPrefix + entryName + urlSuffix}`;
+  }
+
+  if (pageUrl && query_params) {
+    pageUrl = `${pageUrl}?${query_params}`;
+  }
+
+  delete page.source;
+  return {
+    pageUrl,
+    entryName,
+  };
+}
+
+/*
+ * change page info
+ */
+function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inlineStyle, api }, page) {
+  const { applyMethod } = api;
+  const { source, name } = page;
+  if (!source && !name) {
+    return page;
+  }
+  const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
+  const { entryName, pageUrl } = getRealPageInfo({
+    urlPrefix,
+    urlSuffix,
+  }, page);
   if (entryName) {
     if (!page.path || !page.path.startsWith('http')) {
-      page.path = `${urlPrefix + entryName + urlSuffix}`;
+      page.path = pageUrl;
     }
 
     if (isTemplate) {
       if (custom) {
         page.document = document;
-
-        if (manifest.built_in_library) {
-          // remove when has document
-          delete manifest.built_in_library;
-        }
       } else {
         // add script and stylesheet
         page.script = `${cdnPrefix + entryName}.js`;
-        if (!inlineStyle) {
+        if (!inlineStyle || (typeof inlineStyle === 'object' && inlineStyle.forceEnableCSS)) {
           page.stylesheet = `${cdnPrefix + entryName}.css`;
         }
       }
     }
   }
 
-  delete page.source;
   return page;
 }
 
@@ -129,12 +178,17 @@ function setRealUrlToManifest(options, manifest) {
     return manifest;
   }
 
-  if (manifest.app_worker && manifest.app_worker.url) {
-    manifest.app_worker.url = cdnPrefix + manifest.app_worker.url;
+  const { app_worker, tab_bar, pages } = manifest;
+  if (app_worker && app_worker.url && !app_worker.url.startsWith('http')) {
+    app_worker.url = cdnPrefix + app_worker.url;
   }
 
-  if (manifest.pages && manifest.pages.length > 0) {
-    manifest.pages = manifest.pages.map((page) => {
+  if (tab_bar && tab_bar.source && !tab_bar.url) {
+    tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
+  }
+
+  if (pages && pages.length > 0) {
+    manifest.pages = pages.map((page) => {
       // has frames
       if (page.frames && page.frames.length > 0) {
         page.frames = page.frames.map((frame) => {
@@ -142,6 +196,9 @@ function setRealUrlToManifest(options, manifest) {
         });
       }
 
+      if (page.tab_header && page.tab_header.source) {
+        page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
+      }
       return changePageInfo(options, page, manifest);
     });
   }

@@ -8,8 +8,9 @@ export interface IEntryPluginOptions {
 }
 
 export interface IPageConfig {
-  path: string;
-  title?: string;
+  path?: string;
+  window?: any;
+  [key: string]: any;
 }
 
 export interface ILoaderQuery {
@@ -23,5 +24,5 @@ export interface ILoaderQuery {
   assetsProcessor?: string;
   pageConfig?: IPageConfig;
   doctype?: string;
-  injectServerSideData: boolean | string;
+  updateDataInClient: boolean | string;
 }

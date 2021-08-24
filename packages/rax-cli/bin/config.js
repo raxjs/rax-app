@@ -1,3 +1,13 @@
+/**
+ *
+ * @param {array} targets
+ * @returns {boolean}
+ */
+function checkIsMiniappPlatformIncluded(targets = []) {
+  const miniappPlatforms = ['miniapp', 'wechat-miniprogram'];
+  return targets.some((target) => miniappPlatforms.includes(target));
+}
+
 function getPromptQuestion(appTemplate) {
   const promptQuestion = [{
     type: 'list',
@@ -67,6 +77,46 @@ function getPromptQuestion(appTemplate) {
     },
   }, {
     type: 'list',
+    name: 'miniappComponentBuildType',
+    default: 'compile',
+    message: 'What\'s your component build type for miniapp ?',
+    when(answers) {
+      // 组件工程且 targets 包含小程序端时，提供用户选择编译时或者运行时的选项
+      if (answers.projectType === 'component' && checkIsMiniappPlatformIncluded(answers.targets)) {
+        return true;
+      }
+      return false;
+    },
+    choices: [
+      {
+        name: 'compile mode (high preformance, recommended)',
+        value: 'compile',
+      },
+      {
+        name: 'runtime mode (with no syntax constraints)',
+        value: 'runtime',
+      },
+    ],
+  }, {
+    type: 'list',
+    name: 'miniappPluginBuildType',
+    default: 'compile',
+    message: 'What\'s your plugin build type for miniapp ?',
+    when(answers) {
+      return answers.projectType === 'plugin';
+    },
+    choices: [
+      {
+        name: 'compile mode (high performance, support page/component/js api)',
+        value: 'compile',
+      },
+      {
+        name: 'runtime mode (with no syntax constraints, support page)',
+        value: 'runtime',
+      },
+    ],
+  }, {
+    type: 'list',
     name: 'appType',
     message: 'What\'s your application type? ',
     when(answers) {
@@ -93,6 +143,10 @@ function getPromptQuestion(appTemplate) {
         name: 'Web 单页应用',
         value: 'web-spa',
       },
+      {
+        name: '小程序云开发一体化应用',
+        value: 'midway-miniapp',
+      },
     ],
     default: 'web-mpa',
   }, {
@@ -100,7 +154,8 @@ function getPromptQuestion(appTemplate) {
     name: 'languageType',
     message: 'What type of language do you want to use?',
     when(answers) {
-      return (answers.projectType === 'app' || answers.projectType === 'component') && !appTemplate;
+      // midway-miniapp project doesn't support js template
+      return ((answers.projectType === 'app' && answers.appType !== 'midway-miniapp') || answers.projectType === 'component') && !appTemplate;
     },
     choices: [
       {

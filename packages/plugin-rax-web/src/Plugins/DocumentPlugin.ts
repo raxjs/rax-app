@@ -1,14 +1,23 @@
 import * as path from 'path';
 import * as Module from 'module';
 import * as cheerio from 'cheerio';
-import { registerListenTask } from '../utils/localBuildCache';
+import * as htmlparser2 from 'htmlparser2';
+import { getEntriesByRoute } from '@builder/app-helpers';
+import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
-import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
+import {
+  getInjectedHTML,
+  getBuiltInHtmlTpl,
+  insertCommonElements,
+  genComboedScript,
+} from '../utils/htmlStructure';
+import { setDocument } from '../utils/document';
 
 const PLUGIN_NAME = 'DocumentPlugin';
 const { RawSource } = webpackSources;
 export default class DocumentPlugin {
   options: any;
+  init: boolean;
   constructor(options) {
     this.options = options;
   }
@@ -18,23 +27,31 @@ export default class DocumentPlugin {
       staticConfig,
       api: {
         context: {
-          userConfig: { web = {} },
+          userConfig: { web: webConfig },
+          rootDir,
         },
       },
       documentPath,
       insertScript,
     } = this.options;
+    const { mpa, doctype = '<!DOCTYPE html>', ssr } = webConfig || {};
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
     const publicPath = this.options.publicPath || compiler.options.output.publicPath;
-    const doctype = web.doctype || '<!DOCTYPE html>';
     insertCommonElements(staticConfig);
 
     let localBuildTask = registerListenTask();
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, async (compilation, callback) => {
-      localBuildTask.then((localBuildAssets) => {
-        // update local build task
-        localBuildTask = registerListenTask();
+      const enableStatus: boolean = getEnableStatus();
+      if (enableStatus) {
+        updateEnableStatus(false);
+        localBuildTask.then(emitAssets).then(() => {
+          localBuildTask = registerListenTask();
+        });
+      } else {
+        emitAssets(getAssets());
+      }
+      function emitAssets(localBuildAssets) {
         const injectedHTML = getInjectedHTML();
         if (insertScript) {
           injectedHTML.scripts.push(`<script>${insertScript}</script>`);
@@ -44,27 +61,54 @@ export default class DocumentPlugin {
           const assets = getAssetsForPage(buildResult, publicPath);
           const title = getTitleByStaticConfig(staticConfig, {
             entryName,
-            mpa: web.mpa,
+            mpa,
+            rootDir,
           });
           let html = '';
+          // PHA will consume document field
+          let customDocument;
           if (documentPath && localBuildAssets[`${entryName}.js`]) {
             const bundleContent = localBuildAssets[`${entryName}.js`].source();
             const mod = exec(bundleContent, entryPath);
-            html = mod.renderPage(assets, {
-              doctype,
-              title,
-              pagePath,
-            });
-            const $ = cheerio.load(html, { decodeEntities: false });
-            $('head').append(injectedHTML.scripts);
-            html = $.html();
+
+            try {
+              html = mod.renderPage(assets, {
+                doctype,
+                title,
+                pagePath,
+              });
+            } catch (error) {
+              compilation.errors.push(error);
+              throw new Error(error.message);
+            }
+
+            const parserOptions = { decodeEntities: false };
+            const $ = cheerio.load(htmlparser2.parseDOM(html, parserOptions), parserOptions);
+            if (injectedHTML.comboScripts.length) {
+              // Insert comboed script
+              $('#root').after([genComboedScript(injectedHTML.comboScripts), ...injectedHTML.scripts]);
+              html = $.html();
+              // Remove comboed script and insert decomboed scripts
+              $('.__combo_script__').replaceWith(injectedHTML.comboScripts.map(({ script }) => script));
+              customDocument = $.html();
+            } else {
+              $('#root').after(injectedHTML.scripts);
+              html = $.html();
+              customDocument = html;
+            }
           } else {
-            let initialHTML = '';
+            let initialHTML;
 
             if (localBuildAssets[`${entryName}.js`]) {
               const bundleContent = localBuildAssets[`${entryName}.js`].source();
               const mod = exec(bundleContent, entryPath);
-              initialHTML = mod.renderPage();
+
+              try {
+                initialHTML = mod.renderPage();
+              } catch (error) {
+                compilation.errors.push(error);
+                throw new Error(error.message);
+              }
             }
 
             html = getBuiltInHtmlTpl({
@@ -75,31 +119,28 @@ export default class DocumentPlugin {
               initialHTML,
               spmA: staticConfig.spm,
               spmB: spm,
-            });
+            }, ssr);
           }
+
+          setDocument(entryName, customDocument);
 
           compilation.assets[`${entryName}.html`] = new RawSource(html);
         });
 
         callback();
-      });
+      }
     });
   }
 }
 
-function getTitleByStaticConfig(staticConfig, { entryName, mpa }): string {
+function getTitleByStaticConfig(staticConfig, { entryName, mpa, rootDir }): string {
   if (!mpa) return staticConfig.window?.title;
-  const route = staticConfig.routes.find(({ source, name }) => {
-    let pageEntry;
-    if (name) {
-      pageEntry = name;
-    } else if (source) {
-      const dir = path.dirname(source);
-      pageEntry = path.parse(dir).name.toLocaleLowerCase();
-    }
-    return pageEntry === entryName;
-  });
-  return route.window?.title || staticConfig.window?.title;
+  const route = staticConfig.routes
+    .reduce((prev, curr) => {
+      return [...prev, ...getEntriesByRoute(curr, rootDir)];
+    }, [])
+    .find(({ entryName: pageEntry }) => pageEntry === entryName);
+  return route?.window?.title || staticConfig.window?.title;
 }
 
 /**

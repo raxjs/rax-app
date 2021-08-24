@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
-const { platformMap } = require('miniapp-builder-shared');
+const { constants: { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM }, platformMap } = require('miniapp-builder-shared');
 const { setConfig } = require('miniapp-runtime-config');
 const {
   setAppConfig: setAppCompileConfig,
@@ -13,11 +13,19 @@ const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR } = require('./constant
 module.exports = (api) => {
   const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
   const { userConfig } = context;
-  const { targets, inlineStyle } = userConfig;
+  const { targets, inlineStyle, vendor } = userConfig;
+
+  const miniappStandardList = [
+    MINIAPP,
+    WECHAT_MINIPROGRAM,
+    BYTEDANCE_MICROAPP,
+    BAIDU_SMARTPROGRAM,
+    KUAISHOU_MINIPROGRAM,
+  ];
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   targets.forEach((target) => {
-    if (['miniapp', 'wechat-miniprogram', 'bytedance-microapp'].includes(target)) {
+    if (miniappStandardList.includes(target)) {
       const chainConfig = getWebpackBase(api, {
         target,
         babelConfigOptions: { styleSheet: inlineStyle, disableRegenerator: true },
@@ -43,19 +51,17 @@ module.exports = (api) => {
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const { rootDir, userConfig } = context;
         const { outputDir = 'build' } = userConfig;
-        // Set output dir
+        // Get output dir
         const outputPath = path.resolve(rootDir, outputDir, target);
-        config.output.path(outputPath);
 
         const needCopyDirs = [];
 
-        // Copy src/miniapp-native dir
-        if (fs.existsSync(path.resolve(rootDir, 'src', 'miniapp-native'))) {
-          needCopyDirs.push({
-            from: path.resolve(rootDir, 'src', 'miniapp-native'),
-            to: path.resolve(rootDir, outputDir, target, 'miniapp-native'),
-          });
-        }
+        // Copy miniapp-native dir
+        needCopyDirs.push({
+          from: '**/miniapp-native/**',
+          to: path.resolve(rootDir, outputDir, target),
+          context: path.resolve(rootDir, 'src'),
+        });
 
         // Copy public dir
         if (config.plugins.has('CopyWebpackPlugin')) {
@@ -74,6 +80,53 @@ module.exports = (api) => {
             entryPath: './src/app',
           });
         } else {
+          const { subPackages, disableCopyNpm = true } = userConfig[target] || {};
+          if (vendor && subPackages) {
+            const { shareMemory } = subPackages;
+            const originalSplitChunks = config.optimization.get('splitChunks');
+            const { vendor: originalVendor = {} } = originalSplitChunks.cacheGroups || {};
+
+            if (shareMemory) {
+              config.optimization.runtimeChunk({ name: 'webpack-runtime' });
+            }
+            config.optimization.splitChunks({
+              ...originalSplitChunks,
+              cacheGroups: {
+                ...originalSplitChunks.cacheGroups,
+                vendor: {
+                  ...originalVendor,
+                  chunks: 'all',
+                  name: 'vendors',
+                  minChunks: 2,
+                  test({ context: filepath }) {
+                    // If shareMemory is true, every common files should be splited to vendors.js
+                    if (shareMemory) {
+                      return true;
+                    }
+                    if (typeof originalVendor.test === 'function') {
+                      return originalVendor.test(filepath);
+                    }
+                    if (originalVendor.test instanceof RegExp) {
+                      return originalVendor.test.test(filepath);
+                    }
+                    if (typeof originalVendor.test === 'string') {
+                      return new RegExp(originalVendor.test).test(filepath);
+                    }
+                    return false;
+                  },
+                },
+              },
+            });
+            if (config.plugins.has('MiniCssExtractPlugin')) {
+              config.plugin('MiniCssExtractPlugin').tap((options) => [
+                {
+                  ...options[0],
+                  ignoreOrder: true,
+                },
+              ]);
+            }
+          }
+
           setConfig(config, {
             api,
             target,
@@ -95,7 +148,7 @@ module.exports = (api) => {
 
             setComponentCompileConfig(
               compiledComponentsChainConfig,
-              { disableCopyNpm: true },
+              { disableCopyNpm },
               {
                 target,
                 context,

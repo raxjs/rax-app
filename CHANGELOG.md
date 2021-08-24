@@ -1,5 +1,127 @@
 ## Changelog
 
+## 3.6.5
+
+- Fix: mpa entries
+- Fix: tabbar state update
+- Feat: support release report
+- Fix: throw document build error
+
+## 3.6.4
+
+- Fix: store file check
+- Fix: ssr inline style
+
+## 3.6.3
+
+- Feat: use outline css with inlineStyle: true
+- Chore: optimize dev url
+- Fix: store types
+- Fix: doctype is null
+- Fix: use PROJECT_TYPE to get the store file path
+
+## 3.6.2
+
+- Fix: tabBar height in iphoneX
+
+## 3.6.1
+
+- Feat: transform static node to html tag directly
+- Refactor: conditional inject SPA tabBar
+- Chore: optimize `devServer.contentBase` and `output.path` logic
+- Chore: optimize hot reload experience
+- Chore: optimize https cert generate logic
+- Fix: print `devServer.host` in console higher priority
+- Fix: read file content from compiler memfs
+- Fix: `No loader specified` error reported by webpack when set `postcssrc` to true in ssr scene
+
+## 3.6.0
+
+- Feat: support package.json `exports` field with webpack4
+- Feat: support bytedance microapp/ baidu smartprogram/kuaishou miniprogram
+- Feat: support default TabBar in MPA
+- Feat: support query is `csr=true`  with request path end is `.html`, devServer will return CSR result
+- Fix: `tschecker` error with default template
+
+## 3.5.3 (May 12 2021)
+
+- Feat: support use build-plugin-rax-miniapp to config baidu/kuaishou miniapp
+- Chore: change web.template to web.pha.template
+- Chore: add builtInLibaray: false
+- Fix: errorBoundary type define
+
+## 3.5.2 (May 11 2021)
+
+- Feat: support judge bytedance/baidu/kuaishou miniapp env
+
+## 3.5.1 (April 29 2021)
+
+- Feat: support pass `props.pageConfig` to page component
+- Feat: throw error when not using the BrowserRouter
+- Chore: `errorBoundary` default value changed to `true`
+
+## 3.5.0 (April 15 2021)
+
+- Feat: support custom tabbar in MPA
+- Fix: check store file fail in Windows
+- Chore: compatible with app.tsx export default some component
+
+## 3.4.11 (April 1 2021)
+
+- Fix: miniapp vendor test
+## 3.4.10 (March 31 2021)
+
+- Feat: support set dataPrefetch for every single page in PHA
+- Feat: support share memory in every common files with miniapp subpackages
+- Fix: csr html structure error with xtpl
+
+## 3.4.9 (March 25 2021)
+
+ - Feat: add --analyzer-target=web to avoid port conflict with multiple task
+ - Feat: support build tabbar html when configured source in tabbar for PHA
+ - Chore: change injectServerSideData to updateDataInClient
+ - Chore: remove print local url in console
+ - Fix: alibaba miniapp subPackages error
+
+## 3.4.8 (March 23 2021)
+
+- Feat: support share memory with subpackages
+- Chore: reduce miniapp size with subPackages
+- Fix: windows error with document
+
+## 3.4.7 (March 19 2021)
+
+- Fix: rax render won't override original content with initialHTML is undefined
+
+## 3.4.6 (March 18 2021)
+
+- Chore: invalid version
+
+### 3.4.5 (March 18 2021)
+
+- Chore: ensure builtin scripts load order
+- Chore: remove comment node without ssr
+
+### 3.4.4 (March 17 2021)
+
+- Chore: update typescript/ts-loader version
+- Fix: pha dev mode error without pha-worker.js
+- Refactor: ssr html parser
+
+### 3.4.3 (March 12 2021)
+
+- Chore: upgrade less && less-loader
+- Fix: web dev server content base
+- Fix: ssr search default value
+
+### 3.4.2 (March 09 2021)
+
+- Feat: support multiple pages in PHA
+- Fix: SPA with document is invalid
+- Fix: document dev shouldn't block when hot reload
+- Fix: `.ts` file won't add babel JSX compiler
+- Chore: dev server should be applied to every webpack config
+
 ### 3.4.1 (March 04 2021)
 
 - Chore: update sass-loader
@@ -39,7 +161,7 @@
 
 ### 3.2.1 (December 25 2020)
 
-- Chore: `compileDependencies` default value is `['']`. 
+- Chore: `compileDependencies` default value is `['']`.
 
 ### 3.2.0 (December 24 2020)
 
@@ -73,7 +195,7 @@ For v3.1.1 patch version.
 
 ### 3.0.9 (November 23, 2020)
 
-- Feat: support CSS Modules.([#488](https://github.com/raxjs/rax-app/pull/488)) 
+- Feat: support CSS Modules.([#488](https://github.com/raxjs/rax-app/pull/488))
 - Refactor: change mpa entry to `.rax` temp dir.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3825))
 - Fix: user couldn't custom `outputDir`.([#494](https://github.com/raxjs/rax-app/pull/494))
 - Feat: support config `sourceMap` and `minify` when dev mode.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3835) [raxjs/miniapp](https://github.com/raxjs/miniapp/pull/45))

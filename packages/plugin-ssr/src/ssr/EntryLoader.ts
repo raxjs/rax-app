@@ -11,6 +11,7 @@ function addExport(code) {
     render,
     renderToHTML,
     renderWithContext,
+    renderToHTMLWithContext
   };`;
 }
 
@@ -23,7 +24,8 @@ function addImportDocument(code, documentPath) {
 
 function addImportPageComponent(resourcePath, pageConfig) {
   return `import Page from '${formatPath(resourcePath)}';
-  Page.__pageConfig = ${JSON.stringify(pageConfig)};`;
+  Page.__pageConfig = ${JSON.stringify(pageConfig)};
+  `;
 }
 
 function addRunAppDependencies(resourcePath, tempPath) {
@@ -41,9 +43,7 @@ function addDefineInitialPage() {
   const routes = staticConfig.routes;
   const route = routes.find(({ path }) => path === pathname);
   const Page = route.component();
-  Page.__pageConfig = {
-    title: route.window && route.window.title,
-  };
+  Page.__pageConfig = route;
   `;
 }
 
@@ -59,12 +59,13 @@ export default function () {
   const appConfigPath = path.join(query.tempPath, 'appConfig.ts');
   query.useRunApp = query.useRunApp === 'true';
   query.needInjectStyle = query.needInjectStyle === 'true';
-  query.injectServerSideData = query.injectServerSideData === 'true';
+  query.updateDataInClient = query.updateDataInClient === 'true';
   let code = `
     import Generator from '@builder/html-generator';
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
     import staticConfig from '${formatPath(path.join(query.tempPath, 'staticConfig.ts'))}';
+    import TabBar from '${formatPath(path.join(query.tempPath, 'TabBar'))}';
     import { getAppConfig } from '${formatPath(appConfigPath)}';
     ${
   query.useRunApp
@@ -91,6 +92,13 @@ export default function () {
       const { initialData, htmlTemplate, chunkInfo } = options;
       ${query.useRunApp ? addDefineInitialPage() : ''}
       const html = await renderComponentToHTML(Page, { req, res }, initialData, htmlTemplate, chunkInfo);
+      return html;
+    }
+
+    async function renderToHTMLWithContext(ctx, options = {}) {
+      const { initialData, htmlTemplate, chunkInfo } = options;
+      ${query.useRunApp ? addDefineInitialPage() : ''}
+      const html = await renderComponentToHTML(Page, ctx, initialData, htmlTemplate, chunkInfo);
       return html;
     }
 

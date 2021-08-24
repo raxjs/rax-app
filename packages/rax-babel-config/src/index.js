@@ -91,7 +91,7 @@ module.exports = (userOptions = {}) => {
     });
 
     if (logOnce) {
-      console.log(chalk.green('JSX+ enabled, documentation: https://rax.js.org/docs/guide/jsxplus'));
+      console.log(chalk.green('JSX+ enabled, documentation: https://rax.js.org/docs/guide/component'));
       logOnce = false;
     }
   }
@@ -99,7 +99,15 @@ module.exports = (userOptions = {}) => {
   if (styleSheet) {
     configArr.push({
       plugins: [
-        [require.resolve('babel-plugin-transform-jsx-stylesheet'), { retainClassName: true }],
+        [
+          require.resolve('babel-plugin-transform-jsx-stylesheet'),
+          {
+            retainClassName: true,
+            // enable `forceEnableCSS`
+            // skip jsx attribute convert when use css module
+            forceEnableCSS: styleSheet.forceEnableCSS,
+          },
+        ],
       ],
     });
   }

@@ -3,5 +3,7 @@
   "web": {
     "pha": true
   },
-  "inlineStyle": true
+  "inlineStyle": {
+    "forceEnableCSS": true
+  }
 }

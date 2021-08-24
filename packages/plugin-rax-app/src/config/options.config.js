@@ -7,4 +7,8 @@ module.exports = {
     module: false,
     commands: ['start'],
   },
+  'analyzer-target': {
+    module: require.resolve('../cliOptions/analyzerTarget'),
+    commands: ['start', 'build'],
+  },
 };

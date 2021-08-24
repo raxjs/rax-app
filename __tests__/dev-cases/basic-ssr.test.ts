@@ -14,7 +14,7 @@ describe('should start web devServer: ', () => {
     const res = await setupBrowser({ port, defaultHtml: 'home.html' });
     page = res.page;
     browser = res.browser;
-    expect(await page.$$text('.title')).toStrictEqual(['Welcome to Your Rax App with SSR']);
+    expect(await page.$$text('#title')).toStrictEqual(['Welcome to Your Rax App with SSR']);
   }, 120000);
 
   test('open /about', async () => {

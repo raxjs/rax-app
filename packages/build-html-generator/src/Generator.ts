@@ -1,5 +1,5 @@
-import { IGeneratorOptions } from './types';
 import Node from './Node';
+import RootNode from './RootNode';
 import wrapFunc from './wrapFunc';
 
 const TITLE_REG_EXP = /(<title.*?>)([\S\s]*?)(<\/title>)/;
@@ -8,10 +8,9 @@ const BODY_REG_EXP = /(<body.*?>)([\S\s]*?)(<\/body>)/;
 export default class Generator {
   body: Node;
   title: Node;
-  root: Node;
+  root: RootNode;
   private outerHTML: string;
-  constructor(initialHTML: any, generatorOptions?: IGeneratorOptions) {
-    const { rootId = 'root' } = generatorOptions || {};
+  constructor(initialHTML: any) {
     this.outerHTML = initialHTML;
 
     this.body = new Node(initialHTML, 'body', BODY_REG_EXP);
@@ -24,12 +23,11 @@ export default class Generator {
     });
     this.outerHTML = this.title.setPlaceholder(this.outerHTML);
 
-    this.root = new Node(initialHTML, 'div', new RegExp(`(<div.*id="${rootId}".*?>)([\\S\\s]*)(</div>)`), {
-      prependPlaceholder: '__HTML_GENERATOR_ROOT_NODE_PREPEND__',
-      placeholder: '__HTML_GENERATOR_ROOT_NODE__',
-      appendPlaceholder: '__HTML_GENERATOR_ROOT_NODE_APPEND__',
+    this.root = new RootNode({
+      prependPlaceholder: '<!--__BEFORE_ROOT__-->',
+      placeholder: '<!--__INNER_ROOT__-->',
+      appendPlaceholder: '<!--__AFTER_ROOT__-->',
     });
-    this.outerHTML = this.root.setPlaceholder(this.outerHTML);
   }
   insertMeta(metas: string | string[]) {
     this.title.insertBefore(metas);
