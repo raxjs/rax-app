@@ -32,6 +32,7 @@ const retainKeys = [
   'queryParamsPassKeys',
   'queryParamsPassIgnoreKeys',
   'splashViewTimeout',
+  'splashViewAutoClose',
   'swiperThreshold',
   'requestHeaders',
   'enablePoplayer',
