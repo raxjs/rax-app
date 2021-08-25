@@ -3,7 +3,7 @@
  */
 
 import { RawSource } from 'webpack-sources';
-import cloneDeep from 'lodash.clonedeep';
+import * as cloneDeep from 'lodash.clonedeep';
 import { getMpaEntries } from '@builder/app-helpers';
 import { transformAppConfig, setRealUrlToManifest } from '../manifestHelpers';
 import { setPHADevUrls } from '../phaDevUrls';

@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.4.7
+- Feat: support html template for tab header
+
 ## v1.4.6
 
 - Chore: pha plugin add more white list and no decamelize keys
@@ -51,5 +54,5 @@
 
 ## v1.2.3
 
-- Fix: data prefetches do not decamelize 
+- Fix: data prefetches do not decamelize
 
