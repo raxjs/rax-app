@@ -204,7 +204,9 @@ export function setRealUrlToManifest(options, manifest) {
       if (page.tab_header && page.tab_header.source) {
         const { pageTemplate, pageUrl } = getRealPageInfo(options, page.tab_header);
         page.tab_header.url = pageUrl;
-        page.tab_header.html = pageTemplate;
+        if (pageTemplate) {
+          page.tab_header.html = pageTemplate;
+        }
       }
       return changePageInfo(options, page);
     });
