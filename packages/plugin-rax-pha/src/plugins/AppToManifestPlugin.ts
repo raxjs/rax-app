@@ -2,15 +2,17 @@
  * app.json to manifest.json plugin
  */
 
-const { RawSource } = require('webpack-sources');
-const cloneDeep = require('lodash.clonedeep');
-const { getMpaEntries } = require('@builder/app-helpers');
-const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers');
-const { setPHADevUrls } = require('../phaDevUrls');
+import { RawSource } from 'webpack-sources';
+import cloneDeep from 'lodash.clonedeep';
+import { getMpaEntries } from '@builder/app-helpers';
+import { transformAppConfig, setRealUrlToManifest } from '../manifestHelpers';
+import { setPHADevUrls } from '../phaDevUrls';
 
 const PLUGIN_NAME = 'PHA_AppToManifestPlugin';
 
-module.exports = class {
+export default class {
+  options: any;
+
   constructor(options) {
     this.options = options;
   }
@@ -73,7 +75,7 @@ module.exports = class {
           target: 'web',
           appJsonContent: appConfig,
         });
-        entries
+        (entries as any)
           .filter(({ __frameIndex, __pageHeader, __tabBar }) => {
             if ((typeof __frameIndex !== 'undefined' && __frameIndex !== 0) || __pageHeader || __tabBar) {
               return false;
@@ -123,4 +125,4 @@ module.exports = class {
       callback();
     });
   }
-};
+}

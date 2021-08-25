@@ -8,6 +8,7 @@
     { "path": "packages/build-html-generator" },
     { "path": "packages/rax-app-renderer" },
     { "path": "packages/exports-field-webpack-plugin" },
+    { "path": "packages/plugin-rax-pha" },
     { "path": "packages/plugin-rax-web" },
     { "path": "packages/plugin-ssr" },
     { "path": "packages/plugin-rax-store" },

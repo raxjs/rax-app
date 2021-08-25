@@ -1,6 +1,6 @@
-const { getPHADevUrls } = require('./phaDevUrls');
+import { getPHADevUrls } from './phaDevUrls';
 
-module.exports = function (api) {
+export default function (api) {
   const { registerMethod } = api;
   registerMethod('rax.getPHADevUrls', getPHADevUrls);
-};
+}

@@ -1,6 +1,6 @@
-const path = require('path');
+import * as path from 'path';
 
-module.exports = ({ context, config, appWorkerPath }) => {
+export default ({ context, config, appWorkerPath }) => {
   const { userConfig, rootDir } = context;
   const { outputDir = 'build' } = userConfig;
 
