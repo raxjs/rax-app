@@ -5,14 +5,7 @@ import setEntry from './setEntry';
 import AppToManifestPlugin from './plugins/AppToManifestPlugin';
 import setRegisterMethod from './setRegisterMethod';
 
-import type * as Config from 'webpack-chain';
-
-interface IApi {
-  onGetWebpackConfig: (rule: string, callback: (config: Config) => void) => void;
-  context: { [key: string]: any };
-  registerTask: (taskName: string, callback: (config: Config) => void) => void;
-  getValue: (key: string | number) => any;
-}
+import type { IPluginAPI } from '@alib/build-scripts';
 
 const moduleResolve = (filePath: string) => {
   const extension = ['.ts', '.js'].find((ext) => fs.existsSync(`${filePath}${ext}`));
@@ -24,7 +17,7 @@ const moduleResolve = (filePath: string) => {
   return require.resolve(`${filePath}${extension}`);
 };
 
-export default (api: IApi) => {
+export default (api: IPluginAPI) => {
   const { context, onGetWebpackConfig, getValue, registerTask } = api;
   const { rootDir } = context;
 

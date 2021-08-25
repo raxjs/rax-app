@@ -69,6 +69,7 @@ export const transformAppConfig = (appConfig: Record<string, any>, isRoot = true
 
     if (isObj(value) && !(parentKey === 'dataPrefetch' && ['header', 'data'].includes(key))) {
       extend(data, { [transformedKey]: transformAppConfig(value, false, key) });
+
       return;
     }
 
@@ -106,9 +107,12 @@ const getRealPageInfo = ({ urlPrefix, urlSuffix = '', api }: Options, page: Reco
     entryName = pathPackage.parse(dir).name.toLocaleLowerCase();
   }
 
-  let pageTemplate;
+  let pageTemplate = '';
   if (name || source) {
-    pageTemplate = (applyMethod('rax.getDocument', { name, source }) || {}).document;
+    const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
+    if (custom) {
+      pageTemplate = document;
+    }
   }
 
   let pageUrl = '';
@@ -132,7 +136,6 @@ const getRealPageInfo = ({ urlPrefix, urlSuffix = '', api }: Options, page: Reco
 const changePageInfo = (
   { urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inlineStyle, api }: Options,
   page: Record<string, any>,
-  manifest?: Record<string, any>,
 ) => {
   const { applyMethod } = api;
   const { source, name } = page;
@@ -194,7 +197,7 @@ export function setRealUrlToManifest(options, manifest) {
       // has frames
       if (page.frames && page.frames.length > 0) {
         page.frames = page.frames.map((frame) => {
-          return changePageInfo(options, frame, manifest);
+          return changePageInfo(options, frame);
         });
       }
 
@@ -203,7 +206,7 @@ export function setRealUrlToManifest(options, manifest) {
         page.tab_header.url = pageUrl;
         page.tab_header.html = pageTemplate;
       }
-      return changePageInfo(options, page, manifest);
+      return changePageInfo(options, page);
     });
   }
 
