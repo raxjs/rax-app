@@ -3,6 +3,7 @@
 ## v1.4.6
 
 - Chore: pha plugin add more white list and no decamelize keys
+- Fix: no prefetch type will crash in Android TaoBao 9.26.0
 
 ## v1.4.5
 
