@@ -89,9 +89,16 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
           delete item.text;
         }
         if (typeof item === 'object') {
-          if (key === 'dataPrefetch' && !item.header) {
+          if (key === 'dataPrefetch') {
             // hack: No header will crash in Android
-            item.header = {};
+            if (!item.header) {
+              item.header = {};
+            }
+
+            // no prefetchKey will crash in Android TaoBao 9.26.0
+            if (!item.prefetchKey) {
+              item.prefetchKey = 'mtop';
+            }
           }
           return transformAppConfig(item, false, key);
         }

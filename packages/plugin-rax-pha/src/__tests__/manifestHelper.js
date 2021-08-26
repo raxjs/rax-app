@@ -63,6 +63,7 @@ describe('transformAppConfig', () => {
     expect(manifestJSON.data_prefetch[0].dataType).toBe('json');
     expect(manifestJSON.data_prefetch[0].appKey).toBe('12345');
     expect(manifestJSON.data_prefetch[0].LoginRequest).toBe(true);
+    expect(manifestJSON.data_prefetch[0].prefetch_key).toBe('mtop');
   });
 
   it('should transform window to flat object', () => {
@@ -122,7 +123,8 @@ describe('transformAppConfig', () => {
       data: {
         id: 123
       },
-      header: {}
+      header: {},
+      prefetch_key: 'mtop',
     }]);
   });
 
