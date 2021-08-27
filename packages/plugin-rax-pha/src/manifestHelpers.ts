@@ -80,8 +80,8 @@ export const transformAppConfig = (appConfig: Record<string, any>, isRoot = true
 };
 
 interface Options {
-  urlPrefix: string;
-  urlSuffix: string;
+  urlPrefix?: string;
+  urlSuffix?: string;
   cdnPrefix?: string;
   isTemplate?: boolean;
   inlineStyle?: false | { forceEnableCSS: boolean };
@@ -92,10 +92,9 @@ interface Options {
  * get real page info
  * @param options options
  * @param page page info
- * @returns page url & page template & entry name
+ * @returns page url & entry name
  */
-const getRealPageInfo = ({ urlPrefix, urlSuffix = '', api }: Options, page: Record<string, any>) => {
-  const { applyMethod } = api;
+const getRealPageInfo = ({ urlPrefix, urlSuffix = '' }: Options, page: Record<string, any>) => {
   const { source, name, query_params = '' } = page;
 
   let entryName: string;
@@ -107,14 +106,6 @@ const getRealPageInfo = ({ urlPrefix, urlSuffix = '', api }: Options, page: Reco
     entryName = pathPackage.parse(dir).name.toLocaleLowerCase();
   }
 
-  let pageTemplate = '';
-  if (name || source) {
-    const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
-    if (custom) {
-      pageTemplate = document;
-    }
-  }
-
   let pageUrl = '';
   if (entryName) {
     pageUrl = `${urlPrefix + entryName + urlSuffix}`;
@@ -124,11 +115,8 @@ const getRealPageInfo = ({ urlPrefix, urlSuffix = '', api }: Options, page: Reco
     pageUrl = `${pageUrl}?${query_params}`;
   }
 
-  delete page.source;
-
   return {
     pageUrl,
-    pageTemplate,
     entryName,
   };
 };
@@ -177,6 +165,42 @@ const changePageInfo = (
   return page;
 };
 
+/**
+ * get tab header info
+ * @param options options
+ * @param page page info
+ */
+function changeTabHeaderInfo({ api }: Options, page: Record<string, any>) {
+  const { applyMethod } = api;
+  const { tab_header = {} } = page;
+  const { source, url } = tab_header;
+
+  if (source) {
+    const { document, custom } = applyMethod('rax.getDocument', { source }) || {};
+
+    // if config url, skip document
+    if (!url && custom) {
+      tab_header.html = document;
+    }
+  }
+
+  delete page.tab_header.source;
+}
+
+function changeTabBarInfo({ api }: Options, tabBar: Record<string, any>) {
+  const { applyMethod } = api;
+  const { source, url } = tabBar;
+
+  if (source) {
+    const { document, custom } = applyMethod('rax.getDocument', { source }) || {};
+
+    // if config url, skip document
+    if (!url && custom) {
+      tabBar.html = document;
+    }
+  }
+}
+
 export function setRealUrlToManifest(options, manifest) {
   const { urlPrefix, cdnPrefix } = options;
   if (!urlPrefix) {
@@ -190,6 +214,7 @@ export function setRealUrlToManifest(options, manifest) {
 
   if (tab_bar && tab_bar.source && !tab_bar.url) {
     tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
+    changeTabBarInfo(options, tab_bar);
   }
 
   if (pages && pages.length > 0) {
@@ -202,11 +227,9 @@ export function setRealUrlToManifest(options, manifest) {
       }
 
       if (page.tab_header && page.tab_header.source) {
-        const { pageTemplate, pageUrl } = getRealPageInfo(options, page.tab_header);
+        const { pageUrl } = getRealPageInfo(options, page.tab_header);
         page.tab_header.url = pageUrl;
-        if (pageTemplate) {
-          page.tab_header.html = pageTemplate;
-        }
+        changeTabHeaderInfo(options, page);
       }
       return changePageInfo(options, page);
     });
