@@ -153,7 +153,8 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
       page.path = pageUrl;
     }
 
-    if (isTemplate) {
+    // template and no frames under the page
+    if (isTemplate && !Array.isArray(page.frames)) {
       if (custom) {
         page.document = document;
       } else {
