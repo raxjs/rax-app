@@ -1,12 +1,7 @@
 {
-  "targets": ["web", "weex", "kraken"],
-  "weex": {
-    "mpa": true
-  },
-  "kraken": {
-    "mpa": true
-  },
+  "targets": ["web"],
   "web": {
     "mpa": true
-  }
+  },
+  "compileDependencies": []
 }

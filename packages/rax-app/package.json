@@ -14,7 +14,7 @@
     "test": "__tests__"
   },
   "dependencies": {
-    "@builder/pack": "0.2.19",
+    "@builder/pack": "0.3.0",
     "build-scripts": "^1.1.0-9",
     "build-plugin-app-core": "next",
     "build-plugin-ice-config": "next",

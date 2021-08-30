@@ -7,7 +7,7 @@
     },
     {
       "name": "about",
-      "source": "pages/About/index"
+      "source": "pages/About/app"
     }
   ],
   "spm": "a123",
