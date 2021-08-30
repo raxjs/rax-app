@@ -340,6 +340,6 @@ const isObj = <T>(value: T) => getTag(value) === '[object Object]';
  * @param source the source object from which to copy properties.
  * @returns the target object.
  */
-const extend = (target: {}, source: unknown) => {
+const extend: typeof Object.assign = (target, source) => {
   return Object.assign(target, source);
 };
