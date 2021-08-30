@@ -3,6 +3,7 @@
 ## v1.4.6
 
 - Chore: pha plugin add more white list and no decamelize keys
+- Fix:  do not set script field when has frames under the page
 
 ## v1.4.5
 
