@@ -56,23 +56,28 @@ export default class EntryPlugin {
       };
     }
 
+    const coreRunAppPath = path.join(query.tempPath, 'core/runApp');
+
     Object.keys(entries).forEach((entryName) => {
       const entryPaths = entries[entryName];
       // Transform hmr-loader.js!entryPath to [hmr-loader, entryPath]
       const entrySeparatedLoader = entryPaths[entryPaths.length - 1].split('!');
       // Get the real entry path
       const entry = entrySeparatedLoader[entrySeparatedLoader.length - 1];
+      query.entryName = entryName;
+
       if (web.mpa) {
-        query.entryName = entryName;
         query.pageConfig = pageConfig[entryName];
         const entryFolder = path.dirname(entry);
         // Check runApp path
         let runAppPath = path.join(entryFolder, 'runApp');
         if (!fs.existsSync(`${runAppPath}.ts`)) {
           // Use core runApp path as default runApp implement
-          runAppPath = path.join(query.tempPath, 'core/runApp');
+          runAppPath = coreRunAppPath;
         }
         query.runAppPath = runAppPath;
+      } else {
+        query.runAppPath = coreRunAppPath;
       }
       modifyEntry(compiler, {
         entryName,

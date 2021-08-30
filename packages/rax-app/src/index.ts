@@ -13,7 +13,7 @@ interface IRaxAppUserConfig extends IUserConfig {
 }
 
 const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) => {
-  const { targets = ['web'], store = true } = userConfig;
+  const { targets = ['web'], store = true, router = true } = userConfig;
   const coreOptions: Json = {
     framework: 'rax',
     alias: 'rax-app',
@@ -56,6 +56,10 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
   }
   if (targets.some((target) => miniappPlatforms.includes(target))) {
     builtInPlugins.push('build-plugin-rax-miniapp');
+  }
+
+  if (router) {
+    builtInPlugins.push('build-plugin-rax-router');
   }
 
   return builtInPlugins;

@@ -10,8 +10,9 @@ export default (config) => {
   config.optimization
     .minimizer('TerserPlugin')
     .use(TerserPlugin, [{
-      sourceMap: false,
-      cache: true,
+      // TODO: webpack5 doesn't need it
+      // sourceMap: false,
+      // cache: true,
       parallel: true,
       extractComments: false,
       terserOptions: {

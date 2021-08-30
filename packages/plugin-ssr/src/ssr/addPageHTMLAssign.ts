@@ -44,6 +44,7 @@ export default () => {
       createBaseApp,
       emitLifeCycles,
       TabBar,
+      staticConfig,
     });
   `;
 };

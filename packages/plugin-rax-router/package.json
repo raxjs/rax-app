@@ -1,0 +1,26 @@
+{
+  "name": "build-plugin-rax-router",
+  "version": "1.0.0",
+  "description": "SPA router in rax-app",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib",
+    "src/types"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:raxjs/rax-app.git"
+  },
+  "dependencies": {
+    "rax-use-router": "^3.0.0",
+    "path-to-regexp": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.12"
+  }
+}

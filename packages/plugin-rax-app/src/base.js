@@ -13,6 +13,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
   const { rootDir, command, userConfig } = context;
   const { experiments = {} } = userConfig;
   const { exportsField } = experiments;
+  const mpa = userConfig[target] && (userConfig[target].subPackages || userConfig[target].mpa);
 
   const mode = command === 'start' ? 'development' : 'production';
   const babelConfig = getBabelConfig(babelConfigOptions);
@@ -27,6 +28,18 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     webpackConfig,
     babelConfig,
   });
+
+  enhancedWebpackConfig
+    .module
+    .rule('appJSON')
+    .type('javascript/auto')
+    .test(/app\.json$/)
+    .use('route-loader')
+    .loader(require.resolve('./Loaders/RouteLoader'))
+    .options({
+      target,
+      mpa,
+    });
 
   enhancedWebpackConfig
     .plugin('ProgressPlugin')

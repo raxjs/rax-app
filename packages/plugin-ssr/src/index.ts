@@ -6,8 +6,9 @@ import getWebpackBase from './ssr/getBase';
 import EntryPlugin from './ssr/entryPlugin';
 import { NODE, WEB } from './constants';
 import setDev from './ssr/setDev';
-import WebAssetsPlugin from './WebAssetsPlugin';
 import { getChunkInfo } from './utils/chunkInfo';
+
+const WebAssetsPlugin = require('./WebAssetsPlugin');
 
 export default function (api) {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;
@@ -30,9 +31,7 @@ export default function (api) {
     // Before set ssr entry, it need exclude document entry
     entries = webpackConfig.entry;
 
-    if (hash) {
-      config.plugin('WebAssetsPlugin').use(WebAssetsPlugin);
-    }
+    config.plugin('WebAssetsPlugin').use(WebAssetsPlugin);
   });
   onGetWebpackConfig('ssr', (config) => {
     config.target('node');
@@ -101,7 +100,7 @@ export default function (api) {
       const minifedHtml = minify(html, { collapseWhitespace: true, quoteCharacter: "'" });
       const newBundle = bundle
         .replace(/__RAX_APP_SERVER_HTML_TEMPLATE__/, minifedHtml)
-        .replace(new RegExp(`__${entryName}_FILE__`, 'g'), chunkInfo[entryName] || entryName);
+        .replace(new RegExp('__CHUNK_INFO__'), JSON.stringify(chunkInfo));
       fs.writeFileSync(serverFilePath, newBundle, 'utf-8');
     });
   });
