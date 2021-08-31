@@ -67,8 +67,6 @@ module.exports = function (api) {
     const weexWebpackInfo = getWebpackInfo(configs, 'weex');
     const krakenWebpackInfo = getWebpackInfo(configs, 'kraken');
 
-    console.log(configs[0]);
-
     devInfo.publicPath = webWebpackInfo.publicPath;
 
     webEntryKeys = Object.keys(webWebpackInfo.entry);

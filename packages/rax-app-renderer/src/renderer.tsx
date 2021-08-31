@@ -64,7 +64,6 @@ function _render(runtime: RuntimeModule, context: IContext, options: RenderOptio
   if (runtime?.modifyDOMRender) {
     return runtime?.modifyDOMRender?.({ App, appMountNode });
   }
-  console.log('========> render ======>');
   // add process.env.SSR for tree-shaking
   render(<App />, appMountNode, {
     driver,

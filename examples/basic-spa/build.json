@@ -1,6 +1,3 @@
 {
-  "targets": ["web"],
-  "web": {
-    "ssr": true
-  }
+  "targets": ["web", "miniapp", "kraken", "weex", "wechat-miniprogram"]
 }
