@@ -4,6 +4,7 @@
 
 - Chore: pha plugin add more white list and no decamelize keys
 - Fix: no prefetch type will crash in Android TaoBao 9.26.0
+- Fix:  do not set script field when has frames under the page
 
 ## v1.4.5
 
