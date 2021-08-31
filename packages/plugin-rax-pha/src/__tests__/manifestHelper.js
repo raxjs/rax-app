@@ -38,7 +38,14 @@ describe('transformAppConfig', () => {
         },
         header: {
           taskId: 455
-        }
+        },
+        extHeaders: {
+          id: 123,
+          test_id: 234,
+        },
+        dataType: 'json',
+        appKey: '12345',
+        LoginRequest: true,
       }],
     }, true);
     expect(manifestJSON.data_prefetch.length).toBe(1);
@@ -52,6 +59,11 @@ describe('transformAppConfig', () => {
     expect(manifestJSON.data_prefetch[0].header).toMatchObject({
       taskId: 455,
     });
+    expect(manifestJSON.data_prefetch[0].ext_headers).toMatchObject({ id: 123, test_id: 234, });
+    expect(manifestJSON.data_prefetch[0].dataType).toBe('json');
+    expect(manifestJSON.data_prefetch[0].appKey).toBe('12345');
+    expect(manifestJSON.data_prefetch[0].LoginRequest).toBe(true);
+    expect(manifestJSON.data_prefetch[0].prefetch_key).toBe('mtop');
   });
 
   it('should transform window to flat object', () => {
@@ -111,7 +123,8 @@ describe('transformAppConfig', () => {
       data: {
         id: 123
       },
-      header: {}
+      header: {},
+      prefetch_key: 'mtop',
     }]);
   });
 

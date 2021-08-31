@@ -24,13 +24,36 @@ const retainKeys = [
   'links',
   'scripts',
   'offlineResources',
+  'packageResources',
   'manifestPrefetchExpires',
   'manifestPrefetchMaxAge',
+  'maxAge',
+  'expires',
   'queryParamsPassKeys',
   'queryParamsPassIgnoreKeys',
   'splashViewTimeout',
+  'splashViewAutoClose',
   'swiperThreshold',
   'requestHeaders',
+  'enablePoplayer',
+  'disableCapture',
+  'enablePullRefresh',
+  'pullRefreshBackgroundColor',
+  'pullRefreshColorScheme',
+  'pullRefresh',
+];
+
+// do not decamelize list
+const camelizeKeys = [
+  'appKey',
+  'dataType',
+  'valueType',
+  'isSec',
+  'LoginRequest',
+  'sessionOption',
+  'AntiCreep',
+  'AntiFlood',
+  'needLogin',
 ];
 
 // transform app config to decamelize
@@ -51,7 +74,11 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
     if (key === 'pageHeader') {
       key = 'tabHeader';
     }
-    const transformKey = decamelize(key);
+
+    let transformKey = key;
+    if (camelizeKeys.indexOf(key) === -1) {
+      transformKey = decamelize(key);
+    }
     if (key === 'window') {
       Object.assign(data, transformAppConfig(value, false));
     } else if (typeof value === 'string' || typeof value === 'number') {
@@ -63,9 +90,16 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
           delete item.text;
         }
         if (typeof item === 'object') {
-          if (key === 'dataPrefetch' && !item.header) {
+          if (key === 'dataPrefetch') {
             // hack: No header will crash in Android
-            item.header = {};
+            if (!item.header) {
+              item.header = {};
+            }
+
+            // no prefetchKey will crash in Android TaoBao 9.26.0
+            if (!item.prefetchKey) {
+              item.prefetchKey = 'mtop';
+            }
           }
           return transformAppConfig(item, false, key);
         }
@@ -127,7 +161,8 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
       page.path = pageUrl;
     }
 
-    if (isTemplate) {
+    // template and no frames under the page
+    if (isTemplate && !Array.isArray(page.frames)) {
       if (custom) {
         page.document = document;
       } else {
