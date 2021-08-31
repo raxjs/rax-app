@@ -9,8 +9,8 @@ module.exports = class WebAssetsPlugin {
       [...compilation.chunks].forEach((chunk) => {
         const files = [...chunk.files];
         chunkInfo[chunk.name.replace('.chunk', '')] = {
-          js: files.filter(filepath => /\.js$/.test(filepath)),
-          css: files.filter(filepath => /\.css$/.test(filepath)),
+          js: files.filter((filepath) => /\.js$/.test(filepath)),
+          css: files.filter((filepath) => /\.css$/.test(filepath)),
         };
       });
       setChunkInfo(chunkInfo);

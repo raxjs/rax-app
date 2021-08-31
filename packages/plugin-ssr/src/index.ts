@@ -13,7 +13,7 @@ const WebAssetsPlugin = require('./WebAssetsPlugin');
 export default function (api) {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;
   const {
-    userConfig: { outputDir, compileDependencies, hash },
+    userConfig: { outputDir, compileDependencies },
     rootDir,
     command,
   } = context;
