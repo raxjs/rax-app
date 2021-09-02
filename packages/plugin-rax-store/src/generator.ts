@@ -105,7 +105,7 @@ export default class Generator {
     const pageComponentRenderData = {
       pageComponentImport: `import ${pageComponentName} from '${pageComponentSourcePath}'`,
       pageComponentExport: pageComponentName,
-      pageStoreImport: `import store from '${pageStoreFile.replace(pageStoreExtname, '')}'`,
+      pageStoreImport: `import store from '${formatPath(pageStoreFile.replace(pageStoreExtname, ''))}'`,
     };
 
     this.applyMethod('addRenderFile', pageComponentTemplatePath, pageComponentTempPath, pageComponentRenderData);
