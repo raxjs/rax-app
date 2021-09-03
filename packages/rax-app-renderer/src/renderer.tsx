@@ -65,6 +65,7 @@ function _render(runtime: RuntimeModule, context: IContext, options: RenderOptio
     return runtime?.modifyDOMRender?.({ App, appMountNode });
   }
   // add process.env.SSR for tree-shaking
+  // @ts-ignore
   render(<App />, appMountNode, {
     driver,
     hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr || webConfig.staticExport,

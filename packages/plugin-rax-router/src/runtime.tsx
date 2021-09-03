@@ -26,52 +26,98 @@ export default async (api) => {
   });
 
   const renderRouter =
-    (routes) =>
-      () => {
-        const currentPathName = appConfigRouter.history.location.pathname;
-        const parsedRoutes = parseRoutes(routes);
-        const targetRoute = parsedRoutes.find(({ path }) => path === currentPathName);
+    (initialRoutes) => {
+      return () => {
+        const { routes, keepAliveRoutes } = parseRoutes(initialRoutes);
         if (isNode) {
-          const { component } = useRouter({
-            history,
-            routes: parsedRoutes,
-            InitialComponent: targetRoute.component,
-          });
-          return component;
-        } else {
-          let InitialComponent;
-          if (!targetRoute.lazy) {
-            InitialComponent = targetRoute.component;
-          }
-          const { component } = useRouter({
-            history,
-            routes: parseRoutes(routes),
-            InitialComponent,
-          });
-          return component;
+          return (
+            <>
+              <StaticRouter history={appConfigRouter.history} initialRoutes={routes} />
+            </>
+          );
         }
+        return (
+          <>
+            <Router history={appConfigRouter.history} initialRoutes={routes} initialKeepAliveRoutes={keepAliveRoutes} />
+          </>
+        );
       };
+    };
   setRenderApp(renderRouter);
 };
 
+function StaticRouter({ history, initialRoutes }) {
+  const currentPathName = history.location.pathname;
+  const targetRoute = initialRoutes.find(({ path }) => path === currentPathName);
+  return targetRoute.component;
+}
+
+function Router({ history, initialRoutes, initialKeepAliveRoutes }) {
+  const currentPathName = history.location.pathname;
+  const targetRoute = initialRoutes.find(({ path }) => path === currentPathName);
+
+  let InitialComponent;
+  if (!targetRoute.lazy) {
+    InitialComponent = targetRoute.component;
+  }
+  const { component } = useRouter({
+    history,
+    routes: initialRoutes,
+    InitialComponent,
+  });
+
+  return (
+    <>
+      {component}
+      {initialKeepAliveRoutes.map(({ component: PageComponent, path }) => {
+        return <div key={path} style={{ display: path === currentPathName ? 'block' : 'none' }}>{PageComponent}</div>;
+      })}
+    </>
+  );
+}
+
 function parseRoutes(routes) {
-  return routes.map((route) => {
+  const initialRoutes = [];
+  const keepAliveRoutes = [];
+  routes.forEach((route) => {
     const { routeWrappers, ...others } = route;
+    if (route.keepAlive) {
+      // For router toggle placeholder
+      initialRoutes.push({
+        ...others,
+        component: '',
+      });
+      keepAliveRoutes.push({
+        ...others,
+        component: wrapperPage(route.component, { route }),
+      });
+      return;
+    }
+
     let component;
     if (route.lazy) {
-      component = route.component.then((PageComponent) => {
-        PageComponent.__pageConfig = others;
-        return createElement(wrapperRoute(PageComponent, routeWrappers));
-      });
+      component = route.component.then((PageComponent) => wrapperPage(PageComponent, { route }));
     } else {
-      component = createElement(wrapperRoute(route.component, routeWrappers));
-      component.__pageConfig = others;
+      component = wrapperPage(route.component, { route });
     }
-    return {
+
+    initialRoutes.push({
       ...others,
       component,
-    };
+    });
   });
+
+  return {
+    routes: initialRoutes,
+    keepAliveRoutes,
+  };
+}
+
+function wrapperPage(PageComponent, { route }) {
+  const { routeWrappers, ...others } = route;
+  PageComponent.__pageConfig = others;
+  const Wrapper = wrapperRoute(PageComponent, routeWrappers);
+  return <Wrapper key={route.path} />;
 }
 
 function wrapperRoute(component, routerWrappers) {

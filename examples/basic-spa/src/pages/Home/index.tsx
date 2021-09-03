@@ -1,4 +1,4 @@
-import { createElement } from 'rax';
+import { createElement, useState } from 'rax';
 import { usePageShow, usePageHide, getSearchParams } from 'rax-app';
 import View from 'rax-view';
 import Text from 'rax-text';
@@ -8,6 +8,7 @@ import './index.css';
 
 export default function Home(props) {
   const { history } = props;
+  const [count, setCount] = useState(0);
 
   const searchParams = getSearchParams();
 
@@ -27,6 +28,9 @@ export default function Home(props) {
       <Logo />
       <Text className="title">Welcome to Your Rax App</Text>
       <Text className="info">More information about Rax</Text>
+      <Text onClick={() => {
+        setCount(count + 1);
+      }}>State: {count}</Text>
       <Text className="info" id="link" onClick={() => history.push('/about', { id: 1 })}>Go About</Text>
     </View>
   );

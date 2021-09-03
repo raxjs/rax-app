@@ -53,6 +53,7 @@ module.exports = [
         publicPath: '/',
       },
       liveReload: false,
+      historyApiFallback: true,
     },
   },
   {

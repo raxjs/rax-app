@@ -3,11 +3,13 @@
     {
       "path": "/",
       "source": "pages/Home/index",
-      "lazy": false
+      "lazy": false,
+      "keepAlive": true
     },
     {
       "path": "/about",
       "source": "pages/About/index",
+      "lazy": false,
       "window": {
         "title": "About Page"
       }
