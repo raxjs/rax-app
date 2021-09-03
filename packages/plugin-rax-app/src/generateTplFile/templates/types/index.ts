@@ -2,6 +2,8 @@ interface IRouteItem {
   path?: string;
   source: string;
   window?: IWindow;
+  name?: string;
+  [key: string]: unknown;
 }
 
 interface IWindow {
