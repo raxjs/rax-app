@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const { STATIC_CONFIG, TAB_BAR_PATH } = require('../constants');
 
 module.exports = (api) => {
-  const { setValue, getValue, context } = api;
+  const { setValue, getValue, context, applyMethod } = api;
   const { rootDir } = context;
   let staticConfig;
   try {
@@ -13,8 +13,9 @@ module.exports = (api) => {
   }
 
   if (staticConfig.tabBar) {
+    let tabBarPath;
     if (staticConfig.tabBar.custom) {
-      let tabBarPath = path.join(rootDir, 'src/components/CustomTabBar/index');
+      tabBarPath = path.join(rootDir, 'src/components/CustomTabBar/index');
       if (!checkComponentFileExists(tabBarPath)) {
         tabBarPath = path.join(rootDir, 'src/CustomTabBar/index');
         if (!checkComponentFileExists(tabBarPath)) {
@@ -25,10 +26,14 @@ module.exports = (api) => {
         throw new Error('There should have list field as array type to know which page need show tab bar');
       }
       staticConfig.tabBar.source = tabBarPath.replace(`${rootDir}/src`, '');
-      setValue(TAB_BAR_PATH, tabBarPath);
     } else {
-      setValue(TAB_BAR_PATH, path.join(getValue('TEMP_PATH'), 'plugins/rax-app/TabBar'));
+      tabBarPath = path.join(getValue('TEMP_PATH'), 'plugins/rax-app/TabBar');
     }
+    setValue(TAB_BAR_PATH, tabBarPath);
+    applyMethod('modifyRenderData', (renderData) => ({
+      ...renderData,
+      tabBarPath,
+    }));
   }
   setValue(STATIC_CONFIG, staticConfig);
 };
