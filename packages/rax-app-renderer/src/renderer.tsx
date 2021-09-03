@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { render, createElement, Fragment } from 'rax';
+import { render, createElement, Fragment, FunctionComponent } from 'rax';
 import { isWeb, isWeex, isKraken } from 'universal-env';
 import UniversalDriver from 'driver-universal';
 import { IContext, RenderOptions } from './types';
@@ -66,6 +66,7 @@ function _render(runtime: RuntimeModule, context: IContext, options: RenderOptio
   }
 
   // add process.env.SSR for tree-shaking
+  // @ts-ignore
   render(<App />, appMountNode, {
     driver,
     hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr || webConfig.staticExport,
@@ -77,7 +78,7 @@ function _getAppMountNode(mountNode: HTMLElement, rootId: string) {
   return mountNode || document.getElementById(rootId) || document.getElementById('root');
 }
 
-export function getRenderApp(runtime: RuntimeModule, initialProps, options: RenderOptions) {
+export function getRenderApp(runtime: RuntimeModule, initialProps, options: RenderOptions): FunctionComponent {
   const { ErrorBoundary, appConfig = { app: {} }, TabBar } = options;
   const { ErrorBoundaryFallback, onErrorBoundaryHandler, errorBoundary } = appConfig.app;
   const AppProvider = runtime?.composeAppProvider?.();

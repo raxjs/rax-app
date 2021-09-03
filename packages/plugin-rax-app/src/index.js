@@ -38,6 +38,9 @@ module.exports = (api) => {
   // generate template file
   generateTplFile(applyMethod);
 
+  // Add staticConfig type
+  applyMethod('addTypesExport', { source: '../plugins/rax-app/types' });
+
   // set webpack config
   onGetWebpackConfig((chainConfig) => {
     // add resolve modules of project node_modules
