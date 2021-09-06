@@ -1,6 +1,8 @@
 import { createElement, useEffect } from 'rax';
-import { useRouter } from 'rax-use-router';
 import { isNode, isWeb } from 'universal-env';
+import KeepAliveRouter from './runtime/KeepAliveRouter';
+import StaticRouter from './runtime/StaticRouter';
+import Router from './runtime/Router';
 
 export default async (api) => {
   const { appConfig, staticConfig, setRenderApp, modifyRoutes, wrapperPageComponent } = api;
@@ -27,83 +29,48 @@ export default async (api) => {
 
   const renderRouter =
     (initialRoutes) => {
+      const { routes, keepAliveRoutes } = parseRoutes(initialRoutes);
       return () => {
-        const { routes, keepAliveRoutes } = parseRoutes(initialRoutes);
+        routes.push({
+          component: '',
+        });
+
+        // Add KeepAliveRouter
+        const RouterComponents = [<KeepAliveRouter key="rax-keep-alive-router" history={appConfigRouter.history} routes={keepAliveRoutes} />];
+
         if (isNode) {
-          return (
-            <>
-              <StaticRouter history={appConfigRouter.history} initialRoutes={routes} />
-            </>
+          // Add StaticRouter for node
+          RouterComponents.push(
+            <StaticRouter key="rax-static-router" history={appConfigRouter.history} routes={routes} />,
+          );
+        } else {
+          // Add Normal Router for other route
+          RouterComponents.push(
+            <Router key="rax-normal-router" history={appConfigRouter.history} routes={routes} />,
           );
         }
-        return (
-          <>
-            <Router history={appConfigRouter.history} initialRoutes={routes} initialKeepAliveRoutes={keepAliveRoutes} />
-          </>
-        );
+        return RouterComponents;
       };
     };
   setRenderApp(renderRouter);
 };
-
-function StaticRouter({ history, initialRoutes }) {
-  const currentPathName = history.location.pathname;
-  const targetRoute = initialRoutes.find(({ path }) => path === currentPathName);
-  return targetRoute.component;
-}
-
-function Router({ history, initialRoutes, initialKeepAliveRoutes }) {
-  const currentPathName = history.location.pathname;
-  const targetRoute = initialRoutes.find(({ path }) => path === currentPathName);
-
-  let InitialComponent;
-  if (!targetRoute.lazy) {
-    InitialComponent = targetRoute.component;
-  }
-  const { component } = useRouter({
-    history,
-    routes: initialRoutes,
-    InitialComponent,
-  });
-
-  return (
-    <>
-      {component}
-      {initialKeepAliveRoutes.map(({ component: PageComponent, path }) => {
-        return <div key={path} style={{ display: path === currentPathName ? 'block' : 'none' }}>{PageComponent}</div>;
-      })}
-    </>
-  );
-}
 
 function parseRoutes(routes) {
   const initialRoutes = [];
   const keepAliveRoutes = [];
   routes.forEach((route) => {
     const { routeWrappers, ...others } = route;
-    if (route.keepAlive) {
-      // For router toggle placeholder
-      initialRoutes.push({
-        ...others,
-        component: '',
-      });
+    if ((isWeb || isNode) && route.keepAlive) {
       keepAliveRoutes.push({
         ...others,
-        component: wrapperPage(route.component, { route }),
+        component: getComponentByLazy(route.component, { route }),
       });
       return;
     }
 
-    let component;
-    if (route.lazy) {
-      component = route.component.then((PageComponent) => wrapperPage(PageComponent, { route }));
-    } else {
-      component = wrapperPage(route.component, { route });
-    }
-
     initialRoutes.push({
       ...others,
-      component,
+      component: getComponentByLazy(route.component, { route }),
     });
   });
 
@@ -111,6 +78,17 @@ function parseRoutes(routes) {
     routes: initialRoutes,
     keepAliveRoutes,
   };
+}
+
+function getComponentByLazy(PageComponent, { route }) {
+  const { lazy = true } = route;
+  if (lazy) {
+    return PageComponent.then((component) => {
+      return wrapperPage(component, { route });
+    });
+  }
+
+  return wrapperPage(PageComponent, { route });
 }
 
 function wrapperPage(PageComponent, { route }) {

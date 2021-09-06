@@ -3,7 +3,6 @@
     {
       "path": "/",
       "source": "pages/Home/index",
-      "lazy": false,
       "keepAlive": true
     },
     {
