@@ -1,7 +1,7 @@
 // Update `plugin-rax-component` to `plugin-component`
 // https://rax.js.org/docs/guide/com-migration
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 
 let demoOrder = 1;
 // glob to reg: demo/*.{js,jsx,ts,tsx}
