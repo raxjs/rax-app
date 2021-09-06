@@ -2,7 +2,6 @@
 
 ## v1.1.0 
 - Feat: migrate the `plugin-rax-component-to-component` transform into rax-codemod
-- Feat: add transform docs.
 
 ## v1.0.4
 
