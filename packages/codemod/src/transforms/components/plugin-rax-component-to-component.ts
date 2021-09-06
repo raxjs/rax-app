@@ -11,7 +11,7 @@ const changeFileExt = (file, ext) => {
   return path.join(path.dirname(file), path.basename(file, path.extname(file)) + ext);
 };
 
-module.exports = (fileInfo, api, options) => {
+export default (fileInfo, api, options) => {
   const j = api.jscodeshift;
   const basename = path.basename(fileInfo.path);
   if (basename === 'build.json') {
