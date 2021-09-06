@@ -1,11 +1,11 @@
 import { compatDevServer } from '@builder/compat-webpack4';
+import { getHTMLByEntryName } from './utils/htmlCache';
 
-let compilationCache;
+let afterCompiled;
 
-function getHTMLFromCompilation(compilation, filename) {
-  if (compilation.assets[`${filename}.html`]) {
-    return compilation.assets[`${filename}.html`].source();
-  }
+function getHTML(entryName) {
+  const html = getHTMLByEntryName(entryName);
+  if (html) return html;
   return 'Document Not Found.';
 }
 
@@ -25,15 +25,16 @@ export default (config) => {
     // Get web compiler for intercept AppHistoryFallback
     const compiler = server.compiler.compilers[0];
     const contextQueue = [];
-    compiler.hooks.emit.tap('AppHistoryFallback', (compilation) => {
-      let context;
-      compilationCache = compilation;
 
+    compiler.hooks.done.tapAsync('ApiHistoryCallback', (stats, callback) => {
+      let context;
+      afterCompiled = true;
       // eslint-disable-next-line
       while ((context = contextQueue.shift())) {
         const { entryName, res } = context;
-        res.send(getHTMLFromCompilation(compilation, entryName));
+        res.send(getHTML(entryName));
       }
+      callback();
     });
 
     app.get(/^\/?(?!\.(js|css|json))/, (req, res, next) => {
@@ -43,8 +44,8 @@ export default (config) => {
         return;
       }
       const entryName = matched[1];
-      if (compilationCache) {
-        res.send(getHTMLFromCompilation(compilationCache, entryName));
+      if (afterCompiled) {
+        res.send(getHTML(entryName));
       } else {
         contextQueue.push({
           res,
