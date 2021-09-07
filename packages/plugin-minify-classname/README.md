@@ -59,11 +59,11 @@ In this plugin, selectors will be minified according to the sequence in the file
 
 And filepath `src/components/button/index.module.scss` will be minified as a hash string `"54755bb1"` by default
 
-( You can also force filepath to use alphabet `abcdefg...`, with options: { useHash: false }, it will result in a better minification, but be careful, it makes css bundle content changes between builds )
+( You can also force filepath to use alphabet `abcdefg...`, with options: { useHash: false }, it will result in a smaller bundle, but be careful, it makes css bundle content changes between builds )
 
-So finally, `foo` will becomes `a`, `bar` will becomes `b`
+`foo` becomes `a`, `bar` becomes `b`
 
-the final css looks like
+the output css looks like
 
 ```css
 .a54755bb1 {}
