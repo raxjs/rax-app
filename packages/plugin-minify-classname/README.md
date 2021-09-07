@@ -11,14 +11,37 @@ Minify your css modules classnames to get a smaller bundle size
    [
      "build-plugin-minify-classname",
      {
-       "useHash": true, // use hash or not, true by default
-       "prefix": "", // add prefix for every classname
-       "suffix": "", // add suffix for every classname
+       "useHash": true,
+       "prefix": "",
+       "suffix": "",
      }
    ]
   ]
 }
 ```
+
+## Options
+
+### options.useHash
+
+Type: `Boolean`\
+Default: `true`
+
+Use hash to minify filepath, set `useHash` to `false` will switch to alphabet
+
+### options.prefix
+
+Type: `String`\
+Default: `""`
+
+Add prefix for every css modules classname
+
+### options.suffix
+
+Type: `String`\
+Default: `""`
+
+Add suffix for every css modules classname
 
 ## How
 
