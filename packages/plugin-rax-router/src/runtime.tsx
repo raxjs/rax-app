@@ -88,7 +88,7 @@ function parseRoutes(routes) {
 
 function getComponentByLazy(PageComponent, { route }) {
   const { lazy = true } = route;
-  if (lazy) {
+  if (isWeb && lazy) {
     return PageComponent.then((component) => {
       return wrapperPage(component, { route });
     });

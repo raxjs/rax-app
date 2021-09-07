@@ -59,7 +59,6 @@ export default function (appJSON) {
   ${addNormalImportRouteExpression(normalImports)}
 
   ${addDynamicImportRouteExpression.call(this, dynamicImports)};
-  console.log('staticConfig===', staticConfig);
   export default staticConfig;
   `;
 }
