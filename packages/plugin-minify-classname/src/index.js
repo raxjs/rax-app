@@ -1,4 +1,5 @@
 const path = require('path');
+const readPkgUp = require('read-pkg-up');
 const {minify} = require('minify-css-modules-classname');
 
 module.exports = function minifyCSSModulesClassname({onGetWebpackConfig, context}, options = {}) {
@@ -13,14 +14,29 @@ module.exports = function minifyCSSModulesClassname({onGetWebpackConfig, context
     })
   }
 
+  // cache readPkgUp result
+  const cache = new Map();
+  function readPkg(filepath) {
+    let cached = cache.get(filepath);
+
+    if (!cached) {
+      cached = readPkgUp.sync({cwd: path.dirname(filepath)});
+      cache.set(filepath, cached);
+    }
+    
+    return cached;
+  }
+
   function getLocalIdent(loaderContext, _, localName, opts) {
-    const filepath = path.relative(
-      rootDir || '',
-      loaderContext.resourcePath
-    );
+    const resourcePath = loaderContext.resourcePath;
+    const pkg = readPkg(resourcePath);
+    const pkgName = (pkg && pkg.packageJson && pkg.packageJson.name) || '';
+    const filepath = path.relative(rootDir || '', resourcePath);
+    // locate file using pkgname + filepath
+    const location = `${pkgName}#${filepath}`;
 
     return minify(
-      filepath,
+      location,
       localName,
       {useHash, prefix, suffix}
     );

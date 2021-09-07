@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "read-pkg-up": "^7.0.1",
     "minify-css-modules-classname": "^0.1.0"
   },
   "repository": {
