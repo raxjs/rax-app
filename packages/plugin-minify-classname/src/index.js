@@ -11,7 +11,7 @@ module.exports = function minifyCSSModulesClassname({onGetWebpackConfig, context
       configCSSModulesOptions(config, {
         getLocalIdent
       });
-    })
+    });
   }
 
   // cache readPkgUp result
