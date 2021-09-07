@@ -20,3 +20,11 @@ Converts `build-plugin-rax-app@0.x` ~ `build-plugin-rax-app@5.x` into `rax-app@3
 ```bash
 npx rax-codemod
 ```
+
+#### `component`
+
+Converts `plugin-rax-component` into `plugin-component`.
+
+```bash
+npx rax-codemod plugin-rax-component-to-component <path> <...options>
+```
