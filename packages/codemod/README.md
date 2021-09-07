@@ -26,5 +26,5 @@ npx rax-codemod
 Converts `plugin-rax-component` into `plugin-component`.
 
 ```bash
-npx rax-codemod plugin-rax-component-to-component <path> <...options>
+npx rax-codemod plugin-rax-component-to-component <path>
 ```
