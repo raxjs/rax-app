@@ -4,16 +4,16 @@ Minify your css modules classnames to get a smaller bundle size
 
 ## Usage
 
-```json
+```js
 {
   "plugins": [
     // ...
    [
      "build-plugin-minify-classname",
      {
-       useHash: true, // use hash or not, true by default
-       prefix: '', // add prefix for every classname
-       suffix: '', // add suffix for every classname
+       "useHash": true, // use hash or not, true by default
+       "prefix": "", // add prefix for every classname
+       "suffix": "", // add suffix for every classname
      }
    ]
   ]
