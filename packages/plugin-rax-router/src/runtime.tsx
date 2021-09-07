@@ -3,6 +3,7 @@ import { isNode, isWeb } from 'universal-env';
 import KeepAliveRouter from './runtime/KeepAliveRouter';
 import StaticRouter from './runtime/StaticRouter';
 import Router from './runtime/Router';
+import { IRoute } from './type';
 
 export default async (api) => {
   const { appConfig, staticConfig, setRenderApp, modifyRoutes, wrapperPageComponent, getRuntimeValue } = api;
@@ -30,10 +31,11 @@ export default async (api) => {
   });
 
   const renderRouter =
-    (initialRoutes) => {
+    (initialRoutes: IRoute[]) => {
       const { routes, keepAliveRoutes } = parseRoutes(initialRoutes);
       return () => {
         routes.push({
+          // @ts-ignore
           component: '',
         });
         // Add KeepAliveRouter
@@ -62,8 +64,8 @@ export default async (api) => {
 };
 
 function parseRoutes(routes) {
-  const initialRoutes = [];
-  const keepAliveRoutes = [];
+  const initialRoutes: IRoute[] = [];
+  const keepAliveRoutes: IRoute[] = [];
   routes.forEach((route) => {
     const { routeWrappers, ...others } = route;
     if ((isWeb || isNode) && route.keepAlive) {
