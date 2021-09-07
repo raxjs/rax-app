@@ -74,7 +74,3 @@ the output css looks like
 ## Why not [hash:base64:7]
 
 As `54755bb1` here is repeated many times, so it's better for `gzip` to generate a smaller bundle
-
-## Cautions
-
-Don't use this plugin in your component project, because the minified classnames maybe conflict, but you can provide a `prefix` or `suffix` option to avoid the conflict
