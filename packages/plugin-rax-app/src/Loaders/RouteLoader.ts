@@ -37,7 +37,7 @@ interface IImportComponentInfo {
 export default function (appJSON) {
   const options = getOptions(this) || {};
   const { target, mpa } = options;
-  const appConfig: IAppConfig = JSON.parse(appJSON);
+  const appConfig: IAppConfig = transformAppConfig(appJSON);
   const isRootAppJsonPath = this.resourcePath === join(this.rootContext, 'src', 'app.json');
 
   if (mpa && isRootAppJsonPath) {
@@ -59,7 +59,7 @@ export default function (appJSON) {
   ${addNormalImportRouteExpression(normalImports)}
 
   ${addDynamicImportRouteExpression.call(this, dynamicImports)};
-
+  console.log('staticConfig===', staticConfig);
   export default staticConfig;
   `;
 }
@@ -125,4 +125,20 @@ function getComponentName(route: IRoute): string {
   if (route.path === '/') return 'Index';
   // /about => About
   return `${route.path[1].toUpperCase()}${route.path.substr(2)}`;
+}
+
+function transformAppConfig(jsonContent): IAppConfig {
+  const appConfig = JSON.parse(jsonContent);
+  if (appConfig.tabBar?.items) {
+    appConfig.tabBar.items = appConfig.tabBar.items.map((item) => {
+      const { path, name, text, pageName, ...otherConfigs } = item;
+      return {
+        ...otherConfigs,
+        text: text || name,
+        pageName: pageName || path,
+      };
+    });
+  }
+
+  return appConfig;
 }

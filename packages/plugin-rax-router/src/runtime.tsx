@@ -1,11 +1,11 @@
-import { createElement, useEffect } from 'rax';
+import { createElement, useEffect, useCallback } from 'rax';
 import { isNode, isWeb } from 'universal-env';
 import KeepAliveRouter from './runtime/KeepAliveRouter';
 import StaticRouter from './runtime/StaticRouter';
 import Router from './runtime/Router';
 
 export default async (api) => {
-  const { appConfig, staticConfig, setRenderApp, modifyRoutes, wrapperPageComponent } = api;
+  const { appConfig, staticConfig, setRenderApp, modifyRoutes, wrapperPageComponent, getRuntimeValue } = api;
   const { routes: appRoutes } = staticConfig;
   const { router: appConfigRouter = {} } = appConfig;
   modifyRoutes(() => appRoutes);
@@ -13,6 +13,8 @@ export default async (api) => {
     modifyRoutes(appConfigRouter.modifyRoutes);
   }
   const { history } = appConfigRouter;
+  const TabBar = getRuntimeValue('TabBar');
+  const tabBarConfig = getRuntimeValue('tabBarConfig');
 
   wrapperPageComponent((PageComponent) => {
     const RootWrapper = () => {
@@ -34,20 +36,24 @@ export default async (api) => {
         routes.push({
           component: '',
         });
-
         // Add KeepAliveRouter
-        const RouterComponents = [<KeepAliveRouter key="rax-keep-alive-router" history={appConfigRouter.history} routes={keepAliveRoutes} />];
-
+        const RouterComponents = [<KeepAliveRouter key="rax-keep-alive-router" history={history} routes={keepAliveRoutes} />];
+        const handleTabBarItemClick = useCallback((item) => {
+          history.push(item.pageName);
+        }, []);
         if (isNode) {
           // Add StaticRouter for node
           RouterComponents.push(
-            <StaticRouter key="rax-static-router" history={appConfigRouter.history} routes={routes} />,
+            <StaticRouter key="rax-static-router" history={history} routes={routes} />,
           );
         } else {
           // Add Normal Router for other route
           RouterComponents.push(
-            <Router key="rax-normal-router" history={appConfigRouter.history} routes={routes} />,
+            <Router key="rax-normal-router" history={history} routes={routes} />,
           );
+        }
+        if (TabBar) {
+          RouterComponents.push(<TabBar key="rax-app-tab-bar" onClick={handleTabBarItemClick} config={tabBarConfig} currentPageName={history.location.pathname} />);
         }
         return RouterComponents;
       };
