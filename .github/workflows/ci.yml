@@ -29,7 +29,7 @@ jobs:
           if [[ ${{ env.BRANCH_NAME }} =~ ^(master|release-next)$|^hotfix\/* ]]; then
               echo ::set-output name=match::true
           fi
-    - run: npm run setup
+    - run: npm run ci
     - run: npm run dependency:check
     - run: npm run lint
     - run: npm run test

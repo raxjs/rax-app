@@ -8,8 +8,8 @@
   "author": "Rax Team",
   "license": "MIT",
   "scripts": {
-    "setup": "yarn install --no-lockfile && npm run build",
-    "bootstrap": "npm run clean && lerna bootstrap && npm run build",
+    "postinstall": "npm run build",
+    "ci": "yarn install --frozen-lockfile && npm run build",
     "watch": "ts-node ./scripts/watch.ts",
     "build": "ts-node ./scripts/build.ts",
     "version": "ts-node ./scripts/tag-version.ts",

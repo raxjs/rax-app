@@ -11,15 +11,16 @@ Hi! I’m really excited that you are interested in contributing to Rax. Before 
 
 ## Setup Environment
 
+The rax-app is a monorepo project using Yarn workspace & lerna. The package manager used to install and link dependencies must be [Yarn v1](https://classic.yarnpkg.com/).
 clone repo and initialize the setup environment：
 
 ```bash
 # 1. clone and setup
 $ git clone git@github.com:raxjs/rax-app.git
-$ cd rax-app && npm run setup
+$ cd rax-app && yarn
 
 # 2. watch packages
-$ npm run watch
+$ yarn watch
 ```
 
 ## Run Examples
@@ -28,8 +29,8 @@ We provide a lot of examples, you can run the examples：
 
 ```bash
 $ cd examples/basic-spa
-$ npm link ../../packages/rax-app
-$ npm start
+$ yarn link ../../packages/rax-app
+$ yarn start
 ```
 
 ## Publish Packages
@@ -37,7 +38,7 @@ $ npm start
 When you need to release, you can execute the command：
 
 ```bash
-$ npm run publish
+$ yarn publish
 # 1. ✔️ ✔️ ✔️ Checking the working tree status...
 # 2. 📦 📦 📦 Building packages...
 # 3. ⚡ ⚡ ⚡ Update package version automatically...
@@ -55,10 +56,10 @@ When a serious bug occurs in the production environment, you can backtrack the p
 
 ```bash
 # rollback packages
-$ npm run rollback <version>
+$ yarn rollback <version>
 
 # sync packages
-$ npm run sync
+$ yarn sync
 ```
 
 
