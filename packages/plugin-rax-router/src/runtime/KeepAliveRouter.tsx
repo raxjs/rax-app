@@ -81,7 +81,7 @@ export default function KeepAliveRouter({ history, routes }) {
     <>
       {
     keepAliveRoutes.map(({ path, component }) =>
-      <div key={path} style={{ display: path === currentPathName ? 'block' : 'none' }}>{component}</div>)
+      <div key={path} style={{ display: path === currentPathName ? 'unset' : 'none' }}>{component}</div>)
       }
     </>
   );
