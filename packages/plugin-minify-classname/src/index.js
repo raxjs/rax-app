@@ -1,15 +1,15 @@
 const path = require('path');
 const readPkgUp = require('read-pkg-up');
-const {minify} = require('minify-css-modules-classname');
+const { minify } = require('minify-css-modules-classname');
 
-module.exports = function minifyCSSModulesClassname({onGetWebpackConfig, context}, options = {}) {
+module.exports = function minifyCSSModulesClassname({ onGetWebpackConfig, context }, options = {}) {
   const { command, rootDir } = context;
   const { useHash = true, prefix = '', suffix = '' } = options;
 
   if (command === 'build') {
-    onGetWebpackConfig('web', config => {
+    onGetWebpackConfig('web', (config) => {
       configCSSModulesOptions(config, {
-        getLocalIdent
+        getLocalIdent,
       });
     });
   }
@@ -20,15 +20,15 @@ module.exports = function minifyCSSModulesClassname({onGetWebpackConfig, context
     let cached = cache.get(filepath);
 
     if (!cached) {
-      cached = readPkgUp.sync({cwd: path.dirname(filepath)});
+      cached = readPkgUp.sync({ cwd: path.dirname(filepath) });
       cache.set(filepath, cached);
     }
-    
+
     return cached;
   }
 
-  function getLocalIdent(loaderContext, _, localName, opts) {
-    const resourcePath = loaderContext.resourcePath;
+  function getLocalIdent(loaderContext, _, localName) {
+    const { resourcePath } = loaderContext;
     const pkg = readPkg(resourcePath);
     const pkgName = (pkg && pkg.packageJson && pkg.packageJson.name) || '';
     const filepath = path.relative(rootDir || '', resourcePath);
@@ -38,17 +38,18 @@ module.exports = function minifyCSSModulesClassname({onGetWebpackConfig, context
     return minify(
       location,
       localName,
-      {useHash, prefix, suffix}
+      // eslint-disable-next-line comma-dangle
+      { useHash, prefix, suffix }
     );
   }
-}
+};
 
 function configCSSModulesOptions(config, cssModulesOptions = {}) {
   [
     'scss-module',
     'css-module',
     'less-module',
-  ].forEach(rule => {
+  ].forEach((rule) => {
     if (config.module.rules.get(rule)) {
       config.module
         .rule(rule)
@@ -56,9 +57,9 @@ function configCSSModulesOptions(config, cssModulesOptions = {}) {
         .tap((options = {}) => ({
           ...options,
           ...{
-            modules: cssModulesOptions
-          }
+            modules: cssModulesOptions,
+          },
         }));
     }
   });
-};
+}
