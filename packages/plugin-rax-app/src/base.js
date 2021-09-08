@@ -11,7 +11,11 @@ const { isWebpack4 } = require('@builder/compat-webpack4');
 module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNode }) => {
   const { context, onGetWebpackConfig } = api;
   const { rootDir, command, userConfig } = context;
-  const mpa = userConfig[target] && (userConfig[target].subPackages || userConfig[target].mpa);
+  let mpa = false;
+  if (userConfig[target]) {
+    // subPackages is miniapp config, mpa is web/weex/kraken config
+    mpa = userConfig[target].subPackages || userConfig[target].mpa;
+  }
 
   const mode = command === 'start' ? 'development' : 'production';
   const babelConfig = getBabelConfig(babelConfigOptions);
