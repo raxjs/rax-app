@@ -4,6 +4,10 @@
   "description": "The basic webpack configuration for rax project",
   "author": "Rax Team",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "!lib/**/*.map"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

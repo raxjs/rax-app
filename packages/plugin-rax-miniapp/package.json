@@ -3,6 +3,10 @@
   "version": "1.4.1",
   "description": "rax miniapp app plugin",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "!lib/**/*.map"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
