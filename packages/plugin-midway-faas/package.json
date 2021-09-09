@@ -3,6 +3,10 @@
   "version": "1.0.1",
   "description": "",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "!lib/**/*.map"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
