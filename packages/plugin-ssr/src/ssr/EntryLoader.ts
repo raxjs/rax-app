@@ -20,10 +20,8 @@ function addDefineInitialPage() {
   const pathname = req.path;
   let Page = appConfig.renderComponent;
   if (!Page) {
-    const routes = staticConfig.routes;
-    const route = routes.find(({ path }) => path === pathname);
-    Page = route.component();
-    Page.__pageConfig = route;
+    const route = staticConfig.routes.find(({ path }) => path === pathname);
+    Page = route.component;
   }
   `;
 }
@@ -44,6 +42,7 @@ export default function () {
   let code = `
     import Generator from '@builder/html-generator';
     import { createElement } from 'rax';
+    import renderer from 'rax-server-renderer';
     import { getAppConfig } from '${formatPath(path.join(corePath, 'appConfig'))}';
     import { emitLifeCycles } from '${formatPath(path.join(corePath, 'publicAPI'))}';
     import '${formatPath(this.resourcePath)}';

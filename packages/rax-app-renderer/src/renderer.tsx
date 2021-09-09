@@ -14,7 +14,7 @@ async function raxAppRenderer(options) {
     options.appConfig = {};
   }
 
-  const { appConfig, buildConfig, appLifecycle } = options;
+  const { appConfig, buildConfig, appLifecycle, staticConfig } = options;
   const { createBaseApp, emitLifeCycles, initAppLifeCycles } = appLifecycle;
 
   const context: IContext = {};
@@ -33,7 +33,7 @@ async function raxAppRenderer(options) {
   }
 
   setInitialData(context.initialData);
-  const { runtime, appConfig: modifiedAppConfig } = createBaseApp(appConfig, buildConfig, context);
+  const { runtime, appConfig: modifiedAppConfig } = createBaseApp(appConfig, buildConfig, context, staticConfig);
   initAppLifeCycles();
 
   // set InitialData, can get the return value through getInitialData method
@@ -64,9 +64,7 @@ function _render(runtime: RuntimeModule, context: IContext, options: RenderOptio
   if (runtime?.modifyDOMRender) {
     return runtime?.modifyDOMRender?.({ App, appMountNode });
   }
-
   // add process.env.SSR for tree-shaking
-  // @ts-ignore
   render(<App />, appMountNode, {
     driver,
     hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr || webConfig.staticExport,

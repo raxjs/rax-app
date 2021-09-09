@@ -25,7 +25,6 @@ export default (api, documentPath?: string | undefined) => {
 
   baseConfig.plugins.delete('ProgressPlugin');
 
-  baseConfig.target('node');
   baseConfig.output.libraryTarget('commonjs2');
 
   // do not copy public
@@ -66,6 +65,7 @@ export default (api, documentPath?: string | undefined) => {
   });
 
   onGetWebpackConfig('document', (config) => {
+    config.target('node');
     // Watch document change and rewrite page entry file
     if (command === 'start' && documentPath) {
       addReloadByDocumentChange(rootDir, entries);

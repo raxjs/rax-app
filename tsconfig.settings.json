@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "jsx": "preserve",
+    "jsx": "react-native",
     "experimentalDecorators": true,
     "declaration": true,
     "sourceMap": true,

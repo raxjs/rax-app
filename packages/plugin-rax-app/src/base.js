@@ -11,8 +11,11 @@ const { isWebpack4 } = require('@builder/compat-webpack4');
 module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNode }) => {
   const { context, onGetWebpackConfig } = api;
   const { rootDir, command, userConfig } = context;
-  const { experiments = {} } = userConfig;
-  const { exportsField } = experiments;
+  let mpa = false;
+  if (userConfig[target]) {
+    // subPackages is miniapp config, mpa is web/weex/kraken config
+    mpa = userConfig[target].subPackages || userConfig[target].mpa;
+  }
 
   const mode = command === 'start' ? 'development' : 'production';
   const babelConfig = getBabelConfig(babelConfigOptions);
@@ -27,6 +30,18 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     webpackConfig,
     babelConfig,
   });
+
+  enhancedWebpackConfig
+    .module
+    .rule('appJSON')
+    .type('javascript/auto')
+    .test(/app\.json$/)
+    .use('route-loader')
+    .loader(require.resolve('./Loaders/RouteLoader'))
+    .options({
+      target,
+      mpa,
+    });
 
   enhancedWebpackConfig
     .plugin('ProgressPlugin')
@@ -79,19 +94,19 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
       });
     }
 
-    if (exportsField) {
-      // Add condition names
-      if (isWebpack4()) {
-        enhancedWebpackConfig.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
-          {
-            conditionNames: [target],
-          },
-        ]);
-      } else {
-        enhancedWebpackConfig.resolve.merge({
-          conditionNames: [target],
-        });
-      }
+    const conditionNames = [target, 'import', 'require', 'node'];
+
+    // Add condition names
+    if (isWebpack4()) {
+      enhancedWebpackConfig.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
+        {
+          conditionNames,
+        },
+      ]);
+    } else {
+      enhancedWebpackConfig.resolve.merge({
+        conditionNames,
+      });
     }
 
     // Set dev server content base

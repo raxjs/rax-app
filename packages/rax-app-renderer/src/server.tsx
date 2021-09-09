@@ -3,8 +3,9 @@ import { createElement } from 'rax';
 import { getRenderApp } from './renderer';
 
 function renderInServer(context, initialProps, options) {
-  const { appConfig, buildConfig = {}, createBaseApp, emitLifeCycles } = options;
-  const { runtime, appConfig: modifiedAppConfig } = createBaseApp(appConfig, buildConfig, context);
+  const { appConfig, buildConfig = {}, createBaseApp, emitLifeCycles, staticConfig } = options;
+
+  const { runtime, appConfig: modifiedAppConfig } = createBaseApp(appConfig, buildConfig, context, staticConfig);
 
   // Emit app launch cycle
   emitLifeCycles();
@@ -29,6 +30,7 @@ export default function raxAppRendererWithSSR(context, props, options) {
       throw new Error('[SSR]: Only support BrowserRouter when using SSR. You should set the router type to "browser". For more detail, please visit https://rax.js.org/docs/guide/route');
     }
     appConfig.router.type = 'static';
+    appConfig.router.history = props.history;
   }
   return renderInServer(context, props, options);
 }

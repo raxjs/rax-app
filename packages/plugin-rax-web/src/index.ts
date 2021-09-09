@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import setMPAConfig from '@builder/mpa-config';
 import * as appHelpers from '@builder/app-helpers';
 import setEntry from './setEntry';
+import setDev from './setDev';
 import DocumentPlugin from './Plugins/DocumentPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import SnapshotPlugin from './Plugins/SnapshotPlugin';
@@ -51,12 +52,12 @@ export default (api) => {
   // Set global methods
   setRegisterMethod(api);
 
-  // onGetWebpackConfig((config) => {
-  //   const { command } = context;
-  //   if (command === 'start') {
-  //     setDev(config);
-  //   }
-  // });
+  onGetWebpackConfig((config) => {
+    const { command } = context;
+    if (command === 'start') {
+      setDev(config);
+    }
+  });
 
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow

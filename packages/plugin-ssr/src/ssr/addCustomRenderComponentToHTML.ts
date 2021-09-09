@@ -3,22 +3,15 @@ import addPageHTMLAssign from './addPageHTMLAssign';
 
 export default function addCustomRenderComponentToHTML(
   {
-    needInjectStyle,
     entryName,
-    pageConfig = { path: '/' },
     publicPath,
+    pageConfig = { path: '/' },
     assetsProcessor = '',
     doctype = '<!DOCTYPE html>',
     injectedHTML = { scripts: [] },
     updateDataInClient,
   }: ILoaderQuery,
 ) {
-  const scripts = [];
-  const styles = [];
-  if (needInjectStyle) {
-    styles.push(`${publicPath}__${entryName}_FILE__.css`);
-  }
-  scripts.push(`${publicPath}__${entryName}_FILE__.js`);
   return `
   async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate, chunkInfo = {}) {
     const pageInitialProps = await getInitialProps(Component, ctx);
@@ -32,20 +25,20 @@ export default function addCustomRenderComponentToHTML(
     ${addPageHTMLAssign()}
 
     const documentData = await getInitialProps(Document, ctx);
-    const pageConfig = Component.__pageConfig;
 
     function getTitle(config) {
       return config.window && config.window.title
     }
-    const title = getTitle(pageConfig) || getTitle(staticConfig);
+    const title = ${JSON.stringify(pageConfig.window?.title || '')} || getTitle(staticConfig);
 
-    let scripts = ${JSON.stringify(scripts)};
-    let styles = ${JSON.stringify(styles)};
-    if (process.env.NODE_ENV === 'development') {
-      const chunkname = chunkInfo['${entryName}'] || '${entryName}';
-      scripts = scripts.map(script => script.replace('__${entryName}_FILE__', chunkname));
-      styles = styles.map(link => link.replace('__${entryName}_FILE__', chunkname));
+    if (process.env.NODE_ENV !== 'development') {
+      chunkInfo = __CHUNK_INFO__[${JSON.stringify(entryName)}];
     }
+
+    let scripts = chunkInfo[${JSON.stringify(entryName)}].js
+      .map(filename => ${JSON.stringify(publicPath)} + filename);
+    let styles = chunkInfo[${JSON.stringify(entryName)}].css
+      .map(filename => ${JSON.stringify(publicPath)} + filename);;
 
     ${assetsProcessor}
 
@@ -78,7 +71,6 @@ export default function addCustomRenderComponentToHTML(
     ${updateDataInClient ? '' : `if (html.indexOf('window.__INITIAL_DATA__=') < 0) {
       $.insertScript('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>')
     }`}
-
 
     return '${doctype || ''}' + $.html();
   };

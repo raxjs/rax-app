@@ -8,6 +8,7 @@ import * as webpackSources from 'webpack-sources';
 import { processAssets, emitAsset } from '@builder/compat-webpack4';
 import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
 import { setDocument } from '../utils/document';
+import { updateHTMLByEntryName } from '../utils/htmlCache';
 
 const PLUGIN_NAME = 'DocumentPlugin';
 
@@ -117,6 +118,7 @@ export default class DocumentPlugin {
 
           setDocument(entryName, html, customDocument);
           const { RawSource } = webpack.sources || webpackSources;
+          updateHTMLByEntryName(entryName, html);
           emitAsset(compilation, `${entryName}.html`, new RawSource(html));
         });
 

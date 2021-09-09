@@ -14,7 +14,7 @@
     "test": "__tests__"
   },
   "dependencies": {
-    "@builder/pack": "0.2.19",
+    "@builder/pack": "0.3.0",
     "build-scripts": "^1.1.0-9",
     "build-plugin-app-core": "next",
     "build-plugin-ice-config": "next",
@@ -26,6 +26,7 @@
     "build-plugin-rax-web": "1.4.5",
     "build-plugin-rax-weex": "1.1.2",
     "build-plugin-ssr": "1.3.10",
+    "build-plugin-rax-router": "1.0.0",
     "chokidar": "^3.3.1",
     "commander": "^5.0.0",
     "create-cli-utils": "next",

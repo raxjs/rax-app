@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { build } from '@alib/build-scripts';
+import { build } from 'build-scripts';
 import * as getPort from 'get-port';
 import Browser, { IPage } from './browser';
 import getBuiltInPlugins = require('../../packages/rax-app/src');
