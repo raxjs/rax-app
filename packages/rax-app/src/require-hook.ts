@@ -7,7 +7,7 @@ export function getFileName(filePath: string) {
   return filePath.split('/').slice(-1)[0];
 }
 
-export function getHookFiles() {
+export function getHookFiles(webpack5) {
   const webpackPlugins = [
     'webpack/lib/Compilation',
     'webpack/lib/dependencies/ConstDependency',
@@ -35,7 +35,7 @@ export function getHookFiles() {
     return [pluginPath, `@builder/pack/deps/webpack/${pluginName}`];
   });
 
-  return [
+  const hookFiles = [
     ['webpack', '@builder/pack/deps/webpack/webpack-lib'],
     ['webpack/package', '@builder/pack/deps/webpack/package'],
     ['webpack/package.json', '@builder/pack/deps/webpack/package'],
@@ -50,11 +50,17 @@ export function getHookFiles() {
     ['webpack/hot/emitter', '@builder/pack/deps/webpack/hot/emitter'],
     ...pluginMap,
   ];
+
+  if (!webpack5) {
+    hookFiles.push(['webpack-dev-server', '@builder/webpack-dev-server']);
+  }
+
+  return hookFiles;
 }
 
-export function hijackWebpack() {
+export function hijackWebpack(webpack5) {
   const hookPropertyMap = new Map(
-    getHookFiles().map(([request, replacement]) => [request, require.resolve(replacement)]),
+    getHookFiles(webpack5).map(([request, replacement]) => [request, require.resolve(replacement)]),
   );
   // eslint-disable-next-line global-require
   const mod = require('module');

@@ -1,29 +1,53 @@
-import * as TerserPlugin from '@builder/pack/deps/terser-webpack-plugin';
-import * as CssMinimizerPlugin from '@builder/pack/deps/css-minimizer-webpack-plugin';
-import * as safeParser from '@builder/pack/deps/postcss-safe-parser';
+import * as webpack from 'webpack';
+import checkWebpack4 from './checkWebpack4';
 
 export default (config) => {
   // disable devtool of mode prod build
   config.devtool(false);
 
+  const isWebpack4 = checkWebpack4(webpack.version);
+
+  let TerserPlugin;
+  let terserPluginOptions = {
+    parallel: true,
+    extractComments: false,
+    terserOptions: {
+      output: {
+        ascii_only: true,
+        comments: 'some',
+        beautify: false,
+      },
+      mangle: true,
+    },
+  };
+
+  let safeParser;
+  let CssMinimizerPlugin;
+
+  if (isWebpack4) {
+    TerserPlugin = require('@builder/rax-pack/deps/terser-webpack-plugin');
+    terserPluginOptions = {
+      ...terserPluginOptions,
+      // @ts-ignore
+      sourceMap: false,
+      cache: true,
+    };
+    // Safe parser
+    safeParser = require('@builder/rax-pack/deps/postcss-safe-parser');
+    // css minimizer plugin
+    CssMinimizerPlugin = require('@builder/rax-pack/deps/css-minimizer-webpack-plugin');
+  } else {
+    TerserPlugin = require('@builder/pack/deps/terser-webpack-plugin');
+    // Safe parser
+    safeParser = require('@builder/pack/deps/postcss-safe-parser');
+    // css minimizer plugin
+    CssMinimizerPlugin = require('@builder/rax-pack/deps/css-minimizer-webpack-plugin');
+  }
+
   // uglify js file
   config.optimization
     .minimizer('TerserPlugin')
-    .use(TerserPlugin, [{
-      // TODO: webpack5 doesn't need it
-      // sourceMap: false,
-      // cache: true,
-      parallel: true,
-      extractComments: false,
-      terserOptions: {
-        output: {
-          ascii_only: true,
-          comments: 'some',
-          beautify: false,
-        },
-        mangle: true,
-      },
-    }]);
+    .use(TerserPlugin, [terserPluginOptions]);
 
   // optimize css file
   config.optimization

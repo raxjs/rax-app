@@ -1,6 +1,9 @@
 import * as path from 'path';
 import { cloneDeep } from '@builder/pack/deps/lodash';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import * as webpack from 'webpack';
+import { IOptions } from './types';
+import checkWebpack4 from './checkWebpack4';
 
 const URL_LOADER_LIMIT = 8192;
 const EXCLUDE_REGX = /node_modules/;
@@ -20,6 +23,7 @@ const configCSSRule = (config, style) => {
 };
 
 export const createCSSRule = (config, ruleName, reg, excludeRegs = []) => {
+  const isWebpack4 = checkWebpack4(webpack.version);
   const isCSSModule = /\-module$/.test(ruleName);
   const extName = ruleName.replace(/\-(module|global)$/, '');
   const rule = config.module.rule(ruleName).test(reg);
@@ -32,11 +36,13 @@ export const createCSSRule = (config, ruleName, reg, excludeRegs = []) => {
   addCssLoader(rule, isCSSModule);
   addPostCssLoader(rule);
 
-  // TODO: webpack5
+  const sassLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/sass-loader') : require.resolve('@builder/pack/deps/sass-loader');
+  const lessLoader = isWebpack4 ? require.resolve('@builder/pack/deps/sass-loader') : require.resolve('@builder/pack/deps/less-loader');
+
   const loaderMap = {
     css: [],
-    scss: [['sass-loader', require.resolve('@builder/pack/deps/sass-loader')]],
-    less: [['less-loader', require.resolve('@builder/pack/deps/less-loader'), { lessOptions: { javascriptEnabled: true } }]],
+    scss: [['sass-loader', sassLoader]],
+    less: [['less-loader', lessLoader, { lessOptions: { javascriptEnabled: true } }]],
   };
 
   loaderMap[extName].forEach((loader) => {
@@ -57,6 +63,7 @@ const addExtractLoader = (rule) => {
 };
 
 const addCssLoader = (rule, isCSSModule) => {
+  const isWebpack4 = checkWebpack4(webpack.version);
   const cssLoaderOpts = {
     sourceMap: true,
   };
@@ -68,15 +75,19 @@ const addCssLoader = (rule, isCSSModule) => {
     },
   };
 
+  const cssLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/css-loader') : require.resolve('@builder/pack/deps/css-loader');
+
   return rule
     .use('css-loader')
-    .loader(require.resolve('@builder/pack/deps/css-loader'))
+    .loader(cssLoader)
     .options(isCSSModule ? cssModuleLoaderOpts : cssLoaderOpts)
     .end();
 };
 
 const addPostCssLoader = (rule) => {
-  return rule.use('postcss-loader').loader(require.resolve('@builder/pack/deps/postcss-loader')).options({ sourceMap: true }).end();
+  const isWebpack4 = checkWebpack4(webpack.version);
+  const postcssLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/postcss-loader') : require.resolve('@builder/pack/deps/postcss-loader');
+  return rule.use('postcss-loader').loader(postcssLoader).options({ sourceMap: true }).end();
 };
 
 const addCssPreprocessorLoader = (rule, loader) => {
@@ -90,12 +101,11 @@ const addCssPreprocessorLoader = (rule, loader) => {
 };
 
 const configAssetsRule = (config, type, testReg, loaderOpts = {}) => {
-  // TODO: webpack5
   config.module
     .rule(type)
     .test(testReg)
     .use(type)
-    .loader(require.resolve('url-loader'))
+    .loader(require.resolve('@builder/pack/deps/url-loader'))
     .options({
       name: '[hash].[ext]',
       limit: URL_LOADER_LIMIT,
@@ -103,7 +113,7 @@ const configAssetsRule = (config, type, testReg, loaderOpts = {}) => {
     });
 };
 
-export default (config, { rootDir, babelConfig }) => {
+export default (config, { rootDir, babelConfig }: IOptions) => {
   config.resolve.alias
     .set('babel-runtime-jsx-plus', require.resolve('babel-runtime-jsx-plus'))
     // @babel/runtime has no index

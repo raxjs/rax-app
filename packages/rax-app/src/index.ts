@@ -13,16 +13,14 @@ interface IRaxAppUserConfig extends IUserConfig {
 }
 
 const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) => {
-  const { targets = ['web'], store = true, router = true } = userConfig;
+  const { targets = ['web'], store = true, router = true, webpack5 } = userConfig;
   const coreOptions: Json = {
     framework: 'rax',
     alias: 'rax-app',
   };
 
-  // enable webpack 5 by default
-  const useWebpack5 = true;
-  init(useWebpack5);
-  hijackWebpack();
+  init(webpack5);
+  hijackWebpack(webpack5);
 
   // built-in plugins for rax app
   const builtInPlugins: IPluginList = [

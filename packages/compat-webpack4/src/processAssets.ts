@@ -12,7 +12,7 @@ interface IProcessAssetsResult {
 type ProcessAssetsCallback = (processAssetsResult: IProcessAssetsResult) => void;
 
 export default function ({ pluginName, compiler }, callback: ProcessAssetsCallback) {
-  if (isWebpack4()) {
+  if (isWebpack4) {
     compiler.hooks.emit.tapAsync(pluginName, async (compilation, hookCallback) => {
       callback({
         compilation,

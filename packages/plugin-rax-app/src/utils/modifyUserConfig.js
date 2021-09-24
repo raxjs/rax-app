@@ -23,9 +23,11 @@ const taskList = [
 module.exports = (api) => {
   const { context, modifyUserConfig, cancelTask } = api;
   const {
-    userConfig: { targets: originalTargets },
+    userConfig: { targets: originalTargets, webpack5 },
   } = context;
   const { devTargets } = context.commandArgs;
+
+  // Modify userConfig.targets
   if (devTargets) {
     const targets = devTargets.split(',');
     modifyUserConfig(() => {
@@ -43,5 +45,13 @@ module.exports = (api) => {
         }
       });
     }
+  }
+
+  // Modify userConfig.webpack5
+  if (webpack5 === undefined) {
+    modifyUserConfig(() => {
+      context.userConfig.webpack5 = false;
+      return context.userConfig;
+    });
   }
 };

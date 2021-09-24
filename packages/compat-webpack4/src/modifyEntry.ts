@@ -11,7 +11,7 @@ export default (compiler, {
   entryPath,
   override = true,
 }: IEntryInfo) => {
-  if (isWebpack4()) {
+  if (isWebpack4) {
     compiler.options.entry[entryName] = entryPath;
   } else if (override) {
     compiler.options.entry[entryName] = {

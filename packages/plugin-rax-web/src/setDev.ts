@@ -10,10 +10,9 @@ function getHTML(entryName) {
 }
 
 export default (config) => {
-  // TODO: webpack5 before has been changed to onBeforeSetupMiddleware
   const devServer = compatDevServer(config.devServer);
   const devServerBeforeHook = devServer.get('onBeforeSetupMiddleware');
-  devServer.set('onBeforeSetupMiddleware', (app, server) => {
+  devServer.setValue('onBeforeSetupMiddleware', (app, server) => {
     if (!server) {
       // In webpack5, the first argument is devServer instance
       server = app;
