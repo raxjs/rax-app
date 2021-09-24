@@ -27,6 +27,7 @@
     "miniapp-builder-shared": "^0.2.0",
     "copy-webpack-plugin": "^5.0.4",
     "miniapp-compile-config": "^0.2.0",
-    "@builder/app-helpers": "^2.3.4"
+    "@builder/app-helpers": "^2.3.4",
+    "miniapp-renderer": "^0.1.15"
   }
 }
