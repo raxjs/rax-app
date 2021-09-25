@@ -26,12 +26,16 @@ module.exports = function minifyCSSModulesClassname({ onGetWebpackConfig, contex
 
     return cached;
   }
+  
+  function normalizePath(file) {
+    return path.sep === '\\' ? file.replace(/\\/g, '/') : file;
+  }
 
   function getLocalIdent(loaderContext, _, localName) {
     const { resourcePath } = loaderContext;
     const pkg = readPkg(resourcePath);
     const pkgName = (pkg && pkg.packageJson && pkg.packageJson.name) || '';
-    const filepath = path.relative(rootDir || '', resourcePath);
+    const filepath = normalizePath(path.relative(rootDir || '', resourcePath));
     // locate file using pkgname + filepath
     const location = `${pkgName}#${filepath}`;
 
