@@ -26,7 +26,8 @@ const nodeStandardList = [
 ];
 
 module.exports = (config, value, context) => {
-  ['css', 'less', 'scss'].forEach((style) => {
+  // #831
+  ['css', 'less', 'scss', 'styl'].forEach((style) => {
     const cssRule = config.module.rule(style);
     const cssModuleRule = config.module.rule(`${style}-module`);
     setCSSRule(config, { configRule: cssRule, context, value, type: style });

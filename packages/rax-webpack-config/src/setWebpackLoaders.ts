@@ -36,6 +36,8 @@ export const createCSSRule = (config, ruleName, reg, excludeRegs = []) => {
     css: [],
     scss: [['sass-loader', require.resolve('sass-loader')]],
     less: [['less-loader', require.resolve('less-loader'), { lessOptions: { javascriptEnabled: true } }]],
+    // #831
+    styl: [['stylus-loader', require.resolve('stylus-loader')]],
   };
 
   loaderMap[extName].forEach((loader) => {
@@ -127,7 +129,8 @@ export default (config, { rootDir, babelConfig }) => {
   ]);
 
   // css loader
-  ['css', 'scss', 'less'].forEach((style) => {
+  // #831
+  ['css', 'scss', 'less', 'styl'].forEach((style) => {
     configCSSRule(config, style);
   });
 
