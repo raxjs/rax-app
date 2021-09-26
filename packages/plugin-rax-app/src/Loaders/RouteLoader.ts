@@ -1,6 +1,7 @@
 import { getOptions } from 'loader-utils';
 import { join, dirname } from 'path';
 import { formatPath } from '@builder/app-helpers';
+import { checkIsMiniappPlatform } from 'miniapp-builder-shared';
 
 interface ITabBarItem {
   text?: string;
@@ -64,6 +65,7 @@ export default function (appJSON) {
 }
 
 function getImportComponentInfo(appConfig: IAppConfig, target: string): IImportComponentInfo {
+  const isMiniappPlatform = checkIsMiniappPlatform(target);
   const dynamicImports = [];
   let normalImports = [];
   if (target === 'web') {
@@ -75,7 +77,7 @@ function getImportComponentInfo(appConfig: IAppConfig, target: string): IImportC
         normalImports.push(route);
       }
     });
-  } else {
+  } else if (!isMiniappPlatform) {
     normalImports = appConfig.routes;
   }
   const normalImportExpression = normalImports.reduce((curr, next) => {
