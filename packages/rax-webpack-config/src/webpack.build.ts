@@ -1,11 +1,8 @@
-import * as webpack from 'webpack';
-import checkWebpack4 from './checkWebpack4';
+import isWebpack4 from './isWebpack4';
 
 export default (config) => {
   // disable devtool of mode prod build
   config.devtool(false);
-
-  const isWebpack4 = checkWebpack4(webpack.version);
 
   let TerserPlugin;
   let terserPluginOptions = {

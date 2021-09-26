@@ -1,9 +1,8 @@
 import * as path from 'path';
 import { cloneDeep } from '@builder/pack/deps/lodash';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import * as webpack from 'webpack';
 import { IOptions } from './types';
-import checkWebpack4 from './checkWebpack4';
+import isWebpack4 from './isWebpack4';
 
 const URL_LOADER_LIMIT = 8192;
 const EXCLUDE_REGX = /node_modules/;
@@ -23,7 +22,6 @@ const configCSSRule = (config, style) => {
 };
 
 export const createCSSRule = (config, ruleName, reg, excludeRegs = []) => {
-  const isWebpack4 = checkWebpack4(webpack.version);
   const isCSSModule = /\-module$/.test(ruleName);
   const extName = ruleName.replace(/\-(module|global)$/, '');
   const rule = config.module.rule(ruleName).test(reg);
@@ -63,7 +61,6 @@ const addExtractLoader = (rule) => {
 };
 
 const addCssLoader = (rule, isCSSModule) => {
-  const isWebpack4 = checkWebpack4(webpack.version);
   const cssLoaderOpts = {
     sourceMap: true,
   };
@@ -85,7 +82,6 @@ const addCssLoader = (rule, isCSSModule) => {
 };
 
 const addPostCssLoader = (rule) => {
-  const isWebpack4 = checkWebpack4(webpack.version);
   const postcssLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/postcss-loader') : require.resolve('@builder/pack/deps/postcss-loader');
   return rule.use('postcss-loader').loader(postcssLoader).options({ sourceMap: true }).end();
 };
@@ -122,7 +118,15 @@ export default (config, { rootDir, babelConfig }: IOptions) => {
   config.target('web');
   config.context(rootDir);
   config.externals([
-    function (ctx, request, callback) {
+    function (...args) {
+      let request;
+      let callback;
+      if (isWebpack4) {
+        [, request, callback] = args;
+      } else {
+        request = args[0].request;
+        callback = args[1];
+      }
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, `commonjs ${request}`);
       }
