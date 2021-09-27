@@ -1,58 +1,65 @@
 const { validation } = require('@builder/app-helpers');
 const { isWebpack4 } = require('@builder/compat-webpack4');
 
-const devServerDefaultOptions = isWebpack4 ? {
-  compress: true,
-  // Use 'ws' instead of 'sockjs-node' on server since webpackHotDevClient is using native websocket
-  disableHostCheck: true,
-  logLevel: 'silent',
-  transportMode: 'ws',
-  quiet: false,
-  publicPath: '/',
-  clientLogLevel: 'none',
-  watchOptions: {
-    ignored: /node_modules/,
-    aggregateTimeout: 600,
-  },
-  before(app) {
-    app.use((req, res, next) => {
-      // set cros for all served files
-      res.set('Access-Control-Allow-Origin', '*');
-      next();
-    });
-  },
-  hot: true,
-  // For mutilple task, web will occupy the server root route
-  writeToDisk: true,
-  historyApiFallback: true,
-} : {
-  compress: true,
-  hot: true,
-  static: {
-    watch: {
+const devServerDefaultOptionsMap = {
+  webpack4: {
+    compress: true,
+    // Use 'ws' instead of 'sockjs-node' on server since webpackHotDevClient is using native websocket
+    disableHostCheck: true,
+    logLevel: 'silent',
+    transportMode: 'ws',
+    quiet: false,
+    publicPath: '/',
+    clientLogLevel: 'none',
+    watchOptions: {
       ignored: /node_modules/,
       aggregateTimeout: 600,
     },
-  },
-  client: {
-    overlay: false,
-    logging: 'none',
-  },
-  onBeforeSetupMiddleware({ app }) {
-    app.use((req, res, next) => {
-      // set cros for all served files
-      res.set('Access-Control-Allow-Origin', '*');
-      next();
-    });
-  },
-  // For mutilple task, web will occupy the server root route
-  devMiddleware: {
+    before(app) {
+      app.use((req, res, next) => {
+        // set cros for all served files
+        res.set('Access-Control-Allow-Origin', '*');
+        next();
+      });
+    },
+    hot: true,
+    // For mutilple task, web will occupy the server root route
     writeToDisk: true,
-    publicPath: '/',
+    historyApiFallback: true,
   },
-  liveReload: false,
-  historyApiFallback: true,
+  webpack5: {
+    compress: true,
+    hot: true,
+    static: {
+      watch: {
+        ignored: /node_modules/,
+        aggregateTimeout: 600,
+      },
+    },
+    client: {
+      overlay: false,
+      logging: 'none',
+    },
+    onBeforeSetupMiddleware({ app }) {
+      app.use((req, res, next) => {
+        // set cros for all served files
+        res.set('Access-Control-Allow-Origin', '*');
+        next();
+      });
+    },
+    // For mutilple task, web will occupy the server root route
+    devMiddleware: {
+      writeToDisk: true,
+      publicPath: '/',
+    },
+    liveReload: false,
+    historyApiFallback: true,
+  },
 };
+
+const webpackVersion = isWebpack4 ? 'webpack4' : 'webpack5';
+
+const devServerDefaultOptions = devServerDefaultOptionsMap[webpackVersion]
 
 /* eslint global-require: 0 */
 module.exports = [
