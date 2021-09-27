@@ -4,7 +4,7 @@ import * as FilterWarningsPlugin from '@builder/pack/deps/webpack-filter-warning
 import * as CaseSensitivePathsPlugin from '@builder/pack/deps/case-sensitive-paths-webpack-plugin';
 
 // eslint-disable-next-line
-export default (config, options) => {
+export default (config) => {
   config
     .plugin('MiniCssExtractPlugin')
     .use(MiniCssExtractPlugin, [

@@ -9,7 +9,7 @@ import type { RuntimeModule } from 'create-app-shared';
 
 let driver = UniversalDriver;
 
-async function raxAppRenderer(options) {
+async function raxAppRenderer(options, renderOptions) {
   if (!options.appConfig) {
     options.appConfig = {};
   }

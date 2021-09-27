@@ -7,7 +7,7 @@ const setDev = require('./setDev');
 const setBuild = require('./setBuild');
 const customConfigs = require('./config/user.config');
 const customOptionConfig = require('./config/options.config');
-const modifyTargets = require('./utils/modifyTargets');
+const modifyUserConfig = require('./utils/modifyUserConfig');
 const setStaticConfig = require('./utils/setStaticConfig');
 const setDevUrlPrefix = require('./utils/setDevUrlPrefix');
 const setRegisterMethod = require('./utils/setRegisterMethod');
@@ -32,8 +32,8 @@ module.exports = (api) => {
   // Set dev url prefix
   setDevUrlPrefix(api);
 
-  // modify targets
-  modifyTargets(api);
+  // modify userConfig
+  modifyUserConfig(api);
 
   // generate template file
   generateTplFile(applyMethod);

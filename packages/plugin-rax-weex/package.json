@@ -13,14 +13,17 @@
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "build-scripts": "1.0.0",
-    "rax": "^1.0.0"
+    "build-scripts": "^1.0.0"
   },
   "dependencies": {
-    "@builder/mpa-config": "next",
+    "@builder/mpa-config": "^4.0.0",
     "fs-extra": "^9.0.1",
     "webpack-sources": "^2.0.0",
     "@builder/app-helpers": "^2.1.0",
-    "react-dev-utils": "^11.0.0"
+    "react-dev-utils": "^11.0.0",
+    "@builder/compat-webpack4": "^1.0.0"
+  },
+  "devDependencies": {
+    "webpack": ">=4.0.0"
   }
 }

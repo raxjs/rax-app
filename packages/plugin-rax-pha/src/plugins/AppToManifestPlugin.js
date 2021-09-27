@@ -2,13 +2,17 @@
  * app.json to manifest.json plugin
  */
 
-const { RawSource } = require('webpack-sources');
+const webpackSources = require('webpack-sources');
+const webpack = require('webpack');
 const cloneDeep = require('lodash.clonedeep');
 const { getMpaEntries } = require('@builder/app-helpers');
+const { emitAsset, processAssets } = require('@builder/compat-webpack4');
 const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers');
 const { setPHADevUrls } = require('../phaDevUrls');
 
 const PLUGIN_NAME = 'PHA_AppToManifestPlugin';
+
+const { RawSource } = webpack.sources || webpackSources;
 
 module.exports = class {
   constructor(options) {
@@ -33,7 +37,10 @@ module.exports = class {
       pageSuffix = '.html';
     }
 
-    compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
+    processAssets({
+      pluginName: PLUGIN_NAME,
+      compiler,
+    }, ({ compilation, callback }) => {
       const appConfig = getValue('staticConfig');
       let manifestJSON = transformAppConfig(appConfig);
       const devUrls = [];
@@ -65,7 +72,7 @@ module.exports = class {
           manifestJSON,
         );
 
-        compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON, null, 2));
+        emitAsset(compilation, 'manifest.json', new RawSource(JSON.stringify(manifestJSON, null, 2)));
 
         devUrls.push(`${cdnPrefix}manifest.json?pha=true`);
       } else {
@@ -110,7 +117,7 @@ module.exports = class {
               copyManifestJSON,
             );
 
-            compilation.assets[`${entryName}-manifest.json`] = new RawSource(JSON.stringify(copyManifestJSON, null, 2));
+            emitAsset(compilation, `${entryName}-manifest.json`, new RawSource(JSON.stringify(copyManifestJSON, null, 2)));
 
             devUrls.push(`${cdnPrefix}${entryName}-manifest.json?pha=true`);
           });

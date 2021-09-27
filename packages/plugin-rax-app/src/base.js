@@ -24,6 +24,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     mode,
     babelConfig,
     target,
+    webpackVersion: context.webpack.version,
   });
   const enhancedWebpackConfig = getEnhancedWebpackConfig(api, {
     target,
@@ -97,26 +98,28 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     const conditionNames = [target, 'import', 'require', 'node'];
 
     // Add condition names
-    if (isWebpack4()) {
+    if (isWebpack4) {
       enhancedWebpackConfig.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
         {
           conditionNames,
         },
       ]);
+      // Set dev server content base
+      config.devServer.contentBase(path.join(rootDir, outputDir));
+      // Reset config target
+      config.target('web');
     } else {
       enhancedWebpackConfig.resolve.merge({
         conditionNames,
       });
-    }
 
-    // Set dev server content base
-    // TODO: webpack5
-    // config.devServer.contentBase(path.join(rootDir, outputDir));
-    config.devServer.merge({
-      static: {
-        directory: path.join(rootDir, outputDir),
-      },
-    });
+      // Set dev server content base
+      config.devServer.merge({
+        static: {
+          directory: path.join(rootDir, outputDir),
+        },
+      });
+    }
 
     // Set output path
     config.output.path(path.resolve(rootDir, outputDir, target));

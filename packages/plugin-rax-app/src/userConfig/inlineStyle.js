@@ -1,6 +1,7 @@
 const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } = require('../constants');
 const { createCSSRule } = require('rax-webpack-config');
 const getPostCssPlugin = require('../getPostCssPlugin');
+const { isWebpack4 } = require('@builder/compat-webpack4');
 
 const webStandardList = [
   WEB,
@@ -125,17 +126,18 @@ function configPostCssLoader(configRule, type) {
   return configRule
     .use('postcss-loader')
     .tap((options) => {
+      if (isWebpack4) {
+        return {
+          ...options,
+          plugins: (options.plugins || []).concat(getPostCssPlugin(type)),
+        };
+      }
+      const postcssOptions = options.postcssOptions || {};
       return {
         ...options,
-        // TODO: webpack5 not support config field
-        // config: {
-        //   path: configPath,
-        //   ctx: {
-        //     type,
-        //   },
-        // },
         postcssOptions: {
-          plugins: (options.plugins || []).concat(getPostCssPlugin(type)),
+          ...postcssOptions,
+          plugins: (postcssOptions.plugins || []).concat(getPostCssPlugin(type)),
         },
       };
     })
@@ -143,6 +145,14 @@ function configPostCssLoader(configRule, type) {
 }
 
 function configLoadersInNode(configRule) {
+  const cssLoaderOptions = {};
+  if (isWebpack4) {
+    cssLoaderOptions.onlyLocals = true;
+  } else {
+    cssLoaderOptions.modules = {
+      exportOnlyLocals: true,
+    };
+  }
   return configRule
     .uses
     .delete('postcss-loader')
@@ -150,10 +160,10 @@ function configLoadersInNode(configRule) {
     .use('css-loader')
     .tap((loaderOptions) => ({
       ...loaderOptions,
-      // TODO: webpack5 onlyLocals => module.exportOnlyLocals
+      ...cssLoaderOptions,
       modules: {
-        ...(loaderOptions.modules || {}),
-        exportOnlyLocals: true,
+        ...loaderOptions.modules,
+        ...cssLoaderOptions.modules,
       },
     }))
     .end();
