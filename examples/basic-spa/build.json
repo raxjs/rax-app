@@ -1,7 +1,3 @@
 {
-  "targets": ["web"],
-  "web": {
-    "pha": true
-  },
-  "webpack5": true
+  "targets": ["web", "weex", "kraken", "miniapp", "wechat-miniprogram"]
 }
