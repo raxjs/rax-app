@@ -117,7 +117,7 @@ module.exports = class {
               copyManifestJSON,
             );
 
-            emitAsset(compilation, `${entryName}-manifest.json`, new RawSource(JSON.stringify(copyManifestJSON, null, 2)))
+            emitAsset(compilation, `${entryName}-manifest.json`, new RawSource(JSON.stringify(copyManifestJSON, null, 2)));
 
             devUrls.push(`${cdnPrefix}${entryName}-manifest.json?pha=true`);
           });
