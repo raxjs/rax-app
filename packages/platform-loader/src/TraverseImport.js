@@ -20,6 +20,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
     'bytedance-microapp': ['isByteDanceMicroApp'],
     'kuaishou-miniprogram': ['isKuaiShouMiniProgram'],
     'baidu-smartprogram': ['isBaiduSmartProgram'],
+    'harmony': ['isHarmony'],
   };
 
   /**

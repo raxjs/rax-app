@@ -44,6 +44,10 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
     builtInPlugins.push('build-plugin-rax-weex');
   }
 
+  if (targets.includes('harmony')) {
+    builtInPlugins.push('build-plugin-rax-harmony');
+  }
+
   if (targets.includes('kraken')) {
     builtInPlugins.push('build-plugin-rax-kraken');
   }

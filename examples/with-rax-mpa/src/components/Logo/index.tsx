@@ -1,5 +1,4 @@
 import { createElement, PureComponent } from 'rax';
-import Image from 'rax-image';
 
 import './index.css';
 
@@ -10,7 +9,7 @@ class Logo extends PureComponent {
     };
     console.log('with router =>', this.props);
     return (
-      <Image
+      <image
         className="logo"
         source={source}
       />

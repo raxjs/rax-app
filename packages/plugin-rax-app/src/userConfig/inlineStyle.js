@@ -1,11 +1,12 @@
 const { resolve } = require('path');
-const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } = require('../constants');
+const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM, HARMONY } = require('../constants');
 const { createCSSRule } = require('rax-webpack-config');
 
 const configPath = resolve(__dirname, '../');
 
 const webStandardList = [
   WEB,
+  HARMONY,
 ];
 
 const inlineStandardList = [

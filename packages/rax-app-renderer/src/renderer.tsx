@@ -7,6 +7,9 @@ import { IInitialContext, IContext } from './types';
 import { setInitialData } from './initialData';
 import parseSearch from './parseSearch';
 
+declare const ace: any;
+
+const isHarmony = typeof ace !== 'undefined';
 const useRouter = createUseRouter({ useState, useLayoutEffect });
 const tabBarCache = {};
 
@@ -168,7 +171,7 @@ async function renderInClient(options) {
     // Emit app launch cycle
     emitLifeCycles();
 
-    const rootEl = isWeex || isKraken ? null : document.getElementById(rootId);
+    const rootEl = isWeex || isKraken || isHarmony ? null : document.getElementById(rootId);
     if (isWeb && rootId === null) console.warn('Error: Can not find #root element, please check which exists in DOM.');
     const webConfig = buildConfig.web || {};
     return render(appInstance, rootEl, { driver, hydrate: webConfig.hydrate || webConfig.snapshot || webConfig.ssr });

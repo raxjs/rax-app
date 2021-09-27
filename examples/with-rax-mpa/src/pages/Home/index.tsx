@@ -1,16 +1,15 @@
 import { createElement } from 'rax';
-import View from 'rax-view';
-import Text from 'rax-text';
 import Logo from '@/components/Logo';
 
-import './index.css';
+// @ts-ignore
+import styles from './index.css';
 
 export default function Home(props) {
   return (
-    <View className="home">
+    <div style={styles.home}>
       <Logo />
-      <Text className="title">Welcome to Your Rax App</Text>
-      <Text className="info">More information about Rax</Text>
-    </View>
+      <text style={styles.title}>Welcome to Your Rax App</text>
+      <text style={styles.info}>More information about Rax</text>
+    </div>
   );
 }

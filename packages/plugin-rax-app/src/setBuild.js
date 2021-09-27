@@ -8,6 +8,7 @@ const {
   WEB,
   WEEX,
   KRAKEN,
+  HARMONY,
 } = require('./constants');
 
 const highlightPrint = chalk.hex('#F4AF3D');
@@ -74,6 +75,16 @@ module.exports = (api) => {
           console.log();
         }
       });
+
+      if (targets.includes(HARMONY)) {
+        console.log(highlightPrint('[HARMONY] Bundle at:'));
+        console.log(
+          '   ',
+          chalk.underline.white(path.resolve(rootDir, outputDir, HARMONY)),
+        );
+        console.log();
+      }
+
     }
   });
 };

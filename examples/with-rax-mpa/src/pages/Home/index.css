@@ -1,16 +1,18 @@
 .home {
-  align-items: center;
-  margin-top: 200rpx;
+  margin-top: 200px;
+  width: 100px;
+  height: 100px;
+  background-color: red;
 }
 
 .title {
-  font-size: 35rpx;
+  font-size: 35px;
   font-weight: bold;
-  margin: 20rpx 0;
+  margin: 20px 0;
 }
 
 .info {
-  font-size: 36rpx;
-  margin: 8rpx 0;
+  font-size: 36px;
+  margin: 8px 0;
   color: #555;
 }

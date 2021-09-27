@@ -1,13 +1,11 @@
 {
-  "targets": ["web", "weex", "kraken"],
-  "weex": {
+  "targets": ["harmony"],
+  "harmony": {
     "mpa": true
   },
-  "kraken": {
-    "mpa": true
+  "minify": false,
+  "experiments": {
+    "exportsField": true
   },
-  "web": {
-    "mpa": true,
-    "staticExport": true
-  }
+  "inlineStyle": true
 }

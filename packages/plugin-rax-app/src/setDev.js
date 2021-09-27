@@ -8,7 +8,7 @@ const chokidar = require('chokidar');
 const { platformMap } = require('miniapp-builder-shared');
 
 const logWebpackConfig = require('./utils/logWebpackConfig');
-const { MINIAPP_PLATFORMS, MINIAPP, WEB, WEEX, KRAKEN, DEV_URL_PREFIX } = require('./constants');
+const { MINIAPP_PLATFORMS, MINIAPP, WEB, WEEX, KRAKEN, DEV_URL_PREFIX, HARMONY } = require('./constants');
 const generateTempFile = require('./utils/generateTempFile');
 
 const highlightPrint = chalk.hex('#F4AF3D');
@@ -39,9 +39,11 @@ module.exports = function (api) {
   let webEntryKeys = [];
   let weexEntryKeys = [];
   let krakenEntryKeys = [];
+  let harmonyEntryKeys = [];
   let webMpa = false;
   let weexMpa = false;
   let krakenMpa = false;
+  let harmonyMpa = false;
   let isFirstCompile = true;
   let pha = false;
   watchAppJson(rootDir, log);
@@ -66,16 +68,19 @@ module.exports = function (api) {
     const webWebpackInfo = getWebpackInfo(configs, 'web');
     const weexWebpackInfo = getWebpackInfo(configs, 'weex');
     const krakenWebpackInfo = getWebpackInfo(configs, 'kraken');
+    const harmonyWebpackInfo = getWebpackInfo(configs, 'harmony');
 
     devInfo.publicPath = webWebpackInfo.publicPath;
 
     webEntryKeys = Object.keys(webWebpackInfo.entry);
     weexEntryKeys = Object.keys(weexWebpackInfo.entry);
     krakenEntryKeys = Object.keys(krakenWebpackInfo.entry);
+    harmonyEntryKeys = Object.keys(harmonyWebpackInfo.entry);
 
     webMpa = userConfig.web && userConfig.web.mpa;
     weexMpa = userConfig.weex && userConfig.weex.mpa;
     krakenMpa = userConfig.kraken && userConfig.kraken.mpa;
+    harmonyMpa = userConfig.harmony && userConfig.harmony.mpa;
     pha = userConfig.web && userConfig.web.pha;
 
     // Remove outputDir when start devServer
@@ -196,6 +201,18 @@ module.exports = function (api) {
           console.log(`  ${chalk.underline.white(weexUrl)}`);
           console.log();
           qrcode.generate(weexUrl, { small: true });
+          console.log();
+        });
+      }
+
+      if (targets.includes(HARMONY)) {
+        devInfo.urls.harmony = [];
+        // Use Weex App to scan ip address (mobile phone can't visit localhost).
+        console.log(highlightPrint('  [Harmony] Development server at: '));
+        weexEntryKeys.forEach((entryKey) => {
+          const harmonyUrl = `${urlPrefix}/harmony/${harmonyMpa ? entryKey : 'index'}.js`;
+          devInfo.urls.weex.push(harmonyUrl);
+          console.log(`  ${chalk.underline.white(harmonyUrl)}`);
           console.log();
         });
       }
