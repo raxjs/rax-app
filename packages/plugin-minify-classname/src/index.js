@@ -2,11 +2,14 @@ const path = require('path');
 const readPkgUp = require('read-pkg-up');
 const { minify } = require('minify-css-modules-classname');
 
-module.exports = function minifyCSSModulesClassname({ onGetWebpackConfig, context }, options = {}) {
-  const { command, rootDir } = context;
-  const { useHash = true, prefix = '', suffix = '' } = options;
+module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, context }) {
+  const { command, rootDir, userConfig = {} } = context;
+  const { experiments = {} } = userConfig;
+  const options = normalizeOptions(experiments.minifyCSSModules);
 
-  if (command === 'build') {
+  const { enable = false, useHash = true, prefix = '', suffix = '' } = options;
+
+  if ((command === 'build') && enable) {
     onGetWebpackConfig('web', (config) => {
       configCSSModulesOptions(config, {
         getLocalIdent,
@@ -47,6 +50,20 @@ module.exports = function minifyCSSModulesClassname({ onGetWebpackConfig, contex
     );
   }
 };
+
+function normalizeOptions(options) {
+  if (typeof options === 'object') {
+    return {
+      enable: true,
+      // options may be null
+      ...(options || {})
+    };
+  }
+
+  return {
+    enable: Boolean(options)
+  };
+}
 
 function configCSSModulesOptions(config, cssModulesOptions = {}) {
   [
