@@ -60,6 +60,8 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
     builtInPlugins.push('build-plugin-rax-router');
   }
 
+  builtInPlugins.push('build-plugin-ice-logger');
+
   return builtInPlugins;
 };
 
