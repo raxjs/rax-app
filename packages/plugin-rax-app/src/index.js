@@ -1,7 +1,7 @@
 const path = require('path');
 const { applyCliOption, applyUserConfig } = require('@builder/user-config');
 const getBase = require('./base');
-const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
+const { GET_RAX_APP_WEBPACK_CONFIG, REACT_TRANSFORM_CONFIG } = require('./constants');
 const setTest = require('./setTest');
 const setDev = require('./setDev');
 const setBuild = require('./setBuild');
@@ -20,6 +20,11 @@ module.exports = (api) => {
   setRegisterMethod(api);
 
   setValue(GET_RAX_APP_WEBPACK_CONFIG, getBase);
+  setValue(REACT_TRANSFORM_CONFIG, {
+    importSource: 'rax',
+    pragma: 'createElement',
+    pragmaFrag: 'Fragment',
+  });
 
   setStaticConfig(api);
 
