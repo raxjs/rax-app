@@ -35,7 +35,7 @@ export const createCSSRule = (config, ruleName, reg, excludeRegs = []) => {
   addPostCssLoader(rule);
 
   const sassLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/sass-loader') : require.resolve('@builder/pack/deps/sass-loader');
-  const lessLoader = isWebpack4 ? require.resolve('@builder/pack/deps/sass-loader') : require.resolve('@builder/pack/deps/less-loader');
+  const lessLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/less-loader') : require.resolve('@builder/pack/deps/less-loader');
 
   const loaderMap = {
     css: [],
@@ -161,14 +161,14 @@ export default (config, { rootDir, babelConfig }: IOptions) => {
 
   ['jsx', 'tsx'].forEach((ruleName) => {
     const testRegx = new RegExp(`\\.${ruleName}?$`);
-    config.module
-      .rule(ruleName)
+    config.module.rule(ruleName)
       .test(testRegx)
-      .exclude.add(EXCLUDE_REGX)
+      .exclude
+      .add(EXCLUDE_REGX)
       .end()
       .use('babel-loader')
       .loader(babelLoader)
-      .options({ ...cloneDeep(babelConfig), cacheDirectory: true });
+      .options({ ...cloneDeep(babelConfig) });
   });
 
   return config;

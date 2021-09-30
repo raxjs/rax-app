@@ -59,7 +59,7 @@ const devServerDefaultOptionsMap = {
 
 const webpackVersion = isWebpack4 ? 'webpack4' : 'webpack5';
 
-const devServerDefaultOptions = devServerDefaultOptionsMap[webpackVersion]
+const devServerDefaultOptions = devServerDefaultOptionsMap[webpackVersion];
 
 /* eslint global-require: 0 */
 module.exports = [
