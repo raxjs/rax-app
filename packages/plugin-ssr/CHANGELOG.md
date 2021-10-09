@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.3.11
+
+- Feat: support sdk combo
+
+## v1.3.10
+
+- Fix: pass context when generate html
+
 ## v1.3.9
 
 - Feat: transform static node to html tag directly
@@ -7,7 +15,7 @@
 
 ## v1.3.8
 
-- Feat: support query is `csr=true`  with request path end is `.html`, devServer will return CSR result
+- Feat: support query is `csr=true` with request path end is `.html`, devServer will return CSR result
 
 ## v1.3.7
 
@@ -42,4 +50,3 @@
 ## v1.3.0
 
 - Feat: support config `hash` in build.json
-

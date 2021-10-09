@@ -57,7 +57,27 @@ describe(`should build miniapp result: `, () => {
     const existsAppJSONPath = fs.existsSync(appJSONPath);
     expect(existsAppJSONPath).toBe(true);
     if (existsAppJSONPath) {
-      expect(fs.readJsonSync(appJSONPath)).toStrictEqual({"pages": ["pages/Home/index", "pages/About/index"], "window": {"defaultTitle": "Rax App"}});
+      expect(fs.readJsonSync(appJSONPath)).toStrictEqual(
+        {
+          "pages": ["pages/Home/index", "pages/About/index"],
+          "window": {"defaultTitle": "Rax App"},
+          "tabBar": {
+            "textColor": "#dddddd",
+            "selectedColor": "#49a9ee",
+            "backgroundColor": "#ffffff",
+            "items": [
+              {
+                "pagePath": "pages/Home/index",
+                "name": "Home Page",
+              },
+              {
+                "pagePath": "pages/About/index",
+                "name": "About",
+              }
+            ]
+          }
+        }
+      );
     }
   });
 });
@@ -75,7 +95,25 @@ describe(`should build wechat-miniprogram result: `, () => {
     const existsAppJSONPath = fs.existsSync(appJSONPath);
     expect(existsAppJSONPath).toBe(true);
     if (existsAppJSONPath) {
-      expect(fs.readJsonSync(appJSONPath)).toStrictEqual({"pages": ["pages/Home/index", "pages/About/index"], "window": {"navigationBarTitleText": "Rax App"}});
+      expect(fs.readJsonSync(appJSONPath)).toStrictEqual({
+        "pages": ["pages/Home/index", "pages/About/index"],
+        "window": {"navigationBarTitleText": "Rax App"},
+        "tabBar": {
+          "color": "#dddddd",
+          "selectedColor": "#49a9ee",
+          "backgroundColor": "#ffffff",
+          "list": [
+            {
+              "pagePath": "pages/Home/index",
+              "text": "Home Page",
+            },
+            {
+              "pagePath": "pages/About/index",
+              "text": "About",
+            }
+          ]
+        }
+      });
     }
   });
 });

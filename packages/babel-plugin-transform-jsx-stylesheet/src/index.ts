@@ -70,6 +70,9 @@ export default function ({ types: t, template }, opts = {}) {
   }
 
   return {
+    pre(file) {
+      file.set('shouldSkipConvert', false);
+    },
     visitor: {
       Program: {
         exit({ node }, { file }) {
@@ -109,6 +112,11 @@ export default function ({ types: t, template }, opts = {}) {
           retainClassName = false,
           convertImport = true, // default to true
         } = opts;
+
+        // skip attribute convert when use css module
+        // `import styles from '*.module.(c|le|sa|sc)ss'`
+        // should not convert attribute `className` to `style`
+        if (file.get('shouldSkipConvert')) return;
 
         // Check if has "style"
         let hasStyleAttribute = false;
@@ -213,7 +221,7 @@ export default function ({ types: t, template }, opts = {}) {
       // eslint-disable-next-line @typescript-eslint/no-shadow
       ImportDeclaration({ node }, { file, opts }) {
         // Convert style import is disabled.
-        const { convertImport = true } = opts;
+        const { convertImport = true, forceEnableCSS = false } = opts;
         if (!convertImport) return;
 
         const sourceValue = node.source.value;
@@ -232,6 +240,13 @@ export default function ({ types: t, template }, opts = {}) {
 
           file.set('cssParamIdentifiers', cssParamIdentifiers);
           file.set('cssFileCount', cssFileCount);
+        }
+
+        // Set skip flag when `import styles from '*.module.(c|le|sa|sc)ss'`
+        if (node.specifiers.length && cssIndex > -1) {
+          const cssModuleReg = /\.module\.(c|le|sa|sc)ss$/;
+          const shouldSkipConvert = (forceEnableCSS && cssModuleReg.test(sourceValue)) || file.get('shouldSkipConvert');
+          file.set('shouldSkipConvert', shouldSkipConvert);
         }
       },
     },

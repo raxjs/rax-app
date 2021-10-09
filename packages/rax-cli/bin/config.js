@@ -99,6 +99,24 @@ function getPromptQuestion(appTemplate) {
     ],
   }, {
     type: 'list',
+    name: 'miniappPluginBuildType',
+    default: 'compile',
+    message: 'What\'s your plugin build type for miniapp ?',
+    when(answers) {
+      return answers.projectType === 'plugin';
+    },
+    choices: [
+      {
+        name: 'compile mode (high performance, support page/component/js api)',
+        value: 'compile',
+      },
+      {
+        name: 'runtime mode (with no syntax constraints, support page)',
+        value: 'runtime',
+      },
+    ],
+  }, {
+    type: 'list',
     name: 'appType',
     message: 'What\'s your application type? ',
     when(answers) {
@@ -125,6 +143,10 @@ function getPromptQuestion(appTemplate) {
         name: 'Web 单页应用',
         value: 'web-spa',
       },
+      {
+        name: '小程序云开发一体化应用',
+        value: 'midway-miniapp',
+      },
     ],
     default: 'web-mpa',
   }, {
@@ -132,7 +154,8 @@ function getPromptQuestion(appTemplate) {
     name: 'languageType',
     message: 'What type of language do you want to use?',
     when(answers) {
-      return (answers.projectType === 'app' || answers.projectType === 'component') && !appTemplate;
+      // midway-miniapp project doesn't support js template
+      return ((answers.projectType === 'app' && answers.appType !== 'midway-miniapp') || answers.projectType === 'component') && !appTemplate;
     },
     choices: [
       {

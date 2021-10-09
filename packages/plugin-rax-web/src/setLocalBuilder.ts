@@ -55,7 +55,7 @@ export default (api, documentPath?: string | undefined) => {
     let entries;
     if (webConfig.mpa) {
       entries = getMpaEntries(api, {
-        target: 'document',
+        target: 'web',
         appJsonContent: staticConfig,
       });
     } else {
@@ -86,7 +86,7 @@ export default (api, documentPath?: string | undefined) => {
 };
 
 function addReloadByDocumentChange(rootDir, entries) {
-  const watcher = chokidar.watch(`${rootDir}/src/document/index.@(tsx|js?(x))`, {
+  const watcher = chokidar.watch(`${rootDir}/src/document/**`, {
     ignoreInitial: true,
     atomic: 300,
   });

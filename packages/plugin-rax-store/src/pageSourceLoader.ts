@@ -12,10 +12,10 @@ import modifyRoutes from './utils/modifyRoutes';
     ]
   }
  */
-export default function pageSourceLoader(appJSON) {
-  const { tempPath, srcPath, projectType, mpa } = getOptions(this);
+export default function pageSourceLoader(appJSON: string) {
+  const { tempPath, srcPath, mpa } = getOptions(this);
   const content = JSON.parse(appJSON);
 
-  content.routes = modifyRoutes(content.routes, tempPath, srcPath, projectType, mpa);
+  content.routes = modifyRoutes(content.routes, tempPath, srcPath, mpa);
   return JSON.stringify(content);
 }

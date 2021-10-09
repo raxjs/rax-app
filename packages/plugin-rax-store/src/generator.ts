@@ -16,8 +16,6 @@ export default class Generator {
 
   private tempPath: string;
 
-  private projectType: string;
-
   private applyMethod: Function;
 
   private srcDir: string;
@@ -28,13 +26,11 @@ export default class Generator {
     rootDir,
     tempPath,
     applyMethod,
-    projectType,
     srcDir,
     pageEntries,
   }: {
     rootDir: string;
     tempPath: string;
-    projectType: string;
     applyMethod: Function;
     srcDir: string;
     pageEntries: string[];
@@ -42,7 +38,6 @@ export default class Generator {
     this.rootDir = rootDir;
     this.tempPath = tempPath;
     this.applyMethod = applyMethod;
-    this.projectType = projectType;
     this.srcDir = srcDir;
     this.pageEntries = pageEntries;
   }
@@ -58,16 +53,12 @@ export default class Generator {
     this.pageEntries.forEach((pageEntry) => {
       const pageName = getRaxPageName(pageEntry);
       const pageComponentPath = path.join(this.rootDir, this.srcDir, pageEntry);
-      const pageStoreFile = formatPath(getPageStorePath({
-        srcPath,
-        pageName,
-        projectType: this.projectType,
-      }));
-      const existedStoreFile = fse.pathExistsSync(pageStoreFile);
-      if (!existedStoreFile) {
-        // don't generate .rax/pages/Home/index.tsx
-        // 1. the page store does not exist
-        // 2. the entry has no `export default`
+      const pageStoreFile = getPageStorePath(srcPath, pageName);
+
+      // don't generate .rax/pages/Home/index.tsx
+      // 1. the page store does not exist
+      // 2. the entry has no `export default`
+      if (!fse.pathExistsSync(pageStoreFile)) {
         return;
       } else if (!checkExportDefaultDeclarationExists(pageComponentPath)) {
         console.log(chalk.yellow(
@@ -106,14 +97,15 @@ export default class Generator {
   private renderPageComponent({ pageStoreFile, pageEntry, pageComponentPath }: IRenderPageParams) {
     const pageComponentTemplatePath = path.join(__dirname, './template/pageComponent.tsx.ejs');
     // e.g.: generate .rax/pages/Home/myIndex.tsx
-    const pageComponentTempPath = path.join(this.tempPath, `${pageEntry}.${this.projectType}x`);
+    const pageComponentTempPath = path.join(this.tempPath, `${pageEntry}.tsx`);
     const pageComponentSourcePath = formatPath(pageComponentPath);
 
     const pageComponentName = 'PageComponent';
+    const pageStoreExtname = path.extname(pageStoreFile);
     const pageComponentRenderData = {
       pageComponentImport: `import ${pageComponentName} from '${pageComponentSourcePath}'`,
       pageComponentExport: pageComponentName,
-      pageStoreImport: `import store from '${pageStoreFile.replace(`.${this.projectType}`, '')}'`,
+      pageStoreImport: `import store from '${pageStoreFile.replace(pageStoreExtname, '')}'`,
     };
 
     this.applyMethod('addRenderFile', pageComponentTemplatePath, pageComponentTempPath, pageComponentRenderData);

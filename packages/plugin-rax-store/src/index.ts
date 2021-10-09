@@ -4,7 +4,7 @@ import CodeGenerator from './generator';
 import { getAppStorePath, getRaxPagesPath } from './utils/getPath';
 import checkExpectedStoreFileExists from './utils/checkExpectedStoreFileExists';
 import checkIsMpa from './utils/checkIsMpa';
-import { checkExportDefaultDeclarationExists, formatPath } from '@builder/app-helpers';
+import { checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 import modifyStaticConfigRoutes from './utils/modifyStaticConfigRoutes';
 // TODO use import declaration
 const chalk = require('chalk');
@@ -18,19 +18,22 @@ export default async (api) => {
   const srcDir = 'src';
   const srcPath = path.join(rootDir, srcDir);
   const tempPath = getValue('TEMP_PATH');
-  const projectType = getValue('PROJECT_TYPE');
 
-  const storeExists = checkExpectedStoreFileExists({ rootDir, srcDir, projectType });
+  // check if the store.[js|ts] exists in the project
+  const storeExists = checkExpectedStoreFileExists(rootDir, srcDir);
   if (!storeExists) {
     applyMethod('addDisableRuntimePlugin', pluginName);
     return;
   }
+
   process.env.STORE_ENABLED = 'true';
 
-  const appStoreFilePath = formatPath(getAppStorePath({ srcPath, projectType }));
-  const existsAppStoreFile = fse.pathExistsSync(appStoreFilePath);
+  const appStorePath = getAppStorePath(srcPath);
   const pageEntries = getRaxPagesPath(rootDir);
   const mpa = checkIsMpa(userConfig);
+
+  // set IStore to IAppConfig
+  applyMethod('addAppConfigTypes', { source: './store/types', specifier: '{ IStore }', exportName: 'store?: IStore' });
 
   applyMethod('addExport', {
     source: '@ice/store',
@@ -46,7 +49,6 @@ export default async (api) => {
       staticConfig,
       tempPath,
       srcPath,
-      projectType,
       mpa,
     ),
   );
@@ -60,12 +62,11 @@ export default async (api) => {
         tempPath,
         srcPath,
         mpa,
-        projectType,
       });
 
     // Set alias to run @ice/store
     config.resolve.alias
-      .set('$store', existsAppStoreFile ? appStoreFilePath : path.join(tempPath, 'store', 'index.ts'))
+      .set('$store', fse.pathExistsSync(appStorePath) ? appStorePath : path.join(tempPath, 'store', 'index.ts'))
       .set('react-redux', require.resolve('rax-redux'))
       .set('react', path.join(rootDir, 'node_modules', 'rax/lib/compat'));
   });
@@ -74,7 +75,6 @@ export default async (api) => {
     tempPath,
     rootDir,
     applyMethod,
-    projectType,
     srcDir,
     pageEntries,
   });

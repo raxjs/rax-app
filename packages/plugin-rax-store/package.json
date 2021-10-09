@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-store",
-  "version": "1.2.1",
+  "version": "1.3.1",
   "description": "builtin `@ice/store` in rax-app",
   "license": "MIT",
   "main": "lib/index.js",
@@ -24,8 +24,10 @@
     "@ice/store": "^1.3.1",
     "chalk": "^4.1.0",
     "fs-extra": "^8.1.0",
-    "globby": "^11.0.3",
     "loader-utils": "^2.0.0",
     "rax-redux": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.12"
   }
 }

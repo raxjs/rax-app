@@ -38,7 +38,14 @@ describe('transformAppConfig', () => {
         },
         header: {
           taskId: 455
-        }
+        },
+        extHeaders: {
+          id: 123,
+          test_id: 234,
+        },
+        dataType: 'json',
+        appKey: '12345',
+        LoginRequest: true,
       }],
     }, true);
     expect(manifestJSON.data_prefetch.length).toBe(1);
@@ -52,6 +59,11 @@ describe('transformAppConfig', () => {
     expect(manifestJSON.data_prefetch[0].header).toMatchObject({
       taskId: 455,
     });
+    expect(manifestJSON.data_prefetch[0].ext_headers).toMatchObject({ id: 123, test_id: 234, });
+    expect(manifestJSON.data_prefetch[0].dataType).toBe('json');
+    expect(manifestJSON.data_prefetch[0].appKey).toBe('12345');
+    expect(manifestJSON.data_prefetch[0].LoginRequest).toBe(true);
+    expect(manifestJSON.data_prefetch[0].prefetch_key).toBe('mtop');
   });
 
   it('should transform window to flat object', () => {
@@ -111,7 +123,8 @@ describe('transformAppConfig', () => {
       data: {
         id: 123
       },
-      header: {}
+      header: {},
+      prefetch_key: 'mtop',
     }]);
   });
 
@@ -121,6 +134,15 @@ describe('transformAppConfig', () => {
     }, false);
 
     expect(manifestJSON).toMatchObject({ a: 123 });
+  });
+
+  it('should not transform requestHeaders', () => {
+    const manifestJSON = transformAppConfig({
+      "requestHeaders": {
+        "U-Tag": "${storage.uTag}"
+      },
+    }, false);
+    expect(manifestJSON).toMatchObject({ request_headers: { 'U-Tag': '${storage.uTag}' } });
   });
 });
 
@@ -149,6 +171,9 @@ describe('getPageManifestByPath', () => {
 
 describe('setRealUrlToManifest', () => {
   const config = {
+    app_worker: {
+      url: 'pha-worker.js'
+    },
     pages: [
       {
         path: '/',
@@ -205,6 +230,7 @@ describe('setRealUrlToManifest', () => {
     expect(manifest.pages[2].frames[0].path).toBe('https://abc.com/frame1');
     expect(manifest.pages[1].tab_header.url).toBe('https://abc.com/header?b=true');
     expect(manifest.tab_bar.url).toBe('https://abc.com/tabbar?a=2');
+    expect(manifest.app_worker.url).toBe('https://cdn.com/pha-worker.js');
   });
 
   it('should set document to manifest', () => {

@@ -14,14 +14,6 @@
         "title": "home/native-page/index"
       },
       "targets": ["miniapp"]
-    },
-    {
-      "path": "/",
-      "source": "miniapp-native/Webview/index",
-      "window": {
-        "title": "miniapp-native/Webview/index"
-      },
-      "targets": ["miniapp"]
     }
   ]
 }

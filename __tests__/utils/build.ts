@@ -23,7 +23,7 @@ export const buildFixture = function(example: string) {
   test(`setup ${example}`, async () => {
     const rootDir = path.join(__dirname, `../../examples/${example}`);
     executeCommand('rm -rf node_modules', rootDir);
-    executeCommand('npm install --registry=https://registry.npm.taobao.org/', rootDir);
+    executeCommand('npm install', rootDir);
     await build({
       args: {
         config: path.join(rootDir, 'build.json'),
