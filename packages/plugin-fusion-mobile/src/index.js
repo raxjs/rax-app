@@ -11,7 +11,7 @@ module.exports = (api, options = {}) => {
 
   // use babel-plugin-import to extract code
   if (extractModules !== false) {
-    console.log(chalk.yellow('[plugin-fusion-mobile]: extracting code for modules: @alifd/meet, @alifd/meet-react'));
+    log.info('[plugin-fusion-mobile]: extracting code for modules: @alifd/meet, @alifd/meet-react');
     onGetWebpackConfig((config) => {
       setImport(config);
     });
@@ -40,12 +40,10 @@ module.exports = (api, options = {}) => {
             removeCssVar(filePath, themeFilePath, () => {
               const newFileStats = fs.statSync(filePath);
 
-              console.log(
-                chalk.green(
-                  `[build-plugin-fusion-mobile] tranformed css variables successfully at: ${chalk.underline(
-                    filePath,
-                  )} (${Math.floor(originalFileStats.size / 1024)}kb → ${Math.floor(newFileStats.size / 1024)}kb)`,
-                ),
+              log.info(
+                `[build-plugin-fusion-mobile] tranformed css variables successfully at: ${chalk.underline(
+                  filePath,
+                )} (${Math.floor(originalFileStats.size / 1024)}kb → ${Math.floor(newFileStats.size / 1024)}kb)`,
               );
             });
           }
