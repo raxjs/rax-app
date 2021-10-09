@@ -34,7 +34,7 @@ default: `true`
 
 ### transformCssVariables
 
-tranform css variables into static values for miniapp css bundles, such as bundle.css.wxss, bundle.css.acss.
+[**work in miniapp only**] tranform css variables into static values for miniapp css bundles, such as `bundle.css.wxss`, `bundle.css.acss`.
 
 default: `false`
 
@@ -60,7 +60,7 @@ will get
 
 ### injectTheme
 
-set `true` to inject a default theme (`@alifd/meet/es/core/index.css`)
+[**work in miniapp only**] set `true` to inject a default theme (`@alifd/meet/es/core/index.css`)
 
 default: `true`
 
@@ -86,6 +86,6 @@ export default () => {
 
 ### themePackage
 
-enable when `injectTheme=true`, inject the giving theme package
+[**work in miniapp only**] enable when `injectTheme=true`, inject the giving theme package
 
 default: ''

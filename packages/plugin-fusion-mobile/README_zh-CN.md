@@ -37,7 +37,7 @@
 
 ### transformCssVariables
 
-小程序中生效，将主题中的 css variables 转换为静态值，以缩减 css 文件的 bundle size (对应: build.css.acss, build.css.wxss)
+**仅小程序中生效**，将主题中的 css variables 转换为静态值，以缩减 css 文件的 bundle size (对应: build.css.acss, build.css.wxss)
 
 默认值: `false`
 
@@ -63,7 +63,7 @@
 
 ### injectTheme
 
-是否自动注入主题（默认注入：`@alifd/meet/es/core/index.css`）
+**仅小程序中生效**， 是否自动注入主题（默认注入：`@alifd/meet/es/core/index.css`）
 
 默认值： `true`
 
@@ -88,6 +88,6 @@ export default () => {
 
 ### themePackage
 
-`injectTheme=true`时生效，指定要注入主题包，此可在 [Fusion](https://fusion.alibaba-inc.com/mobile/component) 站点上创建
+**仅小程序中生效**， `injectTheme=true`时生效，指定要注入主题包，此可在 [Fusion](https://fusion.alibaba-inc.com/mobile/component) 站点上创建
 
 默认值: `''`
