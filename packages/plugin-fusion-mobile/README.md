@@ -62,7 +62,7 @@ will get
 
 [**work in miniapp only**] set `true` to inject a default theme (`@alifd/meet/es/core/index.css`)
 
-default: `true`
+default: `false`
 
 > **NOTICE:** when it set to be `false`, the page may render with exception because there is no theme config.
 > Don't worry, you can import it manually:

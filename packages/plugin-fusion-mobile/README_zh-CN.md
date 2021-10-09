@@ -1,6 +1,6 @@
 # build-plugin-fusion-mobile
 
-一个在 Rax 项目中移除 [Fusion Mobile](https://www.npmjs.com/package/@alifd/meet) 组件库无效代码的插件，用以缩减 bundle size。
+一个在 Rax 项目中移除 [Fusion Mobile](https://www.npmjs.com/package/@alifd/meet) 组件库未使用代码的插件，用以缩减 bundle size。
 
 ## 使用
 
@@ -22,7 +22,7 @@
 }
 ```
 
-> **注意:** 当 `extractModules` 设置为 `true` 时，为了避免主题重复引入，需要手动引入主题，有两种方式：
+> **注意:** 当 `extractModules` 设置为 `true` 时，组件的默认主题会移除，需要手动引入主题，有两种方式：
 >
 > 1. npm 包自带主题：`@alifd/meet/es/core/index.css`
 > 2. 用户定制的主题： @alife/mobile-theme-default/index.css (可自行在 [Fusion](https://fusion.alibaba-inc.com/mobile/) 创建)
@@ -65,7 +65,7 @@
 
 **仅小程序中生效**， 是否自动注入主题（默认注入：`@alifd/meet/es/core/index.css`）
 
-默认值： `true`
+默认值： `false`
 
 > 注：当此项设置为 false 时，项目中可能因没有主题样式而导致渲染异常, 但可以在代码中手动引入样式， 如：
 
