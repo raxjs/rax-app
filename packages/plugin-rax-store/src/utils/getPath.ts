@@ -1,36 +1,41 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
+import getStoreFileType from './getStoreFileType';
 
-export function getAppStorePath({ srcPath, projectType }) {
+/**
+ * get the app store file path. If not exists, it will throw an error
+ * @param srcPath
+ * @returns
+ */
+export function getAppStorePath(srcPath: string) {
+  const storeFileType = getStoreFileType(srcPath);
   // e.g: src/store.ts
-  const appStoreFilePath = path.join(srcPath, `store.${projectType}`);
-  return appStoreFilePath;
+  return storeFileType ? path.join(srcPath, `store${storeFileType}`) : '';
 }
 
-export function getPagePath({ srcPath, pageName }) {
+function getPagePath(srcPath: string, pageName: string) {
   return path.join(srcPath, 'pages', pageName);
 }
 
-export function getPageStorePath({ srcPath, projectType, pageName }) {
-  const pageNameDir = getPagePath({ srcPath, pageName });
-  // e.g: src/pages/${pageName}/store.ts
-  const pageStoreFilePath = path.join(pageNameDir, `store.${projectType}`);
-
-  return pageStoreFilePath;
+export function getPageStorePath(srcPath: string, pageName: string) {
+  const pageNameDir = getPagePath(srcPath, pageName);
+  const storeFileType = getStoreFileType(pageNameDir);
+  // e.g: src/pages/Home/store.ts
+  return storeFileType ? path.join(pageNameDir, `store${storeFileType}`) : '';
 }
 
-export function getRaxPagesName(rootDir) {
+export function getRaxPagesName(rootDir: string) {
   const pagesPath = getRaxPagesPath(rootDir);
   return pagesPath.map(getRaxPageName);
 }
 
-export function getRaxPageName(pagePath) {
+export function getRaxPageName(pagePath: string) {
   const dir = path.dirname(pagePath);
   const pageName = path.parse(dir).name;
   return pageName;
 }
 
-export function getRaxPagesPath(rootDir) {
+export function getRaxPagesPath(rootDir: string) {
   const absoluteAppJSONPath = path.join(rootDir, 'src/app.json');
   const appJSON = fse.readJSONSync(absoluteAppJSONPath);
   const { routes } = appJSON;

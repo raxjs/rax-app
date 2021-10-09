@@ -123,13 +123,13 @@ async function init(name, verbose, template, skipAsk) {
   let answers = {};
 
   if (!skipAsk) {
-    answers = await askProjectInformaction(template);
+    answers = await askProjectInformation(template);
   }
 
   await createProject(kebabCase(projectName), verbose, template, answers);
 }
 
-function askProjectInformaction(appTemplate) {
+function askProjectInformation(appTemplate) {
   const rootDir = path.resolve(projectName);
   const conflictFiles = ['src', 'build.json', 'package.json'];
 
@@ -189,7 +189,7 @@ async function createProject(name, verbose, template, userAnswers) {
     process.chdir(rootDir);
   }
 
-  const { projectType = 'app', targets, appType, languageType, miniappComponentBuildType = 'compile' } = userAnswers;
+  const { projectType = 'app', targets, appType, languageType, miniappComponentBuildType = 'compile', miniappPluginBuildType = 'compile' } = userAnswers;
   const registry = 'https://registry.npm.taobao.org';
 
   console.log(
@@ -198,7 +198,16 @@ async function createProject(name, verbose, template, userAnswers) {
   );
 
   if (projectType === 'app') {
-    const appTemplate = template || (languageType === 'ts' ? '@rax-materials/scaffolds-app-ts' : '@rax-materials/scaffolds-app-js');
+    let appTemplate;
+    if (template) {
+      appTemplate = template;
+    } else if (appType === 'midway-miniapp') {
+      appTemplate = '@rax-materials/scaffolds-app-midway-miniapp';
+    } else if (languageType === 'ts') {
+      appTemplate = '@rax-materials/scaffolds-app-ts';
+    } else {
+      appTemplate = '@rax-materials/scaffolds-app-js';
+    }
 
     let projectTargets = [];
     let enableMPA = false;
@@ -218,6 +227,8 @@ async function createProject(name, verbose, template, userAnswers) {
       projectTargets = ['web', 'weex'];
     } else if (appType === 'web-spa') {
       projectTargets = ['web'];
+    } else if (appType === 'midway-miniapp') {
+      projectTargets = ['wechat-miniprogram']; // Only support wechat for now
     }
 
     await downloadAndGenerateProject(
@@ -236,7 +247,7 @@ async function createProject(name, verbose, template, userAnswers) {
     const typeToTemplate = {
       component: {
         ts: '@icedesign/template-rax',
-        js: '@icedesign/template-rax',
+        js: '@icedesign/template-rax-js',
       },
       api: '@icedesign/template-rax-api',
       plugin: '@icedesign/template-rax-miniapp-plugin',
@@ -253,6 +264,7 @@ async function createProject(name, verbose, template, userAnswers) {
         npmName: 'rax-example',
         projectTargets: targets,
         miniappComponentBuildType,
+        miniappPluginBuildType,
         isAliInternal
       },
       materialType: 'component',

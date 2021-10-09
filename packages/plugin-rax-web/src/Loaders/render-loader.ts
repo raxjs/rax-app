@@ -43,9 +43,15 @@ export default function () {
           });
         };
 
-        return doctype + renderer.renderToString(createElement(DocumentContextProvider), {
+        const html = renderer.renderToString(createElement(DocumentContextProvider), {
           defaultUnit: 'rpx'
         });
+
+        if (doctype) {
+          return doctype + html;
+        }
+
+        return html;
       }
 
       export {

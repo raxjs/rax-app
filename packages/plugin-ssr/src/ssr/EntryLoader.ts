@@ -11,6 +11,7 @@ function addExport(code) {
     render,
     renderToHTML,
     renderWithContext,
+    renderToHTMLWithContext
   };`;
 }
 
@@ -91,6 +92,13 @@ export default function () {
       const { initialData, htmlTemplate, chunkInfo } = options;
       ${query.useRunApp ? addDefineInitialPage() : ''}
       const html = await renderComponentToHTML(Page, { req, res }, initialData, htmlTemplate, chunkInfo);
+      return html;
+    }
+
+    async function renderToHTMLWithContext(ctx, options = {}) {
+      const { initialData, htmlTemplate, chunkInfo } = options;
+      ${query.useRunApp ? addDefineInitialPage() : ''}
+      const html = await renderComponentToHTML(Page, ctx, initialData, htmlTemplate, chunkInfo);
       return html;
     }
 

@@ -24,12 +24,36 @@ const retainKeys = [
   'links',
   'scripts',
   'offlineResources',
+  'packageResources',
   'manifestPrefetchExpires',
   'manifestPrefetchMaxAge',
+  'maxAge',
+  'expires',
   'queryParamsPassKeys',
   'queryParamsPassIgnoreKeys',
   'splashViewTimeout',
+  'splashViewAutoClose',
   'swiperThreshold',
+  'requestHeaders',
+  'enablePoplayer',
+  'disableCapture',
+  'enablePullRefresh',
+  'pullRefreshBackgroundColor',
+  'pullRefreshColorScheme',
+  'pullRefresh',
+];
+
+// do not decamelize list
+const camelizeKeys = [
+  'appKey',
+  'dataType',
+  'valueType',
+  'isSec',
+  'LoginRequest',
+  'sessionOption',
+  'AntiCreep',
+  'AntiFlood',
+  'needLogin',
 ];
 
 // transform app config to decamelize
@@ -50,7 +74,11 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
     if (key === 'pageHeader') {
       key = 'tabHeader';
     }
-    const transformKey = decamelize(key);
+
+    let transformKey = key;
+    if (camelizeKeys.indexOf(key) === -1) {
+      transformKey = decamelize(key);
+    }
     if (key === 'window') {
       Object.assign(data, transformAppConfig(value, false));
     } else if (typeof value === 'string' || typeof value === 'number') {
@@ -62,14 +90,23 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
           delete item.text;
         }
         if (typeof item === 'object') {
-          if (key === 'dataPrefetch' && !item.header) {
+          if (key === 'dataPrefetch') {
             // hack: No header will crash in Android
-            item.header = {};
+            if (!item.header) {
+              item.header = {};
+            }
+
+            // no prefetchKey will crash in Android TaoBao 9.26.0
+            if (!item.prefetchKey) {
+              item.prefetchKey = 'mtop';
+            }
           }
           return transformAppConfig(item, false, key);
         }
         return item;
       });
+    } else if (key === 'requestHeaders') { // keys of requestHeaders should not be transformed
+      data[transformKey] = value;
     } else if (typeof value === 'object' && !(parentKey === 'dataPrefetch' && (key === 'header' || key === 'data'))) {
       data[transformKey] = transformAppConfig(value, false, key);
     } else {
@@ -124,13 +161,14 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
       page.path = pageUrl;
     }
 
-    if (isTemplate) {
+    // template and no frames under the page
+    if (isTemplate && !Array.isArray(page.frames)) {
       if (custom) {
         page.document = document;
       } else {
         // add script and stylesheet
         page.script = `${cdnPrefix + entryName}.js`;
-        if (!inlineStyle) {
+        if (!inlineStyle || (typeof inlineStyle === 'object' && inlineStyle.forceEnableCSS)) {
           page.stylesheet = `${cdnPrefix + entryName}.css`;
         }
       }
@@ -150,7 +188,7 @@ function setRealUrlToManifest(options, manifest) {
   }
 
   const { app_worker, tab_bar, pages } = manifest;
-  if (app_worker && app_worker.url) {
+  if (app_worker && app_worker.url && !app_worker.url.startsWith('http')) {
     app_worker.url = cdnPrefix + app_worker.url;
   }
 

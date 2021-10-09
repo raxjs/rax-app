@@ -10,7 +10,7 @@
   },
   "wechat-miniprogram": {
     "subPackages": {
-      "shareMemory": true,
+      "shareMemory": true
     }
   }
 }
