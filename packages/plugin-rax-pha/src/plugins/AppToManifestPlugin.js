@@ -25,6 +25,7 @@ module.exports = class {
       pha: { template: isTemplate = true },
     } = web;
     const isStart = command === 'start';
+    const jsonSpace = isStart ? 2 : 0;
 
     let { cdnPrefix = '', pagePrefix = '', pageSuffix } = this.options;
     if (isStart) {
@@ -65,7 +66,7 @@ module.exports = class {
           manifestJSON,
         );
 
-        compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON, null, 2));
+        compilation.assets['manifest.json'] = new RawSource(JSON.stringify(manifestJSON, null, jsonSpace));
 
         devUrls.push(`${cdnPrefix}manifest.json?pha=true`);
       } else {
@@ -110,7 +111,7 @@ module.exports = class {
               copyManifestJSON,
             );
 
-            compilation.assets[`${entryName}-manifest.json`] = new RawSource(JSON.stringify(copyManifestJSON, null, 2));
+            compilation.assets[`${entryName}-manifest.json`] = new RawSource(JSON.stringify(copyManifestJSON, null, jsonSpace));
 
             devUrls.push(`${cdnPrefix}${entryName}-manifest.json?pha=true`);
           });

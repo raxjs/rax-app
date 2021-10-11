@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.7
+
+- Feat: manifest json output no space in production
+
 ## v1.4.6
 
 - Chore: pha plugin add more white list and no decamelize keys
