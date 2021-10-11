@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import { getRaxPagesName, getPageStorePath, getAppStorePath } from './getPath';
+import { getRaxPagesPath, getPageStorePath, getAppStorePath } from './getPath';
 
 function checkStoreFileExists(rootDir: string, srcDir: string) {
   const srcPath = path.join(rootDir, srcDir);
@@ -21,9 +21,10 @@ function checkAppStoreExists(srcPath: string) {
  * check if the src/pages/Home/store.[js|ts] exists
  */
 function checkPageStoreExists(rootDir: string, srcPath: string) {
-  const pagesName = getRaxPagesName(rootDir);
-  return pagesName.some((pageName: string) => {
-    const pageStorePath = getPageStorePath(srcPath, pageName);
+  const pagesPath = getRaxPagesPath(rootDir);
+  return pagesPath.some((pagePath: string) => {
+    const pageComponentPath = path.join(srcPath, pagePath);
+    const pageStorePath = getPageStorePath(pageComponentPath);
     return pageStorePath && fse.pathExistsSync(pageStorePath);
   });
 }
