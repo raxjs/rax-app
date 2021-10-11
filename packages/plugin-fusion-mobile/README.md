@@ -2,7 +2,7 @@
 
 Plugin for rax app using [Fusion Mobile](https://www.npmjs.com/package/@alifd/meet)
 
-[中文文档](./packages/plugin-fusion-mobile/README_zh-CN.md)
+[中文文档](./README_zh-CN.md)
 
 ## Usage
 
