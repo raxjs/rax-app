@@ -2,10 +2,10 @@ const path = require('path');
 const readPkgUp = require('read-pkg-up');
 const { minify } = require('minify-css-modules-classname');
 
-module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, context }) {
+module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, context }, pluginOptions) {
   const { command, rootDir, userConfig = {} } = context;
   const { experiments = {} } = userConfig;
-  const options = normalizeOptions(experiments.minifyCSSModules);
+  const options = normalizeOptions(pluginOptions || experiments.minifyCSSModules);
 
   const { enable = false, useHash = true, prefix = '', suffix = '' } = options;
 
