@@ -55,3 +55,7 @@ will get
   background-color: #209bfa;
 }
 ```
+
+## Changelog
+
+[changelog](./CHANGELOG.md)

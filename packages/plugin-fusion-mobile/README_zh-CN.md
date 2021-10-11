@@ -58,3 +58,7 @@
   background-color: #209bfa;
 }
 ```
+
+## Changelog
+
+[更新日志](./CHANGELOG.md)
