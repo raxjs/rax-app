@@ -22,7 +22,7 @@ export default (config) => {
   let CssMinimizerPlugin;
 
   if (isWebpack4) {
-    TerserPlugin = require('@builder/rax-pack/deps/terser-webpack-plugin');
+    TerserPlugin = require('terser-webpack-plugin');
     terserPluginOptions = {
       ...terserPluginOptions,
       // @ts-ignore
