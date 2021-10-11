@@ -19,9 +19,9 @@ module.exports = (filePath, themePath, callback) => {
     const result = await postcss([
       require('postcss-import'),
       // transform 'page {}' selectors into ':root {}' for wechat-miniprogram in order to remove css vars
-      page2root,
+      page2root(),
       require('postcss-css-variables'),
-      removeInvalidDecls,
+      removeInvalidDecls(),
     ]).process(`${cssContents} \n ${themeContents}`, {});
 
     const r = new CleanCSS({
