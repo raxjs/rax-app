@@ -10,7 +10,7 @@ module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, 
   const { enable = false, useHash = true, prefix = '', suffix = '' } = options;
 
   if ((command === 'build') && enable) {
-    onGetWebpackConfig('web', (config) => {
+    onGetWebpackConfig((config) => {
       configCSSModulesOptions(config, {
         getLocalIdent,
       });
