@@ -40,6 +40,7 @@ export default function (appJSON) {
   const { target, mpa } = options;
   const appConfig: IAppConfig = transformAppConfig(appJSON);
   const isRootAppJsonPath = this.resourcePath === join(this.rootContext, 'src', 'app.json');
+  const isMiniappPlatform = checkIsMiniappPlatform(target);
 
   if (mpa && isRootAppJsonPath) {
     return `
@@ -48,14 +49,14 @@ export default function (appJSON) {
       `;
   }
 
-  const { normalImportExpression, normalImports, dynamicImports } = getImportComponentInfo.call(this, appConfig, target);
+  const { normalImportExpression, normalImports, dynamicImports } = getImportComponentInfo.call(this, appConfig, target, isMiniappPlatform);
   const { routes, ...otherConfig } = appConfig;
   return `
   import { createElement } from 'rax';
   ${normalImportExpression}
   const staticConfig = ${JSON.stringify(otherConfig)};
 
-  staticConfig.routes = [];
+  staticConfig.routes = ${isMiniappPlatform ? 'routes' : '[]'};
 
   ${addNormalImportRouteExpression(normalImports)}
 
@@ -64,8 +65,7 @@ export default function (appJSON) {
   `;
 }
 
-function getImportComponentInfo(appConfig: IAppConfig, target: string): IImportComponentInfo {
-  const isMiniappPlatform = checkIsMiniappPlatform(target);
+function getImportComponentInfo(appConfig: IAppConfig, target: string, isMiniappPlatform: boolean): IImportComponentInfo {
   const dynamicImports = [];
   let normalImports = [];
   if (target === 'web') {
