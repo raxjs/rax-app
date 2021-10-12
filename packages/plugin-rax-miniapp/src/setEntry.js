@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
-const { getAppConfig, pathHelper: { getBundlePath } } = require('miniapp-builder-shared');
+const { getAppConfig, filterNativePages, pathHelper: { getBundlePath } } = require('miniapp-builder-shared');
+const getVirtualModules = require('./virtualModule/page');
 
 module.exports = (config, context, target) => {
   const { rootDir, userConfig } = context;
@@ -14,13 +15,27 @@ module.exports = (config, context, target) => {
       const subAppEntry = moduleResolve(formatPath(path.join(rootDir, 'src', subAppRoot, 'app')));
       const subAppEntryConfig = config.entry(getBundlePath(subAppRoot));
       subAppEntryConfig.add(subAppEntry);
+
+      const subAppConfig = getAppConfig(rootDir, target, null, subAppRoot);
+      const filteredRoutes = filterNativePages(subAppConfig.routes, [], { rootDir, target });
+      const virtualModules = getVirtualModules(filteredRoutes, { rootDir });
+      virtualModules.forEach((value, key) => {
+        config.plugin(`webpack-virtual-modules-${key}`).use(value);
+        const pageEntry = path.join(rootDir, 'src', key);
+        config.entry(key).add(pageEntry);
+      });
     });
   } else {
-    // SPA
     const appEntry = moduleResolve(formatPath(path.join(rootDir, './src/app')));
     const entryConfig = config.entry(getBundlePath());
-
     entryConfig.add(appEntry);
+
+    const virtualModules = getVirtualModules(appConfig.routes, { rootDir });
+    virtualModules.forEach((value, key) => {
+      config.plugin(`webpack-virtual-modules-${key}`).use(value);
+      const pageEntry = path.join(rootDir, 'src', key);
+      config.entry(key).add(pageEntry);
+    });
   }
 };
 

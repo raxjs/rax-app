@@ -13,7 +13,7 @@ const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR } = require('./constant
 module.exports = (api) => {
   const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
   const { userConfig } = context;
-  const { targets, inlineStyle, vendor } = userConfig;
+  const { targets, inlineStyle } = userConfig;
 
   const miniappStandardList = [
     MINIAPP,
@@ -80,51 +80,32 @@ module.exports = (api) => {
             entryPath: './src/app',
           });
         } else {
-          const { subPackages, disableCopyNpm = true } = userConfig[target] || {};
-          if (vendor && subPackages) {
-            const { shareMemory } = subPackages;
-            const originalSplitChunks = config.optimization.get('splitChunks');
-            const { vendor: originalVendor = {} } = originalSplitChunks.cacheGroups || {};
-
-            if (shareMemory) {
-              config.optimization.runtimeChunk({ name: 'webpack-runtime' });
-            }
-            config.optimization.splitChunks({
-              ...originalSplitChunks,
-              cacheGroups: {
-                ...originalSplitChunks.cacheGroups,
-                vendor: {
-                  ...originalVendor,
-                  chunks: 'all',
-                  name: 'vendors',
-                  minChunks: 2,
-                  test({ context: filepath }) {
-                    // If shareMemory is true, every common files should be splited to vendors.js
-                    if (shareMemory) {
-                      return true;
-                    }
-                    if (typeof originalVendor.test === 'function') {
-                      return originalVendor.test(filepath);
-                    }
-                    if (originalVendor.test instanceof RegExp) {
-                      return originalVendor.test.test(filepath);
-                    }
-                    if (typeof originalVendor.test === 'string') {
-                      return new RegExp(originalVendor.test).test(filepath);
-                    }
-                    return false;
-                  },
+          const { disableCopyNpm = true } = userConfig[target] || {};
+          const originalSplitChunks = config.optimization.get('splitChunks');
+          const { vendor: originalVendor = {} } = originalSplitChunks.cacheGroups || {};
+          config.optimization.runtimeChunk({ name: 'webpack-runtime' });
+          config.optimization.splitChunks({
+            ...originalSplitChunks,
+            cacheGroups: {
+              ...originalSplitChunks.cacheGroups,
+              vendor: {
+                ...originalVendor,
+                chunks: 'all',
+                name: 'vendors',
+                minChunks: 2,
+                test() {
+                  return true;
                 },
               },
-            });
-            if (config.plugins.has('MiniCssExtractPlugin')) {
-              config.plugin('MiniCssExtractPlugin').tap((options) => [
-                {
-                  ...options[0],
-                  ignoreOrder: true,
-                },
-              ]);
-            }
+            },
+          });
+          if (config.plugins.has('MiniCssExtractPlugin')) {
+            config.plugin('MiniCssExtractPlugin').tap((options) => [
+              {
+                ...options[0],
+                ignoreOrder: true,
+              },
+            ]);
           }
 
           setConfig(config, {
