@@ -5,7 +5,7 @@ const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
 
 module.exports = (api) => {
-  const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
+  const { getValue, context, registerTask, onGetWebpackConfig } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
@@ -23,11 +23,6 @@ module.exports = (api) => {
   setEntry(chainConfig, context);
 
   registerTask(target, chainConfig);
-  registerUserConfig({
-    name: target,
-    validation: 'object',
-  });
-
 
   onGetWebpackConfig(target, (config) => {
     const { userConfig, command } = context;

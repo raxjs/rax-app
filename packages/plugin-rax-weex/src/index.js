@@ -5,7 +5,7 @@ const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
 const WeexFrameworkBannerPlugin = require('./WeexFrameworkBannerPlugin');
 
 module.exports = (api) => {
-  const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
+  const { getValue, context, registerTask, onGetWebpackConfig } = api;
   const { userConfig, command } = context;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
@@ -26,10 +26,6 @@ module.exports = (api) => {
     .use(WeexFrameworkBannerPlugin);
   chainConfig.name(target);
   registerTask(target, chainConfig);
-  registerUserConfig({
-    name: target,
-    validation: 'object',
-  });
 
   onGetWebpackConfig(target, (config) => {
     const { weex = {} } = userConfig;
