@@ -16,13 +16,13 @@ function getVirtualModules(routes, { rootDir }) {
         window.__pagesRenderInfo.push({
           path: '${route.source}',
           component: Component,
-          setDocument: window.__setDocument || value => document = value
+          setDocument: window.__setDocument || (value => document = value)
         });
       } else {
         window.__pagesRenderInfo = [{
           path: '${route.source}',
           component: Component,
-          setDocument: window.__setDocument || value => document = value
+          setDocument: window.__setDocument || (value => document = value)
         }];
         window.__render = function (pageComponent) {
           const rootEl = document.createElement('div');
