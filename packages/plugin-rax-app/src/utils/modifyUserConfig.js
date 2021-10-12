@@ -23,8 +23,9 @@ const taskList = [
 module.exports = (api) => {
   const { context, modifyUserConfig, cancelTask } = api;
   const {
-    userConfig: { targets: originalTargets, webpack5 },
+    userConfig,
   } = context;
+  const { targets: originalTargets, webpack5 } = userConfig;
   const { devTargets } = context.commandArgs;
 
   // Modify userConfig.targets
@@ -53,5 +54,21 @@ module.exports = (api) => {
       context.userConfig.webpack5 = false;
       return context.userConfig;
     });
+  }
+
+  // Unify all targets mpa config
+  const hasMPA = userConfig.targets.filter((target) => userConfig[target] && userConfig[target].mpa);
+  if (hasMPA) {
+    userConfig.targets.forEach((target) => {
+      if (!userConfig[target]) {
+        userConfig[target] = {};
+      }
+      userConfig[target].mpa = true;
+    });
+
+    if (!userConfig.document) {
+      userConfig.document = {};
+    }
+    userConfig.document.mpa = true;
   }
 };
