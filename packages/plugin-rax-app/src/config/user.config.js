@@ -1,60 +1,72 @@
 const { validation } = require('@builder/app-helpers');
+const { isWebpack4 } = require('@builder/compat-webpack4');
+
+const devServerDefaultOptionsMap = {
+  webpack4: {
+    compress: true,
+    // Use 'ws' instead of 'sockjs-node' on server since webpackHotDevClient is using native websocket
+    disableHostCheck: true,
+    logLevel: 'silent',
+    transportMode: 'ws',
+    quiet: false,
+    publicPath: '/',
+    clientLogLevel: 'none',
+    watchOptions: {
+      ignored: /node_modules/,
+      aggregateTimeout: 600,
+    },
+    before(app) {
+      app.use((req, res, next) => {
+        // set cros for all served files
+        res.set('Access-Control-Allow-Origin', '*');
+        next();
+      });
+    },
+    hot: true,
+    // For mutilple task, web will occupy the server root route
+    writeToDisk: true,
+    historyApiFallback: true,
+  },
+  webpack5: {
+    compress: true,
+    hot: true,
+    static: {
+      watch: {
+        ignored: /node_modules/,
+        aggregateTimeout: 600,
+      },
+    },
+    client: {
+      overlay: false,
+      logging: 'none',
+    },
+    onBeforeSetupMiddleware({ app }) {
+      app.use((req, res, next) => {
+        // set cros for all served files
+        res.set('Access-Control-Allow-Origin', '*');
+        next();
+      });
+    },
+    // For mutilple task, web will occupy the server root route
+    devMiddleware: {
+      writeToDisk: true,
+      publicPath: '/',
+    },
+    liveReload: false,
+    historyApiFallback: true,
+  },
+};
+
+const webpackVersion = isWebpack4 ? 'webpack4' : 'webpack5';
+
+const devServerDefaultOptions = devServerDefaultOptionsMap[webpackVersion];
 
 /* eslint global-require: 0 */
 module.exports = [
   {
     name: 'devServer',
     validation: 'object',
-    defaultValue: {
-      compress: true,
-      // Use 'ws' instead of 'sockjs-node' on server since webpackHotDevClient is using native websocket
-      // TODO: webpack5
-      // disableHostCheck: true,
-      // logLevel: 'silent',
-      // transportMode: 'ws',
-      // quiet: false,
-      // publicPath: '/',
-      // clientLogLevel: 'none',
-      // TODO: webpack5
-      // watchOptions: {
-      //   ignored: /node_modules/,
-      //   aggregateTimeout: 600,
-      // },
-      // TODO: webpack5
-      // before(app) {
-      //   app.use((req, res, next) => {
-      //     // set cros for all served files
-      //     res.set('Access-Control-Allow-Origin', '*');
-      //     next();
-      //   });
-      // },
-      hot: true,
-      static: {
-        watch: {
-          ignored: /node_modules/,
-          aggregateTimeout: 600,
-        },
-      },
-      client: {
-        overlay: false,
-        logging: 'none',
-      },
-      onBeforeSetupMiddleware({ app }) {
-        app.use((req, res, next) => {
-          // set cros for all served files
-          res.set('Access-Control-Allow-Origin', '*');
-          next();
-        });
-      },
-      // For mutilple task, web will occupy the server root route
-      // TODO: webpack5
-      devMiddleware: {
-        writeToDisk: true,
-        publicPath: '/',
-      },
-      liveReload: false,
-      historyApiFallback: true,
-    },
+    defaultValue: devServerDefaultOptions,
   },
   {
     name: 'outputAssetsPath',
@@ -83,5 +95,9 @@ module.exports = [
     name: 'vendor',
     defaultValue: true,
     configWebpack: require('../userConfig/vendor'),
+  },
+  {
+    name: 'webpack5',
+    defaultValue: false,
   },
 ];

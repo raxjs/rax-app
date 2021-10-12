@@ -8,22 +8,24 @@ const hookNamesMap = {
 const hookNames = Object.keys(hookNamesMap);
 
 export default function (devServer) {
-  if (isWebpack4()) {
+  if (isWebpack4) {
     devServer.getValue = function (key) {
       if (hookNames.includes(key)) {
         return devServer.get(hookNamesMap[key]);
+      } else {
+        return devServer.get(key);
       }
-      return devServer.get(key);
     };
     devServer.setValue = function (key, fn) {
       if (hookNames.includes(key)) {
-        devServer.set(key, function (...args) {
+        devServer.set(hookNamesMap[key], function (...args) {
           const [app, server] = args;
           server.app = app;
           fn.call(this, server);
         });
+      } else {
+        return devServer.set(key, fn);
       }
-      return devServer.set(key, fn);
     };
   } else {
     devServer.setValue = function (...args) {

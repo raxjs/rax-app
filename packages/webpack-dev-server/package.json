@@ -1,0 +1,23 @@
+{
+  "name": "@builder/webpack-dev-server",
+  "version": "1.0.0",
+  "description": "webpack-dev-server version 3.x",
+  "author": "Rax Team",
+  "homepage": "https://github.com/raxjs/rax-app/#readme",
+  "license": "MIT",
+  "main": "index.js",
+  "dependencies": {
+    "webpack-dev-server": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-app/issues"
+  },
+  "engines": {
+    "node": ">=10.13.0",
+    "npm": ">=3.0.0"
+  }
+}
