@@ -49,14 +49,20 @@ export default function (appJSON) {
       `;
   }
 
-  const { normalImportExpression, normalImports, dynamicImports } = getImportComponentInfo.call(this, appConfig, target, isMiniappPlatform);
+  const { normalImportExpression, normalImports, dynamicImports } = getImportComponentInfo.call(this, appConfig, target);
   const { routes, ...otherConfig } = appConfig;
+  if (isMiniappPlatform) {
+    return `
+  const staticConfig = ${JSON.stringify(appConfig)};
+  export default staticConfig;
+  `;
+  }
   return `
   import { createElement } from 'rax';
   ${normalImportExpression}
   const staticConfig = ${JSON.stringify(otherConfig)};
 
-  staticConfig.routes = ${isMiniappPlatform ? 'routes' : '[]'};
+  staticConfig.routes = [];
 
   ${addNormalImportRouteExpression(normalImports)}
 
@@ -65,7 +71,7 @@ export default function (appJSON) {
   `;
 }
 
-function getImportComponentInfo(appConfig: IAppConfig, target: string, isMiniappPlatform: boolean): IImportComponentInfo {
+function getImportComponentInfo(appConfig: IAppConfig, target: string): IImportComponentInfo {
   const dynamicImports = [];
   let normalImports = [];
   if (target === 'web') {
@@ -77,7 +83,7 @@ function getImportComponentInfo(appConfig: IAppConfig, target: string, isMiniapp
         normalImports.push(route);
       }
     });
-  } else if (!isMiniappPlatform) {
+  } else {
     normalImports = appConfig.routes;
   }
   const normalImportExpression = normalImports.reduce((curr, next) => {
