@@ -30,7 +30,6 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
 
   if (targets.includes('web')) {
     builtInPlugins.push('build-plugin-rax-web');
-    builtInPlugins.push('build-plugin-minify-classname');
     if (userConfig.web) {
       if (userConfig.web.ssr) {
         builtInPlugins.push('build-plugin-ssr');
@@ -51,6 +50,8 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
   if (targets.some((target) => miniappPlatforms.includes(target))) {
     builtInPlugins.push('build-plugin-rax-miniapp');
   }
+
+  builtInPlugins.push('build-plugin-minify-classname');
 
   return builtInPlugins;
 };
