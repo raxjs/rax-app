@@ -38,7 +38,7 @@ export default (config) => {
     // Safe parser
     safeParser = require('@builder/pack/deps/postcss-safe-parser');
     // css minimizer plugin
-    CssMinimizerPlugin = require('@builder/rax-pack/deps/css-minimizer-webpack-plugin');
+    CssMinimizerPlugin = require('@builder/pack/deps/css-minimizer-webpack-plugin');
   }
 
   // uglify js file
