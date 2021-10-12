@@ -11,7 +11,7 @@ const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR } = require('./constants');
 
 module.exports = (api) => {
-  const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
+  const { getValue, context, registerTask, onGetWebpackConfig } = api;
   const { userConfig } = context;
   const { targets, inlineStyle, vendor } = userConfig;
 
@@ -42,10 +42,6 @@ module.exports = (api) => {
       }
       // Register task
       registerTask(target, chainConfig);
-      registerUserConfig({
-        name: target,
-        validation: 'object',
-      });
 
       onGetWebpackConfig(target, (config) => {
         // eslint-disable-next-line @typescript-eslint/no-shadow

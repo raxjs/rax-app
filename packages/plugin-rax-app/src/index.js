@@ -12,11 +12,14 @@ const setStaticConfig = require('./utils/setStaticConfig');
 const setDevUrlPrefix = require('./utils/setDevUrlPrefix');
 const setRegisterMethod = require('./utils/setRegisterMethod');
 const generateTplFile = require('./generateTplFile');
+const setRegisterUserConfig = require('./utils/setRegisterUserConfig').default;
 
 module.exports = (api) => {
-  const { onGetWebpackConfig, context, setValue, applyMethod } = api;
-  const { command, rootDir } = context;
+  const { onGetWebpackConfig, context, setValue, applyMethod, registerUserConfig } = api;
+  const { command, rootDir, userConfig } = context;
+  const { targets } = userConfig;
 
+  setRegisterUserConfig(targets, registerUserConfig);
   setRegisterMethod(api);
 
   setValue(GET_RAX_APP_WEBPACK_CONFIG, getBase);

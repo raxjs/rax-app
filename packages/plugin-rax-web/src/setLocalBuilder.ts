@@ -7,12 +7,33 @@ import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import { updateEnableStatus } from './utils/localBuildCache';
 
 export default (api, documentPath?: string | undefined) => {
-  const { onGetWebpackConfig, getValue, context, registerTask } = api;
+  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, modifyUserConfig } = api;
+
+  // Register document config key
+  registerUserConfig({
+    name: 'document',
+    validation: 'object',
+  });
+
   const {
     userConfig: { inlineStyle, compileDependencies, web: webConfig = {} },
     rootDir,
     command,
   } = context;
+
+  if (webConfig.mpa) {
+    // Modify mpa config key for document task with RouteLoader
+    modifyUserConfig((originalConfig) => {
+      return {
+        ...originalConfig,
+        document: {
+          ...originalConfig.document,
+          mpa: true,
+        },
+      };
+    });
+  }
+
   const tempPath = getValue('TEMP_PATH');
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);

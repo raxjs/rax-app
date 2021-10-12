@@ -23,17 +23,20 @@ const taskList = [
 module.exports = (api) => {
   const { context, modifyUserConfig, cancelTask } = api;
   const {
-    userConfig: { targets: originalTargets, webpack5 },
+    userConfig,
   } = context;
+  const { targets: originalTargets, webpack5 } = userConfig;
   const { devTargets } = context.commandArgs;
+  const newUserConfig = {
+    ...userConfig,
+    webpack5: Boolean(webpack5),
+  };
 
   // Modify userConfig.targets
   if (devTargets) {
     const targets = devTargets.split(',');
-    modifyUserConfig(() => {
-      context.userConfig.targets = targets;
-      return context.userConfig;
-    });
+    newUserConfig.targets = targets;
+    // Cancel task
     if (originalTargets.length > targets.length) {
       const removeTargets = originalTargets.filter((target) => !targets.includes(target));
       taskList.forEach(({ name, children }) => {
@@ -47,11 +50,29 @@ module.exports = (api) => {
     }
   }
 
-  // Modify userConfig.webpack5
-  if (webpack5 === undefined) {
-    modifyUserConfig(() => {
-      context.userConfig.webpack5 = false;
-      return context.userConfig;
+  // Modify web mpa config with pha
+  if (userConfig.web && userConfig.web.pha) {
+    newUserConfig.web = {
+      ...newUserConfig.web,
+      mpa: true,
+    };
+  }
+
+  // Unify all targets mpa config
+  const hasMPA = newUserConfig.targets.filter((target) => newUserConfig[target] && newUserConfig[target].mpa);
+  if (hasMPA) {
+    newUserConfig.targets.forEach((target) => {
+      if (!newUserConfig[target]) {
+        newUserConfig[target] = {};
+      }
+      newUserConfig[target] = {
+        ...newUserConfig[target],
+        mpa: true,
+      };
     });
   }
+
+  modifyUserConfig(() => {
+    return newUserConfig;
+  });
 };
