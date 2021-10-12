@@ -41,6 +41,7 @@ const retainKeys = [
   'pullRefreshBackgroundColor',
   'pullRefreshColorScheme',
   'pullRefresh',
+  'cacheQueryParams',
 ];
 
 // do not decamelize list

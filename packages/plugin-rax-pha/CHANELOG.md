@@ -3,6 +3,7 @@
 ## v1.4.7
 
 - Feat: manifest json output no space in production
+- Chore: white list add cacheQueryParams
 
 ## v1.4.6
 
