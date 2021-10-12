@@ -7,13 +7,7 @@ import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import { updateEnableStatus } from './utils/localBuildCache';
 
 export default (api, documentPath?: string | undefined) => {
-  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig } = api;
-
-  // Register document config key
-  registerUserConfig({
-    name: 'document',
-    validation: 'object',
-  });
+  const { onGetWebpackConfig, getValue, context, registerTask } = api;
 
   const {
     userConfig: { inlineStyle, compileDependencies, web: webConfig = {} },

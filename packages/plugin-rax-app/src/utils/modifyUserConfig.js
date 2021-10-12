@@ -31,9 +31,11 @@ module.exports = (api) => {
   // Modify userConfig.targets
   if (devTargets) {
     const targets = devTargets.split(',');
-    modifyUserConfig(() => {
-      context.userConfig.targets = targets;
-      return context.userConfig;
+    modifyUserConfig((originConfig) => {
+      return {
+        ...originConfig,
+        targets,
+      };
     });
     if (originalTargets.length > targets.length) {
       const removeTargets = originalTargets.filter((target) => !targets.includes(target));
@@ -50,25 +52,49 @@ module.exports = (api) => {
 
   // Modify userConfig.webpack5
   if (webpack5 === undefined) {
-    modifyUserConfig(() => {
-      context.userConfig.webpack5 = false;
-      return context.userConfig;
+    modifyUserConfig((originConfig) => {
+      return {
+        ...originConfig,
+        webpack5: false,
+      };
+    });
+  }
+
+  // Modify web mpa config with pha
+  if (userConfig.web && userConfig.web.pha) {
+    modifyUserConfig((originConfig) => {
+      return {
+        ...originConfig,
+        web: {
+          ...originConfig.web,
+          mpa: true,
+        },
+      };
     });
   }
 
   // Unify all targets mpa config
   const hasMPA = userConfig.targets.filter((target) => userConfig[target] && userConfig[target].mpa);
   if (hasMPA) {
-    userConfig.targets.forEach((target) => {
-      if (!userConfig[target]) {
-        userConfig[target] = {};
-      }
-      userConfig[target].mpa = true;
+    modifyUserConfig((originConfig) => {
+      const newConfig = {
+        ...originConfig,
+        // Add document mpa config for RouteLoader
+        document: {
+          ...originConfig.document,
+          mpa: true,
+        },
+      };
+      originConfig.targets.forEach((target) => {
+        if (!newConfig[target]) {
+          newConfig[target] = {};
+        }
+        newConfig[target] = {
+          ...newConfig[target],
+          mpa: true,
+        };
+      });
+      return newConfig;
     });
-
-    if (!userConfig.document) {
-      userConfig.document = {};
-    }
-    userConfig.document.mpa = true;
   }
 };
