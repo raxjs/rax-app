@@ -121,6 +121,9 @@ function addNormalImportRouteExpression(normalImports: IRoute[]): string {
 }
 
 function getComponentName(route: IRoute): string {
+  if (!route.path) {
+    throw new Error(`There need path field in this route: ${route}`);
+  }
   if (route.path === '/') return 'Index';
   // /about => About
   return `${route.path[1].toUpperCase()}${route.path.substr(2)}`;
