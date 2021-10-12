@@ -27,16 +27,16 @@ module.exports = (api) => {
   } = context;
   const { targets: originalTargets, webpack5 } = userConfig;
   const { devTargets } = context.commandArgs;
+  const newUserConfig = {
+    ...userConfig,
+    webpack5: Boolean(webpack5),
+  };
 
   // Modify userConfig.targets
   if (devTargets) {
     const targets = devTargets.split(',');
-    modifyUserConfig((originConfig) => {
-      return {
-        ...originConfig,
-        targets,
-      };
-    });
+    newUserConfig.targets = targets;
+    // Cancel task
     if (originalTargets.length > targets.length) {
       const removeTargets = originalTargets.filter((target) => !targets.includes(target));
       taskList.forEach(({ name, children }) => {
@@ -50,51 +50,29 @@ module.exports = (api) => {
     }
   }
 
-  // Modify userConfig.webpack5
-  if (webpack5 === undefined) {
-    modifyUserConfig((originConfig) => {
-      return {
-        ...originConfig,
-        webpack5: false,
-      };
-    });
-  }
-
   // Modify web mpa config with pha
   if (userConfig.web && userConfig.web.pha) {
-    modifyUserConfig((originConfig) => {
-      return {
-        ...originConfig,
-        web: {
-          ...originConfig.web,
-          mpa: true,
-        },
-      };
-    });
+    newUserConfig.web = {
+      ...newUserConfig.web,
+      mpa: true,
+    };
   }
 
   // Unify all targets mpa config
-  const hasMPA = userConfig.targets.filter((target) => userConfig[target] && userConfig[target].mpa);
+  const hasMPA = newUserConfig.targets.filter((target) => newUserConfig[target] && newUserConfig[target].mpa);
   if (hasMPA) {
-    modifyUserConfig((originConfig) => {
-      const newConfig = {
-        ...originConfig,
-        // Add document mpa config for RouteLoader
-        document: {
-          ...originConfig.document,
-          mpa: true,
-        },
+    newUserConfig.targets.forEach((target) => {
+      if (!newUserConfig[target]) {
+        newUserConfig[target] = {};
+      }
+      newUserConfig[target] = {
+        ...newUserConfig[target],
+        mpa: true,
       };
-      originConfig.targets.forEach((target) => {
-        if (!newConfig[target]) {
-          newConfig[target] = {};
-        }
-        newConfig[target] = {
-          ...newConfig[target],
-          mpa: true,
-        };
-      });
-      return newConfig;
     });
   }
+
+  modifyUserConfig(() => {
+    return newUserConfig;
+  });
 };
