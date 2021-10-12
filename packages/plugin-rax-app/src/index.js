@@ -16,7 +16,8 @@ const setRegisterUserConfig = require('./utils/setRegisterUserConfig').default;
 
 module.exports = (api) => {
   const { onGetWebpackConfig, context, setValue, applyMethod, registerUserConfig } = api;
-  const { command, rootDir, userConfig: { targets } } = context;
+  const { command, rootDir, userConfig } = context;
+  const { targets } = userConfig;
 
   setRegisterUserConfig(targets, registerUserConfig);
   setRegisterMethod(api);
