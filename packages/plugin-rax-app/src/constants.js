@@ -17,4 +17,5 @@ module.exports = {
   DEV_URL_PREFIX: 'devUrlPrefix',
   STATIC_CONFIG: 'staticConfig',
   TAB_BAR_PATH: 'TAB_BAR_PATH',
+  REACT_TRANSFORM_CONFIG: 'REACT_TRANSFORM_CONFIG',
 };

@@ -1,5 +1,6 @@
 const setMPAConfig = require('@builder/mpa-config');
 const { getMpaEntries } = require('@builder/app-helpers');
+const { isWebpack4 } = require('@builder/compat-webpack4');
 const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
 
@@ -45,11 +46,10 @@ module.exports = (api) => {
     }
 
     if (command === 'start') {
-      // Force disable HMR, kraken not support yet.
-      // TODO: webpack5
-      // config.devServer.inline(false);
-      // config.devServer.hot(false);
-
+      if (isWebpack4) {
+        // Force disable HMR, kraken not support yet.
+        config.devServer.inline(false);
+      }
       // Add webpack hot dev client
       Object.keys(config.entryPoints.entries()).forEach((entryName) => {
         config.entry(entryName).prepend(require.resolve('react-dev-utils/webpackHotDevClient'));

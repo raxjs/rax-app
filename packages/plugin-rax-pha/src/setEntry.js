@@ -1,4 +1,5 @@
 const path = require('path');
+const { isWebpack4 } = require('@builder/compat-webpack4');
 
 module.exports = ({ context, config, appWorkerPath }) => {
   const { userConfig, rootDir } = context;
@@ -10,9 +11,10 @@ module.exports = ({ context, config, appWorkerPath }) => {
     .end()
     .output.path(path.resolve(rootDir, outputDir, 'web'))
     .libraryTarget('umd')
-    .globalObject('this')
-    .end()
-    // TODO: webpack5
-    // .devServer.inline(false)
-    .hot(false);
+    .globalObject('this');
+
+  if (isWebpack4) {
+    config.devServer.inline(false);
+    config.devServer.hot(false);
+  }
 };
