@@ -56,7 +56,7 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
 
   builtInPlugins.push([
     'build-plugin-minify-classname',
-    {miniapp: isMiniAppTargeted},
+    { miniapp: isMiniAppTargeted },
   ]);
 
   return builtInPlugins;

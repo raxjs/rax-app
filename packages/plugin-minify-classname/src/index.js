@@ -17,7 +17,7 @@ module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, 
   // For other projects(like web):
   // 1. use hash to generate classnames because size is almost the same with gzip enabled
   // 2. no prefix or suffix is needed because hash is already unique
-  const useHash = miniapp ? false : true;
+  const useHash = !miniapp;
   const suffix = miniapp ? '_mc' : '';
 
   if ((command === 'build') && enable) {
