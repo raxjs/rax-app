@@ -29,7 +29,7 @@ module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, 
 
     return cached;
   }
-  
+
   function normalizePath(file) {
     return path.sep === '\\' ? file.replace(/\\/g, '/') : file;
   }
@@ -56,12 +56,12 @@ function normalizeOptions(options) {
     return {
       enable: true,
       // options may be null
-      ...(options || {})
+      ...(options || {}),
     };
   }
 
   return {
-    enable: Boolean(options)
+    enable: Boolean(options),
   };
 }
 
