@@ -2,12 +2,23 @@ const path = require('path');
 const readPkgUp = require('read-pkg-up');
 const { minify } = require('minify-css-modules-classname');
 
-module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, context }, pluginOptions) {
+module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, context }, pluginOptions = {}) {
   const { command, rootDir, userConfig = {} } = context;
   const { experiments = {} } = userConfig;
-  const options = normalizeOptions(pluginOptions || experiments.minifyCSSModules);
+  const { miniapp = false } = pluginOptions;
+  const enable = Boolean(experiments.minifyCSSModules);
 
-  const { enable = false, useHash = true, prefix = '', suffix = '' } = options;
+  // -----
+  // For miniapp projects:
+  // 1. use alphabet to generate classnames, to gain a smaller css bundle size( official 2M limit )
+  // 2. add default suffix `_mc`(short for `minify classname`) to avoid classname conflicts
+  //    with 3rd-party css
+  // -----
+  // For other projects(like web):
+  // 1. use hash to generate classnames because size is almost the same with gzip enabled
+  // 2. no prefix or suffix is needed because hash is already unique
+  const useHash = miniapp ? false : true;
+  const suffix = miniapp ? '_mc' : '';
 
   if ((command === 'build') && enable) {
     onGetWebpackConfig((config) => {
@@ -46,24 +57,10 @@ module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, 
       location,
       localName,
       // eslint-disable-next-line comma-dangle
-      { useHash, prefix, suffix }
+      { useHash, prefix: '', suffix }
     );
   }
 };
-
-function normalizeOptions(options) {
-  if (typeof options === 'object') {
-    return {
-      enable: true,
-      // options may be null
-      ...(options || {}),
-    };
-  }
-
-  return {
-    enable: Boolean(options),
-  };
-}
 
 function configCSSModulesOptions(config, cssModulesOptions = {}) {
   [

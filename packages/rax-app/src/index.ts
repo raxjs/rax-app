@@ -47,11 +47,17 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
   if (targets.includes('kraken')) {
     builtInPlugins.push('build-plugin-rax-kraken');
   }
-  if (targets.some((target) => miniappPlatforms.includes(target))) {
+
+  const isMiniAppTargeted = targets.some((target) => miniappPlatforms.includes(target));
+
+  if (isMiniAppTargeted) {
     builtInPlugins.push('build-plugin-rax-miniapp');
   }
 
-  builtInPlugins.push('build-plugin-minify-classname');
+  builtInPlugins.push([
+    'build-plugin-minify-classname',
+    {miniapp: isMiniAppTargeted},
+  ]);
 
   return builtInPlugins;
 };

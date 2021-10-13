@@ -10,11 +10,7 @@ Minify your css modules classnames to get a smaller bundle size
     // ...
    [
      "build-plugin-minify-classname",
-     {
-       "useHash": true,
-       "prefix": "",
-       "suffix": "",
-     }
+     options
    ]
   ]
 }
@@ -22,26 +18,12 @@ Minify your css modules classnames to get a smaller bundle size
 
 ## Options
 
-### options.useHash
+### options.miniapp
 
 Type: `Boolean`\
-Default: `true`
+Default: `false`
 
-Use hash to minify filepath, set `useHash` to `false` will switch to alphabet
-
-### options.prefix
-
-Type: `String`\
-Default: `""`
-
-Add prefix for every css modules classname
-
-### options.suffix
-
-Type: `String`\
-Default: `""`
-
-Add suffix for every css modules classname
+Set `options.miniapp` to true if you are in a miniapp project. Internally it will use another minification strategy to gain a smaller size.
 
 ## How
 
@@ -73,4 +55,4 @@ the output css looks like
 
 ## Why not [hash:base64:7]
 
-As `54755bb1` here is repeated many times, so it's better for `gzip` to generate a smaller bundle
+As `54755bb1` here is repeated many times, it's better for `gzip`-like algorithm to generate a smaller size bundle
