@@ -14,7 +14,7 @@ import getAppEntry from './utils/getAppEntry';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
-  const { onGetWebpackConfig, getValue, context, registerTask, registerCliOption } = api;
+  const { onGetWebpackConfig, getValue, context, registerTask, registerCliOption, applyMethod } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
@@ -86,17 +86,7 @@ export default (api) => {
     }
 
     if (command === 'start') {
-      const webEntries = config.entryPoints.entries();
-      Object.keys(webEntries).forEach((entryName) => {
-        const entrySet = config.entry(entryName);
-        const entryFiles = entrySet.values();
-        const finalEntryFile = entryFiles[entryFiles.length - 1];
-        // Add webpack hot dev client
-        entrySet.prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
-        // Add module.hot.accept() to entry
-        entrySet.add(`${require.resolve('./Loaders/hmr-loader')}!${finalEntryFile}`);
-        entrySet.delete(finalEntryFile);
-      });
+      applyMethod('rax.injectHotReloadEntries', config);
     }
   });
 

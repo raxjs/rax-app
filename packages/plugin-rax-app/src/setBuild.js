@@ -11,7 +11,7 @@ const {
 } = require('./constants');
 
 const highlightPrint = chalk.hex('#F4AF3D');
-const { logWebpackConfig } = require('./utils');
+const logWebpackConfig = require('./utils/logWebpackConfig');
 
 module.exports = (api) => {
   const { context, onHook } = api;

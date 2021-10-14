@@ -1,3 +1,5 @@
+const injectHotReloadEntries = require('./injectHotReloadEntries').default;
+
 module.exports = (api) => {
   const { registerMethod, setValue, getValue } = api;
 
@@ -5,4 +7,6 @@ module.exports = (api) => {
     const staticConfig = getValue('staticConfig');
     setValue('staticConfig', callback(staticConfig));
   });
+
+  registerMethod('rax.injectHotReloadEntries', injectHotReloadEntries);
 };

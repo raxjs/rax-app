@@ -7,7 +7,7 @@ export default class LocalBuilderPlugin {
     compiler.hooks.shouldEmit.tap(PLUGIN_NAME, (compilation) => {
       // Emit node build assets to web task
       emit(compilation.assets);
-      return true;
+      return false;
     });
   }
 }
