@@ -1,5 +1,4 @@
 const path = require('path');
-const { isWebpack4 } = require('@builder/compat-webpack4');
 
 module.exports = ({ context, config, appWorkerPath }) => {
   const { userConfig, rootDir } = context;

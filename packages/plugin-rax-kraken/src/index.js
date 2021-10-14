@@ -1,6 +1,5 @@
 const setMPAConfig = require('@builder/mpa-config');
 const { getMpaEntries } = require('@builder/app-helpers');
-const { isWebpack4 } = require('@builder/compat-webpack4');
 const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
 
