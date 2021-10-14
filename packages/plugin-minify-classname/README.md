@@ -27,16 +27,16 @@ Suppose there are many selectors in it
 The result in miniapp projects
 
 ```css
-.a54755bb1 {}
-.b54755bb1 {}
+.a-a_mc {}
+.b-a_mc {}
 // ...
 ```
 
 The result in other projects
 
 ```css
-.a-a_mc {}
-.b-a_mc {}
+.a54755bb1 {}
+.b54755bb1 {}
 // ...
 ```
 
