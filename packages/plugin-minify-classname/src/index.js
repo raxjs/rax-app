@@ -1,5 +1,5 @@
 const path = require('path');
-const { minify } = require('minify-css-modules-classname');
+const { createMinify } = require('minify-css-modules-classname');
 const { normalizePath, readPkg, isTargetMiniApp } = require('./shared');
 
 module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, context }) {
@@ -20,6 +20,7 @@ module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, 
       const isMiniApp = isTargetMiniApp(target);
       const useHash = !isMiniApp;
       const suffix = isMiniApp ? '_mc' : '';
+      const minify = createMinify();
 
       onGetWebpackConfig(target, (config) => {
         configCSSModulesOptions(config, {
