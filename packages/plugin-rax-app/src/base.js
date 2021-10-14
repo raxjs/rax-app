@@ -32,8 +32,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     babelConfig,
   });
 
-  enhancedWebpackConfig
-    .module
+  enhancedWebpackConfig.module
     .rule('appJSON')
     .type('javascript/auto')
     .test(/app\.json$/)
@@ -77,6 +76,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
       Object.assign({}, ...args, {
         'process.env.PUBLIC_URL': JSON.stringify(publicUrl),
         'process.env.WDS_SOCKET_PATH': '"/ws"',
+        'process.env.BUILD_TARGET': JSON.stringify(target),
       }),
     ]);
 
@@ -99,7 +99,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
 
     // Add condition names
     if (isWebpack4) {
-      enhancedWebpackConfig.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
+      config.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
         {
           conditionNames,
         },
@@ -109,7 +109,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
       // Reset config target
       config.target('web');
     } else {
-      enhancedWebpackConfig.resolve.merge({
+      config.resolve.merge({
         conditionNames,
       });
 

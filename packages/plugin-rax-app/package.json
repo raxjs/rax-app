@@ -41,7 +41,6 @@
     "@builder/exports-field-webpack-plugin": "^1.0.0",
     "@builder/compat-webpack4": "^1.0.0",
     "postcss-plugin-rpx2vw": "^0.0.2"
-
   },
   "devDependencies": {
     "webpack": "^4.41.1"

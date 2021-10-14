@@ -12,9 +12,4 @@ module.exports = ({ context, config, appWorkerPath }) => {
     .output.path(path.resolve(rootDir, outputDir, 'web'))
     .libraryTarget('umd')
     .globalObject('this');
-
-  if (isWebpack4) {
-    config.devServer.inline(false);
-    config.devServer.hot(false);
-  }
 };
