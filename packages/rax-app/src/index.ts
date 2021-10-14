@@ -10,7 +10,6 @@ interface IRaxAppUserConfig extends IUserConfig {
   web?: any;
   experiments?: {
     minifyCSSModules?: boolean;
-    [key: string]: unknown;
   };
 }
 
