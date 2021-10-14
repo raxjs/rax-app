@@ -35,7 +35,7 @@ module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, 
         const filepath = normalizePath(path.relative(rootDir || '', resourcePath));
         // locate file using pkgname + filepath
         const location = `${pkgName}#${filepath}`;
-    
+
         return minify(
           location,
           localName,
