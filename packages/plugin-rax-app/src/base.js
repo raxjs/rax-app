@@ -76,7 +76,6 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
       Object.assign({}, ...args, {
         'process.env.PUBLIC_URL': JSON.stringify(publicUrl),
         'process.env.WDS_SOCKET_PATH': '"/ws"',
-        'process.env.BUILD_TARGET': JSON.stringify(target),
       }),
     ]);
 
