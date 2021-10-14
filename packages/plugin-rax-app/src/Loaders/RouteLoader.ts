@@ -110,10 +110,7 @@ function addNormalImportRouteExpression(normalImports: IRoute[]): string {
   normalImports.forEach((route) => {
     expression += `staticConfig.routes.push({
       ...${JSON.stringify(route)},
-      component: (props) => createElement(${getComponentName(route)}, {
-        ...props,
-        pageConfig: ${JSON.stringify(route)},
-      }),
+      component: ${getComponentName(route)},
     });`;
   });
 
