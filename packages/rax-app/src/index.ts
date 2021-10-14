@@ -8,6 +8,10 @@ interface IRaxAppUserConfig extends IUserConfig {
   targets: string[];
   store?: boolean;
   web?: any;
+  experiments?: {
+    minifyCSSModules?: boolean;
+    [key: string]: unknown;
+  };
 }
 
 const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) => {
