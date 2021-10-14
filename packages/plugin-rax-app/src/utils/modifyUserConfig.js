@@ -59,7 +59,7 @@ module.exports = (api) => {
   }
 
   // Unify all targets mpa config
-  const hasMPA = newUserConfig.targets.filter((target) => newUserConfig[target] && newUserConfig[target].mpa);
+  const hasMPA = newUserConfig.targets.some((target) => newUserConfig[target] && newUserConfig[target].mpa);
   if (hasMPA) {
     newUserConfig.targets.forEach((target) => {
       if (!newUserConfig[target]) {
