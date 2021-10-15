@@ -52,7 +52,7 @@ export default async (api) => {
             <Router key="rax-normal-router" history={history} routes={routes} />,
           );
         }
-        if (!TabBar) {
+        if (TabBar) {
           RouterComponents.push(<TabBar key="rax-app-tab-bar" onClick={handleTabBarItemClick} config={tabBarConfig} currentPageName={history.location.pathname} />);
         }
         return RouterComponents;
