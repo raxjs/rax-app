@@ -1,12 +1,23 @@
 import { createElement, useEffect, useCallback } from 'rax';
-import { isNode, isWeb } from 'universal-env';
+import {
+  isNode,
+  isWeb,
+  isMiniApp,
+  isBaiduSmartProgram,
+  isByteDanceMicroApp,
+  isKuaiShouMiniProgram,
+  isWeChatMiniProgram,
+} from 'universal-env';
 import KeepAliveRouter from './runtime/KeepAliveRouter';
 import StaticRouter from './runtime/StaticRouter';
 import Router from './runtime/Router';
 import { IRoute } from './type';
 
+const isMiniAppPlatform = isMiniApp || isBaiduSmartProgram || isByteDanceMicroApp || isWeChatMiniProgram || isKuaiShouMiniProgram;
+
 export default async (api) => {
-  const { appConfig, staticConfig, setRenderApp, modifyRoutes, wrapperPageComponent, getRuntimeValue } = api;
+  if (isMiniAppPlatform) return;
+  const { appConfig, staticConfig, setRenderApp, modifyRoutes, getRuntimeValue } = api;
   const { routes: appRoutes } = staticConfig;
   const { router: appConfigRouter = {} } = appConfig;
   modifyRoutes(() => appRoutes);
@@ -16,19 +27,6 @@ export default async (api) => {
   const { history } = appConfigRouter;
   const TabBar = getRuntimeValue('TabBar');
   const tabBarConfig = getRuntimeValue('tabBarConfig');
-
-  wrapperPageComponent((PageComponent) => {
-    const RootWrapper = () => {
-      const routerProps = { history, location: history.location, pageConfig: PageComponent.__pageConfig };
-      useEffect(() => {
-        if (isWeb) {
-          document.title = PageComponent.window?.title || staticConfig.window?.title;
-        }
-      }, []);
-      return <PageComponent {...routerProps} />;
-    };
-    return RootWrapper;
-  });
 
   const renderRouter =
     (initialRoutes: IRoute[]) => {
@@ -54,7 +52,7 @@ export default async (api) => {
             <Router key="rax-normal-router" history={history} routes={routes} />,
           );
         }
-        if (TabBar) {
+        if (!TabBar) {
           RouterComponents.push(<TabBar key="rax-app-tab-bar" onClick={handleTabBarItemClick} config={tabBarConfig} currentPageName={history.location.pathname} />);
         }
         return RouterComponents;
