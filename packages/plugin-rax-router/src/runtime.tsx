@@ -1,4 +1,4 @@
-import { createElement, useEffect, useCallback } from 'rax';
+import { createElement, useCallback } from 'rax';
 import {
   isNode,
   isWeb,
