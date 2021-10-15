@@ -13,7 +13,7 @@ import StaticRouter from './runtime/StaticRouter';
 import Router from './runtime/Router';
 import { IRoute } from './type';
 
-const isMiniAppPlatform = isMiniApp || isBaiduSmartProgram || isByteDanceMicroApp || isWeChatMiniProgram || isKuaiShouMiniProgram;
+const isMiniAppPlatform = (isMiniApp || isBaiduSmartProgram || isByteDanceMicroApp || isWeChatMiniProgram || isKuaiShouMiniProgram) && !isWeb;
 
 export default async (api) => {
   if (isMiniAppPlatform) return;
