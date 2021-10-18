@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.12
+
+- Feat: escape data to prevent xss
+
 ## v1.3.11
 
 - Feat: support sdk combo
