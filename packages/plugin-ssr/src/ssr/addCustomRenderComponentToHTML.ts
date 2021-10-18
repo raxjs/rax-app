@@ -60,7 +60,7 @@ export default function addCustomRenderComponentToHTML(
     DocumentContextProvider.prototype.getChildContext = function() {
       return {
         __initialHtml: pageHTML,
-        __initialData: JSON.stringify(data),
+        __initialData: stripXSS(JSON.stringify(data)),
         __styles: styles,
         __scripts: scripts,
         __pagePath: '${pageConfig.path}'
