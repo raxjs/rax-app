@@ -1,69 +1,52 @@
 const path = require('path');
-const readPkgUp = require('read-pkg-up');
-const { minify } = require('minify-css-modules-classname');
+const { createMinify } = require('minify-css-modules-classname');
+const { normalizePath, readPkg, isTargetMiniApp } = require('./shared');
 
-module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, context }, pluginOptions) {
+module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, context }) {
   const { command, rootDir, userConfig = {} } = context;
-  const { experiments = {} } = userConfig;
-  const options = normalizeOptions(pluginOptions || experiments.minifyCSSModules);
+  const { targets = ['web'] } = userConfig;
 
-  const { enable = false, useHash = true, prefix = '', suffix = '' } = options;
+  if (command === 'build') {
+    targets.forEach((target) => {
+      // -----
+      // For miniapp projects:
+      // 1. use alphabet to generate classnames, to gain a smaller css bundle size( official 2M limit )
+      // 2. add default suffix `_mc`(short for `minify classname`) to avoid classname conflicts
+      //    with 3rd-party css
+      // -----
+      // For other projects(like web):
+      // 1. use hash to generate classnames because size is almost the same with gzip enabled
+      // 2. no prefix or suffix is needed because hash is already unique
+      const isMiniApp = isTargetMiniApp(target);
+      const useHash = !isMiniApp;
+      const suffix = isMiniApp ? '_mc' : '';
+      const minify = createMinify();
 
-  if ((command === 'build') && enable) {
-    onGetWebpackConfig((config) => {
-      configCSSModulesOptions(config, {
-        getLocalIdent,
+      onGetWebpackConfig(target, (config) => {
+        configCSSModulesOptions(config, {
+          getLocalIdent,
+        });
       });
+
+      // move getLocalIdent here to access `useHash` and `suffix`
+      function getLocalIdent(loaderContext, _, localName) {
+        const { resourcePath } = loaderContext;
+        const pkg = readPkg(resourcePath);
+        const pkgName = (pkg && pkg.packageJson && pkg.packageJson.name) || '';
+        const filepath = normalizePath(path.relative(rootDir || '', resourcePath));
+        // locate file using pkgname + filepath
+        const location = `${pkgName}#${filepath}`;
+
+        return minify(
+          location,
+          localName,
+          // eslint-disable-next-line comma-dangle
+          { useHash, prefix: '', suffix }
+        );
+      }
     });
   }
-
-  // cache readPkgUp result
-  const cache = new Map();
-  function readPkg(filepath) {
-    let cached = cache.get(filepath);
-
-    if (!cached) {
-      cached = readPkgUp.sync({ cwd: path.dirname(filepath) });
-      cache.set(filepath, cached);
-    }
-
-    return cached;
-  }
-  
-  function normalizePath(file) {
-    return path.sep === '\\' ? file.replace(/\\/g, '/') : file;
-  }
-
-  function getLocalIdent(loaderContext, _, localName) {
-    const { resourcePath } = loaderContext;
-    const pkg = readPkg(resourcePath);
-    const pkgName = (pkg && pkg.packageJson && pkg.packageJson.name) || '';
-    const filepath = normalizePath(path.relative(rootDir || '', resourcePath));
-    // locate file using pkgname + filepath
-    const location = `${pkgName}#${filepath}`;
-
-    return minify(
-      location,
-      localName,
-      // eslint-disable-next-line comma-dangle
-      { useHash, prefix, suffix }
-    );
-  }
 };
-
-function normalizeOptions(options) {
-  if (typeof options === 'object') {
-    return {
-      enable: true,
-      // options may be null
-      ...(options || {})
-    };
-  }
-
-  return {
-    enable: Boolean(options)
-  };
-}
 
 function configCSSModulesOptions(config, cssModulesOptions = {}) {
   [
