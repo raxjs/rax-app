@@ -13,9 +13,7 @@
       "build-plugin-fusion-mobile",
       {
         "extractModules": true,
-        "transformCssVariables": true,
-        "injectTheme": true,
-        "themePackage": "@alife/mobile-theme-default"
+        "transformCssVariables": true
       }
     ]
   ]
@@ -60,34 +58,3 @@
   background-color: #209bfa;
 }
 ```
-
-### injectTheme
-
-**仅小程序中生效**， 是否自动注入主题（默认注入：`@alifd/meet/es/core/index.css`）
-
-默认值： `false`
-
-> 注：当此项设置为 false 时，项目中可能因没有主题样式而导致渲染异常, 但可以在代码中手动引入样式， 如：
-
-```jsx
-/* @jsx createElement */
-import { createElement } from 'rax';
-import { Button } from '@alifd/meet';
-
-// 强制手动引入
-import '@alifd/meet/es/core/index.css';
-
-export default () => {
-  return (
-    <Button type="primary" model="outline">
-      button
-    </Button>
-  );
-};
-```
-
-### themePackage
-
-**仅小程序中生效**， `injectTheme=true`时生效，指定要注入主题包，此可在 [Fusion](https://fusion.alibaba-inc.com/mobile/component) 站点上创建
-
-默认值: `''`
