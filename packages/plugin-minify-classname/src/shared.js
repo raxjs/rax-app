@@ -1,6 +1,7 @@
 const path = require('path');
 const readPkgUp = require('read-pkg-up');
 const { constants } = require('miniapp-builder-shared');
+
 const { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } = constants;
 const miniappPlatforms = [MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM];
 

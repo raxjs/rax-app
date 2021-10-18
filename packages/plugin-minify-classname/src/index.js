@@ -7,7 +7,7 @@ module.exports = function minifyCSSModulesClassnamePlugin({ onGetWebpackConfig, 
   const { targets = ['web'] } = userConfig;
 
   if (command === 'build') {
-    targets.forEach(target => {
+    targets.forEach((target) => {
       // -----
       // For miniapp projects:
       // 1. use alphabet to generate classnames, to gain a smaller css bundle size( official 2M limit )
