@@ -1,4 +1,5 @@
 const { KRAKEN, WEB, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX } = require('../constants');
+const logDeprecatedConfig = require('./logDeprecatedConfig').default;
 
 const taskList = [
   {
@@ -21,7 +22,7 @@ const taskList = [
 });
 
 module.exports = (api) => {
-  const { context, modifyUserConfig, cancelTask } = api;
+  const { context, modifyUserConfig, cancelTask, log } = api;
   const { userConfig } = context;
   const { targets: originalTargets, webpack5 } = userConfig;
   const { devTargets } = context.commandArgs;
@@ -76,11 +77,31 @@ module.exports = (api) => {
       type: 'esbuild',
       options: newUserConfig.esbuild,
     };
+    logDeprecatedConfig(
+      log,
+      'esbuild',
+      `Please use ${JSON.stringify({
+        minify: {
+          type: 'esbuild',
+          options: {},
+        },
+      }, null, 2)} instead of it.`,
+    );
   } else if (newUserConfig.terserOptions) {
     newUserConfig.minify = {
       type: 'terser',
       options: newUserConfig.terserOptions,
     };
+    logDeprecatedConfig(
+      log,
+      'terserOptions',
+      `Please use \n${JSON.stringify({
+        minify: {
+          type: 'terser',
+          options: {},
+        },
+      }, null, 2)}`,
+    );
   }
 
   modifyUserConfig(() => {
