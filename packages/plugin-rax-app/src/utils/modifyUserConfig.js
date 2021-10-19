@@ -78,33 +78,17 @@ module.exports = (api) => {
 
   // Deprecate in v4.0
   // Minify options
-  let deprecatedConfigkey;
-  if (newUserConfig.esbuild) {
+  Object.keys(deprecatedConfigMap).forEach((deprecatedConfigkey) => {
     newUserConfig.minify = {
-      type: 'esbuild',
-      options: newUserConfig.esbuild,
+      type: deprecatedConfigkey,
+      options: newUserConfig[deprecatedConfigkey],
     };
-    deprecatedConfigkey = 'esbuild';
-  } else if (newUserConfig.terserOptions) {
-    newUserConfig.minify = {
-      type: 'terser',
-      options: newUserConfig.terserOptions,
-    };
-    deprecatedConfigkey = 'terserOptions';
-  }
-
-  if (deprecatedConfigkey) {
     logDeprecatedConfig(
       log,
       deprecatedConfigkey,
-      `Please use \n${JSON.stringify({
-        minify: {
-          type: deprecatedConfigMap[deprecatedConfigkey],
-          options: userConfig[deprecatedConfigkey],
-        },
-      }, null, 2)}`,
+      `Please use \n${JSON.stringify(newUserConfig.minify, null, 2)}`,
     );
-  }
+  });
 
   modifyUserConfig(() => {
     return newUserConfig;
