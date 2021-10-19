@@ -21,6 +21,11 @@ const taskList = [
   });
 });
 
+const deprecatedConfigMap = {
+  esbuild: 'esbuild',
+  terserOptions: 'terser',
+};
+
 module.exports = (api) => {
   const { context, modifyUserConfig, cancelTask, log } = api;
   const { userConfig } = context;
@@ -73,37 +78,31 @@ module.exports = (api) => {
 
   // Deprecate in v4.0
   // Minify options
+  let deprecatedConfigkey;
   if (newUserConfig.esbuild) {
     newUserConfig.minify = {
       type: 'esbuild',
       options: newUserConfig.esbuild,
     };
-    logDeprecatedConfig(
-      log,
-      'esbuild',
-      `Please use \n${JSON.stringify({
-        minify: {
-          type: 'esbuild',
-          options: {},
-        },
-      }, null, 2)}`,
-    );
+    deprecatedConfigkey = 'esbuild';
   } else if (newUserConfig.terserOptions) {
     newUserConfig.minify = {
       type: 'terser',
       options: newUserConfig.terserOptions,
     };
-    logDeprecatedConfig(
-      log,
-      'terserOptions',
-      `Please use \n${JSON.stringify({
-        minify: {
-          type: 'terser',
-          options: {},
-        },
-      }, null, 2)}`,
-    );
+    deprecatedConfigkey = 'terserOptions';
   }
+
+  logDeprecatedConfig(
+    log,
+    deprecatedConfigkey,
+    `Please use \n${JSON.stringify({
+      minify: {
+        type: deprecatedConfigMap[deprecatedConfigkey],
+        options: userConfig[deprecatedConfigkey],
+      },
+    }, null, 2)}`,
+  );
 
   modifyUserConfig(() => {
     return newUserConfig;
