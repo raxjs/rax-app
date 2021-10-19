@@ -93,16 +93,18 @@ module.exports = (api) => {
     deprecatedConfigkey = 'terserOptions';
   }
 
-  logDeprecatedConfig(
-    log,
-    deprecatedConfigkey,
-    `Please use \n${JSON.stringify({
-      minify: {
-        type: deprecatedConfigMap[deprecatedConfigkey],
-        options: userConfig[deprecatedConfigkey],
-      },
-    }, null, 2)}`,
-  );
+  if (deprecatedConfigkey) {
+    logDeprecatedConfig(
+      log,
+      deprecatedConfigkey,
+      `Please use \n${JSON.stringify({
+        minify: {
+          type: deprecatedConfigMap[deprecatedConfigkey],
+          options: userConfig[deprecatedConfigkey],
+        },
+      }, null, 2)}`,
+    );
+  }
 
   modifyUserConfig(() => {
     return newUserConfig;
