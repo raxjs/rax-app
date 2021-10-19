@@ -73,6 +73,16 @@ export default function () {
     : addImportPageComponent(this.resourcePath, query.pageConfig)
 }
 
+    const escapeLookup = {
+      '<': '\\u003c',
+      '>': '\\u003e',
+      '/': '\\u002f',
+    };
+    const escapeRegex = /[<>\/]/g;
+    function stripXSS(str) {
+      return str.replace(escapeRegex, (match) => escapeLookup[match]);
+    }
+
     const appConfig = getAppConfig() || {};
 
     async function getInitialProps(Component, ctx) {
