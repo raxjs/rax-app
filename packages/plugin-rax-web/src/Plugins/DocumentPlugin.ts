@@ -5,12 +5,7 @@ import * as htmlparser2 from 'htmlparser2';
 import { getEntriesByRoute } from '@builder/app-helpers';
 import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
-import {
-  getInjectedHTML,
-  getBuiltInHtmlTpl,
-  insertCommonElements,
-  genComboedScript,
-} from '../utils/htmlStructure';
+import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements, genComboedScript } from '../utils/htmlStructure';
 import { setDocument } from '../utils/document';
 
 const PLUGIN_NAME = 'DocumentPlugin';
@@ -36,7 +31,8 @@ export default class DocumentPlugin {
     } = this.options;
     const { mpa, doctype = '<!DOCTYPE html>', ssr } = webConfig || {};
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
-    const publicPath = this.options.publicPath || compiler.options.output.publicPath;
+    const publicPath =
+      this.options.publicPath || compiler.options.devServer.publicPath || compiler.options.output.publicPath;
     insertCommonElements(staticConfig);
 
     let localBuildTask = registerListenTask();
@@ -111,15 +107,18 @@ export default class DocumentPlugin {
               }
             }
 
-            html = getBuiltInHtmlTpl({
-              doctype,
-              title,
-              injectedHTML,
-              assets,
-              initialHTML,
-              spmA: staticConfig.spm,
-              spmB: spm,
-            }, ssr);
+            html = getBuiltInHtmlTpl(
+              {
+                doctype,
+                title,
+                injectedHTML,
+                assets,
+                initialHTML,
+                spmA: staticConfig.spm,
+                spmB: spm,
+              },
+              ssr,
+            );
           }
 
           setDocument(entryName, customDocument);

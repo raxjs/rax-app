@@ -106,7 +106,8 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
         }
         return item;
       });
-    } else if (key === 'requestHeaders') { // keys of requestHeaders should not be transformed
+    } else if (key === 'requestHeaders') {
+      // keys of requestHeaders should not be transformed
       data[transformKey] = value;
     } else if (typeof value === 'object' && !(parentKey === 'dataPrefetch' && (key === 'header' || key === 'data'))) {
       data[transformKey] = transformAppConfig(value, false, key);
@@ -152,11 +153,15 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
   if (!source && !name) {
     return page;
   }
+
   const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
-  const { entryName, pageUrl } = getRealPageInfo({
-    urlPrefix,
-    urlSuffix,
-  }, page);
+  const { entryName, pageUrl } = getRealPageInfo(
+    {
+      urlPrefix,
+      urlSuffix,
+    },
+    page,
+  );
   if (entryName) {
     if (!page.path || !page.path.startsWith('http')) {
       page.path = pageUrl;
@@ -179,6 +184,20 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
   return page;
 }
 
+function getTabHeaderOrTabBarInfo({ api }, page) {
+  const { source, name } = page;
+  const { applyMethod } = api;
+
+  const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
+
+  custom && delete page.source;
+
+  return {
+    document,
+    custom,
+  };
+}
+
 /**
  * set real url to manifest
  */
@@ -193,8 +212,18 @@ function setRealUrlToManifest(options, manifest) {
     app_worker.url = cdnPrefix + app_worker.url;
   }
 
-  if (tab_bar && tab_bar.source && !tab_bar.url) {
-    tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
+  if (tab_bar && tab_bar.source) {
+    const { document, custom } = getTabHeaderOrTabBarInfo(options, tab_bar);
+    if (custom) {
+      tab_bar.html = document;
+    } else {
+      tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
+    }
+
+    if (tab_bar.list) {
+      tab_bar.items = tab_bar.list.map(() => ({}));
+      delete tab_bar.list;
+    }
   }
 
   if (pages && pages.length > 0) {
@@ -207,7 +236,12 @@ function setRealUrlToManifest(options, manifest) {
       }
 
       if (page.tab_header && page.tab_header.source) {
-        page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
+        const { document, custom } = getTabHeaderOrTabBarInfo(options, page.tab_header);
+        if (custom) {
+          page.tab_header.html = document;
+        } else {
+          page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
+        }
       }
       return changePageInfo(options, page, manifest);
     });
