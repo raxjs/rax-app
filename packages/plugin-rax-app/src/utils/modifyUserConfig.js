@@ -71,6 +71,7 @@ module.exports = (api) => {
     });
   }
 
+  // Deprecate in v4.0
   // Minify options
   if (newUserConfig.esbuild) {
     newUserConfig.minify = {
@@ -80,12 +81,12 @@ module.exports = (api) => {
     logDeprecatedConfig(
       log,
       'esbuild',
-      `Please use ${JSON.stringify({
+      `Please use \n${JSON.stringify({
         minify: {
           type: 'esbuild',
           options: {},
         },
-      }, null, 2)} instead of it.`,
+      }, null, 2)}`,
     );
   } else if (newUserConfig.terserOptions) {
     newUserConfig.minify = {
