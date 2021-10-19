@@ -16,8 +16,8 @@ class WeexFrameworkBannerPlugin {
     processAssets({
       pluginName: 'WeexFrameworkBannerPlugin',
       compiler,
-    }, (compilation, assets, callback) => {
-      Object.keys(assets).filter(/\.js$/.test).forEach((chunkName) => {
+    }, ({ compilation, assets, callback }) => {
+      Object.keys(assets).filter((filepath) => /\.js$/.test(filepath)).forEach((chunkName) => {
         const content = assets[chunkName].source();
         delete assets[chunkName];
         emitAsset(compilation, chunkName, new ConcatSource(

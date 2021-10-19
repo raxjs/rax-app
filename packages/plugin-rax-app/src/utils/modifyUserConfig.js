@@ -22,9 +22,7 @@ const taskList = [
 
 module.exports = (api) => {
   const { context, modifyUserConfig, cancelTask } = api;
-  const {
-    userConfig,
-  } = context;
+  const { userConfig } = context;
   const { targets: originalTargets, webpack5 } = userConfig;
   const { devTargets } = context.commandArgs;
   const newUserConfig = {
@@ -70,6 +68,19 @@ module.exports = (api) => {
         mpa: true,
       };
     });
+  }
+
+  // Minify options
+  if (newUserConfig.esbuild) {
+    newUserConfig.minify = {
+      type: 'esbuild',
+      options: newUserConfig.esbuild,
+    };
+  } else if (newUserConfig.terserOptions) {
+    newUserConfig.minify = {
+      type: 'terser',
+      options: newUserConfig.terserOptions,
+    };
   }
 
   modifyUserConfig(() => {

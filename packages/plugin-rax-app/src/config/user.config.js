@@ -100,4 +100,13 @@ module.exports = [
     name: 'webpack5',
     defaultValue: false,
   },
+  {
+    name: 'terserOptions',
+    validation: 'object',
+    defaultValue: {},
+  },
+  {
+    name: 'esbuild',
+    validation: 'object',
+  },
 ];

@@ -53,6 +53,7 @@ export function getHookFiles(webpack5) {
 
   if (!webpack5) {
     hookFiles.push(['webpack-dev-server', '@builder/webpack-dev-server']);
+    hookFiles.push(['@builder/pack/deps/terser-webpack-plugin', 'terser-webpack-plugin']);
   }
 
   return hookFiles;
