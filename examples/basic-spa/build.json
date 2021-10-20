@@ -1,6 +1,6 @@
 {
   "targets": ["web", "weex", "kraken", "miniapp", "wechat-miniprogram"],
   "minify": {
-    "miniappDevMode": true
+    "activeInDev": ["miniapp"]
   }
 }
