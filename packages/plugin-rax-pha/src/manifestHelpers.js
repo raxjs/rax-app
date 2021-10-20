@@ -137,6 +137,8 @@ function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
     pageUrl = `${pageUrl}?${query_params}`;
   }
 
+  delete page.source;
+
   return {
     pageUrl,
     entryName,
