@@ -163,27 +163,28 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
     },
     page,
   );
+
   if (entryName) {
     if (!page.path || !page.path.startsWith('http')) {
       page.path = pageUrl;
-      // do not inject document when config url
-      if (page.url) {
-        page.path = page.url;
-        isTemplate = false;
-        delete page.url;
-      }
+    }
+
+    if (page.url) {
+      page.path = page.url;
+      delete page.url;
+      return page;
     }
 
     // template and no frames under the page
     if (isTemplate && !Array.isArray(page.frames)) {
       if (custom) {
         page.document = document;
-      } else {
-        // add script and stylesheet
-        page.script = `${cdnPrefix + entryName}.js`;
-        if (!inlineStyle || (typeof inlineStyle === 'object' && inlineStyle.forceEnableCSS)) {
-          page.stylesheet = `${cdnPrefix + entryName}.css`;
-        }
+        return page;
+      }
+      // add script and stylesheet
+      page.script = `${cdnPrefix + entryName}.js`;
+      if (!inlineStyle || (typeof inlineStyle === 'object' && inlineStyle.forceEnableCSS)) {
+        page.stylesheet = `${cdnPrefix + entryName}.css`;
       }
     }
   }
