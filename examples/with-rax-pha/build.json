@@ -5,8 +5,5 @@
   },
   "inlineStyle": {
     "forceEnableCSS": true
-  },
-  "devServer": {
-    "publicPath": "http://abc.com/"
   }
 }

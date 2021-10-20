@@ -8,8 +8,8 @@
       "frames": [
         {
           "name": "home",
-          "path": "/",
           "source": "pages/Home/index",
+          "url": "https://m.taobao.com",
           "window": {
             "title": "home"
           }
@@ -22,8 +22,8 @@
     },
     {
       "name": "about-single",
-      "path": "/about-single",
-      "source": "pages/About-Single/index"
+      "source": "pages/About-Single/index",
+      "url": "https://m.taobao.com"
     }
   ],
   "window": {

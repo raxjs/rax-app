@@ -137,7 +137,6 @@ function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
     pageUrl = `${pageUrl}?${query_params}`;
   }
 
-  delete page.source;
   return {
     pageUrl,
     entryName,
@@ -165,6 +164,12 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
   if (entryName) {
     if (!page.path || !page.path.startsWith('http')) {
       page.path = pageUrl;
+      // do not inject document when config url
+      if (page.url) {
+        page.path = page.url;
+        isTemplate = false;
+        delete page.url;
+      }
     }
 
     // template and no frames under the page
@@ -189,8 +194,6 @@ function getTabHeaderOrTabBarInfo({ api }, page) {
   const { applyMethod } = api;
 
   const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
-
-  custom && delete page.source;
 
   return {
     document,
@@ -219,11 +222,12 @@ function setRealUrlToManifest(options, manifest) {
     } else {
       tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
     }
+    delete tab_bar.source;
+  }
 
-    if (tab_bar.list) {
-      tab_bar.items = tab_bar.list.map(() => ({}));
-      delete tab_bar.list;
-    }
+  if (tab_bar.list) {
+    tab_bar.items = tab_bar.list.map(() => ({}));
+    delete tab_bar.list;
   }
 
   if (pages && pages.length > 0) {
@@ -237,11 +241,12 @@ function setRealUrlToManifest(options, manifest) {
 
       if (page.tab_header && page.tab_header.source) {
         const { document, custom } = getTabHeaderOrTabBarInfo(options, page.tab_header);
-        if (custom) {
+        if (custom && !page.tab_header.url) {
           page.tab_header.html = document;
         } else {
           page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
         }
+        delete page.tab_header.source;
       }
       return changePageInfo(options, page, manifest);
     });
