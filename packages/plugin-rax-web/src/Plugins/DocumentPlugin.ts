@@ -31,8 +31,12 @@ export default class DocumentPlugin {
     } = this.options;
     const { mpa, doctype = '<!DOCTYPE html>', ssr } = webConfig || {};
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
-    const publicPath =
-      this.options.publicPath || compiler.options.devServer.publicPath || compiler.options.output.publicPath;
+    let { publicPath } = this.options;
+    if (compiler.options.mode !== 'production') {
+      publicPath = publicPath || compiler.options.devServer.publicPath;
+    } else {
+      publicPath = publicPath || compiler.options.output.publicPath;
+    }
     insertCommonElements(staticConfig);
 
     let localBuildTask = registerListenTask();

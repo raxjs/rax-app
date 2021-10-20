@@ -19,8 +19,8 @@ module.exports = (api) => {
     ]);
 
     // set devServer.publicPath
-    const devServerConfig = config.devServer.toConfig();
-    if (devServerConfig.publicPath === '/') {
+    const publicPath = config.devServer.get('publicPath');
+    if (publicPath === '/') {
       const url = `${getValue('devUrlPrefix')}/`;
       config.devServer.publicPath(url);
     }

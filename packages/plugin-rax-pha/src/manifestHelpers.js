@@ -191,23 +191,12 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
   return page;
 }
 
-function getTabHeaderOrTabBarInfo({ api }, page) {
-  const { source, name } = page;
-  const { applyMethod } = api;
-
-  const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
-
-  return {
-    document,
-    custom,
-  };
-}
-
 /**
  * set real url to manifest
  */
 function setRealUrlToManifest(options, manifest) {
-  const { urlPrefix, cdnPrefix } = options;
+  const { urlPrefix, cdnPrefix, api } = options;
+  const { applyMethod } = api;
   if (!urlPrefix) {
     return manifest;
   }
@@ -218,8 +207,8 @@ function setRealUrlToManifest(options, manifest) {
   }
 
   if (tab_bar && tab_bar.source) {
-    const { document, custom } = getTabHeaderOrTabBarInfo(options, tab_bar);
-    if (custom) {
+    const { document, custom } = applyMethod('rax.getDocument', { name: tab_bar.name, source: tab_bar.source }) || {};
+    if (custom && !tab_bar.url) {
       tab_bar.html = document;
     } else {
       tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
@@ -227,6 +216,7 @@ function setRealUrlToManifest(options, manifest) {
     delete tab_bar.source;
   }
 
+  // items is `undefined` will crash in PHA
   if (tab_bar.list) {
     tab_bar.items = tab_bar.list.map(() => ({}));
     delete tab_bar.list;
@@ -242,7 +232,8 @@ function setRealUrlToManifest(options, manifest) {
       }
 
       if (page.tab_header && page.tab_header.source) {
-        const { document, custom } = getTabHeaderOrTabBarInfo(options, page.tab_header);
+        const { document, custom } =
+          applyMethod('rax.getDocument', { name: page.tab_header.name, source: page.tab_header.source }) || {};
         if (custom && !page.tab_header.url) {
           page.tab_header.html = document;
         } else {
