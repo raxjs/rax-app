@@ -165,14 +165,14 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
   );
 
   if (entryName) {
-    if (!page.path || !page.path.startsWith('http')) {
-      page.path = pageUrl;
-    }
-
     if (page.url) {
       page.path = page.url;
       delete page.url;
       return page;
+    }
+
+    if (!page.path || !page.path.startsWith('http')) {
+      page.path = pageUrl;
     }
 
     // template and no frames under the page
