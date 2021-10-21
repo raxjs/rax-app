@@ -330,6 +330,11 @@ describe('setRealUrlToManifest', () => {
             },
           ],
         },
+        {
+          path: '/about',
+          name: 'about',
+          source: 'pages/About/index',
+        },
       ],
       tab_bar: {
         custom: true,
@@ -354,5 +359,38 @@ describe('setRealUrlToManifest', () => {
     expect(manifest.tab_bar.url).toBe('https://m.taobao.com');
     expect(manifest.tab_bar.source).toBeUndefined();
     expect(manifest.tab_bar.items).toHaveLength(2);
+
+    expect(manifest.pages[2].path).toBe('https://abc.com/about');
+    expect(manifest.pages[2].script).toBe('https://cdn.com/about.js');
+    expect(manifest.pages[2].stylesheet).toBe('https://cdn.com/about.css');
+  });
+
+  it('should not cover url by pageUrl', () => {
+    const manifest = setRealUrlToManifest(options, {
+      ...cloneDeep(config),
+      pages: [
+        {
+          tab_header: {
+            source: 'pages/Header/index',
+          },
+          frames: [
+            {
+              path: '/frame1',
+              name: 'frame1',
+              source: 'pages/frame1/index',
+              url: 'https://m.taobao.com',
+            },
+          ],
+        },
+      ],
+      tab_bar: {
+        custom: true,
+        source: 'components/CustomTabBar/index',
+        list: ['home', 'frame1'],
+      },
+    });
+
+    expect(manifest.pages[0].tab_header.url).toBe('https://abc.com/header');
+    expect(manifest.tab_bar.url).toBe('https://abc.com/customtabbar');
   });
 });

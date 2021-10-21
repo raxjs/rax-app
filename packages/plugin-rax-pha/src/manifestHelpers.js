@@ -209,7 +209,7 @@ function setRealUrlToManifest(options, manifest) {
 
   if (tab_bar && tab_bar.source) {
     const { document, custom } = applyMethod('rax.getDocument', { name: tab_bar.name, source: tab_bar.source }) || {};
-    if (custom && !tab_bar.url) {
+    if (custom) {
       tab_bar.html = document;
     } else if (!tab_bar.url) {
       tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
