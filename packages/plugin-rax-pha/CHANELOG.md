@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.8
+
+- Feat: support tabHeader & tabBar template
+- Feat: support config url in page & tabHeader & tabBar
+
 ## v1.4.7
 
 - Feat: manifest json output no space in production
@@ -58,5 +63,5 @@
 
 ## v1.2.3
 
-- Fix: data prefetches do not decamelize 
+- Fix: data prefetches do not decamelize
 
