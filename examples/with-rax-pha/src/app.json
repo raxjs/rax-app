@@ -7,13 +7,16 @@
       },
       "frames": [
         {
+          "name": "home",
           "path": "/",
           "source": "pages/Home/index",
+          "url": "https://m.taobao.com",
           "window": {
             "title": "home"
           }
         },
         {
+          "name": "about",
           "path": "/about",
           "source": "pages/About/index"
         }
@@ -22,10 +25,15 @@
     {
       "name": "about-single",
       "path": "/about-single",
-      "source": "pages/About-Single/index"
+      "source": "pages/About-Single/index",
+      "url": "https://m.taobao.com"
     }
   ],
   "window": {
     "title": "PHA Demo"
+  },
+  "tabBar": {
+    "custom": true,
+    "list": ["home", "about-single"]
   }
 }
