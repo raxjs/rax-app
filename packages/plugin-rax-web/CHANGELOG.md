@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.7
+
+- Fix: inject publicPath in development mode
+
 ## v1.4.6
 
 - Fix: document live load
