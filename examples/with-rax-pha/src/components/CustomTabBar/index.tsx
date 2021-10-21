@@ -4,14 +4,14 @@ import Text from 'rax-text';
 
 import './index.css';
 
-class Header extends PureComponent {
+class TabBar extends PureComponent {
   render() {
     return (
       <View className="about">
-        <Text className="title">PHA Header</Text>
+        <Text className="title">PHA TabBar</Text>
       </View>
     );
   }
 }
 
-export default Header;
+export default TabBar;
