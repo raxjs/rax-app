@@ -7,7 +7,7 @@ import { spawnSync } from 'child_process';
 import { setPublishedPackages } from './published-info';
 import { IPackageInfo, getPackageInfos, getVersionPrefix } from './getPackageInfos';
 
-const BETA_REG = /([^-]+)-beta\.(\d+)/; // '1.0.0-beta.1'
+const BETA_REG = /([^-]+)-alpha\.(\d+)/; // '1.0.0-beta.1'
 
 interface IBetaPackageInfo extends IPackageInfo {
   betaVersion: string;
@@ -28,13 +28,14 @@ function getBetaVersionInfo(packageInfo: IPackageInfo): IBetaPackageInfo {
       encoding: 'utf-8',
     });
     const distTags = JSON.parse(childProcess.stdout) || {};
-    const matched = (distTags.beta || '').match(BETA_REG);
+    const matched = (distTags.alpha || '').match(BETA_REG);
 
     // 1.0.0-beta.1 -> ["1.0.0-beta.1", "1.0.0", "1"] -> 1.0.0-beta.2
     if (matched && matched[1] === localVersion && matched[2]) {
       betaVersion = Number(matched[2]) + 1;
     }
-    version += `-beta.${betaVersion}`;
+    console.log('name ===> ', betaVersion);
+    version += `-alpha.${betaVersion}`;
   }
 
   return Object.assign({}, packageInfo, { betaVersion: version });
@@ -66,13 +67,13 @@ function updatePackageJson(betaPackageInfos: IBetaPackageInfo[]): void {
 
 function publish(pkg: string, betaVersion: string, directory: string): void {
   console.log('[PUBLISH BETA]', `${pkg}@${betaVersion}`);
-  spawnSync('npm', [
-    'publish',
-    '--tag=beta',
-  ], {
-    stdio: 'inherit',
-    cwd: directory,
-  });
+  // spawnSync('npm', [
+  //   'publish',
+  //   '--tag=alpha',
+  // ], {
+  //   stdio: 'inherit',
+  //   cwd: directory,
+  // });
 }
 
 // Entry
