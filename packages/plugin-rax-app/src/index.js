@@ -26,7 +26,6 @@ module.exports = (api) => {
   // modify userConfig
   modifyUserConfig(api);
 
-
   // register cli option
   applyCliOption(api, { customOptionConfig });
 
