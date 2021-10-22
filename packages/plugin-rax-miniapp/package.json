@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "fs-extra": "^9.0.1",
-    "miniapp-runtime-config": "^0.3.0",
+    "miniapp-runtime-config": "0.4.0-alpha.1",
     "webpack-sources": "^2.0.0",
     "miniapp-builder-shared": "^0.2.0",
     "copy-webpack-plugin": "^5.0.4",

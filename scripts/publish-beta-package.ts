@@ -34,7 +34,6 @@ function getBetaVersionInfo(packageInfo: IPackageInfo): IBetaPackageInfo {
     if (matched && matched[1] === localVersion && matched[2]) {
       betaVersion = Number(matched[2]) + 1;
     }
-    console.log('name ===> ', betaVersion);
     version += `-alpha.${betaVersion}`;
   }
 
@@ -67,13 +66,13 @@ function updatePackageJson(betaPackageInfos: IBetaPackageInfo[]): void {
 
 function publish(pkg: string, betaVersion: string, directory: string): void {
   console.log('[PUBLISH BETA]', `${pkg}@${betaVersion}`);
-  // spawnSync('npm', [
-  //   'publish',
-  //   '--tag=alpha',
-  // ], {
-  //   stdio: 'inherit',
-  //   cwd: directory,
-  // });
+  spawnSync('npm', [
+    'publish',
+    '--tag=alpha',
+  ], {
+    stdio: 'inherit',
+    cwd: directory,
+  });
 }
 
 // Entry
