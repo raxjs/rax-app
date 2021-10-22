@@ -393,4 +393,50 @@ describe('setRealUrlToManifest', () => {
     expect(manifest.pages[0].tab_header.url).toBe('https://abc.com/header');
     expect(manifest.tab_bar.url).toBe('https://abc.com/customtabbar');
   });
+
+  it('should not inject html when tabHeader & tabBar have url field', () => {
+    const manifest = setRealUrlToManifest(
+      {
+        ...options,
+        api: {
+          applyMethod: () => {
+            return {
+              document: '<html>123</html>',
+              custom: true,
+            };
+          },
+        },
+      },
+      {
+        ...cloneDeep(config),
+        pages: [
+          {
+            tab_header: {
+              source: 'pages/Header/index',
+              url: 'https://m.taobao.com',
+            },
+            frames: [
+              {
+                path: '/frame1',
+                name: 'frame1',
+                source: 'pages/frame1/index',
+                url: 'https://m.taobao.com',
+              },
+            ],
+          },
+        ],
+        tab_bar: {
+          custom: true,
+          source: 'components/CustomTabBar/index',
+          list: ['home', 'frame1'],
+        },
+      },
+    );
+
+    expect(manifest.pages[0].tab_header.url).toBe('https://m.taobao.com');
+    expect(manifest.pages[0].tab_header.html).toBeUndefined();
+
+    expect(manifest.tab_bar.url).toBeUndefined();
+    expect(manifest.tab_bar.html).toBe('<html>123</html>');
+  });
 });
