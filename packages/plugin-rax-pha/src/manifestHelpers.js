@@ -209,10 +209,12 @@ function setRealUrlToManifest(options, manifest) {
 
   if (tab_bar && tab_bar.source) {
     const { document, custom } = applyMethod('rax.getDocument', { name: tab_bar.name, source: tab_bar.source }) || {};
-    if (custom && !tab_bar.url) {
-      tab_bar.html = document;
-    } else if (!tab_bar.url) {
-      tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
+    if (!tab_bar.url) {
+      if (custom) {
+        tab_bar.html = document;
+      } else {
+        tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
+      }
     }
     delete tab_bar.source;
   }
@@ -235,10 +237,12 @@ function setRealUrlToManifest(options, manifest) {
       if (page.tab_header && page.tab_header.source) {
         const { document, custom } =
           applyMethod('rax.getDocument', { name: page.tab_header.name, source: page.tab_header.source }) || {};
-        if (custom && !page.tab_header.url) {
-          page.tab_header.html = document;
-        } else if (!page.tab_header.url) {
-          page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
+        if (!page.tab_header.url) {
+          if (custom) {
+            page.tab_header.html = document;
+          } else {
+            page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
+          }
         }
         delete page.tab_header.source;
       }
