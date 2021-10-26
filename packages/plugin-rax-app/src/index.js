@@ -23,6 +23,9 @@ module.exports = (api) => {
   // set global value
   setGlobalValue(api);
 
+  // modify userConfig
+  modifyUserConfig(api);
+
   // register cli option
   applyCliOption(api, { customOptionConfig });
 
@@ -31,9 +34,6 @@ module.exports = (api) => {
 
   // Set dev url prefix
   setDevUrlPrefix(api);
-
-  // modify userConfig
-  modifyUserConfig(api);
 
   // generate template file
   generateTplFile(applyMethod);

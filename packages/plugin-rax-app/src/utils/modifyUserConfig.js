@@ -79,15 +79,13 @@ module.exports = (api) => {
   // Deprecate in v4.0
   // Minify options
   Object.keys(deprecatedConfigMap).forEach((deprecatedConfigkey) => {
-    newUserConfig.minify = {
-      type: deprecatedConfigkey,
-      options: newUserConfig[deprecatedConfigkey],
-    };
-    logDeprecatedConfig(
-      log,
-      deprecatedConfigkey,
-      `Please use \n${JSON.stringify(newUserConfig.minify, null, 2)}`,
-    );
+    if (Object.prototype.hasOwnProperty.call(userConfig, deprecatedConfigkey)) {
+      newUserConfig.minify = {
+        type: deprecatedConfigkey,
+        options: newUserConfig[deprecatedConfigkey],
+      };
+      logDeprecatedConfig(log, deprecatedConfigkey, `Please use \n${JSON.stringify(newUserConfig.minify, null, 2)}`);
+    }
   });
 
   modifyUserConfig(() => {
