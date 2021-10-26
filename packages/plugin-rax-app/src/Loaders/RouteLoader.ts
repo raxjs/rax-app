@@ -1,6 +1,7 @@
 import { getOptions } from 'loader-utils';
 import { join, dirname } from 'path';
 import { formatPath } from '@builder/app-helpers';
+import { pathHelper } from 'miniapp-builder-shared';
 
 interface ITabBarItem {
   text?: string;
@@ -16,9 +17,10 @@ interface IRoute {
   source: string;
   lazy?: boolean;
   component?: any;
+  pageSource?: string;
 }
 
-interface IAppConfig {
+interface IStaticConfig {
   routes: IRoute[];
   tabBar: {
     textColor?: string;
@@ -37,8 +39,22 @@ interface IImportComponentInfo {
 export default function (appJSON) {
   const options = getOptions(this) || {};
   const { target, mpa } = options;
-  const appConfig: IAppConfig = transformAppConfig(appJSON);
+  const initialStaticConfig: IStaticConfig = transformAppConfig(appJSON);
   const isRootAppJsonPath = this.resourcePath === join(this.rootContext, 'src', 'app.json');
+
+  const staticConfig = {
+    ...initialStaticConfig,
+    routes: formatRoutes(
+      initialStaticConfig.routes,
+      {
+        target,
+        currentSubDir: dirname(this.resourcePath),
+        rootContext: this.rootContext,
+        isRootAppJsonPath,
+      },
+    ),
+  };
+
 
   if (mpa && isRootAppJsonPath) {
     return `
@@ -47,8 +63,8 @@ export default function (appJSON) {
       `;
   }
 
-  const { normalImportExpression, normalImports, dynamicImports } = getImportComponentInfo.call(this, appConfig, target);
-  const { routes, ...otherConfig } = appConfig;
+  const { normalImportExpression, normalImports, dynamicImports } = getImportComponentInfo.call(this, staticConfig, target);
+  const { routes, ...otherConfig } = staticConfig;
   return `
   import { createElement } from 'rax';
   ${normalImportExpression}
@@ -63,7 +79,7 @@ export default function (appJSON) {
   `;
 }
 
-function getImportComponentInfo(appConfig: IAppConfig, target: string): IImportComponentInfo {
+function getImportComponentInfo(appConfig: IStaticConfig, target: string): IImportComponentInfo {
   const dynamicImports = [];
   let normalImports = [];
   if (target === 'web') {
@@ -81,7 +97,7 @@ function getImportComponentInfo(appConfig: IAppConfig, target: string): IImportC
   const normalImportExpression = normalImports.reduce((curr, next) => {
     // import Home from 'source';
     return `${curr}
-    import ${getComponentName(next)} from '${formatPath(join(dirname(this.resourcePath), next.source))}';`;
+    import ${getComponentName(next)} from '${getPagePathByRoute(next, { rootContext: this.rootContext })}';`;
   }, '');
 
   return {
@@ -97,7 +113,7 @@ function addDynamicImportRouteExpression(dynamicImports: IRoute[]): string {
     expression += `staticConfig.routes.push({
       ...${JSON.stringify(route)},
       lazy: true,
-      component: import(/* webpackChunkName: "${getComponentName(route).toLowerCase()}.chunk" */ '${formatPath(join(dirname(this.resourcePath), route.source))}')
+      component: import(/* webpackChunkName: "${getComponentName(route).toLowerCase()}.chunk" */ '${getPagePathByRoute(route, { rootContext: this.rootContext })}')
       .then((mod) => mod.default || mod)
     });`;
   });
@@ -126,7 +142,7 @@ function getComponentName(route: IRoute): string {
   return `${route.path[1].toUpperCase()}${route.path.substr(2)}`;
 }
 
-function transformAppConfig(jsonContent): IAppConfig {
+function transformAppConfig(jsonContent): IStaticConfig {
   const appConfig = JSON.parse(jsonContent);
   if (appConfig.tabBar?.items) {
     appConfig.tabBar.items = appConfig.tabBar.items.map((item) => {
@@ -141,3 +157,38 @@ function transformAppConfig(jsonContent): IAppConfig {
 
   return appConfig;
 }
+
+function formatRoutes(routes: IRoute[], { target, currentSubDir, rootContext, isRootAppJsonPath }): IRoute[] {
+  return filterByTarget(routes, { target })
+    .filter(({ source }) =>
+      !pathHelper.isNativePage(join(currentSubDir, source), target))
+    .map((route) => {
+      if (isRootAppJsonPath) return route;
+      if (route.pageSource) {
+        return {
+          ...route,
+          source: formatSourcePath(route.pageSource, { rootContext }),
+        };
+      }
+      return {
+        ...route,
+        source: formatSourcePath(join(currentSubDir, route.source), { rootContext }),
+      };
+    });
+}
+
+function filterByTarget(routes, { target }) {
+  return routes.filter(({ targets }) => {
+    if (!targets) return true;
+    return targets.includes(target);
+  });
+}
+
+function formatSourcePath(filepath: string, { rootContext }): string {
+  return formatPath(filepath).replace(formatPath(`${rootContext}/src/`), '');
+}
+
+function getPagePathByRoute({ source, pageSource }: IRoute, { rootContext }): string {
+  return formatPath(pageSource || join(rootContext, 'src', source));
+}
+

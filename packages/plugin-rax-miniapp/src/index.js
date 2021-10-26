@@ -6,7 +6,9 @@ const {
   setAppConfig: setAppCompileConfig,
   setComponentConfig: setComponentCompileConfig,
 } = require('miniapp-compile-config');
+const { normalizeStaticConfig } = require('miniapp-builder-shared');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const separateRoutes = require('./separateRoutes').default;
 const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR } = require('./constants');
 
@@ -35,11 +37,7 @@ module.exports = (api) => {
       });
       chainConfig.name(target);
       chainConfig.taskName = target;
-      const isCompileProject = userConfig[target] && userConfig[target].buildType === 'compile';
-      // Set Entry when it's runtime project
-      if (!isCompileProject) {
-        setEntry(chainConfig, context, target);
-      }
+
       // Register task
       registerTask(target, chainConfig);
 
@@ -50,6 +48,14 @@ module.exports = (api) => {
         // Get output dir
         const outputPath = path.resolve(rootDir, outputDir, target);
 
+        // static config
+        const staticConfig = normalizeStaticConfig(getValue('staticConfig'), { rootDir });
+        const { normalRoutes, nativeRoutes } = separateRoutes(staticConfig.routes, { target, rootDir });
+        const isCompileProject = userConfig[target] && userConfig[target].buildType === 'compile';
+        // Set Entry when it's runtime project
+        if (!isCompileProject) {
+          setEntry(chainConfig, { context, target, routes: normalRoutes });
+        }
         const needCopyDirs = [];
 
         // Copy miniapp-native dir
@@ -74,6 +80,11 @@ module.exports = (api) => {
             context,
             outputPath,
             entryPath: './src/app',
+            staticConfig: {
+              ...staticConfig,
+              routes: normalRoutes,
+            },
+            nativeRoutes,
           });
         } else {
           const { subPackages, disableCopyNpm = true } = userConfig[target] || {};
@@ -128,6 +139,11 @@ module.exports = (api) => {
             target,
             modernMode: true,
             outputPath,
+            staticConfig: {
+              ...staticConfig,
+              routes: normalRoutes,
+            },
+            nativeRoutes,
           });
 
           // If miniapp-compiled dir exists, register a new task
