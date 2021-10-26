@@ -209,7 +209,7 @@ function setRealUrlToManifest(options, manifest) {
 
   if (tab_bar && tab_bar.source) {
     const { document, custom } = applyMethod('rax.getDocument', { name: tab_bar.name, source: tab_bar.source }) || {};
-    if (custom) {
+    if (custom && !tab_bar.url) {
       tab_bar.html = document;
     } else if (!tab_bar.url) {
       tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
@@ -218,7 +218,7 @@ function setRealUrlToManifest(options, manifest) {
   }
 
   // items is `undefined` will crash in PHA
-  if (tab_bar.list) {
+  if (tab_bar && tab_bar.list) {
     tab_bar.items = tab_bar.list.map(() => ({}));
     delete tab_bar.list;
   }
@@ -235,7 +235,7 @@ function setRealUrlToManifest(options, manifest) {
       if (page.tab_header && page.tab_header.source) {
         const { document, custom } =
           applyMethod('rax.getDocument', { name: page.tab_header.name, source: page.tab_header.source }) || {};
-        if (custom) {
+        if (custom && !page.tab_header.url) {
           page.tab_header.html = document;
         } else if (!page.tab_header.url) {
           page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
