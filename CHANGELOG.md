@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.7.1
+
+- Revert: revert node version >= 10.13.0
+
 ## 3.7.0
 
 - Feat: update node version >=12
