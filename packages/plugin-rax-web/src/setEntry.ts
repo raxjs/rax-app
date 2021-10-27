@@ -15,4 +15,3 @@ export default (config, context) => {
     entryConfig.add(entryPath);
   }
 };
-

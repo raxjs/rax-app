@@ -8,10 +8,13 @@ interface IRaxAppUserConfig extends IUserConfig {
   targets: string[];
   store?: boolean;
   web?: any;
+  experiments?: {
+    minifyCSSModules?: boolean;
+  };
 }
 
 const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) => {
-  const { targets = ['web'], store = true } = userConfig;
+  const { targets = ['web'], store = true, experiments = {} } = userConfig;
   const coreOptions: Json = {
     framework: 'rax',
     alias: 'rax-app',
@@ -51,8 +54,15 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
   if (targets.includes('kraken')) {
     builtInPlugins.push('build-plugin-rax-kraken');
   }
-  if (targets.some((target) => miniappPlatforms.includes(target))) {
+
+  const isMiniAppTargeted = targets.some((target) => miniappPlatforms.includes(target));
+
+  if (isMiniAppTargeted) {
     builtInPlugins.push('build-plugin-rax-miniapp');
+  }
+
+  if (experiments.minifyCSSModules === true) {
+    builtInPlugins.push('build-plugin-minify-classname');
   }
 
   return builtInPlugins;
