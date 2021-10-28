@@ -213,12 +213,12 @@ function setRealUrlToManifest(options, manifest) {
       if (custom) {
         tab_bar.html = document;
       }
-      //! iOS issue
-      //! should remove it in PHA 2.x
+      // TODO: iOS issue
+      // TODO: should remove it in PHA 2.x
       // PHA 1.x should inject `url` to be a base url to load assets
       tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
-      //! Android issue
-      //! should remove it in PHA 2.x
+      // TODO: Android issue
+      // TODO: should remove it in PHA 2.x
       // same as iOS issue
       tab_bar.name = new URL(tab_bar.url).origin;
     }
