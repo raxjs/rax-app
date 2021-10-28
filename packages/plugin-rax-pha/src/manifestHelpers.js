@@ -247,12 +247,12 @@ function setRealUrlToManifest(options, manifest) {
           if (custom) {
             page.tab_header.html = document;
           }
-          //! iOS issue
-          //! should remove it in PHA 2.x
+          // TODO: iOS issue
+          // TODO: should remove it in PHA 2.x
           // PHA 1.x should inject `url` to be a base url to load assets
           page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
-          //! Android issue
-          //! should remove it in PHA 2.x
+          // TODO: Android issue
+          // TODO: should remove it in PHA 2.x
           // same as iOS issue
           page.tab_header.name = new URL(page.tab_header.url).origin;
         }
