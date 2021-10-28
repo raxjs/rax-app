@@ -254,7 +254,7 @@ function setRealUrlToManifest(options, manifest) {
           //! Android issue
           //! should remove it in PHA 2.x
           // same as iOS issue
-          tab_bar.name = new URL(tab_bar.url).origin;
+          page.tab_header.name = new URL(page.tab_header.url).origin;
         }
         delete page.tab_header.source;
       }
