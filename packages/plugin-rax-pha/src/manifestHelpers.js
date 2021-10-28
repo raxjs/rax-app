@@ -212,9 +212,15 @@ function setRealUrlToManifest(options, manifest) {
     if (!tab_bar.url) {
       if (custom) {
         tab_bar.html = document;
-      } else {
-        tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
       }
+      // TODO: iOS issue
+      // TODO: should remove it in PHA 2.x
+      // PHA 1.x should inject `url` to be a base url to load assets
+      tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
+      // TODO: Android issue
+      // TODO: should remove it in PHA 2.x
+      // same as iOS issue
+      tab_bar.name = new URL(tab_bar.url).origin;
     }
     delete tab_bar.source;
   }
@@ -240,9 +246,15 @@ function setRealUrlToManifest(options, manifest) {
         if (!page.tab_header.url) {
           if (custom) {
             page.tab_header.html = document;
-          } else {
-            page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
           }
+          // TODO: iOS issue
+          // TODO: should remove it in PHA 2.x
+          // PHA 1.x should inject `url` to be a base url to load assets
+          page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
+          // TODO: Android issue
+          // TODO: should remove it in PHA 2.x
+          // same as iOS issue
+          page.tab_header.name = new URL(page.tab_header.url).origin;
         }
         delete page.tab_header.source;
       }
