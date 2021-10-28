@@ -436,7 +436,7 @@ describe('setRealUrlToManifest', () => {
     expect(manifest.pages[0].tab_header.url).toBe('https://m.taobao.com');
     expect(manifest.pages[0].tab_header.html).toBeUndefined();
 
-    expect(manifest.tab_bar.url).toBeUndefined();
+    expect(manifest.tab_bar.url).toBe('https://abc.com/customtabbar');
     expect(manifest.tab_bar.html).toBe('<html>123</html>');
   });
 });
