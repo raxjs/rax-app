@@ -27,8 +27,9 @@ export default function addCustomRenderComponentToHTML(
     injectedScripts.unshift(genComboedScript(injectedHTML.comboScripts));
   }
   return `
-  async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate, chunkInfo = {}) {
-    const pageInitialProps = await getInitialProps(Component, ctx);
+  async function renderComponentToHTML(Component, ctx, options = {}) {
+    const { initialData, htmlTemplate, chunkInfo = {}, initialProps } = options;
+    const pageInitialProps = initialProps || await getInitialProps(Component, ctx);
     const data = {
       __SSR_ENABLED__: true,
       initialData,

@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.0
+- Feat: support render pure page to html
+- Feat: support render pure document to html
+- Feat: support pass initialProps for page
+
 ## v1.3.12
 
 - Feat: escape data to prevent xss

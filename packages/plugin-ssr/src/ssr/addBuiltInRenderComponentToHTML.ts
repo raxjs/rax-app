@@ -3,10 +3,11 @@ import addPageHTMLAssign from './addPageHTMLAssign';
 
 export default function addBuiltInRenderComponentToHTML({ useRunApp, updateDataInClient }: ILoaderQuery) {
   return `
-  async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate = "__RAX_APP_SERVER_HTML_TEMPLATE__") {
+  async function renderComponentToHTML(Component, ctx, options ) {
+    const { initialData, htmlTemplate = "__RAX_APP_SERVER_HTML_TEMPLATE__", initialProps } = options;
     const $ = new Generator(htmlTemplate);
 
-    const pageInitialProps = await getInitialProps(Component, ctx);
+    const pageInitialProps = initialProps || await getInitialProps(Component, ctx);
     const data = {
       __SSR_ENABLED__: true,
       initialData,
