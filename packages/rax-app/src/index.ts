@@ -13,6 +13,10 @@ interface IRaxAppUserConfig extends IUserConfig {
   experiments?: {
     minifyCSSModules?: boolean;
   };
+
+  webpack5?: boolean;
+
+  router?: boolean;
 }
 
 const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) => {
