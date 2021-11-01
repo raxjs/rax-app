@@ -68,7 +68,6 @@ export default class DocumentPlugin {
           });
           let html = '';
           // PHA will consume document field
-          let customDocument;
           if (documentPath && localBuildAssets[`${entryName}.js`]) {
             const bundleContent = localBuildAssets[`${entryName}.js`].source();
             const mod = exec(bundleContent, entryPath);
@@ -92,11 +91,9 @@ export default class DocumentPlugin {
               html = $.html();
               // Remove comboed script and insert decomboed scripts
               $('.__combo_script__').replaceWith(injectedHTML.comboScripts.map(({ script }) => script));
-              customDocument = $.html();
             } else {
               $('#root').after(injectedHTML.scripts);
               html = $.html();
-              customDocument = html;
             }
           } else {
             let initialHTML;
