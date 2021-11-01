@@ -5,6 +5,7 @@ import {
   getInjectedHTML,
   injectHTML,
   insertScriptsByInfo,
+  genComboedScript,
 } from '../utils/htmlStructure';
 
 describe('generate html structure', () => {
@@ -78,5 +79,18 @@ describe('generate html structure', () => {
     </body>
   </html>
 `);
+  });
+
+  it('should generate comboed script', () => {
+    expect(genComboedScript([
+      {
+        src: 'code/lib/rax/1.1.4/rax.js',
+        script: '<script crossorigin="anonymous" src="https://g.alicdn.com/code/lib/rax/1.1.4/rax.js"></script>'
+      },
+      {
+        src: 'mtb/lib/2.8.0/index.js',
+        script: '<script crossorigin="anonymous" src="https://g.alicdn.com/mtb/lib/2.8.0/index.js"></script>'
+      }
+    ])).toEqual('<script class="__combo_script__" crossorigin="anonymous" src="https://g.alicdn.com/??code/lib/rax/1.1.4/rax.js,mtb/lib/2.8.0/index.js"></script>');
   });
 });

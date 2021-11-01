@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import { formatPath, checkExportDefaultDeclarationExists } from '@builder/app-helpers';
-import { getPageStorePath, getRaxPageName } from './utils/getPath';
+import { getPageStorePath } from './utils/getPath';
 // TODO use import declaration
 const chalk = require('chalk');
 
@@ -48,12 +48,9 @@ export default class Generator {
     // generate .rax/store/types.ts
     this.renderAppStoreTypes();
 
-    const srcPath = path.join(this.rootDir, this.srcDir);
-
     this.pageEntries.forEach((pageEntry) => {
-      const pageName = getRaxPageName(pageEntry);
       const pageComponentPath = path.join(this.rootDir, this.srcDir, pageEntry);
-      const pageStoreFile = getPageStorePath(srcPath, pageName);
+      const pageStoreFile = getPageStorePath(pageComponentPath);
 
       // don't generate .rax/pages/Home/index.tsx
       // 1. the page store does not exist
@@ -105,7 +102,7 @@ export default class Generator {
     const pageComponentRenderData = {
       pageComponentImport: `import ${pageComponentName} from '${pageComponentSourcePath}'`,
       pageComponentExport: pageComponentName,
-      pageStoreImport: `import store from '${pageStoreFile.replace(pageStoreExtname, '')}'`,
+      pageStoreImport: `import store from '${formatPath(pageStoreFile.replace(pageStoreExtname, ''))}'`,
     };
 
     this.applyMethod('addRenderFile', pageComponentTemplatePath, pageComponentTempPath, pageComponentRenderData);

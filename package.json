@@ -14,8 +14,8 @@
     "build": "ts-node ./scripts/build.ts",
     "version": "ts-node ./scripts/tag-version.ts",
     "version:check": "ts-node ./scripts/version-check.ts",
-    "publish": "ts-node ./scripts/publish-package.ts",
-    "publish:beta": "ts-node ./scripts/publish-beta-package.ts",
+    "publish": "npm run build && ts-node ./scripts/publish-package.ts",
+    "publish:beta": "npm run build && ts-node ./scripts/publish-beta-package.ts",
     "sync": "ts-node ./scripts/sync.ts",
     "rollback": "ts-node ./scripts/rollback.ts",
     "owner": "ts-node ./scripts/owner.ts",
@@ -23,6 +23,7 @@
     "clean": "rimraf packages/*/lib",
     "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./",
     "lint:fix": "npm run lint -- --fix",
+    "lint:diff": "ts-node ./scripts/lint-diff.ts",
     "test": "jest --forceExit",
     "test:watch": "jest --watch",
     "coverage": "codecov",
@@ -31,19 +32,23 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "npm run lint"
+      "pre-commit": "npm run lint:diff"
     }
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@iceworks/spec": "^1.0.0",
+    "@types/eslint": "^7.28.0",
     "@types/jest": "^25.2.1",
+    "@types/puppeteer": "^5.4.2",
+    "axios": "^0.21.1",
     "codecov": "^3.6.5",
     "dependency-check": "^4.1.0",
     "eslint": "^6.8.0",
     "esm": "^3.2.25",
     "execa": "^4.0.0",
     "fs-extra": "^8.1.0",
+    "get-port": "^5.1.1",
     "glob": "^7.1.6",
     "husky": "^4.1.0",
     "jest": "^25.4.0",
@@ -52,16 +57,13 @@
     "npm-run-all": "^4.1.5",
     "nsfw": "1.2.6",
     "pify": "^4.0.1",
+    "puppeteer": "^5.5.0",
     "rimraf": "^3.0.0",
     "semver": "^7.3.2",
     "simple-git": "^1.132.0",
     "ts-jest": "^25.4.0",
     "ts-node": "^8.6.1",
-    "typescript": "^3.7.4",
-    "@types/puppeteer": "^5.4.2",
-    "puppeteer": "^5.5.0",
-    "get-port": "^5.1.1",
-    "axios": "^0.21.1"
+    "typescript": "^3.7.4"
   },
   "dependencies": {
     "core-js": "^3.6.4",

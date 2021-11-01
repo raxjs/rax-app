@@ -1,5 +1,3 @@
-/* eslint-disable no-case-declarations */
-/* eslint-disable global-require */
 const atImport = require('postcss-import');
 
 module.exports = function getPlugins(type) {

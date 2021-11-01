@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.4.8
+
+- Fix: `publicPath` in document
+
+## v1.4.7
+
+- Fix: inject publicPath in development mode
+
+## v1.4.6
+
+- Fix: document live load
+- Feat: support sdk combo
+
 ## v1.4.5
 
 - Fix: throw document build error
@@ -73,4 +86,3 @@
 
 - Refactor: document
 - Feat: support config `hash` in build.json
-

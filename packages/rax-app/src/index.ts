@@ -10,10 +10,17 @@ interface IRaxAppUserConfig extends IUserConfig {
   targets: string[];
   store?: boolean;
   web?: any;
+  experiments?: {
+    minifyCSSModules?: boolean;
+  };
+
+  webpack5?: boolean;
+
+  router?: boolean;
 }
 
 const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) => {
-  const { targets = ['web'], store = true, router = true, webpack5 } = userConfig;
+  const { targets = ['web'], store = true, router = true, webpack5, experiments = {} } = userConfig;
   const coreOptions: Json = {
     framework: 'rax',
     alias: 'rax-app',
@@ -52,7 +59,10 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
   if (targets.includes('kraken')) {
     builtInPlugins.push('build-plugin-rax-kraken');
   }
-  if (targets.some((target) => miniappPlatforms.includes(target))) {
+
+  const isMiniAppTargeted = targets.some((target) => miniappPlatforms.includes(target));
+
+  if (isMiniAppTargeted) {
     builtInPlugins.push('build-plugin-rax-miniapp');
   }
 
@@ -61,6 +71,10 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
   }
 
   builtInPlugins.push('build-plugin-ice-logger');
+
+  if (experiments.minifyCSSModules === true) {
+    builtInPlugins.push('build-plugin-minify-classname');
+  }
 
   return builtInPlugins;
 };
