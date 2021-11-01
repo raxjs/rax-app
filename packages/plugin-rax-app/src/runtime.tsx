@@ -9,10 +9,10 @@ export default async (api) => {
 
   wrapperPageComponent((PageComponent) => {
     const RootWrapper = () => {
-      const routerProps = { history, location: history.location, pageConfig: PageComponent.__pageConfig };
+      const routerProps = { history, location: history?.location, pageConfig: PageComponent.__pageConfig };
       useEffect(() => {
         if (isWeb) {
-          document.title = PageComponent.window?.title || staticConfig.window?.title;
+          document.title = PageComponent.__pageConfig.window?.title || staticConfig.window?.title;
         }
       }, []);
       return <PageComponent {...routerProps} />;
