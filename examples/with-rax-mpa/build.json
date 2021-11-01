@@ -1,11 +1,13 @@
 {
-  "targets": ["harmony"],
+  "targets": ["harmony", "weex"],
   "harmony": {
+    "mpa": true
+  },
+  "weex": {
     "mpa": true
   },
   "minify": false,
   "experiments": {
     "exportsField": true
-  },
-  "inlineStyle": true
+  }
 }

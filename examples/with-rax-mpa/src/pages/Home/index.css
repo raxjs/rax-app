@@ -1,18 +1,24 @@
 .home {
-  margin-top: 200px;
-  width: 100px;
-  height: 100px;
-  background-color: red;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-content: flex-start;
+  align-items: center;
+  margin-top: 200rpx;
+  width: 100%;
 }
 
 .title {
-  font-size: 35px;
+  font-size: 35rpx;
   font-weight: bold;
-  margin: 20px 0;
+  margin: 20rpx 0;
+  display: block;
 }
 
 .info {
-  font-size: 36px;
-  margin: 8px 0;
+  font-size: 36rpx;
+  margin: 8rpx 0;
   color: #555;
+  display: block;
 }

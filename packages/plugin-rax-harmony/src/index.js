@@ -12,6 +12,7 @@ module.exports = (api) => {
   const target = 'harmony';
   const chainConfig = getWebpackBase(api, {
     target: 'harmony',
+    babelConfigOptions: { styleSheet: true },
     progressOptions: {
       name: 'Harmony',
     },

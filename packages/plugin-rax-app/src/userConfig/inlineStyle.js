@@ -6,11 +6,12 @@ const configPath = resolve(__dirname, '../');
 
 const webStandardList = [
   WEB,
-  HARMONY,
 ];
 
 const inlineStandardList = [
-  WEEX, KRAKEN,
+  WEEX,
+  KRAKEN,
+  HARMONY,
 ];
 
 const miniappStandardList = [
