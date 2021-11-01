@@ -1,0 +1,18 @@
+.about {
+  align-items: center;
+  background-color: tomato;
+}
+
+.title {
+  font-size: 45rpx;
+  font-weight: bold;
+  margin: 20rpx 0;
+  white-space: nowrap;
+  color: white;
+}
+
+.info {
+  font-size: 36rpx;
+  margin: 8rpx 0;
+  color: #555;
+}

@@ -50,6 +50,16 @@ export default function () {
 
     const { createBaseApp, staticConfig, pageConfig, TabBar } = app;
 
+    const escapeLookup = {
+      '<': '\\u003c',
+      '>': '\\u003e',
+      '/': '\\u002f',
+    };
+    const escapeRegex = /[<>\/]/g;
+    function stripXSS(str) {
+      return str.replace(escapeRegex, (match) => escapeLookup[match]);
+    }
+
     const appConfig = getAppConfig() || {};
 
     async function getInitialProps(Component, ctx) {

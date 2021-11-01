@@ -12,6 +12,10 @@
       "source": "pages/About/app"
     },
     {
+      "path": "/about/me",
+      "source": "pages/About/Me/index"
+    },
+    {
       "path": "/detail",
       "source": "pages/Detail/index"
     }

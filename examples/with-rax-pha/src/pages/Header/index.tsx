@@ -4,7 +4,7 @@ import Text from 'rax-text';
 
 import './index.css';
 
-class About extends PureComponent {
+class Header extends PureComponent {
   render() {
     return (
       <View className="about">
@@ -14,4 +14,4 @@ class About extends PureComponent {
   }
 }
 
-export default About;
+export default Header;

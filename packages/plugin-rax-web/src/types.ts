@@ -9,6 +9,7 @@ export interface IHtmlInfo {
     links?: string[];
     scripts?: string[];
     metas?: string[];
+    comboScripts?: IComboScript[];
   };
   spmA?: string;
   spmB?: string;
@@ -25,4 +26,9 @@ export interface ICustomDocumentQuery {
   staticExportPagePath: string;
   htmlInfo: IHtmlInfo;
   pagePath: string;
+}
+
+export interface IComboScript {
+  src: string;
+  script: string;
 }

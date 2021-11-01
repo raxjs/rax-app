@@ -6,7 +6,7 @@ import { getEntriesByRoute } from '@builder/app-helpers';
 import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } from '../utils/localBuildCache';
 import * as webpackSources from 'webpack-sources';
 import { processAssets, emitAsset } from '@builder/compat-webpack4';
-import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements } from '../utils/htmlStructure';
+import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements, genComboedScript } from '../utils/htmlStructure';
 import { setDocument } from '../utils/document';
 import { updateHTMLByEntryName } from '../utils/htmlCache';
 
@@ -68,9 +68,8 @@ export default class DocumentPlugin {
           });
           let html = '';
           // PHA will consume document field
-          let customDocument = false;
+          let customDocument;
           if (documentPath && localBuildAssets[`${entryName}.js`]) {
-            customDocument = true;
             const bundleContent = localBuildAssets[`${entryName}.js`].source();
             const mod = exec(bundleContent, entryPath);
 
@@ -87,13 +86,22 @@ export default class DocumentPlugin {
 
             const parserOptions = { decodeEntities: false };
             const $ = cheerio.load(htmlparser2.parseDOM(html, parserOptions), parserOptions);
-            $('#root').after(injectedHTML.scripts);
-            html = $.html();
+            if (injectedHTML.comboScripts.length) {
+              // Insert comboed script
+              $('#root').after([genComboedScript(injectedHTML.comboScripts), ...injectedHTML.scripts]);
+              html = $.html();
+              // Remove comboed script and insert decomboed scripts
+              $('.__combo_script__').replaceWith(injectedHTML.comboScripts.map(({ script }) => script));
+              customDocument = $.html();
+            } else {
+              $('#root').after(injectedHTML.scripts);
+              html = $.html();
+              customDocument = html;
+            }
           } else {
             let initialHTML;
 
             if (localBuildAssets[`${entryName}.js`]) {
-              customDocument = true;
               const bundleContent = localBuildAssets[`${entryName}.js`].source();
               const mod = exec(bundleContent, entryPath);
 
@@ -116,7 +124,7 @@ export default class DocumentPlugin {
             }, ssr);
           }
 
-          setDocument(entryName, html, customDocument);
+          setDocument(entryName, html);
           const { RawSource } = webpack.sources || webpackSources;
           updateHTMLByEntryName(entryName, html);
           emitAsset(compilation, `${entryName}.html`, new RawSource(html));

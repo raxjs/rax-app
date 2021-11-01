@@ -1,5 +1,6 @@
 import { ILoaderQuery } from '../types';
 import addPageHTMLAssign from './addPageHTMLAssign';
+import genComboedScript from '../utils/genComboedScript';
 
 export default function addCustomRenderComponentToHTML(
   {
@@ -12,6 +13,11 @@ export default function addCustomRenderComponentToHTML(
     updateDataInClient,
   }: ILoaderQuery,
 ) {
+  const injectedScripts = [];
+
+  if (injectedHTML.comboScripts) {
+    injectedScripts.unshift(genComboedScript(injectedHTML.comboScripts));
+  }
   return `
   async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate, chunkInfo = {}) {
     const pageInitialProps = await getInitialProps(Component, ctx);
@@ -46,7 +52,7 @@ export default function addCustomRenderComponentToHTML(
     DocumentContextProvider.prototype.getChildContext = function() {
       return {
         __initialHtml: pageHTML,
-        __initialData: JSON.stringify(data),
+        __initialData: stripXSS(JSON.stringify(data)),
         __styles: styles,
         __scripts: scripts,
         __pagePath: '${pageConfig.path}'
@@ -66,7 +72,7 @@ export default function addCustomRenderComponentToHTML(
       $.title.innerHTML = title;
     }
 
-    $.insertScript(${JSON.stringify(injectedHTML.scripts || [])});
+    $.insertScript(${JSON.stringify(injectedScripts)});
 
     ${updateDataInClient ? '' : `if (html.indexOf('window.__INITIAL_DATA__=') < 0) {
       $.insertScript('<script data-from="server">window.__INITIAL_DATA__=' + JSON.stringify(data) + '</script>')
