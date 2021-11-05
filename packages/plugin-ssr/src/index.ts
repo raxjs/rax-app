@@ -12,13 +12,17 @@ import { getChunkInfo } from './utils/chunkInfo';
 export default function (api) {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;
   const {
-    userConfig: { outputDir, compileDependencies, hash },
+    userConfig: { outputDir, compileDependencies, hash, web = {} },
     rootDir,
     command,
   } = context;
   const documentPath: string = getDocumentPath(rootDir);
   const outputPath = path.join(rootDir, outputDir, NODE);
   const baseConfig = getWebpackBase(api);
+
+  const {
+    ssr: { sourceMap, mockBrowserEnv },
+  } = web;
 
   registerTask('ssr', baseConfig);
 
@@ -35,6 +39,16 @@ export default function (api) {
     }
   });
   onGetWebpackConfig('ssr', (config) => {
+    // When mock browser env, output should be a variable, called in a wrapper function.
+    if (mockBrowserEnv) {
+      config.output.libraryTarget('var');
+      config.output.library('Renderer');
+    }
+
+    if (sourceMap) {
+      config.devtool(sourceMap === true ? 'eval-cheap-module-source-map' : sourceMap);
+    }
+
     config.target('node');
     // Set entry
     Object.keys(entries).forEach((entryName) => {

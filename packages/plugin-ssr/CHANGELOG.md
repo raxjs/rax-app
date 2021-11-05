@@ -4,6 +4,8 @@
 - Feat: support render pure page to html
 - Feat: support render pure document to html
 - Feat: support pass initialProps for page
+- Feat: support enable sourcemap
+- Feat: adjust output for mock browser env
 
 ## v1.3.12
 
