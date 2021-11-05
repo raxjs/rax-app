@@ -41,6 +41,7 @@ const retainKeys = [
   'pullRefreshBackgroundColor',
   'pullRefreshColorScheme',
   'pullRefresh',
+  'cacheQueryParams',
 ];
 
 // do not decamelize list
@@ -105,7 +106,8 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
         }
         return item;
       });
-    } else if (key === 'requestHeaders') { // keys of requestHeaders should not be transformed
+    } else if (key === 'requestHeaders') {
+      // keys of requestHeaders should not be transformed
       data[transformKey] = value;
     } else if (typeof value === 'object' && !(parentKey === 'dataPrefetch' && (key === 'header' || key === 'data'))) {
       data[transformKey] = transformAppConfig(value, false, key);
@@ -136,6 +138,7 @@ function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
   }
 
   delete page.source;
+
   return {
     pageUrl,
     entryName,
@@ -151,12 +154,23 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
   if (!source && !name) {
     return page;
   }
+
   const { document, custom } = applyMethod('rax.getDocument', { name, source }) || {};
-  const { entryName, pageUrl } = getRealPageInfo({
-    urlPrefix,
-    urlSuffix,
-  }, page);
+  const { entryName, pageUrl } = getRealPageInfo(
+    {
+      urlPrefix,
+      urlSuffix,
+    },
+    page,
+  );
+
   if (entryName) {
+    if (page.url) {
+      page.path = page.url;
+      delete page.url;
+      return page;
+    }
+
     if (!page.path || !page.path.startsWith('http')) {
       page.path = pageUrl;
     }
@@ -165,12 +179,12 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
     if (isTemplate && !Array.isArray(page.frames)) {
       if (custom) {
         page.document = document;
-      } else {
-        // add script and stylesheet
-        page.script = `${cdnPrefix + entryName}.js`;
-        if (!inlineStyle || (typeof inlineStyle === 'object' && inlineStyle.forceEnableCSS)) {
-          page.stylesheet = `${cdnPrefix + entryName}.css`;
-        }
+        return page;
+      }
+      // add script and stylesheet
+      page.script = `${cdnPrefix + entryName}.js`;
+      if (!inlineStyle || (typeof inlineStyle === 'object' && inlineStyle.forceEnableCSS)) {
+        page.stylesheet = `${cdnPrefix + entryName}.css`;
       }
     }
   }
@@ -182,7 +196,8 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
  * set real url to manifest
  */
 function setRealUrlToManifest(options, manifest) {
-  const { urlPrefix, cdnPrefix } = options;
+  const { urlPrefix, cdnPrefix, api } = options;
+  const { applyMethod } = api;
   if (!urlPrefix) {
     return manifest;
   }
@@ -192,8 +207,28 @@ function setRealUrlToManifest(options, manifest) {
     app_worker.url = cdnPrefix + app_worker.url;
   }
 
-  if (tab_bar && tab_bar.source && !tab_bar.url) {
-    tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
+  if (tab_bar && tab_bar.source) {
+    const { document, custom } = applyMethod('rax.getDocument', { name: tab_bar.name, source: tab_bar.source }) || {};
+    if (!tab_bar.url) {
+      if (custom) {
+        tab_bar.html = document;
+      }
+      // TODO: iOS issue
+      // TODO: should remove it in PHA 2.x
+      // PHA 1.x should inject `url` to be a base url to load assets
+      tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
+      // TODO: Android issue
+      // TODO: should remove it in PHA 2.x
+      // same as iOS issue
+      tab_bar.name = new URL(tab_bar.url).origin;
+    }
+    delete tab_bar.source;
+  }
+
+  // items is `undefined` will crash in PHA
+  if (tab_bar && tab_bar.list) {
+    tab_bar.items = tab_bar.list.map(() => ({}));
+    delete tab_bar.list;
   }
 
   if (pages && pages.length > 0) {
@@ -206,7 +241,22 @@ function setRealUrlToManifest(options, manifest) {
       }
 
       if (page.tab_header && page.tab_header.source) {
-        page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
+        const { document, custom } =
+          applyMethod('rax.getDocument', { name: page.tab_header.name, source: page.tab_header.source }) || {};
+        if (!page.tab_header.url) {
+          if (custom) {
+            page.tab_header.html = document;
+          }
+          // TODO: iOS issue
+          // TODO: should remove it in PHA 2.x
+          // PHA 1.x should inject `url` to be a base url to load assets
+          page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
+          // TODO: Android issue
+          // TODO: should remove it in PHA 2.x
+          // same as iOS issue
+          page.tab_header.name = new URL(page.tab_header.url).origin;
+        }
+        delete page.tab_header.source;
       }
       return changePageInfo(options, page, manifest);
     });

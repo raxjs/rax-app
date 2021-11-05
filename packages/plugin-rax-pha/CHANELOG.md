@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.4.9
+
+- Fix: tabHeader & tabBar logic in iOS & Android
+- Fix: `publicPath` in document
+
+## v1.4.8
+
+- Feat: support tabHeader & tabBar template
+- Feat: support config url in page & tabHeader & tabBar
+
+## v1.4.7
+
+- Feat: manifest json output no space in production
+- Chore: white list add cacheQueryParams
+
 ## v1.4.6
 
 - Chore: pha plugin add more white list and no decamelize keys
@@ -53,5 +68,5 @@
 
 ## v1.2.3
 
-- Fix: data prefetches do not decamelize 
+- Fix: data prefetches do not decamelize
 

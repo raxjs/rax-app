@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3.2
+
+- Fix: can't wrap `store.Provider` to nested page
+- Fix: compatible store file path in windows
+
+
 ## v1.3.1
 
 - Fix: store file check
