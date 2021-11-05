@@ -15,6 +15,12 @@ Plugin for rax app using [Fusion Mobile](https://www.npmjs.com/package/@alifd/me
       "build-plugin-fusion-mobile",
       {
         "extractModules": true,
+        "libs": [
+          {
+            "libraryName": "custom_npm",
+            "dir": "es"
+          }
+        ],
         "transformCssVariables": true
       }
     ]
@@ -29,6 +35,10 @@ Plugin for rax app using [Fusion Mobile](https://www.npmjs.com/package/@alifd/me
 use [babel-plugin-import](https://www.npmjs.com/package/babel-plugin-import) to extract component code for @alifd/meet, @alifd/meet-react
 
 default: `true`
+
+### libs
+
+extract external npm packages expect `@alifd/meet`, `@alifd/meet-react`, if extractModules is `true`
 
 ### transformCssVariables
 

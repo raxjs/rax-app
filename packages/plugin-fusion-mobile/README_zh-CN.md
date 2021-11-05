@@ -13,6 +13,12 @@
       "build-plugin-fusion-mobile",
       {
         "extractModules": true,
+        "libs": [
+          {
+            "libraryName": "custom_npm",
+            "dir": "es"
+          }
+        ],
         "transformCssVariables": true
       }
     ]
@@ -32,6 +38,10 @@
 所有环境均有效，使用 [babel-plugin-import](https://www.npmjs.com/package/babel-plugin-import) 抽取有效代码
 
 默认值: `true`
+
+### libs
+
+当 `extractModules=true` 时，指定额外需要抽取的 npm 包（如：业务上开发的业务物料大包）
 
 ### transformCssVariables
 

@@ -7,13 +7,19 @@ const getThemeFilePath = require('./utils/getThemeFilePath');
 module.exports = (api, options = {}) => {
   const { onGetWebpackConfig, context, log, onHook } = api;
   const { rootDir } = context;
-  const { transformCssVariables = false, extractModules = true, injectTheme = false, themePackage = '' } = options;
+  const {
+    transformCssVariables = false,
+    extractModules = true,
+    injectTheme = false,
+    themePackage = '',
+    libs = [],
+  } = options;
 
   // use babel-plugin-import to extract code
   if (extractModules !== false) {
     log.info('[plugin-fusion-mobile]: extracting code for modules: @alifd/meet, @alifd/meet-react');
     onGetWebpackConfig((config) => {
-      setImport(config);
+      setImport(config, libs);
     });
   }
 

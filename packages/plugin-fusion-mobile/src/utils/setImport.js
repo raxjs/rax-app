@@ -1,25 +1,31 @@
 const { merge } = require('webpack-merge');
 
-module.exports = function (config) {
-  // notice: in babel 7+
-  const importConfigs = [
-    [
-      require.resolve('babel-plugin-import'),
-      {
-        libraryName: '@alifd/meet',
-        libraryDirectory: 'es',
-      },
-      'meet',
-    ],
-    [
-      require.resolve('babel-plugin-import'),
-      {
-        libraryName: '@alifd/meet-react',
-        libraryDirectory: 'es',
-      },
-      'meet-react',
-    ],
+module.exports = function (config, libs) {
+  const extractLibs = [
+    {
+      libraryName: '@alifd/meet',
+      dir: 'es',
+    },
+    {
+      libraryName: '@alifd/meet-react',
+      dir: 'es',
+    },
+    ...libs,
   ];
+
+  // notice: in babel 7+
+  const importConfigs = extractLibs.map((lib) => {
+    const { libraryName, dir = 'es' } = lib;
+
+    return [
+      require.resolve('babel-plugin-import'),
+      {
+        libraryName,
+        libraryDirectory: dir,
+      },
+      libraryName,
+    ];
+  });
 
   ['tsx', 'jsx'].forEach((rule) => {
     config.module
