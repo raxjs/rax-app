@@ -2,6 +2,8 @@ import { getOptions } from 'loader-utils';
 import { join, dirname } from 'path';
 import { formatPath } from '@builder/app-helpers';
 import { pathHelper } from 'miniapp-builder-shared';
+import { MINIAPP_PLATFORMS } from '../constants';
+
 
 interface ITabBarItem {
   text?: string;
@@ -34,6 +36,7 @@ interface IImportComponentInfo {
   normalImportExpression: string;
   normalImports: IRoute[];
   dynamicImports: IRoute[];
+  requireRoutes: IRoute[];
 }
 
 export default function (appJSON) {
@@ -63,7 +66,7 @@ export default function (appJSON) {
       `;
   }
 
-  const { normalImportExpression, normalImports, dynamicImports } = getImportComponentInfo.call(this, staticConfig, target);
+  const { normalImportExpression, normalImports, dynamicImports, requireRoutes } = getImportComponentInfo.call(this, staticConfig, target);
   const { routes, ...otherConfig } = staticConfig;
   return `
   import { createElement } from 'rax';
@@ -75,6 +78,8 @@ export default function (appJSON) {
   ${addNormalImportRouteExpression(normalImports)}
 
   ${addDynamicImportRouteExpression.call(this, dynamicImports)};
+
+  ${addRequireRouteExpression.call(this, requireRoutes)}
   export default staticConfig;
   `;
 }
@@ -82,6 +87,7 @@ export default function (appJSON) {
 function getImportComponentInfo(appConfig: IStaticConfig, target: string): IImportComponentInfo {
   const dynamicImports = [];
   let normalImports = [];
+  let requireRoutes = [];
   if (target === 'web') {
     appConfig.routes.forEach((route) => {
       const { lazy = true } = route;
@@ -91,6 +97,8 @@ function getImportComponentInfo(appConfig: IStaticConfig, target: string): IImpo
         normalImports.push(route);
       }
     });
+  } else if (MINIAPP_PLATFORMS.includes(target)) {
+    requireRoutes = appConfig.routes;
   } else {
     normalImports = appConfig.routes;
   }
@@ -104,6 +112,7 @@ function getImportComponentInfo(appConfig: IStaticConfig, target: string): IImpo
     normalImportExpression,
     normalImports,
     dynamicImports,
+    requireRoutes,
   };
 }
 
@@ -127,6 +136,18 @@ function addNormalImportRouteExpression(normalImports: IRoute[]): string {
     expression += `staticConfig.routes.push({
       ...${JSON.stringify(route)},
       component: ${getComponentName(route)},
+    });`;
+  });
+
+  return expression;
+}
+
+function addRequireRouteExpression(normalImports: IRoute[]): string {
+  let expression = '';
+  normalImports.forEach((route) => {
+    expression += `staticConfig.routes.push({
+      ...${JSON.stringify(route)},
+      component: () => require('${getPagePathByRoute(route, { rootContext: this.rootContext })}').default,
     });`;
   });
 
