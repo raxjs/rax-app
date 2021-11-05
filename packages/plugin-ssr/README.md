@@ -22,11 +22,12 @@ await renderWithContext(ctx, {
 Render page component to html string.
 
 Params
+* ctx: the http request context
 * initialProps(optional): initial props for rendering page.
 
 ```js
-const html = await renderPageToHtml({
-  index: 1,
+const html = await renderPageToHtml(ctx, {
+  initialProps: {},
 });
 ```
 
@@ -35,10 +36,11 @@ const html = await renderPageToHtml({
 Render document component to html string.
 
 Params
+* ctx: the http request context
 * initialProps(optional): initial props for rendering page.
 
 ```js
-const html = await renderDocumentHtml({
-  index: 1,
+const html = await renderDocumentHtml(ctx, {
+  initialProps: {},
 });
 ```

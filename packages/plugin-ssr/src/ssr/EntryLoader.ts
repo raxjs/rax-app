@@ -150,22 +150,23 @@ export default function () {
       ctx.res.send(html);
     }
     
-    async function renderPageToHtml(initialData = {}) {
+    async function renderPageToHtml(ctx, options = {}) {
       const Component = Page;
-      const pageInitialProps = initialData;
+      const pageInitialProps = options.initialProps;
       ${addPageHTMLAssign(query.useRunApp)}
 
       return pageHTML;
     }
 
-    async function renderDocumentToHtml(initialData = {}) {
-      const Component = Document;
+    async function renderDocumentToHtml(ctx, options = {}) {
+      console.log('enter');
 
-      const element = createElement(Component, initialData);
-      const html = renderer.renderToString(element, {
-        defaultUnit: 'rpx'
-      });
+      const Page = () => {
+        return '';
+      };
+      Page.__pageConfig = {};
 
+      const html = await renderComponentToHTML(Page, ctx, options);
       return html;
     }
   `;
