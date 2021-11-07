@@ -1,5 +1,10 @@
 ## Changelog
 
+## 3.7.2
+
+- Fix: PHA TabHeader & TabBar url inject logic
+- Fix: `publicPath` inject logic
+
 ## 3.7.1
 
 - Revert: revert node version >= 10.13.0

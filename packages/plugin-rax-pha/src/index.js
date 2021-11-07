@@ -17,13 +17,6 @@ module.exports = (api) => {
         appWorkerPath,
       },
     ]);
-
-    // set devServer.publicPath
-    const publicPath = config.devServer.get('publicPath');
-    if (publicPath === '/') {
-      const url = `${getValue('devUrlPrefix')}/`;
-      config.devServer.publicPath(url);
-    }
   });
 
   // Set get dev url api before appWorkerPath check
