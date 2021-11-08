@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.4.7
+
+- Chore: lock webpackbar version for avoid minimum node version error
+
 ## 6.4.6
 
 - Feat: merge postcssOptions support
