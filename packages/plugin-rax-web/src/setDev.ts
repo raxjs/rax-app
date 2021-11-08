@@ -37,10 +37,7 @@ export default (config) => {
     });
 
     app.get(/^\/?(?!\.(js|css|json))/, (req, res, next) => {
-      // `.html` in search params should not match
-      // `http://localhost` is a placeholder in `URL`, if remove, it will throw error
-      // eslint-disable-next-line @iceworks/best-practices/no-http-url
-      const path = new URL(req.url, 'http://localhost').pathname;
+      const path = req.url.split('?')[0];
       const matched = path.match(/^\/(\S*?)\.html/);
       if (!matched) {
         next();
