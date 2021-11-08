@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.7.3
+
+- Chore: lock webpackbar version for avoid minimum node version error
+
 ## 3.7.2
 
 - Fix: PHA TabHeader & TabBar url inject logic
