@@ -4,7 +4,6 @@ import { formatPath } from '@builder/app-helpers';
 import { pathHelper } from 'miniapp-builder-shared';
 import { MINIAPP_PLATFORMS } from '../constants';
 
-
 interface ITabBarItem {
   text?: string;
   pageName?: string;
@@ -47,17 +46,13 @@ export default function (appJSON) {
 
   const staticConfig = {
     ...initialStaticConfig,
-    routes: formatRoutes(
-      initialStaticConfig.routes,
-      {
-        target,
-        currentSubDir: dirname(this.resourcePath),
-        rootContext: this.rootContext,
-        isRootAppJsonPath,
-      },
-    ),
+    routes: formatRoutes(initialStaticConfig.routes, {
+      target,
+      currentSubDir: dirname(this.resourcePath),
+      rootContext: this.rootContext,
+      isRootAppJsonPath,
+    }),
   };
-
 
   if (mpa && isRootAppJsonPath) {
     return `
@@ -66,7 +61,11 @@ export default function (appJSON) {
       `;
   }
 
-  const { normalImportExpression, normalImports, dynamicImports, requireRoutes } = getImportComponentInfo.call(this, staticConfig, target);
+  const { normalImportExpression, normalImports, dynamicImports, requireRoutes } = getImportComponentInfo.call(
+    this,
+    staticConfig,
+    target,
+  );
   const { routes, ...otherConfig } = staticConfig;
   return `
   import { createElement } from 'rax';
@@ -122,7 +121,10 @@ function addDynamicImportRouteExpression(dynamicImports: IRoute[]): string {
     expression += `staticConfig.routes.push({
       ...${JSON.stringify(route)},
       lazy: true,
-      component: import(/* webpackChunkName: "${getComponentName(route).toLowerCase()}.chunk" */ '${getPagePathByRoute(route, { rootContext: this.rootContext })}')
+      component: import(/* webpackChunkName: "${getComponentName(route).toLowerCase()}.chunk" */ '${getPagePathByRoute(
+  route,
+  { rootContext: this.rootContext },
+)}')
       .then((mod) => mod.default || mod)
     });`;
   });
@@ -181,10 +183,11 @@ function transformAppConfig(jsonContent): IStaticConfig {
 
 function formatRoutes(routes: IRoute[], { target, currentSubDir, rootContext, isRootAppJsonPath }): IRoute[] {
   return filterByTarget(routes, { target })
-    .filter(({ source }) => {
-      if (!MINIAPP_PLATFORMS.includes(target)) return true;
-      return !pathHelper.isNativePage(join(currentSubDir, source), target);
-    })
+    .filter(
+      ({ source }) =>
+        // Only filter miniapp native page
+        !MINIAPP_PLATFORMS.includes(target) || !pathHelper.isNativePage(join(currentSubDir, source), target),
+    )
     .map((route) => {
       if (isRootAppJsonPath) return route;
       if (route.pageSource) {
@@ -214,4 +217,3 @@ function formatSourcePath(filepath: string, { rootContext }): string {
 function getPagePathByRoute({ source, pageSource }: IRoute, { rootContext }): string {
   return formatPath(pageSource || join(rootContext, 'src', source));
 }
-
