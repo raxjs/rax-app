@@ -37,7 +37,9 @@ export default (config) => {
     });
 
     app.get(/^\/?(?!\.(js|css|json))/, (req, res, next) => {
-      const matched = req.url.match(/^\/(\S*?)\.html/);
+      // `.html` in search params should not match
+      const path = new URL(req.url, 'https://placeholder.com').pathname;
+      const matched = path.match(/^\/(\S*?)\.html/);
       if (!matched) {
         next();
         return;
