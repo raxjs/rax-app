@@ -52,16 +52,6 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     enhancedWebpackConfig.plugin('CopyWebpackPlugin').use(CopyWebpackPlugin, [[]]);
   }
 
-  ['jsx', 'tsx'].forEach((ruleName) => {
-    enhancedWebpackConfig.module
-      .rule(ruleName)
-      .use('platform-loader')
-      .loader(require.resolve('rax-platform-loader'))
-      .options({
-        platform: target === 'ssr' || isNode ? 'node' : target,
-      });
-  });
-
   onGetWebpackConfig(target, (config) => {
     // Set public url after developer has set public path
     // Get public path
@@ -124,6 +114,17 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     config.output.path(path.resolve(rootDir, outputDir, target));
 
     // Only save target node
+    const keepPlatform = target === 'ssr' || isNode ? 'node' : target;
+    ['jsx', 'tsx'].forEach((ruleName) => {
+      enhancedWebpackConfig.module
+        .rule(ruleName)
+        .use('platform-loader')
+        .loader(require.resolve('rax-platform-loader'))
+        .options({
+          platform: keepPlatform,
+        });
+    });
+
     if (swc) {
       config.module
         .rule('swc')
@@ -131,7 +132,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
         .tap((options) => {
           return {
             ...options,
-            keepPlatform: target,
+            keepPlatform,
           };
         });
     }
