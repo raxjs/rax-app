@@ -33,7 +33,7 @@ export default async (api) => {
   const mpa = checkIsMpa(userConfig);
 
   // set IStore to IAppConfig
-  applyMethod('addAppConfigTypes', { source: './store/types', specifier: '{ IStore }', exportName: 'store?: IStore' });
+  applyMethod('addAppConfigTypes', { source: '../plugins/store/types', specifier: '{ IStore }', exportName: 'store?: IStore' });
 
   applyMethod('addExport', {
     source: '@ice/store',
@@ -66,7 +66,7 @@ export default async (api) => {
 
     // Set alias to run @ice/store
     config.resolve.alias
-      .set('$store', fse.pathExistsSync(appStorePath) ? appStorePath : path.join(tempPath, 'store', 'index.ts'))
+      .set('$store', fse.pathExistsSync(appStorePath) ? appStorePath : path.join(tempPath, 'plugins', 'store', 'index.ts'))
       .set('react-redux', require.resolve('rax-redux'))
       .set('react', path.join(rootDir, 'node_modules', 'rax/lib/compat'));
   });

@@ -76,7 +76,7 @@ export default class Generator {
 
   private renderAppStoreIndex() {
     const appStoreTemplatePath = path.join(__dirname, './template/appIndex.ts.ejs');
-    const sourceFilename = 'store/index';
+    const sourceFilename = 'plugins/store/index';
     const tempPath = path.join(this.tempPath, `${sourceFilename}.ts`);
 
     this.applyMethod('addRenderFile', appStoreTemplatePath, tempPath);
@@ -84,11 +84,11 @@ export default class Generator {
 
   private renderAppStoreTypes() {
     const typesTemplatePath = path.join(__dirname, './template/types.ts.ejs');
-    const sourceFilename = 'store/types';
+    const sourceFilename = 'plugins/store/types';
     const tempPath = path.join(this.tempPath, `${sourceFilename}.ts`);
 
     this.applyMethod('addRenderFile', typesTemplatePath, tempPath);
-    this.applyMethod('addTypesExport', { source: './store/types' });
+    this.applyMethod('addTypesExport', { source: '../plugins/store/types' });
   }
 
   private renderPageComponent({ pageStoreFile, pageEntry, pageComponentPath }: IRenderPageParams) {
