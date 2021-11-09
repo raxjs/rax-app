@@ -79,7 +79,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
       }),
     ]);
 
-    const { outputDir = 'build' } = userConfig;
+    const { outputDir = 'build', swc } = userConfig;
     // Copy public dir
     if (config.plugins.has('CopyWebpackPlugin')) {
       config.plugin('CopyWebpackPlugin').tap(([copyList]) => {
@@ -122,6 +122,37 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
 
     // Set output path
     config.output.path(path.resolve(rootDir, outputDir, target));
+
+    // Only save target node
+    if (swc) {
+      config.module
+        .rule('swc')
+        .use('swc-loader')
+        .tap((options) => {
+          return {
+            ...options,
+            keepPlatform: target,
+          };
+        });
+    }
+
+    // Set minify options
+    if (config.optimization.minimizers.has('SWC')) {
+      config.optimization.minimizer('SWC').tap(([swcPluginOptions]) => {
+        const jscOptions = swcPluginOptions.jsc || {};
+        const transformOptions = jscOptions.transform || {};
+        return [{
+          ...swcPluginOptions,
+          jsc: {
+            ...jscOptions,
+            transform: {
+              ...transformOptions,
+            },
+          },
+          minify: true,
+        }];
+      });
+    }
   });
 
   return enhancedWebpackConfig;
