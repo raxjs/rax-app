@@ -13,8 +13,8 @@
     "@types/rax": "^1.0.0"
   },
   "scripts": {
-    "start": "rax-app start",
-    "build": "rax-app build"
+    "start": "../../packages/rax-app/bin/rax-cli.js start",
+    "build": "../../packages/rax-app/bin/rax-cli.js build"
   },
   "engines": {
     "node": ">=8.0.0"
