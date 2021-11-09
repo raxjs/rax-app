@@ -7,10 +7,7 @@
         "title": "home"
       }
     },
-    {
-      "path": "/about",
-      "source": "pages/About/app"
-    },
+
     {
       "path": "/about/me",
       "source": "pages/About/Me/index"
