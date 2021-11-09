@@ -8,7 +8,7 @@ const fs = require('fs-extra');
 const ExportsFieldWebpackPlugin = require('@builder/exports-field-webpack-plugin').default;
 const { isWebpack4 } = require('@builder/compat-webpack4');
 
-module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNode }) => {
+module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => {
   const { context, onGetWebpackConfig } = api;
   const { rootDir, command, userConfig } = context;
   let mpa = false;
