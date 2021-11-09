@@ -39,7 +39,7 @@ module.exports = (api) => {
   generateTplFile(applyMethod);
 
   // Add staticConfig type
-  applyMethod('addTypesExport', { source: '../plugins/rax-app/types' });
+  applyMethod('addTypesExport', { source: '../plugins/app/types' });
 
   // set webpack config
   onGetWebpackConfig((chainConfig) => {
