@@ -41,7 +41,8 @@ module.exports = (userOptions = {}) => {
         },
       ],
       ['@builder/pack/deps/@babel/preset-typescript', {
-        onlyRemoveTypeImports: true,
+        jsxPragma: 'createElement',
+        jsxPragmaFrag: 'Fragment',
       }],
       [
         '@builder/pack/deps/@babel/preset-react', {
