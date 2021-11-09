@@ -25,7 +25,7 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
     framework: 'rax',
     alias: 'rax-app',
   };
-  console.log('webpack5', webpack5);
+
   init(webpack5);
   hijackWebpack(webpack5);
 
