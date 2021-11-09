@@ -27,7 +27,7 @@ module.exports = (api) => {
       }
       staticConfig.tabBar.source = tabBarPath.replace(`${rootDir}/src`, '');
     } else {
-      tabBarPath = path.join(getValue('TEMP_PATH'), 'plugins/rax-app/TabBar');
+      tabBarPath = path.join(getValue('TEMP_PATH'), 'plugins/app/TabBar');
     }
     setValue(TAB_BAR_PATH, tabBarPath);
     applyMethod('modifyRenderData', (renderData) => ({
