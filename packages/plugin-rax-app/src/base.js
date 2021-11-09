@@ -136,24 +136,6 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
           };
         });
     }
-
-    // Set minify options
-    if (config.optimization.minimizers.has('SWC')) {
-      config.optimization.minimizer('SWC').tap(([swcPluginOptions]) => {
-        const jscOptions = swcPluginOptions.jsc || {};
-        const transformOptions = jscOptions.transform || {};
-        return [{
-          ...swcPluginOptions,
-          jsc: {
-            ...jscOptions,
-            transform: {
-              ...transformOptions,
-            },
-          },
-          minify: true,
-        }];
-      });
-    }
   });
 
   return enhancedWebpackConfig;
