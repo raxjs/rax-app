@@ -64,11 +64,19 @@ export default async (api) => {
         mpa,
       });
 
+    let raxPath;
+
+    try {
+      raxPath = require.resolve(path.join(rootDir, 'node_modules', 'rax/lib/compat'));
+    } catch (e) {
+      raxPath = 'rax/lib/compat';
+    }
+
     // Set alias to run @ice/store
     config.resolve.alias
       .set('$store', fse.pathExistsSync(appStorePath) ? appStorePath : path.join(tempPath, 'plugins', 'store', 'index.ts'))
       .set('react-redux', require.resolve('rax-redux'))
-      .set('react', path.join(rootDir, 'node_modules', 'rax/lib/compat'));
+      .set('react', raxPath);
   });
 
   const gen = new CodeGenerator({
