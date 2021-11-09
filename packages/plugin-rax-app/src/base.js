@@ -114,7 +114,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     config.output.path(path.resolve(rootDir, outputDir, target));
 
     // Only save target code
-    const keepPlatform = target === 'ssr' || isNode ? 'node' : target;
+    const keepPlatform = ['ssr', 'document'].includes(target) ? 'node' : target;
     ['jsx', 'tsx'].forEach((ruleName) => {
       enhancedWebpackConfig.module
         .rule(ruleName)
