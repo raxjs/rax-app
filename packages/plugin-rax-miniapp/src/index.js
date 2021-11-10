@@ -8,9 +8,11 @@ const {
 } = require('miniapp-compile-config');
 const { normalizeStaticConfig } = require('miniapp-builder-shared');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { setWebviewConfig } = require('miniapp-webview-config');
+
 const separateRoutes = require('./separateRoutes').default;
 const setEntry = require('./setEntry');
-const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR } = require('./constants');
+const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR, MINIAPP_BUILD_TYPES } = require('./constants');
 
 module.exports = (api) => {
   const { getValue, context, registerTask, onGetWebpackConfig } = api;
@@ -51,9 +53,9 @@ module.exports = (api) => {
         // static config
         const staticConfig = normalizeStaticConfig(getValue('staticConfig'), { rootDir });
         const { normalRoutes, nativeRoutes } = separateRoutes(staticConfig.routes, { target, rootDir });
-        const isCompileProject = userConfig[target] && userConfig[target].buildType === 'compile';
+        const buildType = userConfig[target] && userConfig[target].buildType ? userConfig[target].buildType : MINIAPP_BUILD_TYPES.RUNTIME;
         // Set Entry when it's runtime project
-        if (!isCompileProject) {
+        if (buildType === MINIAPP_BUILD_TYPES.RUNTIME) {
           setEntry(chainConfig, { context, target, routes: normalRoutes });
         }
         const needCopyDirs = [];
@@ -74,7 +76,7 @@ module.exports = (api) => {
           config.plugin('CopyWebpackPlugin').use(CopyWebpackPlugin, [needCopyDirs]);
         }
 
-        if (isCompileProject) {
+        if (buildType === MINIAPP_BUILD_TYPES.COMPILE) {
           setAppCompileConfig(config, userConfig[target] || {}, {
             target,
             context,
@@ -86,7 +88,7 @@ module.exports = (api) => {
             },
             nativeRoutes,
           });
-        } else {
+        } else if (buildType === MINIAPP_BUILD_TYPES.RUNTIME) {
           const { subPackages, disableCopyNpm = true } = userConfig[target] || {};
           if (vendor && subPackages) {
             const { shareMemory } = subPackages;
@@ -170,6 +172,11 @@ module.exports = (api) => {
             );
             registerTask(compiledComponentsTaskName, compiledComponentsChainConfig);
           }
+        } else {
+          setWebviewConfig(config, {
+            api,
+            target,
+          });
         }
       });
     }

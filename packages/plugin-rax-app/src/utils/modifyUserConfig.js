@@ -29,7 +29,7 @@ const deprecatedConfigMap = {
 module.exports = (api) => {
   const { context, modifyUserConfig, cancelTask, log } = api;
   const { userConfig } = context;
-  const { targets: originalTargets, webpack5 } = userConfig;
+  const { targets: originalTargets, webpack5, swc } = userConfig;
   const { devTargets } = context.commandArgs;
   const newUserConfig = {
     ...userConfig,
@@ -87,6 +87,11 @@ module.exports = (api) => {
       logDeprecatedConfig(log, deprecatedConfigkey, `Please use \n${JSON.stringify(newUserConfig.minify, null, 2)}`);
     }
   });
+
+  // Modify minify config
+  if (swc && !Object.prototype.hasOwnProperty.call(userConfig, 'minify')) {
+    newUserConfig.minify = 'swc';
+  }
 
   modifyUserConfig(() => {
     return newUserConfig;

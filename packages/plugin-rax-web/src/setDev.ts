@@ -37,7 +37,8 @@ export default (config) => {
     });
 
     app.get(/^\/?(?!\.(js|css|json))/, (req, res, next) => {
-      const matched = req.url.match(/^\/(\S*?)\.html/);
+      const path = req.url.split('?')[0];
+      const matched = path.match(/^\/(\S*?)\.html/);
       if (!matched) {
         next();
         return;

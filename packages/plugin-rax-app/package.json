@@ -29,7 +29,7 @@
     "lodash": "^4.17.15",
     "miniapp-builder-shared": "alpha",
     "react-dev-utils": "^11.0.0",
-    "webpackbar": "^5.0.0-3",
+    "webpackbar": "^5.0.0",
     "qrcode-terminal": "^0.12.0",
     "mini-css-extract-plugin": "^1.2.1",
     "copy-webpack-plugin": "^5.0.4",
