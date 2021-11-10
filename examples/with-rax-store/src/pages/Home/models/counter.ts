@@ -1,6 +1,6 @@
 import { IStoreDispatch } from 'rax-app';
 
-export const delay = (time) => new Promise((resolve) => setTimeout(() => resolve(), time));
+export const delay = (time) => new Promise((resolve) => setTimeout(() => resolve(null), time));
 
 export default {
   state: {

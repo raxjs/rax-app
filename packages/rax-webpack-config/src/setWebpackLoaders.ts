@@ -127,6 +127,7 @@ export default (config, { rootDir, babelConfig }: IOptions) => {
         request = args[0].request;
         callback = args[1];
       }
+
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, `commonjs ${request}`);
       }

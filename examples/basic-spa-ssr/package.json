@@ -1,20 +1,12 @@
 {
   "name": "basic-spa-ssr",
   "description": "rax example",
-  "dependencies": {
-    "rax": "^1.1.0",
-    "rax-document": "^0.1.0",
-    "rax-image": "^2.0.0",
-    "rax-link": "^1.0.1",
-    "rax-text": "^2.0.0",
-    "rax-view": "^2.0.0"
-  },
   "devDependencies": {
     "@types/rax": "^1.0.0"
   },
   "scripts": {
-    "start": "rax-app start",
-    "build": "rax-app build"
+    "start": "../../packages/rax-app/bin/rax-cli.js start",
+    "build": "../../packages/rax-app/bin/rax-cli.js build"
   },
   "engines": {
     "node": ">=8.0.0"

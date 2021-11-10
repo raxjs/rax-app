@@ -40,7 +40,6 @@ export default (api, documentPath?: string | undefined) => {
   const baseConfig = getWebpackBase(api, {
     target: 'document',
     babelConfigOptions: { styleSheet: inlineStyle },
-    isNode: true,
   });
   baseConfig.name('document');
 

@@ -8,7 +8,7 @@ const fs = require('fs-extra');
 const ExportsFieldWebpackPlugin = require('@builder/exports-field-webpack-plugin').default;
 const { isWebpack4 } = require('@builder/compat-webpack4');
 
-module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNode }) => {
+module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => {
   const { context, onGetWebpackConfig } = api;
   const { rootDir, command, userConfig } = context;
   let mpa = false;
@@ -52,16 +52,6 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     enhancedWebpackConfig.plugin('CopyWebpackPlugin').use(CopyWebpackPlugin, [[]]);
   }
 
-  ['jsx', 'tsx'].forEach((ruleName) => {
-    enhancedWebpackConfig.module
-      .rule(ruleName)
-      .use('platform-loader')
-      .loader(require.resolve('rax-platform-loader'))
-      .options({
-        platform: target === 'ssr' || isNode ? 'node' : target,
-      });
-  });
-
   onGetWebpackConfig(target, (config) => {
     // Set public url after developer has set public path
     // Get public path
@@ -79,7 +69,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
       }),
     ]);
 
-    const { outputDir = 'build' } = userConfig;
+    const { outputDir = 'build', swc } = userConfig;
     // Copy public dir
     if (config.plugins.has('CopyWebpackPlugin')) {
       config.plugin('CopyWebpackPlugin').tap(([copyList]) => {
@@ -122,6 +112,30 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
 
     // Set output path
     config.output.path(path.resolve(rootDir, outputDir, target));
+
+    // Only save target code
+    const keepPlatform = ['ssr', 'document'].includes(target) ? 'node' : target;
+    ['jsx', 'tsx'].forEach((ruleName) => {
+      enhancedWebpackConfig.module
+        .rule(ruleName)
+        .use('platform-loader')
+        .loader(require.resolve('rax-platform-loader'))
+        .options({
+          platform: keepPlatform,
+        });
+    });
+
+    if (swc) {
+      config.module
+        .rule('swc')
+        .use('swc-loader')
+        .tap((options) => {
+          return {
+            ...options,
+            keepPlatform,
+          };
+        });
+    }
   });
 
   return enhancedWebpackConfig;
