@@ -1,7 +1,9 @@
 import { IGetBuiltInPlugins, IPluginList, Json, IUserConfig } from '@alib/build-scripts';
 import * as miniappBuilderShared from 'miniapp-builder-shared';
 import { satisfies } from 'semver';
-import { red } from 'chalk';
+
+// TODO use import declaration
+const chalk = require('chalk');
 
 const { constants: { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } } = miniappBuilderShared;
 const miniappPlatforms = [MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM];
@@ -70,7 +72,7 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
 
 function validateNodeVersion() {
   if (!satisfies(process.version, '>=12.22.0')) {
-    console.error(red('Please upgrate Node.js to a later version than 12.22.0! More detail see https://github.com/raxjs/rax-app/issues/882'));
+    console.error(chalk.red('Please upgrate Node.js to a later version than 12.22.0! More detail see https://github.com/raxjs/rax-app/issues/882'));
   }
 }
 
