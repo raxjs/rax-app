@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.7.4
+
+- Chore: add node version validate
+
 ## 3.7.3
 
 - Chore: lock webpackbar version for avoid minimum node version error
