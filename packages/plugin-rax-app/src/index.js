@@ -1,27 +1,30 @@
 const path = require('path');
 const { applyCliOption, applyUserConfig } = require('@builder/user-config');
-const getBase = require('./base');
-const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
+const setGlobalValue = require('./utils/setGlobalValue').default;
 const setTest = require('./setTest');
 const setDev = require('./setDev');
 const setBuild = require('./setBuild');
 const customConfigs = require('./config/user.config');
 const customOptionConfig = require('./config/options.config');
-const modifyTargets = require('./utils/modifyTargets');
-const setStaticConfig = require('./utils/setStaticConfig');
+const modifyUserConfig = require('./utils/modifyUserConfig');
 const setDevUrlPrefix = require('./utils/setDevUrlPrefix');
 const setRegisterMethod = require('./utils/setRegisterMethod');
 const generateTplFile = require('./generateTplFile');
+const setRegisterUserConfig = require('./utils/setRegisterUserConfig').default;
 
 module.exports = (api) => {
-  const { onGetWebpackConfig, context, setValue, applyMethod } = api;
-  const { command, rootDir } = context;
+  const { onGetWebpackConfig, context, applyMethod, registerUserConfig } = api;
+  const { command, rootDir, userConfig } = context;
+  const { targets } = userConfig;
 
+  setRegisterUserConfig(targets, registerUserConfig);
   setRegisterMethod(api);
 
-  setValue(GET_RAX_APP_WEBPACK_CONFIG, getBase);
+  // set global value
+  setGlobalValue(api);
 
-  setStaticConfig(api);
+  // modify userConfig
+  modifyUserConfig(api);
 
   // register cli option
   applyCliOption(api, { customOptionConfig });
@@ -32,11 +35,11 @@ module.exports = (api) => {
   // Set dev url prefix
   setDevUrlPrefix(api);
 
-  // modify targets
-  modifyTargets(api);
-
   // generate template file
   generateTplFile(applyMethod);
+
+  // Add staticConfig type
+  applyMethod('addTypesExport', { source: '../plugins/app/types' });
 
   // set webpack config
   onGetWebpackConfig((chainConfig) => {

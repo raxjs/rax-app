@@ -1,4 +1,8 @@
-const { ConcatSource } = require('webpack-sources');
+const webpackSources = require('webpack-sources');
+const webpack = require('webpack');
+const { processAssets, emitAsset } = require('@builder/compat-webpack4');
+
+const { ConcatSource } = webpack.sources || webpackSources;
 
 class WeexFrameworkBannerPlugin {
   constructor(options) {
@@ -9,56 +13,21 @@ class WeexFrameworkBannerPlugin {
 
   apply(compiler) {
     const frameworkComment = `// {"framework" : "${this.options.framework}"}`;
-
-    // Webpack 4
-    if (compiler.hooks && compiler.hooks.compilation && compiler.hooks.compilation.tap) {
-      compiler.hooks.compilation.tap('WeexFrameworkBannerPlugin', (compilation) => {
-        // uglify-webpack-plugin will remove javascript's comments in optimizeChunkAssets
-        // need use afterOptimizeChunkAssets to add frameworkComment after that.
-        // like the else block
-        compilation.hooks.afterOptimizeChunkAssets.tap('WeexFrameworkBannerPlugin', (chunks) => {
-          // eslint-disable-next-line no-restricted-syntax
-          for (const chunk of chunks) {
-            // Entry only
-            if (!chunk.canBeInitial()) {
-              continue; // eslint-disable-line
-            }
-
-            chunk.files.forEach((file) => {
-              compilation.assets[file] = new ConcatSource(
-                frameworkComment,
-                '\n',
-                compilation.assets[file],
-              );
-            });
-          }
-        });
+    processAssets({
+      pluginName: 'WeexFrameworkBannerPlugin',
+      compiler,
+    }, ({ compilation, assets, callback }) => {
+      Object.keys(assets).filter((filepath) => /\.js$/.test(filepath)).forEach((chunkName) => {
+        const content = assets[chunkName].source();
+        delete assets[chunkName];
+        emitAsset(compilation, chunkName, new ConcatSource(
+          frameworkComment,
+          '\n',
+          content,
+        ));
       });
-    } else {
-      compiler.plugin('compilation', (compilation) => {
-        // uglify-webpack-plugin will remove javascript's comments in
-        // optimize-chunk-assets, add frameworkComment after that.
-        compilation.plugin('after-optimize-chunk-assets', (chunks) => {
-          chunks.forEach((chunk) => {
-            // Entry only
-            try {
-              // In webpack2 chunk.initial was removed. Use isInitial()
-              if (!chunk.initial) return;
-            } catch (e) {
-              if (!chunk.isInitial()) return;
-            }
-
-            chunk.files.forEach((file) => {
-              compilation.assets[file] = new ConcatSource(
-                frameworkComment,
-                '\n',
-                compilation.assets[file],
-              );
-            });
-          });
-        });
-      });
-    }
+      callback();
+    });
   }
 }
 

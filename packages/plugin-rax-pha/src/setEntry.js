@@ -10,8 +10,5 @@ module.exports = ({ context, config, appWorkerPath }) => {
     .end()
     .output.path(path.resolve(rootDir, outputDir, 'web'))
     .libraryTarget('umd')
-    .globalObject('this')
-    .end()
-    .devServer.inline(false)
-    .hot(false);
+    .globalObject('this');
 };

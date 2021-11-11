@@ -2,13 +2,17 @@
   "files": [],
   "references": [
     { "path": "packages/codemod" },
+    { "path": "packages/compat-webpack4" },
     { "path": "packages/rax-webpack-config" },
     { "path": "packages/stylesheet-loader" },
     { "path": "packages/babel-plugin-transform-jsx-stylesheet" },
     { "path": "packages/build-html-generator" },
     { "path": "packages/rax-app-renderer" },
     { "path": "packages/exports-field-webpack-plugin" },
+    { "path": "packages/plugin-rax-router" },
+    { "path": "packages/plugin-rax-app" },
     { "path": "packages/plugin-rax-web" },
+    { "path": "packages/plugin-rax-miniapp" },
     { "path": "packages/plugin-ssr" },
     { "path": "packages/plugin-rax-store" },
     { "path": "packages/rax-app" }

@@ -1,5 +1,6 @@
 const path = require('path');
 
 module.exports = (applyMethod) => {
-  applyMethod('addTemplateDir', path.join(__dirname, 'templates'));
+  applyMethod('addPluginTemplate', path.join(__dirname, 'templates'));
+  applyMethod('addAppConfigTypes', { exportName: 'renderComponent?: FrameworkComponentType' });
 };

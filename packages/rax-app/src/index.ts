@@ -1,5 +1,7 @@
-import { IGetBuiltInPlugins, IPluginList, Json, IUserConfig } from '@alib/build-scripts';
+import { IGetBuiltInPlugins, IPluginList, Json, IUserConfig } from 'build-scripts';
 import * as miniappBuilderShared from 'miniapp-builder-shared';
+import { init } from '@builder/pack/deps/webpack/webpack';
+import { hijackWebpack } from './require-hook';
 
 const { constants: { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } } = miniappBuilderShared;
 const miniappPlatforms = [MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM];
@@ -11,14 +13,21 @@ interface IRaxAppUserConfig extends IUserConfig {
   experiments?: {
     minifyCSSModules?: boolean;
   };
+
+  webpack5?: boolean;
+
+  router?: boolean;
 }
 
 const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) => {
-  const { targets = ['web'], store = true, experiments = {} } = userConfig;
+  const { targets = ['web'], store = true, router = true, webpack5, experiments = {} } = userConfig;
   const coreOptions: Json = {
     framework: 'rax',
     alias: 'rax-app',
   };
+
+  init(webpack5);
+  hijackWebpack(webpack5);
 
   // built-in plugins for rax app
   const builtInPlugins: IPluginList = [
@@ -60,6 +69,12 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
   if (isMiniAppTargeted) {
     builtInPlugins.push('build-plugin-rax-miniapp');
   }
+
+  if (router) {
+    builtInPlugins.push('build-plugin-rax-router');
+  }
+
+  builtInPlugins.push('build-plugin-ice-logger');
 
   if (experiments.minifyCSSModules === true) {
     builtInPlugins.push('build-plugin-minify-classname');

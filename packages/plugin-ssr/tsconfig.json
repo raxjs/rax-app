@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "rootDir": "src",
+    "allowJs": false,
     "outDir": "lib"
   }
 }

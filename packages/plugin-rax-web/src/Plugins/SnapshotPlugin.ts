@@ -11,9 +11,11 @@
 
 import * as webpackSource from 'webpack-sources';
 import * as htmlMinifier from 'html-minifier';
+import * as webpack from 'webpack';
+import { processAssets, emitAsset } from '@builder/compat-webpack4';
 
 const PLUGIN_NAME = 'SnapshotPlugin';
-const { RawSource } = webpackSource;
+const { RawSource } = webpack.sources || webpackSource;
 const { minify } = htmlMinifier;
 export default class SnapshotPlugin {
   options: { withSSR: any };
@@ -24,29 +26,34 @@ export default class SnapshotPlugin {
   apply(compiler) {
     const { withSSR } = this.options;
 
-    compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
+    processAssets({
+      pluginName: PLUGIN_NAME,
+      compiler,
+    }, ({ compilation, assets, callback }) => {
       const processSnapshot = `
-        var pathname = window.location.pathname;
-        var hash = window.location.hash.replace('#', '') || '/';
-        var storageKey = '__INITIAL_HTML_' + ${withSSR ? 'pathname' : 'hash'} + '__';
-        var __INITIAL_HTML__ = localStorage.getItem(storageKey);
-        if(__INITIAL_HTML__) {
-          document.getElementById('root').innerHTML = __INITIAL_HTML__;
-        }
+      var pathname = window.location.pathname;
+      var hash = window.location.hash.replace('#', '') || '/';
+      var storageKey = '__INITIAL_HTML_' + ${withSSR ? 'pathname' : 'hash'} + '__';
+      var __INITIAL_HTML__ = localStorage.getItem(storageKey);
+      if(__INITIAL_HTML__) {
+        document.getElementById('root').innerHTML = __INITIAL_HTML__;
+      }
 
-        window.addEventListener("load", function (event) {
-          localStorage.setItem(storageKey, this.document.getElementById('root').innerHTML);
-        });
-      `;
-      Object.keys(compilation.assets).forEach((assetName) => {
+      window.addEventListener("load", function (event) {
+        localStorage.setItem(storageKey, this.document.getElementById('root').innerHTML);
+      });
+    `;
+      Object.keys(assets).forEach((assetName) => {
         if (/\.html$/.test(assetName)) {
+          const content = assets[assetName].source();
           // In order to rendering faster, using inline script.
-          compilation.assets[assetName] = new RawSource(
+          delete assets[assetName];
+          emitAsset(compilation, assetName, new RawSource(
             minify(
-              compilation.assets[assetName].source().replace('<script ', `<script>${processSnapshot}</script><script `),
+              content.replace('<script ', `<script>${processSnapshot}</script><script `),
               { minifyJS: true },
             ),
-          );
+          ));
         }
       });
       callback();

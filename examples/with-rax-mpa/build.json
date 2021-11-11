@@ -6,8 +6,5 @@
   "weex": {
     "mpa": true
   },
-  "minify": false,
-  "experiments": {
-    "exportsField": true
-  }
+  "minify": false
 }

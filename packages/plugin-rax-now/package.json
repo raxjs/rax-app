@@ -4,6 +4,10 @@
   "description": "Rax plugin for deploy app with ZEIT Now",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "!lib/**/*.map"
+  ],
   "dependencies": {
   }
 }

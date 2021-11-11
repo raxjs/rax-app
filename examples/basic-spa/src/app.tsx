@@ -4,7 +4,6 @@ import { runApp } from 'rax-app';
 runApp({
   app: {
     // ErrorBoundary
-    errorBoundary: true,
 
     // 生命周期
     onShow() {
@@ -22,4 +21,7 @@ runApp({
       };
     },
   },
+  router: {
+    type: 'browser'
+  }
 });
