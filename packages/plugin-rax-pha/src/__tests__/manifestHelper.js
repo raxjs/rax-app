@@ -244,7 +244,7 @@ describe('setRealUrlToManifest', () => {
         return {};
       },
     },
-    asserts: [
+    assets: [
       'home3.js',
       'home3.css',
       'about.js',
