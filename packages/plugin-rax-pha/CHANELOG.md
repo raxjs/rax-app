@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.10
+
+- Fix: inject script or stylesheet by asserts
+
 ## v1.4.9
 
 - Fix: tabHeader & tabBar logic in iOS & Android

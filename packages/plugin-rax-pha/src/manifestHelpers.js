@@ -148,7 +148,7 @@ function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
 /*
  * change page info
  */
-function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inlineStyle, api }, page) {
+function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, api, asserts = [] }, page) {
   const { applyMethod } = api;
   const { source, name } = page;
   if (!source && !name) {
@@ -181,10 +181,16 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
         page.document = document;
         return page;
       }
+
       // add script and stylesheet
-      page.script = `${cdnPrefix + entryName}.js`;
-      if (!inlineStyle || (typeof inlineStyle === 'object' && inlineStyle.forceEnableCSS)) {
-        page.stylesheet = `${cdnPrefix + entryName}.css`;
+      const scriptName = `${entryName}.js`;
+      if (asserts.includes(scriptName)) {
+        page.script = cdnPrefix + scriptName;
+      }
+
+      const stylesheetName = `${entryName}.css`;
+      if (asserts.includes(stylesheetName)) {
+        page.stylesheet = cdnPrefix + stylesheetName;
       }
     }
   }
