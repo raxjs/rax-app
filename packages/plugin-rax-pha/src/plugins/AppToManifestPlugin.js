@@ -35,7 +35,7 @@ module.exports = class {
     }
 
     compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
-      const asserts = compilation.getAssets();
+      const assets = compilation.getAssets();
       const appConfig = getValue('staticConfig');
       let manifestJSON = transformAppConfig(appConfig);
       const devUrls = [];
@@ -63,7 +63,7 @@ module.exports = class {
             isTemplate,
             inlineStyle,
             api,
-            asserts,
+            assets,
           },
           manifestJSON,
         );
@@ -109,7 +109,7 @@ module.exports = class {
                 isTemplate,
                 inlineStyle,
                 api,
-                asserts,
+                assets,
               },
               copyManifestJSON,
             );

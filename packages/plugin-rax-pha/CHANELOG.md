@@ -2,7 +2,7 @@
 
 ## v1.4.10
 
-- Fix: inject script or stylesheet by asserts
+- Fix: inject script or stylesheet by assets
 
 ## v1.4.9
 
