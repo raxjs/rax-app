@@ -3,6 +3,8 @@
 ## 3.7.4
 
 - Chore: add node version validate
+- Fix: platform-loader error with no match platform
+- Fix: inject script or stylesheet by assets
 
 ## 3.7.3
 
