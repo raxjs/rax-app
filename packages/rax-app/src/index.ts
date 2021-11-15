@@ -72,7 +72,7 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
 
 function validateNodeVersion() {
   if (!satisfies(process.version, '>=12.22.0')) {
-    console.error(chalk.red('Please upgrate Node.js to a later version than 12.22.0! More detail see https://github.com/raxjs/rax-app/issues/882'));
+    console.error(chalk.red('Please upgrade Node.js to a later version than 12.22.0! More detail see https://github.com/raxjs/rax-app/issues/882'));
   }
 }
 
