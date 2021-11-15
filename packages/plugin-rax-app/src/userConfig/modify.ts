@@ -1,5 +1,4 @@
-import { KRAKEN, WEB, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX } from '../constants';
-import logDeprecatedConfig from '../utils/logDeprecatedConfig';
+import { KRAKEN, WEB, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX, DEPRECATED_CONFIG } from '../constants';
 
 const taskList = [
   {
@@ -20,11 +19,6 @@ const taskList = [
     children: [`rax-compiled-components-${target}`],
   });
 });
-
-const deprecatedConfigMap = {
-  esbuild: 'esbuild',
-  terserOptions: 'terser',
-};
 
 export default (api) => {
   const { context, modifyUserConfig, cancelTask, log } = api;
@@ -78,13 +72,12 @@ export default (api) => {
 
   // Deprecate in v4.0
   // Minify options
-  Object.keys(deprecatedConfigMap).forEach((deprecatedConfigkey) => {
+  Object.keys(DEPRECATED_CONFIG).forEach((deprecatedConfigkey) => {
     if (Object.prototype.hasOwnProperty.call(userConfig, deprecatedConfigkey)) {
       newUserConfig.minify = {
         type: deprecatedConfigkey,
         options: newUserConfig[deprecatedConfigkey],
       };
-      logDeprecatedConfig(log, deprecatedConfigkey, `Please use \n${JSON.stringify(newUserConfig.minify, null, 2)}`);
     }
   });
 

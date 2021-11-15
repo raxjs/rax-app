@@ -19,4 +19,8 @@ module.exports = {
   TAB_BAR_PATH: 'TAB_BAR_PATH',
   REACT_TRANSFORM_CONFIG: 'REACT_TRANSFORM_CONFIG',
   MINIFY_TASKS: 'MINIFY_TASKS',
+  DEPRECATED_CONFIG: {
+    esbuild: 'esbuild',
+    terserOptions: 'terser',
+  },
 };
