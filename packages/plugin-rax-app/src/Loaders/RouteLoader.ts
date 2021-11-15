@@ -162,7 +162,8 @@ function getComponentName(route: IRoute): string {
   }
   if (route.path === '/') return 'Index';
   // /about => About
-  return `${route.path[1].toUpperCase()}${route.path.substr(2)}`;
+  // /list-a => lista
+  return `${route.path[1].toUpperCase()}${route.path.substr(2).replace(/-/, '')}`;
 }
 
 function transformAppConfig(jsonContent): IStaticConfig {
