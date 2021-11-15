@@ -30,7 +30,6 @@ export default (api) => {
     },
   });
   chainConfig.name(target);
-  chainConfig.taskName = target;
 
   // Set Entry
   setEntry(chainConfig, context);

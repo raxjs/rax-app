@@ -6,21 +6,26 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "files": [
+    "lib",
+    "!lib/**/*.map"
+  ],
   "keywords": [
     "plugin",
     "rax"
   ],
-  "author": "",
+  "author": "Rax Team",
   "license": "MIT",
   "peerDependencies": {
-    "@alib/build-scripts": "^0.1.0",
+    "build-scripts": "^1.0.0",
     "rax": "^1.0.0"
   },
   "dependencies": {
-    "@builder/mpa-config": "^3.0.0",
+    "@builder/mpa-config": "^4.0.0",
     "fs-extra": "^9.0.1",
-    "webpack-sources": "^2.0.0",
     "@builder/app-helpers": "^2.1.0",
-    "react-dev-utils": "^10.0.0"
+    "react-dev-utils": "^11.0.0",
+    "loader-utils": "^2.0.0",
+    "@builder/compat-webpack4": "^1.0.0"
   }
 }

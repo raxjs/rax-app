@@ -33,7 +33,6 @@ module.exports = (api) => {
     // set mpa config
     if (weex.mpa) {
       setMPAConfig.default(api, config, {
-        context,
         targetDir: tempDir,
         type: 'weex',
         entries: getMpaEntries(api, {

@@ -38,7 +38,6 @@ module.exports = (api) => {
         },
       });
       chainConfig.name(target);
-      chainConfig.taskName = target;
 
       // Register task
       registerTask(target, chainConfig);

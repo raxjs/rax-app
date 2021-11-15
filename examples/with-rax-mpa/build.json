@@ -6,5 +6,7 @@
   "weex": {
     "mpa": true
   },
-  "minify": false
+  "minify": false,
+  "compileDependencies": [],
+  "webpack5": true
 }

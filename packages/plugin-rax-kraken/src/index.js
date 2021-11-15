@@ -17,7 +17,6 @@ module.exports = (api) => {
     },
   });
   chainConfig.name(target);
-  chainConfig.taskName = target;
 
   setEntry(chainConfig, context);
 

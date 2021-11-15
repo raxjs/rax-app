@@ -7,6 +7,9 @@ import { setInitialData } from './initialData';
 import parseSearch from './parseSearch';
 import type { RuntimeModule } from 'create-app-shared';
 
+//@ts-ignore
+const isHarmony = typeof ace !== 'undefined';
+
 let driver = UniversalDriver;
 
 async function raxAppRenderer(options) {
@@ -72,7 +75,7 @@ function _render(runtime: RuntimeModule, context: IContext, options: RenderOptio
 }
 
 function _getAppMountNode(mountNode: HTMLElement, rootId: string) {
-  if (isWeex || isKraken) return null;
+  if (isWeex || isKraken || isHarmony) return null;
   return mountNode || document.getElementById(rootId) || document.getElementById('root');
 }
 
