@@ -39,12 +39,6 @@ export default function (api) {
     }
   });
   onGetWebpackConfig('ssr', (config) => {
-    // When mock browser env, output should be a variable, called in a wrapper function.
-    if (mockBrowserEnv) {
-      config.output.libraryTarget('var');
-      config.output.library('Renderer');
-    }
-
     if (sourceMap) {
       config.devtool(sourceMap === true ? 'eval-cheap-module-source-map' : sourceMap);
     }
@@ -66,6 +60,12 @@ export default function (api) {
         documentPath,
       },
     ]);
+
+    // When mock browser env, output should be a variable, called in a wrapper function.
+    if (mockBrowserEnv) {
+      config.output.libraryTarget('var');
+      config.output.library('Renderer');
+    }
 
     // Set server flag
     config.plugin('DefinePlugin').tap((args) => [
