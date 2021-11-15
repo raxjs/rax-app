@@ -126,15 +126,17 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
     });
 
     if (swc) {
-      config.module
-        .rule('swc')
-        .use('swc-loader')
-        .tap((options) => {
-          return {
-            ...options,
-            keepPlatform,
-          };
-        });
+      ['jsx', 'tsx'].forEach((suffix) => {
+        config.module
+          .rule(`swc-${suffix}`)
+          .use('swc-loader')
+          .tap((options) => {
+            return {
+              ...options,
+              keepPlatform,
+            };
+          });
+      });
     }
   });
 
