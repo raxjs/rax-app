@@ -1,5 +1,5 @@
-const { KRAKEN, WEB, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX } = require('../constants');
-const logDeprecatedConfig = require('./logDeprecatedConfig').default;
+import { KRAKEN, WEB, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX } from '../constants';
+import logDeprecatedConfig from '../utils/logDeprecatedConfig';
 
 const taskList = [
   {
@@ -26,7 +26,7 @@ const deprecatedConfigMap = {
   terserOptions: 'terser',
 };
 
-module.exports = (api) => {
+export default (api) => {
   const { context, modifyUserConfig, cancelTask, log } = api;
   const { userConfig } = context;
   const { targets: originalTargets, webpack5, swc } = userConfig;

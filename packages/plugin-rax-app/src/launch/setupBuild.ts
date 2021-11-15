@@ -1,19 +1,19 @@
-const path = require('path');
-const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
-const chalk = require('chalk');
-const { platformMap } = require('miniapp-builder-shared');
+import path from 'path';
+import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
+import chalk from 'chalk';
+import { platformMap } from 'miniapp-builder-shared';
 
-const {
+import {
   MINIAPP_PLATFORMS,
   WEB,
   WEEX,
   KRAKEN,
-} = require('./constants');
+} from '../constants';
 
 const highlightPrint = chalk.hex('#F4AF3D');
 const logWebpackConfig = require('./utils/logWebpackConfig');
 
-module.exports = (api) => {
+export default (api) => {
   const { context, onHook } = api;
   const { rootDir } = context;
 

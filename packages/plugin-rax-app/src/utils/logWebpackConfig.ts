@@ -1,6 +1,8 @@
-const debug = require('debug')('rax-app');
+import debugCore from 'debug';
 
-module.exports = (configs) => {
+const debug = debugCore('rax-app');
+
+export default (configs) => {
   try {
     const tmp = [];
     debug(JSON.stringify(configs, (key, val) => {
