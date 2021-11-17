@@ -78,7 +78,7 @@ module.exports = [
   {
     name: 'inlineStyle',
     defaultValue: false,
-    configWebpack: require('../userConfig/inlineStyle'),
+    configWebpack: require('../userConfig/atoms/inlineStyle'),
     validation: (val) => {
       return validation('inlineStyle', val, 'boolean|object');
     },
@@ -94,7 +94,7 @@ module.exports = [
   {
     name: 'vendor',
     defaultValue: true,
-    configWebpack: require('../userConfig/vendor'),
+    configWebpack: require('../userConfig/atoms/vendor'),
   },
   {
     name: 'webpack5',

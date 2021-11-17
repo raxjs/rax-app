@@ -1,6 +1,7 @@
-const injectHotReloadEntries = require('./injectHotReloadEntries').default;
+import { IPluginAPI } from 'build-scripts';
+import injectHotReloadEntries from '../utils/injectHotReloadEntries';
 
-module.exports = (api) => {
+export default (api: IPluginAPI) => {
   const { registerMethod, setValue, getValue } = api;
 
   registerMethod('rax.modifyStaticConfig', (callback) => {

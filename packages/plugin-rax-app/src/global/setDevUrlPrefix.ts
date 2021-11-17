@@ -1,7 +1,7 @@
-const address = require('address');
-const { DEV_URL_PREFIX } = require('../constants');
+import address from 'address';
+import { DEV_URL_PREFIX } from '../constants';
 
-module.exports = (api) => {
+export default (api) => {
   const { setValue, context } = api;
   const { commandArgs, userConfig: { devServer: { host, port } } } = context;
   const protocol = commandArgs.https ? 'https' : 'http';

@@ -1,39 +1,31 @@
 const path = require('path');
 const { applyCliOption, applyUserConfig } = require('@builder/user-config');
-const setGlobalValue = require('./utils/setGlobalValue').default;
-const setTest = require('./setTest');
-const setDev = require('./setDev');
-const setBuild = require('./setBuild');
 const customConfigs = require('./config/user.config');
 const customOptionConfig = require('./config/options.config');
-const modifyUserConfig = require('./utils/modifyUserConfig');
-const setDevUrlPrefix = require('./utils/setDevUrlPrefix');
-const setRegisterMethod = require('./utils/setRegisterMethod');
+const modifyUserConfig = require('./userConfig/modify').default;
 const generateTplFile = require('./generateTplFile');
-const setRegisterUserConfig = require('./utils/setRegisterUserConfig').default;
+const registerCustomUserConfig = require('./userConfig/register').default;
+const setupLaunch = require('./launch').default;
+const setupGlobalValue = require('./global').default;
 
 module.exports = (api) => {
   const { onGetWebpackConfig, context, applyMethod, registerUserConfig } = api;
-  const { command, rootDir, userConfig } = context;
+  const { rootDir, userConfig } = context;
   const { targets } = userConfig;
 
-  setRegisterUserConfig(targets, registerUserConfig);
-  setRegisterMethod(api);
+  registerCustomUserConfig(targets, registerUserConfig);
 
-  // set global value
-  setGlobalValue(api);
-
-  // modify userConfig
+  // Modify userConfig
   modifyUserConfig(api);
 
-  // register cli option
+  // Register cli option
   applyCliOption(api, { customOptionConfig });
 
-  // register user config
+  // Register user config whitch the same as icejs
   applyUserConfig(api, { customConfigs });
 
-  // Set dev url prefix
-  setDevUrlPrefix(api);
+  // Set global value and method
+  setupGlobalValue(api);
 
   // generate template file
   generateTplFile(applyMethod);
@@ -47,16 +39,6 @@ module.exports = (api) => {
     chainConfig.resolve.modules.add(path.join(rootDir, 'node_modules'));
   });
 
-  if (command === 'start') {
-    setDev(api);
-  }
-
-  if (command === 'build') {
-    setBuild(api);
-  }
-
-  if (command === 'test') {
-    setTest(api);
-  }
+  setupLaunch(api);
 };
 
