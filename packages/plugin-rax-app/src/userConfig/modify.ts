@@ -1,4 +1,4 @@
-import hasProperty from '../utils/hasProperty';
+import hasOwnProperty from '../utils/hasOwnProperty';
 import logDeprecatedConfig from '../utils/logDeprecatedConfig';
 import { KRAKEN, WEB, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX, DEPRECATED_CONFIG, MINIAPP_PLATFORMS } from '../constants';
 
@@ -85,7 +85,7 @@ export default (api) => {
   // Deprecate in v4.0
   // Minify options
   Object.keys(DEPRECATED_CONFIG).forEach((deprecatedConfigkey) => {
-    if (hasProperty(userConfig, deprecatedConfigkey)) {
+    if (hasOwnProperty(userConfig, deprecatedConfigkey)) {
       newUserConfig.minify = {
         type: deprecatedConfigkey,
         options: newUserConfig[deprecatedConfigkey],
@@ -96,7 +96,7 @@ export default (api) => {
 
   if (swc) {
     // Modify minify config
-    if (!hasProperty(userConfig, 'minify')) {
+    if (!hasOwnProperty(userConfig, 'minify')) {
       newUserConfig.minify = 'swc';
     }
 

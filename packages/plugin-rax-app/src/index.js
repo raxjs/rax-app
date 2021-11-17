@@ -5,7 +5,7 @@ const customOptionConfig = require('./config/options.config');
 const modifyUserConfig = require('./userConfig/modify').default;
 const generateTplFile = require('./generateTplFile');
 const registerCustomUserConfig = require('./userConfig/register').default;
-const { default: setupLaunch } = require('./launch');
+const setupLaunch = require('./launch').default;
 const setupGlobalValue = require('./global').default;
 
 module.exports = (api) => {
