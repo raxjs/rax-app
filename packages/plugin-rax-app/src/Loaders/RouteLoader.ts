@@ -162,7 +162,7 @@ function getComponentName(route: IRoute): string {
   }
   if (route.path === '/') return 'Index';
   // /about => About
-  // /list-a => lista
+  // /list-a => Lista
   return `${route.path[1].toUpperCase()}${route.path.substr(2).replace(/-/, '')}`;
 }
 
