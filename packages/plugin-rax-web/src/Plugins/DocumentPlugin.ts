@@ -101,7 +101,6 @@ export default class DocumentPlugin {
             if (localBuildAssets[`${entryName}.js`]) {
               const bundleContent = localBuildAssets[`${entryName}.js`].source();
               const mod = exec(bundleContent, entryPath);
-
               try {
                 initialHTML = mod.renderPage();
               } catch (error) {
