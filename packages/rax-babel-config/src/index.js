@@ -54,6 +54,13 @@ module.exports = (userOptions = {}) => {
         require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
         { loose: true },
       ],
+      // https://github.com/babel/babel/releases/tag/v7.16.0, Don't transform declare class in plugin-proposal-class-properties
+      // TypeScript 'declare' fields must first be transformed by @babel/plugin-transform-typescript.
+      // If you have already enabled that plugin (or '@babel/preset-typescript'), make sure that it runs before any plugin related to additional class features:
+      // - @babel/plugin-proposal-class-properties
+      // - @babel/plugin-proposal-private-methods
+      // - @babel/plugin-proposal-decorators
+      require('@babel/plugin-transform-typescript'),
       // Stage 2
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       require.resolve('@babel/plugin-proposal-export-namespace-from'),
