@@ -1,4 +1,4 @@
-import * as TimeFixPlugin from '@builder/pack/deps/time-fix-plugin';
+import * as TimeFixPlugin from 'time-fix-plugin';
 
 export default (config) => {
   // custom stat output by stats.toJson() calls

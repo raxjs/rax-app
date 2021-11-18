@@ -93,17 +93,24 @@ export default (api, documentPath?: string | undefined) => {
 
     config.output.filename('[name].js');
 
+    // Get redirect runApp info in MPA
+    const { runApp: { multipleSource = [] } } = getValue('importDeclarations');
+
     entries.forEach(({ entryName, entryPath }) => {
       let entry = entryPath;
       if (documentPath) {
         entry = documentPath;
       }
-      // Check runApp path
-      let runAppPath = path.join(path.dirname(entryPath), 'runApp');
-      if (!fs.existsSync(`${runAppPath}.ts`)) {
-        // Use core runApp path as default runApp implement
-        runAppPath = path.join(tempPath, 'core/runApp');
+      // Use core runApp path as default runApp implement
+      let runAppPath = path.join(tempPath, 'core/runApp');
+      if (multipleSource.length > 0) {
+        const targetEntryInfo = multipleSource.find(({ filename }) => filename === entryPath);
+
+        if (targetEntryInfo) {
+          runAppPath = targetEntryInfo.value;
+        }
       }
+
       config.entry(entryName).add(
         `${require.resolve('./Loaders/render-loader')}?${qs.stringify({
           documentPath,

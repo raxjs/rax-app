@@ -1,5 +1,8 @@
-const { validation } = require('@builder/app-helpers');
-const { isWebpack4 } = require('@builder/compat-webpack4');
+import { validation } from '@builder/app-helpers';
+import { isWebpack4 } from '@builder/compat-webpack4';
+import address from 'address';
+
+const host = address.ip();
 
 const devServerDefaultOptionsMap = {
   webpack4: {
@@ -26,6 +29,7 @@ const devServerDefaultOptionsMap = {
     // For mutilple task, web will occupy the server root route
     writeToDisk: true,
     historyApiFallback: true,
+    host,
   },
   webpack5: {
     compress: true,
@@ -54,6 +58,7 @@ const devServerDefaultOptionsMap = {
     },
     liveReload: false,
     historyApiFallback: true,
+    host,
   },
 };
 
@@ -61,8 +66,7 @@ const webpackVersion = isWebpack4 ? 'webpack4' : 'webpack5';
 
 const devServerDefaultOptions = devServerDefaultOptionsMap[webpackVersion];
 
-/* eslint global-require: 0 */
-module.exports = [
+export default [
   {
     name: 'devServer',
     validation: 'object',
@@ -78,7 +82,7 @@ module.exports = [
   {
     name: 'inlineStyle',
     defaultValue: false,
-    configWebpack: require('../userConfig/inlineStyle'),
+    configWebpack: require('../userConfig/atoms/inlineStyle'),
     validation: (val) => {
       return validation('inlineStyle', val, 'boolean|object');
     },
@@ -94,7 +98,7 @@ module.exports = [
   {
     name: 'vendor',
     defaultValue: true,
-    configWebpack: require('../userConfig/vendor'),
+    configWebpack: require('../userConfig/atoms/vendor'),
   },
   {
     name: 'webpack5',
