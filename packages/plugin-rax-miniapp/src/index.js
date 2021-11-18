@@ -30,7 +30,7 @@ module.exports = (api) => {
   // For Webview mode
   registerUserConfig({
     name: 'webview',
-    validation: 'object'
+    validation: 'object',
   });
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
