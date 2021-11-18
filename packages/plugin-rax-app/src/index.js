@@ -1,6 +1,6 @@
 const path = require('path');
 const { applyCliOption, applyUserConfig } = require('@builder/user-config');
-const customConfigs = require('./config/user.config');
+const customConfigs = require('./config/user.config').default;
 const customOptionConfig = require('./config/options.config');
 const modifyUserConfig = require('./userConfig/modify').default;
 const generateTplFile = require('./generateTplFile');
