@@ -7,14 +7,21 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const fs = require('fs-extra');
 const ExportsFieldWebpackPlugin = require('@builder/exports-field-webpack-plugin').default;
 const { isWebpack4 } = require('@builder/compat-webpack4');
+const { MINIAPP_PLATFORMS, SSR, DOCUMENT } = require('./constants');
 
 module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => {
   const { context, onGetWebpackConfig } = api;
   const { rootDir, command, userConfig } = context;
   let mpa = false;
-  if (userConfig[target]) {
-    // subPackages is miniapp config, mpa is web/weex/kraken config
-    mpa = userConfig[target].subPackages || userConfig[target].mpa;
+
+  // subPackages is miniapp config, mpa is web/weex/kraken config
+  // document and ssr need be the same as web
+  if (MINIAPP_PLATFORMS.includes(target)) {
+    mpa = (userConfig[target] || {}).subPackages;
+  } else if ([SSR, DOCUMENT].includes(target)) {
+    mpa = (userConfig.web || {}).mpa;
+  } else if (userConfig[target]) {
+    mpa = userConfig[target].mpa;
   }
 
   const mode = command === 'start' ? 'development' : 'production';
