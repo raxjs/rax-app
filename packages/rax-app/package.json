@@ -16,8 +16,8 @@
   "dependencies": {
     "@builder/pack": "^0.3.0",
     "build-scripts": "^1.1.0",
-    "build-plugin-app-core": "2.0.3-beta.0",
-    "build-plugin-ice-config": "2.0.0",
+    "build-plugin-app-core": "2.0.3",
+    "build-plugin-ice-config": "2.0.1",
     "build-plugin-rax-app": "7.0.0",
     "build-plugin-rax-kraken": "2.0.0",
     "build-plugin-rax-miniapp": "2.0.0",
@@ -38,7 +38,6 @@
     "yargs-parser": "^18.1.2",
     "@builder/webpack-dev-server": "^1.0.0",
     "@builder/webpack-dev-server-v4": "^1.0.0"
-
   },
   "files": [
     "bin",
