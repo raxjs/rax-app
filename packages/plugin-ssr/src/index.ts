@@ -7,8 +7,7 @@ import EntryPlugin from './ssr/entryPlugin';
 import { NODE, WEB } from './constants';
 import setDev from './ssr/setDev';
 import { getChunkInfo } from './utils/chunkInfo';
-
-const WebAssetsPlugin = require('./WebAssetsPlugin');
+import WebAssetsPlugin from './WebAssetsPlugin';
 
 export default function (api) {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;

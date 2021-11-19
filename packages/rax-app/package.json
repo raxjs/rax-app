@@ -54,7 +54,7 @@
     "url": "https://github.com/raxjs/rax-app/issues"
   },
   "engines": {
-    "node": ">=10.13.0",
+    "node": ">=12.22.0",
     "npm": ">=3.0.0"
   }
 }

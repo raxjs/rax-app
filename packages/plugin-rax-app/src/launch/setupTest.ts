@@ -1,7 +1,7 @@
-const getJestConfig = require('rax-jest-config');
-const logWebpackConfig = require('./utils/logWebpackConfig');
+import * as getJestConfig from 'rax-jest-config';
+import logWebpackConfig from '../utils/logWebpackConfig';
 
-module.exports = (api) => {
+export default (api) => {
   const { onHook, onGetJestConfig, context } = api;
   const { rootDir } = context;
 

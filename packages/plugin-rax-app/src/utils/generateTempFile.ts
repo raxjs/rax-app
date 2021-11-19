@@ -1,7 +1,7 @@
-const fs = require('fs-extra');
-const path = require('path');
+import fs from 'fs-extra';
+import path from 'path';
 
-module.exports = (filename, content, { rootDir }) => {
+export default (filename, content, { rootDir }) => {
   const tempPath = path.join(rootDir, 'node_modules/.tmp/@builder');
   fs.ensureDirSync(tempPath);
   fs.writeFileSync(path.join(tempPath, filename), content);

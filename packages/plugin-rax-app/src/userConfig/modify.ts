@@ -1,5 +1,6 @@
-const { KRAKEN, WEB, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX } = require('../constants');
-const logDeprecatedConfig = require('./logDeprecatedConfig').default;
+import hasOwnProperty from '../utils/hasOwnProperty';
+import logDeprecatedConfig from '../utils/logDeprecatedConfig';
+import { KRAKEN, WEB, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, WEEX, DEPRECATED_CONFIG, MINIAPP_PLATFORMS } from '../constants';
 
 const taskList = [
   {
@@ -21,12 +22,7 @@ const taskList = [
   });
 });
 
-const deprecatedConfigMap = {
-  esbuild: 'esbuild',
-  terserOptions: 'terser',
-};
-
-module.exports = (api) => {
+export default (api) => {
   const { context, modifyUserConfig, cancelTask, log } = api;
   const { userConfig } = context;
   const { targets: originalTargets, webpack5, swc } = userConfig;
@@ -65,21 +61,31 @@ module.exports = (api) => {
   // Unify all targets mpa config
   const hasMPA = newUserConfig.targets.some((target) => newUserConfig[target] && newUserConfig[target].mpa);
   if (hasMPA) {
-    newUserConfig.targets.forEach((target) => {
-      if (!newUserConfig[target]) {
-        newUserConfig[target] = {};
+    newUserConfig.targets
+      // Avoid miniapp runtime mode be became MPA
+      .filter((target) => !MINIAPP_PLATFORMS.includes(target))
+      .forEach((target) => {
+        if (!newUserConfig[target]) {
+          newUserConfig[target] = {};
+        }
+        newUserConfig[target] = {
+          ...newUserConfig[target],
+          mpa: true,
+        };
+      });
+
+    // Warning tip when use miniapp runtime mode with MPA
+    for (const target of newUserConfig.targets) {
+      if (MINIAPP_PLATFORMS.includes(target) && !newUserConfig[target]?.subpackages) {
+        log.error('小程序非分包模式不推荐和 MPA 应用同时使用，下一个大版本将禁止该能力！');
       }
-      newUserConfig[target] = {
-        ...newUserConfig[target],
-        mpa: true,
-      };
-    });
+    }
   }
 
   // Deprecate in v4.0
   // Minify options
-  Object.keys(deprecatedConfigMap).forEach((deprecatedConfigkey) => {
-    if (Object.prototype.hasOwnProperty.call(userConfig, deprecatedConfigkey)) {
+  Object.keys(DEPRECATED_CONFIG).forEach((deprecatedConfigkey) => {
+    if (hasOwnProperty(userConfig, deprecatedConfigkey)) {
       newUserConfig.minify = {
         type: deprecatedConfigkey,
         options: newUserConfig[deprecatedConfigkey],
@@ -88,9 +94,16 @@ module.exports = (api) => {
     }
   });
 
-  // Modify minify config
-  if (swc && !Object.prototype.hasOwnProperty.call(userConfig, 'minify')) {
-    newUserConfig.minify = 'swc';
+  if (swc) {
+    // Modify minify config
+    if (!hasOwnProperty(userConfig, 'minify')) {
+      newUserConfig.minify = 'swc';
+    }
+
+    // Warning in the cases that are not applicable
+    if (newUserConfig.targets.some((target) => MINIAPP_PLATFORMS.includes(target))) {
+      log.warn('小程序构建暂未支持 swc，页面生命周期以及与原生混用能力将失效，后续将完善该场景');
+    }
   }
 
   modifyUserConfig(() => {
