@@ -4,7 +4,7 @@ const { STATIC_CONFIG, TAB_BAR_PATH } = require('../constants');
 
 module.exports = (api) => {
   const { setValue, getValue, context, applyMethod } = api;
-  const { rootDir } = context;
+  const { rootDir, userConfig } = context;
   let staticConfig;
   try {
     staticConfig = JSON.parse(fs.readFileSync(path.join(rootDir, 'src/app.json')));
@@ -30,10 +30,15 @@ module.exports = (api) => {
       tabBarPath = path.join(getValue('TEMP_PATH'), 'plugins/app/TabBar');
     }
     setValue(TAB_BAR_PATH, tabBarPath);
-    applyMethod('modifyRenderData', (renderData) => ({
-      ...renderData,
-      tabBarPath,
-    }));
+
+    if (!userConfig.mpa) {
+      applyMethod('modifyRenderData', (renderData) => {
+        return {
+          ...renderData,
+          tabBarPath,
+        };
+      });
+    }
   }
   setValue(STATIC_CONFIG, staticConfig);
 };

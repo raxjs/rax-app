@@ -123,7 +123,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
     // Only save target code
     const keepPlatform = ['ssr', 'document'].includes(target) ? 'node' : target;
     ['jsx', 'tsx'].forEach((ruleName) => {
-      enhancedWebpackConfig.module
+      config.module
         .rule(ruleName)
         .use('platform-loader')
         .loader(require.resolve('rax-platform-loader'))
@@ -145,6 +145,9 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
           });
       });
     }
+
+    // TODO: hack for tslib wrong exports field https://github.com/microsoft/tslib/issues/161
+    config.resolve.alias.set('tslib', 'tslib/tslib.es6.js');
   });
 
   return enhancedWebpackConfig;

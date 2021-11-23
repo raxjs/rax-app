@@ -5,4 +5,9 @@ export default function (targets: string[], registerUserConfig) {
       validation: 'object',
     });
   });
+
+  registerUserConfig({
+    name: 'mpa',
+    validation: 'boolean',
+  });
 }

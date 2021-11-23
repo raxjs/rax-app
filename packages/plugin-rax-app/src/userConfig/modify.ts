@@ -74,6 +74,8 @@ export default (api) => {
         };
       });
 
+    newUserConfig.mpa = true;
+
     // Warning tip when use miniapp runtime mode with MPA
     for (const target of newUserConfig.targets) {
       if (MINIAPP_PLATFORMS.includes(target) && !newUserConfig[target]?.subpackages) {
