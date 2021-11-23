@@ -1,12 +1,14 @@
-export interface IRequireModulePluginOptions {
+export interface IBundleShellPluginOptions {
   appType: string;
+  manifest: IManifest;
 }
 
-export interface IAppWorkerLoaderOptions {
-  appType: string;
-  manifest: string;
+export interface IManifest {
+  appID?: string;
+  pages?: string[];
+  [key: string]: unknown;
 }
 
-export interface ILoadAppDefineOptions extends IAppWorkerLoaderOptions {
-  code: string;
+export interface IShellOptions {
+  filename: string;
 }

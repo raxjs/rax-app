@@ -1,10 +1,18 @@
-import * as path from 'path';
 import * as setMPAConfig from '@builder/mpa-config';
 import { getMpaEntries } from '@builder/app-helpers';
-import setEntry from './setEntry';
+import setEntry from './setupAppEntry';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
-import RequireModulePlugin from './Plugins/RequireModulePlugin';
+import BundleShellPlugin from './BundleShellPlugin';
 import addWorkerEntry from './addWorkerEntry';
+import type { IBundleShellPluginOptions } from './types';
+import { isWebpack4 } from '@builder/compat-webpack4';
+import getManifest from './utils/getManifest';
+import setupAppEntry from './setupAppEntry';
+
+/*
+TODO:
+- 鸿蒙应用 vendors 为 false，不可配置
+ */
 
 export default (api) => {
   const { getValue, context, registerTask, onGetWebpackConfig } = api;
@@ -21,7 +29,7 @@ export default (api) => {
     },
   });
 
-  setEntry(chainConfig, context);
+  let entries = [setupAppEntry(chainConfig, context)];
 
   chainConfig.name(target);
 
@@ -31,43 +39,45 @@ export default (api) => {
     const { harmony = {} } = userConfig;
     const { mpa, appType = 'rich' } = harmony;
     const staticConfig = getValue('staticConfig');
+
+    // base config
+    if (isWebpack4) {
+      config.output.libraryTarget('var');
+      config.output.libraryExport('result');
+    } else {
+      config.output.merge({
+        library: {
+          name: 'result',
+          type: 'var',
+        },
+      });
+    }
+
     // set mpa config
     if (mpa) {
+      entries = getMpaEntries(api, {
+        target,
+        appJsonContent: staticConfig,
+      });
+
       setMPAConfig.default(api, config, {
         targetDir: tempDir,
         type: target,
-        entries: getMpaEntries(api, {
-          target,
-          appJsonContent: staticConfig,
-        }),
+        entries,
       });
-
-      addWorkerEntry(config, { rootDir });
     }
 
-    config.output.merge({
-      iife: true,
-    });
+    addWorkerEntry(config, { rootDir });
+
     config.output.devtoolModuleFilenameTemplate('webpack:///[absolute-resource-path]');
     config.devtool('nosources-source-map');
 
-    config.module
-      .rule('app-worker')
-      .test(/src\/app-worker\.(j|t)s$/)
-      .use('app-worker-loader')
-      .loader(require.resolve('./Loaders/AppWorkerLoader'))
-      .options({
-        appType,
-        // TODO: transform staticConfig to manifest.json
-        // Mock
-        manifest: '{"appID":"com.example.ace.helloworld","appName":"HelloAce","versionName":"1.0.0","versionCode":1,"minPlatformVersion":"1.0.1","pages":["pages/index/index","pages/detail/detail"],"window":{"designWidth":750,"autoDesignWidth":false}}',
-      });
+    const bundleShellPluginOptions: IBundleShellPluginOptions = {
+      appType,
+      manifest: getManifest(entries, { staticConfig, nativeConfig: harmony.nativeConfig }),
+    };
 
-    config.plugin('RequireModulePlugin').use(RequireModulePlugin, [
-      {
-        appType,
-      },
-    ]);
+    config.plugin('BundleShellPlugin').use(BundleShellPlugin, [bundleShellPluginOptions]);
 
     if (command === 'start') {
       // Add webpack hot dev client

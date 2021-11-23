@@ -3,10 +3,8 @@ import Logo from '@/components/Logo';
 
 import './index.css';
 
-// @ts-ignore
-var a = requireModule('@system/router')
 
-console.log(a)
+console.log(11111);
 
 export default function Home(props) {
   return (

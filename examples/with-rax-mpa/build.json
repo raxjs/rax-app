@@ -1,9 +1,6 @@
 {
-  "targets": ["harmony", "weex"],
+  "targets": ["harmony"],
   "harmony": {
-    "mpa": true
-  },
-  "weex": {
     "mpa": true
   },
   "minify": false,
