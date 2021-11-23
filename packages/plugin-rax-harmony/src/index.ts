@@ -1,6 +1,5 @@
 import * as setMPAConfig from '@builder/mpa-config';
 import { getMpaEntries } from '@builder/app-helpers';
-import setEntry from './setupAppEntry';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import BundleShellPlugin from './BundleShellPlugin';
 import addWorkerEntry from './addWorkerEntry';
