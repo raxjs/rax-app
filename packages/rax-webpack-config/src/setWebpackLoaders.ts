@@ -101,7 +101,7 @@ const configAssetsRule = (config, type, testReg, loaderOpts = {}) => {
     .rule(type)
     .test(testReg)
     .use(type)
-    .loader(require.resolve('@builder/pack/deps/url-loader'))
+    .loader(require.resolve('url-loader'))
     .options({
       name: '[hash].[ext]',
       limit: URL_LOADER_LIMIT,

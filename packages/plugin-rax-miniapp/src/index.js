@@ -15,7 +15,7 @@ const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR, MINIAPP_BUILD_TYPES } = require('./constants');
 
 module.exports = (api) => {
-  const { getValue, context, registerTask, onGetWebpackConfig } = api;
+  const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
   const { userConfig } = context;
   const { targets, inlineStyle, vendor } = userConfig;
 
@@ -26,6 +26,12 @@ module.exports = (api) => {
     BAIDU_SMARTPROGRAM,
     KUAISHOU_MINIPROGRAM,
   ];
+
+  // For Webview mode
+  registerUserConfig({
+    name: 'webview',
+    validation: 'object',
+  });
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   targets.forEach((target) => {

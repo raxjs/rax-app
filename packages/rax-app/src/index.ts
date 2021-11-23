@@ -42,14 +42,6 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
 
   if (targets.includes('web')) {
     builtInPlugins.push('build-plugin-rax-web');
-    if (userConfig.web) {
-      if (userConfig.web.ssr) {
-        builtInPlugins.push('build-plugin-ssr');
-      }
-      if (userConfig.web.pha) {
-        builtInPlugins.push('build-plugin-rax-pha');
-      }
-    }
   }
 
   if (targets.includes('weex')) {
@@ -68,6 +60,16 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
 
   if (isMiniAppTargeted) {
     builtInPlugins.push('build-plugin-rax-miniapp');
+  }
+
+  if (userConfig.web) {
+    if (userConfig.web.pha) {
+      builtInPlugins.push('build-plugin-rax-pha');
+    }
+    // Make ssr plugin after base plugin which need registerTask, the action will override the devServer config
+    if (userConfig.web.ssr) {
+      builtInPlugins.push('build-plugin-ssr');
+    }
   }
 
   if (router) {

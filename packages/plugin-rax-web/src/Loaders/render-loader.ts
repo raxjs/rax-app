@@ -9,6 +9,7 @@ function getInitialHTML(staticExport): string {
     createBaseApp,
     emitLifeCycles,
     TabBar,
+    staticConfig,
   })`;
 }
 

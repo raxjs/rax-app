@@ -1,17 +1,30 @@
-const chalk = require('chalk');
-const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
-const openBrowser = require('react-dev-utils/openBrowser');
-const qrcode = require('qrcode-terminal');
-const path = require('path');
-const fs = require('fs-extra');
-const chokidar = require('chokidar');
-const { platformMap } = require('miniapp-builder-shared');
+import chalk from 'chalk';
+import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
+import openBrowser from 'react-dev-utils/openBrowser';
+import qrcode from 'qrcode-terminal';
+import path from 'path';
+import fs from 'fs-extra';
+import chokidar from 'chokidar';
+import { platformMap } from 'miniapp-builder-shared';
 
-const logWebpackConfig = require('./utils/logWebpackConfig');
-const { MINIAPP_PLATFORMS, MINIAPP, WEB, WEEX, KRAKEN, DEV_URL_PREFIX, HARMONY } = require('./constants');
-const generateTempFile = require('./utils/generateTempFile');
+import logWebpackConfig from '../utils/logWebpackConfig';
+import { MINIAPP_PLATFORMS, MINIAPP, WEB, WEEX, KRAKEN, DEV_URL_PREFIX, HARMONY } from '../constants';
+import generateTempFile from '../utils/generateTempFile';
 
 const highlightPrint = chalk.hex('#F4AF3D');
+
+interface IDevInfo {
+  framework: string;
+  urls: {
+    web?: string[];
+    weex?: string[];
+    kraken?: string[];
+    pha?: string[];
+    harmony?: string[];
+  };
+  compiledTime?: number;
+  publicPath?: string;
+}
 
 function watchAppJson(rootDir, log) {
   const watcher = chokidar.watch(path.resolve(rootDir, 'src/app.json'), {
@@ -32,7 +45,7 @@ function watchAppJson(rootDir, log) {
   });
 }
 
-module.exports = function (api) {
+export default function (api) {
   // eslint-disable-next-line global-require
   const { context, onHook, getValue, log, applyMethod } = api;
   const { commandArgs, rootDir } = context;
@@ -59,7 +72,7 @@ module.exports = function (api) {
       publicPath: taskConfig.output.publicPath,
     };
   };
-  const devInfo = {
+  const devInfo: IDevInfo = {
     urls: {},
     framework: 'rax',
   };
@@ -244,4 +257,4 @@ module.exports = function (api) {
       generateTempFile('dev.json', JSON.stringify(devInfo), { rootDir });
     }
   });
-};
+}
