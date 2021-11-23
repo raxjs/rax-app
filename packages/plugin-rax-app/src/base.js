@@ -145,6 +145,9 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
           });
       });
     }
+
+    // TODO: hack for tslib wrong exports field https://github.com/microsoft/tslib/issues/161
+    config.resolve.alias.set('tslib', 'tslib/tslib.es6.js');
   });
 
   return enhancedWebpackConfig;

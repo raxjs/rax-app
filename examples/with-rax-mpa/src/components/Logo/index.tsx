@@ -4,7 +4,6 @@ import './index.css';
 
 class Logo extends PureComponent {
   render() {
-    console.log('with router =>', this.props);
     return (
       <image
         className="logo"
