@@ -1,0 +1,10 @@
+{
+  "targets": ["web"],
+  "postcssOptions": {
+    "plugins": {
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
+  },
+  "webpack5": true
+}
