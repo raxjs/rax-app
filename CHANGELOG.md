@@ -1,5 +1,20 @@
 ## Changelog
 
+## 3.7.4
+
+- Chore: add node version validate
+- Fix: platform-loader error with no match platform
+- Fix: inject script or stylesheet by assets
+
+## 3.7.3
+
+- Chore: lock webpackbar version for avoid minimum node version error
+
+## 3.7.2
+
+- Fix: PHA TabHeader & TabBar url inject logic
+- Fix: `publicPath` inject logic
+
 ## 3.7.1
 
 - Revert: revert node version >= 10.13.0

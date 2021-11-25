@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.4.10
+
+- Fix: inject script or stylesheet by assets
+
+## v1.4.9
+
+- Fix: tabHeader & tabBar logic in iOS & Android
+- Fix: `publicPath` in document
+
 ## v1.4.8
 
 - Feat: support tabHeader & tabBar template

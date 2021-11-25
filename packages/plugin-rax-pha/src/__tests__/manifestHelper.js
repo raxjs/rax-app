@@ -244,6 +244,12 @@ describe('setRealUrlToManifest', () => {
         return {};
       },
     },
+    assets: [
+      'home3.js',
+      'home3.css',
+      'about.js',
+      'about.css'
+    ]
   };
 
   it('should change real url to manifest', () => {
@@ -279,18 +285,6 @@ describe('setRealUrlToManifest', () => {
     expect(manifest.pages[0].document).toBe('<html>123</html>');
     expect(manifest.pages[1].document).toBe('<html>123</html>');
     expect(manifest.pages[2].frames[0].document).toBe('<html>123</html>');
-  });
-
-  it('should not add stylesheet to page', () => {
-    const manifest = setRealUrlToManifest(
-      {
-        ...options,
-        inlineStyle: true,
-      },
-      cloneDeep(config),
-    );
-
-    expect(manifest.pages[0].stylesheet).toBeUndefined();
   });
 
   it('should not support template', () => {
@@ -436,7 +430,28 @@ describe('setRealUrlToManifest', () => {
     expect(manifest.pages[0].tab_header.url).toBe('https://m.taobao.com');
     expect(manifest.pages[0].tab_header.html).toBeUndefined();
 
-    expect(manifest.tab_bar.url).toBeUndefined();
+    expect(manifest.tab_bar.url).toBe('https://abc.com/customtabbar');
     expect(manifest.tab_bar.html).toBe('<html>123</html>');
   });
+
+  it('should not add script and stylesheet to page', () => {
+    const manifest = setRealUrlToManifest(
+      {
+        ...options,
+      },
+      {
+        ...cloneDeep(config),
+        pages: [
+          {
+            page: '/mine',
+            name: 'mine',
+            source: 'page/Mine/index',
+          },
+        ]
+      }
+    );
+
+    expect(manifest.pages[0].script).toBeUndefined();
+    expect(manifest.pages[0].stylesheet).toBeUndefined();
+  })
 });

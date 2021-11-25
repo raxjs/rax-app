@@ -148,7 +148,7 @@ function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
 /*
  * change page info
  */
-function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inlineStyle, api }, page) {
+function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, api, assets = [] }, page) {
   const { applyMethod } = api;
   const { source, name } = page;
   if (!source && !name) {
@@ -181,10 +181,16 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, inli
         page.document = document;
         return page;
       }
+
       // add script and stylesheet
-      page.script = `${cdnPrefix + entryName}.js`;
-      if (!inlineStyle || (typeof inlineStyle === 'object' && inlineStyle.forceEnableCSS)) {
-        page.stylesheet = `${cdnPrefix + entryName}.css`;
+      const scriptName = `${entryName}.js`;
+      if (assets.includes(scriptName)) {
+        page.script = cdnPrefix + scriptName;
+      }
+
+      const stylesheetName = `${entryName}.css`;
+      if (assets.includes(stylesheetName)) {
+        page.stylesheet = cdnPrefix + stylesheetName;
       }
     }
   }
@@ -212,9 +218,15 @@ function setRealUrlToManifest(options, manifest) {
     if (!tab_bar.url) {
       if (custom) {
         tab_bar.html = document;
-      } else {
-        tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
       }
+      // TODO: iOS issue
+      // TODO: should remove it in PHA 2.x
+      // PHA 1.x should inject `url` to be a base url to load assets
+      tab_bar.url = getRealPageInfo(options, tab_bar).pageUrl;
+      // TODO: Android issue
+      // TODO: should remove it in PHA 2.x
+      // same as iOS issue
+      tab_bar.name = new URL(tab_bar.url).origin;
     }
     delete tab_bar.source;
   }
@@ -240,9 +252,15 @@ function setRealUrlToManifest(options, manifest) {
         if (!page.tab_header.url) {
           if (custom) {
             page.tab_header.html = document;
-          } else {
-            page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
           }
+          // TODO: iOS issue
+          // TODO: should remove it in PHA 2.x
+          // PHA 1.x should inject `url` to be a base url to load assets
+          page.tab_header.url = getRealPageInfo(options, page.tab_header).pageUrl;
+          // TODO: Android issue
+          // TODO: should remove it in PHA 2.x
+          // same as iOS issue
+          page.tab_header.name = new URL(page.tab_header.url).origin;
         }
         delete page.tab_header.source;
       }
