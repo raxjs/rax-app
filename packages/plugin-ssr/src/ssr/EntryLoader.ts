@@ -159,11 +159,8 @@ export default function () {
     }
 
     async function renderDocumentToHtml(ctx, options = {}) {
-      console.log('enter');
-
-      const Page = () => {
-        return '';
-      };
+      // render empty page
+      const Page = () => '';
       Page.__pageConfig = {};
 
       const html = await renderComponentToHTML(Page, ctx, options);
