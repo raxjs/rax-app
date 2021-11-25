@@ -3,9 +3,6 @@ import Logo from '@/components/Logo';
 
 import './index.css';
 
-
-console.log(11111);
-
 export default function Home(props) {
   return (
     <div className="home">

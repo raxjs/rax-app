@@ -54,9 +54,9 @@ export default class RichShell extends BaseShell {
       $app_exports$.default = result.default;
       $app_exports$.manifest = ${JSON.stringify(this.pluginOptions.manifest)};
       $app_module$.exports = $app_exports$.default;
-
-      $app_bootstrap$('@app-application/app', undefined, undefined)
     });
+
+    $app_bootstrap$('@app-application/app', undefined, undefined);
     `;
   }
 
@@ -82,9 +82,9 @@ export default class RichShell extends BaseShell {
       };
 
       $app_module$.exports.style = {};
-
-      $app_bootstrap$('@app-component/${pageName}', undefined, undefined)
     });
+
+    $app_bootstrap$('@app-component/${pageName}', undefined, undefined);
     `;
   }
 }

@@ -22,17 +22,19 @@ async function raxAppRenderer(options) {
 
   const context: IContext = {};
   // ssr enabled and the server has returned data
-  if ((window as any)?.__INITIAL_DATA__) {
-    context.initialData = (window as any).__INITIAL_DATA__.initialData;
-    context.pageInitialProps = (window as any).__INITIAL_DATA__.pageInitialProps;
-  } else if (isWeb && appConfig?.app?.getInitialData) {
-    const { pathname, search } = window.location;
-    const query = parseSearch(search);
-    const initialContext = {
-      pathname,
-      query,
-    };
-    context.initialData = await appConfig.app.getInitialData(initialContext);
+  if (isWeb) {
+    if ((window as any).__INITIAL_DATA__) {
+      context.initialData = (window as any).__INITIAL_DATA__.initialData;
+      context.pageInitialProps = (window as any).__INITIAL_DATA__.pageInitialProps;
+    } else if (appConfig?.app?.getInitialData) {
+      const { pathname, search } = window.location;
+      const query = parseSearch(search);
+      const initialContext = {
+        pathname,
+        query,
+      };
+      context.initialData = await appConfig.app.getInitialData(initialContext);
+    }
   }
 
   setInitialData(context.initialData);

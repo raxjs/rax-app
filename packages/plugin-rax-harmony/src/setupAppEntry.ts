@@ -19,4 +19,3 @@ export default (config, context) => {
     entryPath: appEntry,
   };
 };
-
