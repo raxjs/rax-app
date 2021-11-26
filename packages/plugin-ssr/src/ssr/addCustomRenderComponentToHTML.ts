@@ -38,7 +38,7 @@ export default function addCustomRenderComponentToHTML(
     const title = ${JSON.stringify(pageConfig.window?.title || '')} || getTitle(staticConfig);
 
     if (process.env.NODE_ENV !== 'development') {
-      chunkInfo = __CHUNK_INFO__[${JSON.stringify(entryName)}];
+      chunkInfo = JSON.parse(decodeURIComponent("__CHUNK_INFO__"));
     }
 
     let scripts = chunkInfo[${JSON.stringify(entryName)}].js
