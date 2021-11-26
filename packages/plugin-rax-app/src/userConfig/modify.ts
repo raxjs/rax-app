@@ -92,7 +92,7 @@ export default (api) => {
         type: deprecatedConfigkey,
         options: newUserConfig[deprecatedConfigkey],
       };
-      logDeprecatedConfig(log, deprecatedConfigkey, `Please use \n${JSON.stringify(newUserConfig.minify, null, 2)}`);
+      logDeprecatedConfig(log, deprecatedConfigkey, `Please use \n${JSON.stringify({ minify: newUserConfig.minify }, null, 2)}`);
     }
   });
 
