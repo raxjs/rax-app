@@ -41,7 +41,8 @@ module.exports = class {
     processAssets({
       pluginName: PLUGIN_NAME,
       compiler,
-    }, ({ compilation, callback }) => {
+    }, ({ compilation, callback, assets }) => {
+      const assetNames = Object.keys(assets);
       const appConfig = getValue('staticConfig');
       let manifestJSON = transformAppConfig(appConfig);
       const devUrls = [];
@@ -69,6 +70,7 @@ module.exports = class {
             isTemplate,
             inlineStyle,
             api,
+            assetNames,
           },
           manifestJSON,
         );
@@ -114,6 +116,7 @@ module.exports = class {
                 isTemplate,
                 inlineStyle,
                 api,
+                assetNames,
               },
               copyManifestJSON,
             );
