@@ -25,7 +25,6 @@ export default (config) => {
     terserPluginOptions = {
       ...terserPluginOptions,
       // @ts-ignore
-      sourceMap: false,
       cache: true,
     };
     // Safe parser
