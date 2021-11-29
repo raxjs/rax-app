@@ -35,7 +35,11 @@ export default function Home(props) {
       >
         State: {count}
       </Text>
-      <Text className="btn" id="link" onClick={() => history.push('/about', { id: 1 })}>
+      <Text
+        className="rounded-lg border border-gray-300 text-gray-100 bg-blue-500 px-4 py-2 m-2 inline-block hover:shadow cursor-pointer"
+        id="link"
+        onClick={() => history.push('/about', { id: 1 })}
+      >
         Go About
       </Text>
     </View>
