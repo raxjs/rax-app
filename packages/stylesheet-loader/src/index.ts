@@ -37,7 +37,7 @@ function styleSheetLoader(source) {
   return genStyleContent(parsedData, parsedQuery);
 }
 
-const parse = (parsedQuery, stylesheet) => {
+export const parse = (parsedQuery, stylesheet) => {
   const styles = {};
   const fontFaceRules = [];
   const mediaRules = [];
@@ -161,7 +161,7 @@ const getMediaContent = (mediaRules, parsedQuery) => {
   return content;
 };
 
-const getFontFaceContent = (rules) => {
+export const getFontFaceContent = (rules) => {
   let content = '';
 
   if (rules.length > 0) {
@@ -172,7 +172,7 @@ const getFontFaceContent = (rules) => {
 
   rules.forEach((rule, index) => {
     content += `
-    var fontFace${index} = new FontFace('${rule['font-family'].replace(QUOTES_REG, '')}', '${rule.src.replace(QUOTES_REG, '')}');
+    var fontFace${index} = new FontFace('${rule['font-family'].replace(QUOTES_REG, '')}', '${rule.src.replace(QUOTES_REG, '"')}');
     document.fonts.add(fontFace${index});
     `;
   });
