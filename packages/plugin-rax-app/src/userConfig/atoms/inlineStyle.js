@@ -1,4 +1,4 @@
-const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } = require('../../constants');
+const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM, HARMONY } = require('../../constants');
 const { createCSSRule } = require('rax-webpack-config');
 const { isWebpack4 } = require('@builder/compat-webpack4');
 const getPostCssPlugin = require('../../getPostCssPlugin');
@@ -8,7 +8,9 @@ const webStandardList = [
 ];
 
 const inlineStandardList = [
-  WEEX, KRAKEN,
+  WEEX,
+  KRAKEN,
+  HARMONY,
 ];
 
 const miniappStandardList = [

@@ -1,14 +1,9 @@
 {
-  "targets": ["web", "weex", "kraken"],
-  "weex": {
+  "targets": ["harmony"],
+  "harmony": {
     "mpa": true
   },
-  "kraken": {
-    "mpa": true
-  },
-  "web": {
-    "mpa": true
-  },
-  "swc": true,
+  "minify": false,
+  "compileDependencies": [],
   "webpack5": true
 }

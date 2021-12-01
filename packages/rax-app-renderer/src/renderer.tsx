@@ -7,9 +7,12 @@ import { setInitialData } from './initialData';
 import parseSearch from './parseSearch';
 import type { RuntimeModule } from 'create-app-shared';
 
+//@ts-ignore
+const isHarmony = typeof ace !== 'undefined';
+
 let driver = UniversalDriver;
 
-async function raxAppRenderer(options, renderOptions) {
+async function raxAppRenderer(options) {
   if (!options.appConfig) {
     options.appConfig = {};
   }
@@ -19,17 +22,19 @@ async function raxAppRenderer(options, renderOptions) {
 
   const context: IContext = {};
   // ssr enabled and the server has returned data
-  if ((window as any)?.__INITIAL_DATA__) {
-    context.initialData = (window as any).__INITIAL_DATA__.initialData;
-    context.pageInitialProps = (window as any).__INITIAL_DATA__.pageInitialProps;
-  } else if (isWeb && appConfig?.app?.getInitialData) {
-    const { pathname, search } = window.location;
-    const query = parseSearch(search);
-    const initialContext = {
-      pathname,
-      query,
-    };
-    context.initialData = await appConfig.app.getInitialData(initialContext);
+  if (isWeb) {
+    if ((window as any).__INITIAL_DATA__) {
+      context.initialData = (window as any).__INITIAL_DATA__.initialData;
+      context.pageInitialProps = (window as any).__INITIAL_DATA__.pageInitialProps;
+    } else if (appConfig?.app?.getInitialData) {
+      const { pathname, search } = window.location;
+      const query = parseSearch(search);
+      const initialContext = {
+        pathname,
+        query,
+      };
+      context.initialData = await appConfig.app.getInitialData(initialContext);
+    }
   }
 
   setInitialData(context.initialData);
@@ -72,7 +77,7 @@ function _render(runtime: RuntimeModule, context: IContext, options: RenderOptio
 }
 
 function _getAppMountNode(mountNode: HTMLElement, rootId: string) {
-  if (isWeex || isKraken) return null;
+  if (isWeex || isKraken || isHarmony) return null;
   return mountNode || document.getElementById(rootId) || document.getElementById('root');
 }
 

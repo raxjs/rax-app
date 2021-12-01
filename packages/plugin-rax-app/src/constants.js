@@ -6,6 +6,7 @@ module.exports = {
   SSR: 'ssr',
   WEEX: 'weex',
   KRAKEN: 'kraken',
+  HARMONY: 'harmony',
   MINIAPP,
   WECHAT_MINIPROGRAM,
   BYTEDANCE_MICROAPP,
