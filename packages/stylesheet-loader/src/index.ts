@@ -161,6 +161,7 @@ const getMediaContent = (mediaRules, parsedQuery) => {
   return content;
 };
 
+// export for test case
 export const getFontFaceContent = (rules) => {
   let content = '';
 
