@@ -1,4 +1,4 @@
-import { createElement, useState, useEffect } from 'rax';
+import { useState, useEffect } from 'rax';
 
 export default function TabBarWrapper({ renderTabBar, history }) {
   const [, setPathName] = useState(history.location.pathname);
