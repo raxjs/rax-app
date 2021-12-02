@@ -1,4 +1,4 @@
-import { ILoaderQuery } from '../types';
+import { IFormattedLoaderQuery } from '../types';
 import addPageHTMLAssign from './addPageHTMLAssign';
 import genComboedScript from '../utils/genComboedScript';
 
@@ -11,7 +11,7 @@ export default function addCustomRenderComponentToHTML(
     doctype = '<!DOCTYPE html>',
     injectedHTML = { scripts: [] },
     updateDataInClient,
-  }: ILoaderQuery,
+  }: IFormattedLoaderQuery,
 ) {
   const injectedScripts = [];
 

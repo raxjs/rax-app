@@ -13,6 +13,12 @@ export interface IPageConfig {
   [key: string]: any;
 }
 
+export interface IFormattedLoaderQuery extends ILoaderQuery {
+  needInjectStyle?: boolean;
+  pageConfig?: IPageConfig;
+  updateDataInClient: boolean;
+}
+
 export interface ILoaderQuery {
   documentPath?: string;
   entryName?: string;
@@ -21,7 +27,7 @@ export interface ILoaderQuery {
   tempPath: string;
   injectedHTML?: any;
   assetsProcessor?: string;
-  pageConfig?: IPageConfig;
+  pageConfig?: IPageConfig | string;
   doctype?: string;
   updateDataInClient: boolean | string;
   runAppPath?: string;
