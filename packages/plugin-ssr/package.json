@@ -27,7 +27,6 @@
   "dependencies": {
     "fs-extra": "^9.0.1",
     "error-stack-tracey": "^0.1.3",
-    "qs": "^6.9.4",
     "@builder/app-helpers": "^2.1.0",
     "react-dev-utils": "^11.0.0",
     "cheerio": "1.0.0-rc.3",
@@ -36,6 +35,8 @@
     "rax-server-renderer": "^1.2.0",
     "@builder/html-generator": "^2.0.0",
     "chalk": "^4.0.0",
-    "@builder/compat-webpack4": "^1.0.0"
+    "@builder/compat-webpack4": "^1.0.0",
+    "query-string": "^7.0.1",
+    "parse-url": "^5.0.7"
   }
 }

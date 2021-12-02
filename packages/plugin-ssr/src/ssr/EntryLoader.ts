@@ -1,9 +1,10 @@
 import { formatPath } from '@builder/app-helpers';
-import * as qs from 'qs';
+import * as queryString from 'queryString';
 import * as path from 'path';
-import { ILoaderQuery } from '../types';
+import { IFormattedLoaderQuery, ILoaderQuery } from '../types';
 import addCustomRenderComponentToHTML from './addCustomRenderComponentToHTML';
 import addBuiltInRenderComponentToHTML from './addBuiltInRenderComponentToHTML';
+import formatEntryLoaderQuery from '../utils/formatEntryLoaderQuery';
 
 function addExport(code) {
   return `${code}
@@ -18,7 +19,7 @@ function addExport(code) {
 function addDefineInitialPage() {
   return `
   const pathname = req.path;
-  let Page = appConfig.renderComponent;
+  let Page = appConfig.app && appConfig.app.renderComponent;
   if (!Page) {
     const route = staticConfig.routes.find(({ path }) => path === pathname);
     Page = route.component;
@@ -28,33 +29,37 @@ function addDefineInitialPage() {
 
 /**
  * Global variables:
- * utils: Generator
+ * utils: Generator, queryString, parseUrl
  * rax render: createElement/renderer
  * Component: Page/Document
- * generated in .rax: appConfig/staticConfig/createBaseApp/emitLifeCycles
+ * generated in .rax: appConfig/staticConfig/createBaseApp/emitLifeCycles/setHistory/enableRouter
  * MPA: pageConfig
  */
 export default function () {
-  const query = (qs.parse(this.query.substr(1)) as unknown) as ILoaderQuery;
+  const query: ILoaderQuery = queryString.parse(this.query);
+  const formattedQuery: IFormattedLoaderQuery = formatEntryLoaderQuery(query);
   const corePath = path.join(query.tempPath, 'core');
-  query.needInjectStyle = query.needInjectStyle === 'true';
-  query.updateDataInClient = query.updateDataInClient === 'true';
+
   let code = `
     import Generator from '@builder/html-generator';
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
+    import * as queryString from 'query-string';
+    import * as parseUrl from 'parse-url';
     import { getAppConfig } from '${formatPath(path.join(corePath, 'appConfig'))}';
     import { emitLifeCycles } from '${formatPath(path.join(corePath, 'publicAPI'))}';
+    import { setHistory } from '${formatPath(path.join(corePath, 'routerAPI'))}';
     import '${formatPath(this.resourcePath)}';
     import app from '${formatPath(query.runAppPath)}';
 
-    const { createBaseApp, staticConfig, pageConfig, TabBar } = app;
+    const { createBaseApp, staticConfig, pageConfig, TabBar, enableRouter } = app;
 
     const escapeLookup = {
       '<': '\\u003c',
       '>': '\\u003e',
       '/': '\\u002f',
     };
+
     const escapeRegex = /[<>\/]/g;
     function stripXSS(str) {
       return str.replace(escapeRegex, (match) => escapeLookup[match]);
@@ -73,7 +78,7 @@ export default function () {
       throw new Error(message);
     }
 
-    ${query.documentPath ? addCustomRenderComponentToHTML(query) : addBuiltInRenderComponentToHTML(query)}
+    ${formattedQuery.documentPath ? addCustomRenderComponentToHTML(formattedQuery) : addBuiltInRenderComponentToHTML(formattedQuery)}
 
     async function renderToHTML(req, res, options = {}) {
       const { initialData, htmlTemplate, chunkInfo } = options;
@@ -125,8 +130,8 @@ export default function () {
     }
   `;
 
-  if (query.documentPath) {
-    code = `import Document from '${formatPath(query.documentPath)}';
+  if (formattedQuery.documentPath) {
+    code = `import Document from '${formatPath(formattedQuery.documentPath)}';
     ${code}`;
   }
 
