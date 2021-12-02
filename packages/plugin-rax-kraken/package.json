@@ -23,7 +23,7 @@
   "dependencies": {
     "fs-extra": "^9.0.1",
     "webpack-sources": "^2.0.0",
-    "@builder/mpa-config": "^4.1.0-beta.1",
+    "@builder/mpa-config": "^4.1.0",
     "@builder/app-helpers": "^2.1.0"
   }
 }
