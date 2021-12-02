@@ -1,4 +1,4 @@
-import { ILoaderQuery } from '../types';
+import { IFormattedLoaderQuery } from '../types';
 import addPageHTMLAssign from './addPageHTMLAssign';
 import genComboedScript from '../utils/genComboedScript';
 
@@ -11,7 +11,7 @@ export default function addCustomRenderComponentToHTML(
     doctype = '<!DOCTYPE html>',
     injectedHTML = { scripts: [] },
     updateDataInClient,
-  }: ILoaderQuery,
+  }: IFormattedLoaderQuery,
 ) {
   const injectedScripts = [];
 
@@ -38,7 +38,8 @@ export default function addCustomRenderComponentToHTML(
     const title = ${JSON.stringify(pageConfig.window?.title || '')} || getTitle(staticConfig);
 
     if (process.env.NODE_ENV !== 'development') {
-      chunkInfo = __CHUNK_INFO__[${JSON.stringify(entryName)}];
+      // chunk info will be replaced during local build
+      chunkInfo = JSON.parse(decodeURIComponent("__CHUNK_INFO__"));
     }
 
     let scripts = chunkInfo[${JSON.stringify(entryName)}].js

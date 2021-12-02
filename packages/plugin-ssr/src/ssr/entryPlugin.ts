@@ -1,4 +1,4 @@
-import * as qs from 'qs';
+import * as queryString from 'query-string';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { modifyEntry } from '@builder/compat-webpack4';
@@ -67,7 +67,7 @@ export default class EntryPlugin {
       query.entryName = entryName;
 
       if (web.mpa) {
-        query.pageConfig = pageConfig[entryName];
+        query.pageConfig = JSON.stringify(pageConfig[entryName]);
         const entryFolder = path.dirname(entry);
         // Check runApp path
         let runAppPath = path.join(entryFolder, 'runApp');
@@ -81,7 +81,7 @@ export default class EntryPlugin {
       }
       modifyEntry(compiler, {
         entryName,
-        entryPath: `${EntryLoader}?${qs.stringify(query || {})}!${entry}`,
+        entryPath: `${EntryLoader}?${queryString.stringify(query)}!${entry}`,
       });
     });
   }

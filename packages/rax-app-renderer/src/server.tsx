@@ -25,7 +25,7 @@ export default function raxAppRendererWithSSR(context, props, options) {
   if (!appConfig.router) {
     appConfig.router = {};
   }
-  if (!appConfig.renderComponent) {
+  if (context.enableRouter) {
     if (appConfig.router.type !== 'browser') {
       throw new Error('[SSR]: Only support BrowserRouter when using SSR. You should set the router type to "browser". For more detail, please visit https://rax.js.org/docs/guide/route');
     }

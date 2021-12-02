@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getFontFaceContent should convert \`@font-face\` correctly when use double quotes 1`] = `
+"
+  if (typeof FontFace === 'function') {
+    
+    var fontFace0 = new FontFace('Open Sans', 'url(\\"/fonts/OpenSans-Regular-webfont.woff2\\") format(\\"woff2\\"),
+        url(\\"/fonts/OpenSans-Regular-webfont.woff\\") format(\\"woff\\")');
+    document.fonts.add(fontFace0);
+    
+  }
+    "
+`;
+
+exports[`getFontFaceContent should convert \`@font-face\` correctly when use single quotes 1`] = `
+"
+  if (typeof FontFace === 'function') {
+    
+    var fontFace0 = new FontFace('Open Sans', 'url(\\"/fonts/OpenSans-Regular-webfont.woff2\\") format(\\"woff2\\"),
+        url(\\"/fonts/OpenSans-Regular-webfont.woff\\") format(\\"woff\\")');
+    document.fonts.add(fontFace0);
+    
+  }
+    "
+`;
