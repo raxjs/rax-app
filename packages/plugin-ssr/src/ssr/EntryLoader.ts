@@ -1,5 +1,5 @@
 import { formatPath } from '@builder/app-helpers';
-import { parse, ParsedQuery } from 'query-string';
+import { parse } from 'query-string';
 import * as path from 'path';
 import { IFormattedLoaderQuery, ILoaderQuery } from '../types';
 import addCustomRenderComponentToHTML from './addCustomRenderComponentToHTML';
