@@ -74,6 +74,8 @@ export default (api) => {
         };
       });
 
+    newUserConfig.mpa = true;
+
     // Warning tip when use miniapp runtime mode with MPA
     for (const target of newUserConfig.targets) {
       if (MINIAPP_PLATFORMS.includes(target) && !newUserConfig[target]?.subpackages) {
@@ -84,13 +86,13 @@ export default (api) => {
 
   // Deprecate in v4.0
   // Minify options
-  Object.keys(DEPRECATED_CONFIG).forEach((deprecatedConfigkey) => {
-    if (hasOwnProperty(userConfig, deprecatedConfigkey)) {
+  Object.keys(DEPRECATED_CONFIG).forEach((deprecatedConfigKey) => {
+    if (hasOwnProperty(userConfig, deprecatedConfigKey)) {
       newUserConfig.minify = {
-        type: deprecatedConfigkey,
-        options: newUserConfig[deprecatedConfigkey],
+        type: DEPRECATED_CONFIG[deprecatedConfigKey],
+        options: newUserConfig[deprecatedConfigKey],
       };
-      logDeprecatedConfig(log, deprecatedConfigkey, `Please use \n${JSON.stringify(newUserConfig.minify, null, 2)}`);
+      logDeprecatedConfig(log, deprecatedConfigKey, `Please use \n${JSON.stringify({ minify: newUserConfig.minify }, null, 2)}`);
     }
   });
 

@@ -8,6 +8,7 @@ class Logo extends PureComponent {
     const source = {
       uri: `${process.env.PUBLIC_URL}/rax.png`,
     };
+    console.log('with router =>', this.props);
     return (
       <Image
         className="logo"

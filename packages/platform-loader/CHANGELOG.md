@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.1
+
+- Fix: not match platform error
+
 ## v1.1.0
 
 - Feat: support judge env of 'bytedance-microapp', 'kuaishou-miniprogram' and 'baidu-smartprogram'
