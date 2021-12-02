@@ -1,5 +1,5 @@
 import { formatPath } from '@builder/app-helpers';
-import * as queryString from 'queryString';
+import { parse, ParsedQuery } from 'query-string';
 import * as path from 'path';
 import { IFormattedLoaderQuery, ILoaderQuery } from '../types';
 import addCustomRenderComponentToHTML from './addCustomRenderComponentToHTML';
@@ -19,10 +19,12 @@ function addExport(code) {
 function addDefineInitialPage() {
   return `
   const pathname = req.path;
-  let Page = appConfig.app && appConfig.app.renderComponent;
-  if (!Page) {
+  let Page;
+  if (enableRouter) {
     const route = staticConfig.routes.find(({ path }) => path === pathname);
     Page = route.component;
+  } else {
+    Page = appConfig.app && appConfig.app.renderComponent;
   }
   `;
 }
@@ -36,7 +38,7 @@ function addDefineInitialPage() {
  * MPA: pageConfig
  */
 export default function () {
-  const query: ILoaderQuery = queryString.parse(this.query);
+  const query = parse(this.query) as unknown as ILoaderQuery;
   const formattedQuery: IFormattedLoaderQuery = formatEntryLoaderQuery(query);
   const corePath = path.join(query.tempPath, 'core');
 
@@ -50,7 +52,7 @@ export default function () {
     import { emitLifeCycles } from '${formatPath(path.join(corePath, 'publicAPI'))}';
     import { setHistory } from '${formatPath(path.join(corePath, 'routerAPI'))}';
     import '${formatPath(this.resourcePath)}';
-    import app from '${formatPath(query.runAppPath)}';
+    import app from '${formatPath(formattedQuery.runAppPath)}';
 
     const { createBaseApp, staticConfig, pageConfig, TabBar, enableRouter } = app;
 
