@@ -22,13 +22,13 @@
   },
   "dependencies": {
     "fs-extra": "^9.0.1",
-    "miniapp-runtime-config": "alpha",
+    "miniapp-runtime-config": "^0.4.0-rc.1",
     "webpack-sources": "^2.0.0",
-    "miniapp-builder-shared": "alpha",
+    "miniapp-builder-shared": "^0.3.0-rc.1",
     "copy-webpack-plugin": "^5.0.4",
-    "miniapp-compile-config": "alpha",
+    "miniapp-compile-config": "^0.3.0-rc.1",
     "@builder/app-helpers": "^2.3.4",
-    "miniapp-renderer": "0.2.2-beta.1",
-    "miniapp-webview-config": "alpha"
+    "miniapp-renderer": "^0.2.2-beta.2",
+    "miniapp-webview-config": "^1.0.0-rc.1"
   }
 }
