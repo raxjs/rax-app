@@ -36,7 +36,7 @@ function styleSheetLoader(source) {
 
   return genStyleContent(parsedData, parsedQuery);
 }
-
+// export for test case
 export const parse = (parsedQuery, stylesheet) => {
   const styles = {};
   const fontFaceRules = [];
