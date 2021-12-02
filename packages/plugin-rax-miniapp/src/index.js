@@ -27,12 +27,6 @@ module.exports = (api) => {
     KUAISHOU_MINIPROGRAM,
   ];
 
-  // For Webview mode
-  registerUserConfig({
-    name: 'webview',
-    validation: 'object',
-  });
-
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   targets.forEach((target) => {
     if (miniappStandardList.includes(target)) {
