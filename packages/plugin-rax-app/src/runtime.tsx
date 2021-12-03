@@ -16,7 +16,7 @@ export default async (api) => {
 function wrapperPageWithOtherPlatform(context) {
   const WrapperPageFn = (PageComponent) => {
     const { __pageConfig: pageConfig } = PageComponent;
-    const ServerWrapper = (props) => {
+    const PageWrapper = (props) => {
       const history = getHistory();
       const pageProps = {
         ...props,
@@ -27,7 +27,7 @@ function wrapperPageWithOtherPlatform(context) {
       };
       return <PageComponent {...pageProps} />;
     };
-    return ServerWrapper;
+    return PageWrapper;
   };
   return WrapperPageFn;
 }
