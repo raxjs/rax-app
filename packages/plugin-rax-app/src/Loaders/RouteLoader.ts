@@ -185,9 +185,9 @@ function transformAppConfig(jsonContent): IStaticConfig {
 function formatRoutes(routes: IRoute[], { target, currentSubDir, rootContext, isRootAppJsonPath }): IRoute[] {
   return filterByTarget(routes, { target })
     .filter(
-      ({ source }) =>
+      ({ source, url }) =>
         // Only filter miniapp native page
-        !MINIAPP_PLATFORMS.includes(target) || !pathHelper.isNativePage(join(currentSubDir, source), target),
+        (!MINIAPP_PLATFORMS.includes(target) || !pathHelper.isNativePage(join(currentSubDir, source), target)) && !url,
     )
     .map((route) => {
       if (isRootAppJsonPath) return route;

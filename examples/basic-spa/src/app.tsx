@@ -1,4 +1,3 @@
-import { createElement } from 'rax';
 import { runApp } from 'rax-app';
 
 runApp({
@@ -20,8 +19,5 @@ runApp({
         b: 2,
       };
     },
-  },
-  router: {
-    type: 'browser'
   }
 });

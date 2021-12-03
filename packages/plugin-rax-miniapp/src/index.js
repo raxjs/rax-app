@@ -8,7 +8,7 @@ const {
 } = require('miniapp-compile-config');
 const { normalizeStaticConfig } = require('miniapp-builder-shared');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const { setWebviewConfig } = require('miniapp-webview-config');
+const { setWebviewConfig, setWebviewPageConfig } = require('miniapp-webview-config');
 
 const separateRoutes = require('./separateRoutes').default;
 const setEntry = require('./setEntry');
@@ -52,7 +52,7 @@ module.exports = (api) => {
 
         // static config
         const staticConfig = normalizeStaticConfig(getValue('staticConfig'), { rootDir });
-        const { normalRoutes, nativeRoutes } = separateRoutes(staticConfig.routes, { target, rootDir });
+        const { normalRoutes, nativeRoutes, remoteRoutes } = separateRoutes(staticConfig.routes, { target, rootDir });
         const buildType = userConfig[target] && userConfig[target].buildType ? userConfig[target].buildType : MINIAPP_BUILD_TYPES.RUNTIME;
         // Set Entry when it's runtime project
         if (buildType === MINIAPP_BUILD_TYPES.RUNTIME) {
@@ -74,6 +74,14 @@ module.exports = (api) => {
           });
         } else if (needCopyDirs.length > 0) {
           config.plugin('CopyWebpackPlugin').use(CopyWebpackPlugin, [needCopyDirs]);
+        }
+
+        if (buildType === MINIAPP_BUILD_TYPES.WEBVIEW) {
+          setWebviewConfig(config, {
+            api,
+            target,
+          });
+          return;
         }
 
         if (buildType === MINIAPP_BUILD_TYPES.COMPILE) {
@@ -172,11 +180,26 @@ module.exports = (api) => {
             );
             registerTask(compiledComponentsTaskName, compiledComponentsChainConfig);
           }
-        } else {
-          setWebviewConfig(config, {
-            api,
-            target,
+        }
+        if (remoteRoutes.length > 0) {
+          const webviewTaskName = `webview-${target}`;
+          const webviewPagesChainConfig = getWebpackBase(api, {
+            target: webviewTaskName,
+            babelConfigOptions: { styleSheet: inlineStyle, disableRegenerator: true },
           });
+          webviewPagesChainConfig.plugins.delete('ProgressPlugin');
+          webviewPagesChainConfig.name(webviewTaskName);
+          webviewPagesChainConfig.taskName = webviewTaskName;
+          setWebviewPageConfig(
+            webviewPagesChainConfig,
+            {
+              api,
+              target,
+              outputPath: path.resolve(rootDir, outputDir, target),
+            },
+            remoteRoutes,
+          );
+          registerTask(webviewTaskName, webviewPagesChainConfig);
         }
       });
     }
