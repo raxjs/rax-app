@@ -36,8 +36,9 @@ function wrapperPageWithWeb(staticConfig) {
   const wrapperPage = (PageComponent) => {
     const { __pageConfig: pageConfig } = PageComponent;
 
-    const ClientWrapper = (props) => {
+    const PageWrapper = (props) => {
       const history = getHistory();
+      const location = history?.location || window.location;
       const [data, setData] = useState((window as any)?.__INITIAL_DATA__?.pageInitialProps);
       useEffect(() => {
         document.title = pageConfig.window?.title || staticConfig.window?.title;
@@ -52,8 +53,6 @@ function wrapperPageWithWeb(staticConfig) {
         } else if (PageComponent.getInitialProps) {
           // When the server does not return data, the client calls getinitialprops
           (async () => {
-            const location = history?.location || window.location;
-
             const initialContext = {
               pathname: location.pathname,
               query: getSearchParams(),
@@ -63,11 +62,11 @@ function wrapperPageWithWeb(staticConfig) {
             setData(result);
           })();
         }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
       }, []);
-      return <PageComponent {...Object.assign({}, props, data)} />;
+      return <PageComponent {...{ ...props, ...data, history, location, pageConfig }} />;
     };
-    return ClientWrapper;
+    return PageWrapper;
   };
   return wrapperPage;
 }
