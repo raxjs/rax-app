@@ -8,6 +8,8 @@ import {
   isKuaiShouMiniProgram,
   isWeChatMiniProgram,
 } from 'universal-env';
+// @ts-ignore
+import { getHistory } from 'rax-app';
 import KeepAliveRouter from './runtime/KeepAliveRouter';
 import StaticRouter from './runtime/StaticRouter';
 import Router from './runtime/Router';
@@ -26,7 +28,7 @@ export default async (api) => {
   if (appConfigRouter.modifyRoutes) {
     modifyRoutes(appConfigRouter.modifyRoutes);
   }
-  const { history } = appConfigRouter;
+  const history = getHistory();
   const TabBar = getRuntimeValue('TabBar');
   const tabBarConfig = getRuntimeValue('tabBarConfig');
 

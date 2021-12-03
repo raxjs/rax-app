@@ -9,6 +9,5 @@
   "web": {
     "mpa": true
   },
-  "swc": true,
-  "webpack5": true
+  "swc": true
 }

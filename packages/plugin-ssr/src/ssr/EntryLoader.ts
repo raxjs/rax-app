@@ -31,7 +31,7 @@ function addDefineInitialPage() {
 
 /**
  * Global variables:
- * utils: Generator, queryString, parseUrl
+ * utils: Generator, parseUrl
  * rax render: createElement/renderer
  * Component: Page/Document
  * generated in .rax: appConfig/staticConfig/createBaseApp/emitLifeCycles/setHistory/enableRouter
@@ -46,7 +46,6 @@ export default function () {
     import Generator from '@builder/html-generator';
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
-    import * as queryString from 'query-string';
     import * as parseUrl from 'parse-url';
     import { getAppConfig } from '${formatPath(path.join(corePath, 'appConfig'))}';
     import { emitLifeCycles } from '${formatPath(path.join(corePath, 'publicAPI'))}';
@@ -80,19 +79,39 @@ export default function () {
       throw new Error(message);
     }
 
+    function getInitialContext(ctx) {
+      const { req, res } = ctx;
+      const { hash, search, query } = parseUrl(req.url);
+      const pathname = req.path;
+      const location = {
+        pathname,
+        search,
+        state: null,
+        hash,
+      };
+
+      return {
+        req,
+        res,
+        pathname,
+        query,
+        location,
+      };
+    }
+
     ${formattedQuery.documentPath ? addCustomRenderComponentToHTML(formattedQuery) : addBuiltInRenderComponentToHTML(formattedQuery)}
 
     async function renderToHTML(req, res, options = {}) {
       const { initialData, htmlTemplate, chunkInfo } = options;
       ${addDefineInitialPage()}
-      const html = await renderComponentToHTML(Page, { req, res }, initialData, htmlTemplate, chunkInfo);
+      const html = await renderComponentToHTML(Page, getInitialContext({ req, res }), initialData, htmlTemplate, chunkInfo);
       return html;
     }
 
     async function renderToHTMLWithContext(ctx, options = {}) {
       const { initialData, htmlTemplate, chunkInfo } = options;
       ${addDefineInitialPage()}
-      const html = await renderComponentToHTML(Page, ctx, initialData, htmlTemplate, chunkInfo);
+      const html = await renderComponentToHTML(Page, getInitialContext(ctx), initialData, htmlTemplate, chunkInfo);
       return html;
     }
 
@@ -102,7 +121,7 @@ export default function () {
       ${addDefineInitialPage()}
       let html;
       try {
-        html = await renderComponentToHTML(Page, ctx, initialData);
+        html = await renderComponentToHTML(Page, getInitialContext(ctx), initialData);
       } catch (e) {
         html = htmlTemplate;
         console.error(e);
