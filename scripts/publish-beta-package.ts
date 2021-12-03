@@ -95,7 +95,6 @@ getPackageInfos().then((packageInfos: IPackageInfo[]) => {
     publishedPackages.push(`${name}:${betaVersion}`);
   });
 
-
   console.log(`[PUBLISH PACKAGE BETA] Complete (count=${publishedCount}):`);
   console.log(`${publishedPackages.join('\n')}`);
   setPublishedPackages(publishedPackages);
