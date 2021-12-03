@@ -2,41 +2,24 @@ export default () => {
   return `
     const { setInitialData } = require('rax-app-renderer');
     const raxServerRenderer = require('rax-app-renderer/lib/server').default;
-    const { req, res } = ctx;
-    const { pathname, hash, search } = parseUrl(req.url);
-    const parsedQuery = queryString.parseUrl(req.url).query;
-    const location = {
-      pathname,
-      search,
-      state: null,
-      hash,
-    };
-    const history = { location };
-    setHistory(history);
-    const initialContext = {
-      req,
-      res,
-      pathname,
-      query: parsedQuery,
-      location,
+
+    const history = {
+      location: ctx.location,
     };
 
+    setHistory(history);
+
     if (!data.initialData) {
-      data.initialData = appConfig.app && appConfig.app.getInitialData ? await appConfig.app.getInitialData(initialContext) : {};
+      data.initialData = appConfig.app && appConfig.app.getInitialData ? await appConfig.app.getInitialData(ctx) : {};
     }
 
     setInitialData(data.initialData);
 
     const pageHTML = raxServerRenderer(
       {
-        initialContext,
+        initialContext: ctx,
         enableRouter,
-      },
-      {
-        pageConfig,
-        history,
-        location,
-        ...data.pageInitialProps,
+        pageInitialProps: data.pageInitialProps,
       },
       {
         appConfig,

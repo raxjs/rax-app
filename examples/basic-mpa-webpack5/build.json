@@ -8,6 +8,5 @@
   },
   "web": {
     "mpa": true
-  },
-  "webpack5": true
+  }
 }
