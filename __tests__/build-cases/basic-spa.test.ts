@@ -14,7 +14,7 @@ describe('should build web result: ', () => {
     const res = await setupBrowser({ example });
     page = res.page;
     browser = res.browser;
-    await page.waitForFunction(`document.getElementsByTagName('span').length > 0`);
+    await page.waitForFunction(`document.getElementsByTagName('img').length > 0`);
     expect(await page.$$text('.title')).toStrictEqual(['Welcome to Your Rax App']);
     await page.click('#link');
     await page.waitForFunction(`document.getElementsByClassName('about').length > 0`);
