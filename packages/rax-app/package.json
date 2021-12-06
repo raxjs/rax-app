@@ -17,7 +17,7 @@
     "@builder/pack": "^0.4.0",
     "build-scripts": "^1.1.0",
     "build-plugin-app-core": "2.1.0",
-    "build-plugin-ice-config": "2.0.1",
+    "build-plugin-ice-config": "2.0.2-beta.1",
     "build-plugin-rax-app": "7.0.0",
     "build-plugin-rax-kraken": "2.0.0",
     "build-plugin-rax-miniapp": "2.0.0",
