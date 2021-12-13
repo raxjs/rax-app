@@ -14,10 +14,10 @@
     "test": "__tests__"
   },
   "dependencies": {
-    "@builder/pack": "^0.4.0",
+    "@builder/pack": "^0.5.0",
     "build-scripts": "^1.1.0",
     "build-plugin-app-core": "2.1.0",
-    "build-plugin-ice-config": "2.0.2-beta.1",
+    "build-plugin-ice-config": "2.0.2",
     "build-plugin-rax-app": "7.0.0",
     "build-plugin-rax-kraken": "2.0.0",
     "build-plugin-rax-miniapp": "2.0.0",
@@ -36,8 +36,7 @@
     "inquirer": "^7.1.0",
     "miniapp-builder-shared": "^0.3.0-rc.2",
     "yargs-parser": "^18.1.2",
-    "@builder/webpack-dev-server": "^1.0.0",
-    "@builder/webpack-dev-server-v4": "^1.0.0"
+    "@builder/webpack-dev-server": "^1.0.0"
   },
   "files": [
     "bin",
