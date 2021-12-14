@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.0
+
+- Feat: upgrade dependencies for webpack 5
+- Feat: use `runApp` as MPA default render trigger
+
 ## v1.4.8
 
 - Fix: `publicPath` in document
