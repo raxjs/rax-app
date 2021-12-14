@@ -7,7 +7,7 @@
   "dependencies": {
     "read-pkg-up": "^7.0.1",
     "minify-css-modules-classname": "^0.1.4",
-    "miniapp-builder-shared": "^0.3.0-rc.2"
+    "miniapp-builder-shared": "^0.3.0"
   },
   "repository": {
     "type": "git",
