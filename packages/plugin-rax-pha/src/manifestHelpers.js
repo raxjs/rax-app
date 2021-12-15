@@ -148,7 +148,7 @@ function getRealPageInfo({ urlPrefix, urlSuffix = '' }, page) {
 /*
  * change page info
  */
-function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, api, assets = [] }, page) {
+function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, api, assetNames = [] }, page) {
   const { applyMethod } = api;
   const { source, name } = page;
   if (!source && !name) {
@@ -184,12 +184,12 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, api,
 
       // add script and stylesheet
       const scriptName = `${entryName}.js`;
-      if (assets.includes(scriptName)) {
+      if (assetNames.includes(scriptName)) {
         page.script = cdnPrefix + scriptName;
       }
 
       const stylesheetName = `${entryName}.css`;
-      if (assets.includes(stylesheetName)) {
+      if (assetNames.includes(stylesheetName)) {
         page.stylesheet = cdnPrefix + stylesheetName;
       }
     }

@@ -8,9 +8,7 @@ const jscodeshiftExecutable = require.resolve('.bin/jscodeshift');
 const baseIgnorePattern = '*(node_modules|.vscode|abc.json|.rax|build)';
 export default function run() {
   const cli = meow(
-    {
-      description: 'Codemods for updating Rax.',
-      help: `
+    `
     Usage
       $ npx rax-codemod <transform> <path> <...options>
         transform    One of the choices from https://github.com/raxjs/blob/master/packages/codemod
@@ -21,12 +19,25 @@ export default function run() {
       --print            Print transformed files to your terminal
       --jscodeshift  (Advanced) Pass options directly to jscodeshift
     `,
-    },
     {
-      boolean: ['force', 'dry', 'print', 'help'],
-      string: ['_'],
-      alias: {
-        h: 'help',
+      flags: {
+        force: {
+          type: 'boolean',
+          default: false,
+        },
+        dry: {
+          type: 'boolean',
+          default: false,
+        },
+        print: {
+          type: 'boolean',
+          default: false,
+        },
+        help: {
+          type: 'boolean',
+          default: false,
+          alias: 'h',
+        },
       },
     },
   );
@@ -41,7 +52,7 @@ export default function run() {
   const selectedTransformer = cli.input[0] || 'app';
 
   if (!filesExpanded.length) {
-    console.log(`No files found matching ${filesBeforeExpansion.join(' ')}`);
+    console.log(`No files found matching ${filesExpanded.join(' ')}`);
     return null;
   }
 

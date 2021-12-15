@@ -6,12 +6,13 @@
     "jsx": "react",
     "jsxFactory": "createElement",
     "module": "esNext",
-    "target": "es5",
+    "target": "ES2016",
     "experimentalDecorators": true,
     "declaration": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "allowJs": true
   },
 }

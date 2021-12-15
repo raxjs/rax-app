@@ -12,6 +12,10 @@
     "rax": "^1.0.0",
     "@alifd/meet": "^2.0.0"
   },
+  "files": [
+    "lib",
+    "!lib/**/*.map"
+  ],
   "dependencies": {
     "babel-plugin-import": "^1.13.0",
     "chalk": "^2.4.2",

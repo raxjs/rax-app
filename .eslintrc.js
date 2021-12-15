@@ -11,6 +11,8 @@ module.exports = getESLintConfig('rax-ts', {
     'no-console': 'off',
     'no-param-reassign': 'off',
     'max-len': 'off',
+    '@typescript-eslint/restrict-plus-operands': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
     '@iceworks/best-practices/no-js-in-ts-project': 'off',
     '@typescript-eslint/no-require-imports': 'off',
     '@typescript-eslint/restrict-plus-operands': 'off',

@@ -1,8 +1,9 @@
-import * as Config from 'webpack-chain';
+import * as Config from '@builder/pack/deps/webpack-chain';
 import setWebpackLoaders from './setWebpackLoaders';
 import setWebpackPlugins from './setWebpackPlugins';
+import { IOptions } from './types';
 
-export default (options) => {
+export default (options: IOptions) => {
   const config = new Config();
 
   config.mode(options.mode);
@@ -11,7 +12,7 @@ export default (options) => {
   // webpack loaders
   setWebpackLoaders(config, options);
   // webpack plugins
-  setWebpackPlugins(config, options);
+  setWebpackPlugins(config);
 
   return config;
 };

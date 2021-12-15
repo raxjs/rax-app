@@ -4,6 +4,10 @@
   "description": "Rax Aliyun Function Compute Plugin",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "!lib/**/*.map"
+  ],
   "dependencies": {
     "address": "^1.1.2",
     "fs-extra": "^8.1.0",

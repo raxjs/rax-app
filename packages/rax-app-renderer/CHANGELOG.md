@@ -1,5 +1,10 @@
 # Changelog
 
+## v3.0.0
+
+- Feat: use `runApp` as MPA default render trigger
+- Feat: optimize code and remove router logic
+
 # v2.0.5
 
 - Fix: tabbar state update

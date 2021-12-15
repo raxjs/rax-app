@@ -1,9 +1,7 @@
-import { IGetBuiltInPlugins, IPluginList, Json, IUserConfig } from '@alib/build-scripts';
+import { IGetBuiltInPlugins, IPluginList, Json, IUserConfig } from 'build-scripts';
 import * as miniappBuilderShared from 'miniapp-builder-shared';
-import { satisfies } from 'semver';
-
-// TODO use import declaration
-const chalk = require('chalk');
+import { init } from '@builder/pack/deps/webpack/webpack';
+import { hijackWebpack } from './require-hook';
 
 const { constants: { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } } = miniappBuilderShared;
 const miniappPlatforms = [MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM];
@@ -15,16 +13,21 @@ interface IRaxAppUserConfig extends IUserConfig {
   experiments?: {
     minifyCSSModules?: boolean;
   };
+
+  webpack5?: boolean;
+
+  router?: boolean;
 }
 
 const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) => {
-  const { targets = ['web'], store = true, experiments = {} } = userConfig;
+  const { targets = ['web'], store = true, router = true, webpack5, experiments = {} } = userConfig;
   const coreOptions: Json = {
     framework: 'rax',
     alias: 'rax-app',
   };
 
-  validateNodeVersion();
+  init(webpack5);
+  hijackWebpack(webpack5);
 
   // built-in plugins for rax app
   const builtInPlugins: IPluginList = [
@@ -39,14 +42,6 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
 
   if (targets.includes('web')) {
     builtInPlugins.push('build-plugin-rax-web');
-    if (userConfig.web) {
-      if (userConfig.web.ssr) {
-        builtInPlugins.push('build-plugin-ssr');
-      }
-      if (userConfig.web.pha) {
-        builtInPlugins.push('build-plugin-rax-pha');
-      }
-    }
   }
 
   if (targets.includes('weex')) {
@@ -63,17 +58,27 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
     builtInPlugins.push('build-plugin-rax-miniapp');
   }
 
+  if (userConfig.web) {
+    if (userConfig.web.pha) {
+      builtInPlugins.push('build-plugin-rax-pha');
+    }
+    // Make ssr plugin after base plugin which need registerTask, the action will override the devServer config
+    if (userConfig.web.ssr) {
+      builtInPlugins.push('build-plugin-ssr');
+    }
+  }
+
+  if (router) {
+    builtInPlugins.push('build-plugin-rax-router');
+  }
+
+  builtInPlugins.push('build-plugin-ice-logger');
+
   if (experiments.minifyCSSModules === true) {
     builtInPlugins.push('build-plugin-minify-classname');
   }
 
   return builtInPlugins;
 };
-
-function validateNodeVersion() {
-  if (!satisfies(process.version, '>=12.22.0')) {
-    console.error(chalk.red('Please upgrade Node.js to a later version than 12.22.0! More detail see https://github.com/raxjs/rax-app/issues/882'));
-  }
-}
 
 export = getBuiltInPlugins;

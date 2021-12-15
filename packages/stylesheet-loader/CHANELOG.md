@@ -1,9 +1,12 @@
 # Changelog
 
+## v0.9.1
+
+- Fix: FontFace qoute replacement
+
 ## v0.9.0
 
 - Chore: break change for `module.exports`
-
 
 ## v0.8.6
 

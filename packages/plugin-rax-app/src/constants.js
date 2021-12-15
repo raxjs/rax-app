@@ -16,5 +16,12 @@ module.exports = {
   GET_RAX_APP_WEBPACK_CONFIG: 'getRaxAppWebpackConfig',
   DEV_URL_PREFIX: 'devUrlPrefix',
   STATIC_CONFIG: 'staticConfig',
-  CUSTOM_TAB_BAR_PATH: 'CUSTOM_TAB_BAR_PATH',
+  TAB_BAR_PATH: 'TAB_BAR_PATH',
+  REACT_TRANSFORM_CONFIG: 'REACT_TRANSFORM_CONFIG',
+  MINIFY_TASKS: 'MINIFY_TASKS',
+  DEPRECATED_CONFIG: {
+    esbuild: 'esbuild',
+    terserOptions: 'terser',
+  },
+  HTTPS_URL_LIST: 'HTTPS_URL_LIST',
 };

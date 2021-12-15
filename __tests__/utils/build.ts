@@ -1,9 +1,8 @@
 import * as path from 'path';
-import { build } from '@alib/build-scripts';
+import { build } from 'build-scripts';
 import * as getPort from 'get-port';
 import Browser, { IPage } from './browser';
 import getBuiltInPlugins = require('../../packages/rax-app/src');
-import executeCommand from './executeCommand';
 
 interface ISetupBrowser {
   (options: {
@@ -22,8 +21,6 @@ interface IReturn {
 export const buildFixture = function(example: string) {
   test(`setup ${example}`, async () => {
     const rootDir = path.join(__dirname, `../../examples/${example}`);
-    executeCommand('rm -rf node_modules', rootDir);
-    executeCommand('npm install', rootDir);
     await build({
       args: {
         config: path.join(rootDir, 'build.json'),

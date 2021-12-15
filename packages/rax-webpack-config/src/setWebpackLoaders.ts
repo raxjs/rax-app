@@ -1,6 +1,8 @@
 import * as path from 'path';
-import * as deepClone from 'lodash.clonedeep';
+import { cloneDeep } from '@builder/pack/deps/lodash';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { IOptions } from './types';
+import isWebpack4 from './isWebpack4';
 
 const URL_LOADER_LIMIT = 8192;
 const EXCLUDE_REGX = /node_modules/;
@@ -32,10 +34,13 @@ export const createCSSRule = (config, ruleName, reg, excludeRegs = []) => {
   addCssLoader(rule, isCSSModule);
   addPostCssLoader(rule);
 
+  const sassLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/sass-loader') : require.resolve('@builder/pack/deps/sass-loader');
+  const lessLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/less-loader') : require.resolve('@builder/pack/deps/less-loader');
+
   const loaderMap = {
     css: [],
-    scss: [['sass-loader', require.resolve('sass-loader')]],
-    less: [['less-loader', require.resolve('less-loader'), { lessOptions: { javascriptEnabled: true } }]],
+    scss: [['sass-loader', sassLoader]],
+    less: [['less-loader', lessLoader, { lessOptions: { javascriptEnabled: true } }]],
   };
 
   loaderMap[extName].forEach((loader) => {
@@ -67,15 +72,18 @@ const addCssLoader = (rule, isCSSModule) => {
     },
   };
 
+  const cssLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/css-loader') : require.resolve('@builder/pack/deps/css-loader');
+
   return rule
     .use('css-loader')
-    .loader(require.resolve('css-loader'))
+    .loader(cssLoader)
     .options(isCSSModule ? cssModuleLoaderOpts : cssLoaderOpts)
     .end();
 };
 
 const addPostCssLoader = (rule) => {
-  return rule.use('postcss-loader').loader(require.resolve('postcss-loader')).options({ sourceMap: true }).end();
+  const postcssLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/postcss-loader') : require.resolve('@builder/pack/deps/postcss-loader');
+  return rule.use('postcss-loader').loader(postcssLoader).options({ sourceMap: true }).end();
 };
 
 const addCssPreprocessorLoader = (rule, loader) => {
@@ -101,7 +109,7 @@ const configAssetsRule = (config, type, testReg, loaderOpts = {}) => {
     });
 };
 
-export default (config, { rootDir, babelConfig }) => {
+export default (config, { rootDir, babelConfig }: IOptions) => {
   config.resolve.alias
     .set('babel-runtime-jsx-plus', require.resolve('babel-runtime-jsx-plus'))
     // @babel/runtime has no index
@@ -110,7 +118,16 @@ export default (config, { rootDir, babelConfig }) => {
   config.target('web');
   config.context(rootDir);
   config.externals([
-    function (ctx, request, callback) {
+    function (...args) {
+      let request;
+      let callback;
+      if (isWebpack4) {
+        [, request, callback] = args;
+      } else {
+        request = args[0].request;
+        callback = args[1];
+      }
+
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, `commonjs ${request}`);
       }
@@ -141,31 +158,19 @@ export default (config, { rootDir, babelConfig }) => {
     configAssetsRule(config, type, reg, opts || {});
   });
 
-  const babelLoader = require.resolve('babel-loader');
+  const babelLoader = require.resolve('@builder/pack/deps/babel-loader');
 
-  // js loader
-  config.module
-    .rule('jsx')
-    .test(/\.jsx?$/)
-    .exclude.add(EXCLUDE_REGX)
-    .end()
-    .use('babel-loader')
-    .loader(babelLoader)
-    .options({ ...deepClone(babelConfig), cacheDirectory: true });
-
-  // ts loader
-  config.module
-    .rule('tsx')
-    .test(/\.tsx?$/)
-    .exclude.add(EXCLUDE_REGX)
-    .end()
-    .use('babel-loader')
-    .loader(babelLoader)
-    .options({ ...deepClone(babelConfig), cacheDirectory: true })
-    .end()
-    .use('ts-loader')
-    .loader(require.resolve('ts-loader'))
-    .options({ transpileOnly: true });
+  ['jsx', 'tsx'].forEach((ruleName) => {
+    const testRegx = new RegExp(`\\.${ruleName}?$`);
+    config.module.rule(ruleName)
+      .test(testRegx)
+      .exclude
+      .add(EXCLUDE_REGX)
+      .end()
+      .use('babel-loader')
+      .loader(babelLoader)
+      .options({ ...cloneDeep(babelConfig) });
+  });
 
   return config;
 };

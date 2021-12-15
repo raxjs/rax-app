@@ -84,8 +84,8 @@ export default function (fileInfo) {
 
   Object.keys(pkg.scripts).forEach((command) => {
     pkg.scripts[command] = pkg.scripts[command]
-      .replace('build-scripts build', 'rax-app build')
-      .replace('build-scripts start', 'rax-app start');
+      .replace('build-scripts build', '../../packages/rax-app/bin/rax-cli.js build')
+      .replace('build-scripts start', '../../packages/rax-app/bin/rax-cli.js');
   });
 
   extraScripts.forEach(({ name, command }) => {

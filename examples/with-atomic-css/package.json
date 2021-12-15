@@ -1,0 +1,16 @@
+{
+  "name": "with-atomic-css",
+  "description": "rax example",
+  "devDependencies": {
+    "@types/rax": "^1.0.0",
+    "autoprefixer": "^9.8.8",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
+  },
+  "scripts": {
+    "start": "../../packages/rax-app/bin/rax-cli.js start",
+    "build": "../../packages/rax-app/bin/rax-cli.js build"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}

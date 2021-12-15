@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.0
+
+- Feat: support webpack 5
+
 ## v2.0.5
 
 - Chore: `TerserPlugin` `sourceMap` default value is depended on `webpackConfig.devtool`

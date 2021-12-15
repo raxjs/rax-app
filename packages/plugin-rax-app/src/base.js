@@ -6,12 +6,23 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const fs = require('fs-extra');
 const ExportsFieldWebpackPlugin = require('@builder/exports-field-webpack-plugin').default;
+const { isWebpack4 } = require('@builder/compat-webpack4');
+const { MINIAPP_PLATFORMS, SSR, DOCUMENT } = require('./constants');
 
-module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNode }) => {
+module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => {
   const { context, onGetWebpackConfig } = api;
-  const { rootDir, command, userConfig, webpack } = context;
-  const { experiments = {} } = userConfig;
-  const { exportsField } = experiments;
+  const { rootDir, command, userConfig } = context;
+  let mpa = false;
+
+  // subPackages is miniapp config, mpa is web/weex/kraken config
+  // document and ssr need be the same as web
+  if (MINIAPP_PLATFORMS.includes(target)) {
+    mpa = (userConfig[target] || {}).subPackages;
+  } else if ([SSR, DOCUMENT].includes(target)) {
+    mpa = (userConfig.web || {}).mpa;
+  } else if (userConfig[target]) {
+    mpa = userConfig[target].mpa;
+  }
 
   const mode = command === 'start' ? 'development' : 'production';
   const babelConfig = getBabelConfig(babelConfigOptions);
@@ -20,12 +31,24 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     mode,
     babelConfig,
     target,
+    webpackVersion: context.webpack.version,
   });
   const enhancedWebpackConfig = getEnhancedWebpackConfig(api, {
     target,
     webpackConfig,
     babelConfig,
   });
+
+  enhancedWebpackConfig.module
+    .rule('appJSON')
+    .type('javascript/auto')
+    .test(/app\.json$/)
+    .use('route-loader')
+    .loader(require.resolve('./Loaders/RouteLoader'))
+    .options({
+      target,
+      mpa,
+    });
 
   enhancedWebpackConfig
     .plugin('ProgressPlugin')
@@ -35,16 +58,6 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
   if (fs.existsSync(path.resolve(rootDir, 'public'))) {
     enhancedWebpackConfig.plugin('CopyWebpackPlugin').use(CopyWebpackPlugin, [[]]);
   }
-
-  ['jsx', 'tsx'].forEach((ruleName) => {
-    enhancedWebpackConfig.module
-      .rule(ruleName)
-      .use('platform-loader')
-      .loader(require.resolve('rax-platform-loader'))
-      .options({
-        platform: target === 'ssr' || isNode ? 'node' : target,
-      });
-  });
 
   onGetWebpackConfig(target, (config) => {
     // Set public url after developer has set public path
@@ -59,10 +72,11 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     config.plugin('DefinePlugin').tap((args) => [
       Object.assign({}, ...args, {
         'process.env.PUBLIC_URL': JSON.stringify(publicUrl),
+        'process.env.WDS_SOCKET_PATH': '"/ws"',
       }),
     ]);
 
-    const { outputDir = 'build' } = userConfig;
+    const { outputDir = 'build', swc } = userConfig;
     // Copy public dir
     if (config.plugins.has('CopyWebpackPlugin')) {
       config.plugin('CopyWebpackPlugin').tap(([copyList]) => {
@@ -77,26 +91,63 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
       });
     }
 
-    if (exportsField) {
-      // Add condition names
-      if (/^5\./.test(webpack.version)) {
-        enhancedWebpackConfig.resolve.merge({
-          conditionNames: [target],
-        });
-      } else {
-        enhancedWebpackConfig.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
-          {
-            conditionNames: [target],
-          },
-        ]);
-      }
-    }
+    const conditionNames = [target, 'import', 'require', 'node'];
 
-    // Set dev server content base
-    config.devServer.contentBase(path.join(rootDir, outputDir));
+    // Add condition names
+    if (isWebpack4) {
+      config.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
+        {
+          conditionNames,
+        },
+      ]);
+      // Set dev server content base
+      config.devServer.contentBase(path.join(rootDir, outputDir));
+      // Reset config target
+      config.target('web');
+    } else {
+      config.resolve.merge({
+        conditionNames,
+      });
+
+      // Set dev server content base
+      config.devServer.merge({
+        static: {
+          directory: path.join(rootDir, outputDir),
+        },
+      });
+    }
 
     // Set output path
     config.output.path(path.resolve(rootDir, outputDir, target));
+
+    // Only save target code
+    const keepPlatform = ['ssr', 'document'].includes(target) ? 'node' : target;
+    ['jsx', 'tsx'].forEach((ruleName) => {
+      config.module
+        .rule(ruleName)
+        .use('platform-loader')
+        .loader(require.resolve('rax-platform-loader'))
+        .options({
+          platform: keepPlatform,
+        });
+    });
+
+    if (swc) {
+      ['jsx', 'tsx'].forEach((suffix) => {
+        config.module
+          .rule(`swc-${suffix}`)
+          .use('swc-loader')
+          .tap((options) => {
+            return {
+              ...options,
+              keepPlatform,
+            };
+          });
+      });
+    }
+
+    // TODO: hack for tslib wrong exports field https://github.com/microsoft/tslib/issues/161
+    config.resolve.alias.set('tslib', 'tslib/tslib.es6.js');
   });
 
   return enhancedWebpackConfig;
