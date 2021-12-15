@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0.0
+
+- Feat: upgrade dependencies for webpack 5
+- Feat: support webview mode
+- Chore: optimize code logic for get staticConfig
+
 ## v1.4.1
 
 - Chore: optimize `output.path` logic

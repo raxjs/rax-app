@@ -1,5 +1,13 @@
 # Changelog
 
+## 7.0.0
+
+- Feat: upgrade dependencies for webpack 5
+- Feat: add more tip during developing
+- Feat: only need set `web.mpa` to make multiple app to MPA
+- Feat: support swc
+- Feat: support more compressor
+
 ## 6.4.7
 
 - Chore: lock webpackbar version for avoid minimum node version error

@@ -1,6 +1,6 @@
 {
   "name": "rax-webpack-config",
-  "version": "2.0.5",
+  "version": "3.0.0",
   "description": "rax base webpack config",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/raxjs/rax-app/tree/master/packages/rax-webpack-config#readme",
   "dependencies": {
-    "@builder/pack": "^0.4.0",
+    "@builder/pack": "^0.5.0",
     "@builder/rax-pack": "^0.1.0",
     "@babel/runtime": "^7.2.0",
     "babel-runtime-jsx-plus": "^0.1.3",
