@@ -137,7 +137,7 @@ export default function () {
       ctx.body = html;
     }
 
-    async function render(ctx, options) {
+    async function render(ctx, options = {}) {
       let html;
       if (ctx.req) {
         const { initialData, htmlTemplate } = options;
