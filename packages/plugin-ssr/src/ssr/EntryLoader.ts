@@ -110,7 +110,7 @@ export default function () {
     async function renderToHTML(req, res, options = {}) {
       const { initialData, htmlTemplate } = options;
       ${addDefineInitialPage()}
-      const html = await renderComponentToHTML(Page, getInitialContext({ req, res }), initialData, htmlTemplate);
+      const html = await renderComponentToHTML(Page, getInitialContext({ req, res }), initialData);
       return html;
     }
 

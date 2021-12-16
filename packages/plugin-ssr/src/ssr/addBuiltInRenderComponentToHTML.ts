@@ -3,7 +3,11 @@ import addPageHTMLAssign from './addPageHTMLAssign';
 
 export default function addBuiltInRenderComponentToHTML({ updateDataInClient }: IFormattedLoaderQuery) {
   return `
-  async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate = "__RAX_APP_SERVER_HTML_TEMPLATE__") {
+  async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate) {
+    if (!htmlTemplate) {
+      htmlTemplate = '__RAX_APP_SERVER_HTML_TEMPLATE__';
+    }
+
     const $ = new Generator(htmlTemplate);
 
     const pageInitialProps = await getInitialProps(Component, ctx);
