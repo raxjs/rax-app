@@ -79,7 +79,7 @@ export default class EntryPlugin {
       } else {
         query.runAppPath = coreRunAppPath;
       }
-      console.log(`${EntryLoader}?${queryString.stringify(query)}!${entry}`)
+      console.log(`${EntryLoader}?${queryString.stringify(query)}!${entry}`);
       modifyEntry(compiler, {
         entryName,
         entryPath: `${EntryLoader}?${queryString.stringify(query)}!${entry}`,
