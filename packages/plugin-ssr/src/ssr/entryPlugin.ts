@@ -50,7 +50,7 @@ export default class EntryPlugin {
         needInjectStyle: web.mpa && !inlineStyle,
         documentPath,
         publicPath,
-        injectedHTML: applyMethod('rax.getInjectedHTML'),
+        injectedHTML: JSON.stringify(applyMethod('rax.getInjectedHTML')),
         assetsProcessor,
         doctype: web.doctype,
       };
@@ -79,6 +79,7 @@ export default class EntryPlugin {
       } else {
         query.runAppPath = coreRunAppPath;
       }
+      console.log(`${EntryLoader}?${queryString.stringify(query)}!${entry}`)
       modifyEntry(compiler, {
         entryName,
         entryPath: `${EntryLoader}?${queryString.stringify(query)}!${entry}`,
