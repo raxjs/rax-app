@@ -4,9 +4,10 @@ import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import BundleShellPlugin from './BundleShellPlugin';
 import addWorkerEntry from './addWorkerEntry';
 import type { IBundleShellPluginOptions } from './types';
-import { isWebpack4 } from '@builder/compat-webpack4';
 import getManifest from './utils/getManifest';
 import setupAppEntry from './setupAppEntry';
+
+const PROJECT_PATH = '/Users/fushen/Documents/workplace/harmony_example/entry/src/main/js/default';
 
 /*
 TODO:
@@ -15,7 +16,7 @@ TODO:
 
 export default (api) => {
   const { getValue, context, registerTask, onGetWebpackConfig } = api;
-  const { userConfig, command, rootDir } = context;
+  const { userConfig, rootDir } = context;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
@@ -39,18 +40,10 @@ export default (api) => {
     const { mpa, appType = 'rich' } = harmony;
     const staticConfig = getValue('staticConfig');
 
-    // base config
-    if (isWebpack4) {
-      config.output.libraryTarget('var');
-      config.output.libraryExport('result');
-    } else {
-      config.output.merge({
-        library: {
-          name: 'result',
-          type: 'var',
-        },
-      });
-    }
+    config.target('node');
+
+    config.output.path(PROJECT_PATH);
+    config.devServer.hot(false);
 
     // set mpa config
     if (mpa) {
@@ -68,21 +61,11 @@ export default (api) => {
 
     addWorkerEntry(config, { rootDir });
 
-    config.output.devtoolModuleFilenameTemplate('webpack:///[absolute-resource-path]');
-    config.devtool('nosources-source-map');
-
     const bundleShellPluginOptions: IBundleShellPluginOptions = {
       appType,
       manifest: getManifest(entries, { staticConfig, nativeConfig: harmony.nativeConfig }),
     };
 
     config.plugin('BundleShellPlugin').use(BundleShellPlugin, [bundleShellPluginOptions]);
-
-    if (command === 'start') {
-      // Add webpack hot dev client
-      Object.keys(config.entryPoints.entries()).forEach((entryName) => {
-        config.entry(entryName).prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
-      });
-    }
   });
 };

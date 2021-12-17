@@ -53,15 +53,11 @@ async function raxAppRenderer(options) {
 }
 
 function _render(runtime: RuntimeModule, context: IContext, options: RenderOptions) {
-  const { appConfig = {}, buildConfig, pageConfig } = options;
+  const { appConfig = {}, buildConfig } = options;
   const { rootId, mountNode } = appConfig.app;
   const webConfig = buildConfig.web || {};
   const App = getRenderApp(
     runtime,
-    {
-      pageConfig,
-      ...context.pageInitialProps,
-    },
     options,
   );
 
@@ -76,18 +72,18 @@ function _render(runtime: RuntimeModule, context: IContext, options: RenderOptio
   });
 }
 
-function _getAppMountNode(mountNode: HTMLElement, rootId: string) {
+function _getAppMountNode(mountNode: HTMLElement, rootId: string = 'root') {
   if (isWeex || isKraken || isHarmony) return null;
-  return mountNode || document.getElementById(rootId) || document.getElementById('root');
+  return mountNode || document.getElementById(rootId);
 }
 
-export function getRenderApp(runtime: RuntimeModule, initialProps, options: RenderOptions): FunctionComponent {
+export function getRenderApp(runtime: RuntimeModule, options: RenderOptions): FunctionComponent {
   const { ErrorBoundary, appConfig = { app: {} }, TabBar } = options;
   const { ErrorBoundaryFallback, onErrorBoundaryHandler, errorBoundary } = appConfig.app;
   const AppProvider = runtime?.composeAppProvider?.();
   const AppComponent = runtime?.getAppComponent?.();
   function App() {
-    const appComponent = <AppComponent {...initialProps} />;
+    const appComponent = <AppComponent />;
     let rootApp = AppProvider ? <AppProvider>{appComponent}</AppProvider> : appComponent;
     if (TabBar) {
       rootApp = (

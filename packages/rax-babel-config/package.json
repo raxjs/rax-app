@@ -1,6 +1,6 @@
 {
   "name": "rax-babel-config",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "description": "rax base babel config",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/raxjs/rax-scripts/tree/master/packages/rax-babel-config#readme",
   "dependencies": {
-    "@builder/pack": "^0.4.0",
+    "@builder/pack": "^0.5.0",
     "babel-plugin-minify-dead-code-elimination-while-loop-fixed": "^0.3.0",
     "babel-plugin-transform-jsx-class": "^0.1.2",
     "babel-plugin-transform-jsx-condition": "^0.1.0",

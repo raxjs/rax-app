@@ -24,4 +24,5 @@ module.exports = {
     esbuild: 'esbuild',
     terserOptions: 'terser',
   },
+  HTTPS_URL_LIST: 'HTTPS_URL_LIST',
 };

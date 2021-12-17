@@ -135,6 +135,10 @@ export default (config, { rootDir, babelConfig }: IOptions) => {
       if (/^plugin\:\/\//.test(request)) {
         return callback(null, `commonjs ${request}`);
       }
+
+      if (/^@system\./.test(request)) {
+        return callback(null, `commonjs ${request}`);
+      }
       callback();
     },
   ]);

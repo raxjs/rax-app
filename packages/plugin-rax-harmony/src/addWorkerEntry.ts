@@ -6,7 +6,7 @@ export default function addWorkerEntry(config, { rootDir }) {
 
   if (workerEntry) {
     // worker file output name is app.js
-    const workerEntryConfig = config.entry('app');
-    workerEntryConfig.add(workerEntry);
+    // const workerEntryConfig = config.entry('app');
+    // workerEntryConfig.add(workerEntry);
   }
 }

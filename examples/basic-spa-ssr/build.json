@@ -2,5 +2,6 @@
   "targets": ["web"],
   "web": {
     "ssr": true
-  }
+  },
+  "swc": true
 }

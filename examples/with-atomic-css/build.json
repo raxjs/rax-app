@@ -1,0 +1,9 @@
+{
+  "targets": ["web"],
+  "postcssOptions": {
+    "plugins": {
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
+  }
+}

@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.0
+
+- Feat: upgrade dependencies for webpack 5
+
+## v1.4.10
+
+- Fix: inject script or stylesheet by assets
+
 ## v1.4.9
 
 - Fix: tabHeader & tabBar logic in iOS & Android

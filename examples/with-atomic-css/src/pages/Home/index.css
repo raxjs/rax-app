@@ -1,0 +1,20 @@
+.home {
+  align-items: center;
+  margin-top: 200rpx;
+}
+
+.title {
+  font-size: 35rpx;
+  font-weight: bold;
+  margin: 20rpx 0;
+}
+
+.info {
+  font-size: 36rpx;
+  margin: 8rpx 0;
+  color: #555;
+}
+
+.btn {
+  @apply rounded-lg border border-gray-300 text-gray-100 bg-blue-500 px-4 py-2 m-2 inline-block hover:shadow cursor-pointer;
+}

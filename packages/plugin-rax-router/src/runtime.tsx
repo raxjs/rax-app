@@ -8,12 +8,16 @@ import {
   isKuaiShouMiniProgram,
   isWeChatMiniProgram,
 } from 'universal-env';
+// @ts-ignore
+import { getHistory } from 'rax-app';
 import KeepAliveRouter from './runtime/KeepAliveRouter';
 import StaticRouter from './runtime/StaticRouter';
 import Router from './runtime/Router';
+import TabBarWrapper from './runtime/TabBar';
 import { IRoute } from './type';
 
-const isMiniAppPlatform = (isMiniApp || isBaiduSmartProgram || isByteDanceMicroApp || isWeChatMiniProgram || isKuaiShouMiniProgram) && !isWeb;
+const isMiniAppPlatform =
+  (isMiniApp || isBaiduSmartProgram || isByteDanceMicroApp || isWeChatMiniProgram || isKuaiShouMiniProgram) && !isWeb;
 
 export default async (api) => {
   if (isMiniAppPlatform) return;
@@ -24,40 +28,49 @@ export default async (api) => {
   if (appConfigRouter.modifyRoutes) {
     modifyRoutes(appConfigRouter.modifyRoutes);
   }
-  const { history } = appConfigRouter;
+  const history = getHistory();
   const TabBar = getRuntimeValue('TabBar');
   const tabBarConfig = getRuntimeValue('tabBarConfig');
 
-  const renderRouter =
-    (initialRoutes: IRoute[]) => {
-      const { routes, keepAliveRoutes } = parseRoutes(initialRoutes);
-      return () => {
-        routes.push({
-          // @ts-ignore
-          component: '',
-        });
-        // Add KeepAliveRouter
-        const RouterComponents = [<KeepAliveRouter key="rax-keep-alive-router" history={history} routes={keepAliveRoutes} />];
-        const handleTabBarItemClick = useCallback((item) => {
-          history.push(item.pageName);
-        }, []);
-        if (isNode) {
-          // Add StaticRouter for node
-          RouterComponents.push(
-            <StaticRouter key="rax-static-router" history={history} routes={routes} />,
-          );
-        } else {
-          // Add Normal Router for other route
-          RouterComponents.push(
-            <Router key="rax-normal-router" history={history} routes={routes} />,
-          );
-        }
-        if (TabBar) {
-          RouterComponents.push(<TabBar key="rax-app-tab-bar" onClick={handleTabBarItemClick} config={tabBarConfig} currentPageName={history.location.pathname} />);
-        }
-        return RouterComponents;
-      };
+  const renderRouter = (initialRoutes: IRoute[]) => {
+    const { routes, keepAliveRoutes } = parseRoutes(initialRoutes);
+    return () => {
+      routes.push({
+        // @ts-ignore
+        component: '',
+      });
+      // Add KeepAliveRouter
+      const RouterComponents = [
+        <KeepAliveRouter key="rax-keep-alive-router" history={history} routes={keepAliveRoutes} />,
+      ];
+      const handleTabBarItemClick = useCallback((item) => {
+        history.push(item.pageName);
+      }, []);
+      if (isNode) {
+        // Add StaticRouter for node
+        RouterComponents.push(<StaticRouter key="rax-static-router" history={history} routes={routes} />);
+      } else {
+        // Add Normal Router for other route
+        RouterComponents.push(<Router key="rax-normal-router" history={history} routes={routes} />);
+      }
+      if (TabBar) {
+        RouterComponents.push(
+          <TabBarWrapper
+            key="rax-app-tab-bar"
+            history={history}
+            renderTabBar={() => (
+              <TabBar
+                onClick={handleTabBarItemClick}
+                config={tabBarConfig}
+                currentPageName={history.location.pathname}
+              />
+            )}
+          />,
+        );
+      }
+      return RouterComponents;
     };
+  };
   setRenderApp(renderRouter);
 };
 

@@ -6,12 +6,9 @@ import { getSearchParams, withPageLifeCycle } from 'rax-app';
 import './index.css';
 
 class About extends Component {
-  componentDidMount() {
-    console.log('about search params', getSearchParams());
-  }
-
   onShow() {
     console.log('about show...');
+    console.log('about search params', getSearchParams());
   }
 
   onHide() {
@@ -22,7 +19,9 @@ class About extends Component {
     return (
       <View className="about">
         <Text className="title">About Page</Text>
-        <Text className="info" onClick={() => (this.props as any).history.push('/')}>Go Home</Text>
+        <Text className="info" onClick={() => (location.href = '/home')}>
+          Go Home
+        </Text>
       </View>
     );
   }

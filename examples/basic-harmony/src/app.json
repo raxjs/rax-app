@@ -1,0 +1,16 @@
+{
+  "routes": [
+    {
+      "name": "home",
+      "source": "pages/Home/index",
+      "spm": "b456"
+    },
+    {
+      "name": "about",
+      "source": "pages/About/index"
+    }
+  ],
+  "window": {
+    "title": "Rax Harmony App"
+  }
+}

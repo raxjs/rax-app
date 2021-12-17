@@ -1,0 +1,8 @@
+{
+  "targets": ["harmony"],
+  "harmony": {
+    "mpa": true
+  },
+  "compileDependencies": [],
+  "webpack5": true
+}

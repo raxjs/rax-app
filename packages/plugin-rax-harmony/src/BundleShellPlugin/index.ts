@@ -10,7 +10,6 @@ import getPageName from '../utils/getPageName';
 const PLUGIN_NAME = 'BundleShell';
 const { RawSource } = webpack.sources || webpackSources;
 
-
 export default class BundleShell {
   pluginOptions: IBundleShellPluginOptions = {
     appType: 'rich',
@@ -32,22 +31,23 @@ export default class BundleShell {
             outputFileName = `pages/${getPageName(filename)}`;
           }
           if (/\.js$/.test(filename)) {
-            transformJSFile(filename, { compilation, assets, pluginOptions: this.pluginOptions, outputFileName: `${outputFileName}.js` });
+            transformJSFile(filename, { compilation, assets, pluginOptions: this.pluginOptions, outputFileName: `${outputFileName}/index.js` });
+
+            emitHml({ compilation, outputFileName: `${outputFileName}/index.hml` });
           }
 
           if (/\.js\.map$/.test(filename)) {
-            moveMapFile(filename, { compilation, assets, outputFileName: `${outputFileName}.js.map` });
+            delete assets[filename];
           }
         });
 
-      // Generate manifest.json
-      emitAsset(compilation, 'manifest.json',
-        new RawSource(
-          JSON.stringify(this.pluginOptions.manifest, null, compiler.options.mode === 'production' ? 0 : 2),
-        ));
       callback();
     });
   }
+}
+
+function emitHml({ compilation, outputFileName }) {
+  emitAsset(compilation, outputFileName, new RawSource('<div></div>'));
 }
 
 function transformJSFile(filename: string, { compilation, assets, pluginOptions, outputFileName }) {

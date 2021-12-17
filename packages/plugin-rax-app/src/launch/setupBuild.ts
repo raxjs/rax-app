@@ -1,8 +1,8 @@
 import path from 'path';
-import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
 import chalk from 'chalk';
 import { platformMap } from 'miniapp-builder-shared';
 import logWebpackConfig from '../utils/logWebpackConfig';
+import formatMessage from '../utils/formatMessage';
 
 import {
   MINIAPP_PLATFORMS,
@@ -30,7 +30,7 @@ export default (api) => {
       warnings: true,
       timings: true,
     });
-    const messages = formatWebpackMessages(statsJson);
+    const messages = formatMessage(statsJson);
     // Do not print localUrl and assets information when containing an error
     const isSuccessful = !messages.errors.length;
     const { outputDir = 'build', targets } = userConfig;

@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
 import openBrowser from 'react-dev-utils/openBrowser';
 import qrcode from 'qrcode-terminal';
 import path from 'path';
@@ -10,6 +9,7 @@ import { platformMap } from 'miniapp-builder-shared';
 import logWebpackConfig from '../utils/logWebpackConfig';
 import { MINIAPP_PLATFORMS, MINIAPP, WEB, WEEX, KRAKEN, DEV_URL_PREFIX, HARMONY } from '../constants';
 import generateTempFile from '../utils/generateTempFile';
+import formatMessage from '../utils/formatMessage';
 
 const highlightPrint = chalk.hex('#F4AF3D');
 
@@ -112,7 +112,7 @@ export default function (api) {
       warnings: true,
       timings: true,
     });
-    const messages = formatWebpackMessages(statsJson);
+    const messages = formatMessage(statsJson);
     // Do not print localUrl and assets information when containing an error
     const isSuccessful = !messages.errors.length;
     const { userConfig } = context;
@@ -214,18 +214,6 @@ export default function (api) {
           console.log(`  ${chalk.underline.white(weexUrl)}`);
           console.log();
           qrcode.generate(weexUrl, { small: true });
-          console.log();
-        });
-      }
-
-      if (targets.includes(HARMONY)) {
-        devInfo.urls.harmony = [];
-        // Use Weex App to scan ip address (mobile phone can't visit localhost).
-        console.log(highlightPrint('  [Harmony] Development server at: '));
-        weexEntryKeys.forEach((entryKey) => {
-          const harmonyUrl = `${urlPrefix}/harmony/${harmonyMpa ? entryKey : 'index'}.js`;
-          devInfo.urls.weex.push(harmonyUrl);
-          console.log(`  ${chalk.underline.white(harmonyUrl)}`);
           console.log();
         });
       }
