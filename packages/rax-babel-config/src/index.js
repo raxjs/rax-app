@@ -64,10 +64,6 @@ module.exports = (userOptions = {}) => {
       ],
     ]),
     plugins: resolvePlugin([
-      [
-        '@builder/pack/deps/@babel/plugin-transform-typescript',
-        typescriptPluginDefaultOptions,
-      ],
       '@builder/pack/deps/@babel/plugin-syntax-dynamic-import',
       // Stage 0
       '@builder/pack/deps/@babel/plugin-proposal-function-bind',
