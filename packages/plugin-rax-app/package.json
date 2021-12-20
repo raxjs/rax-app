@@ -43,7 +43,8 @@
     "process": "^0.11.10",
     "events": "^3.3.0",
     "node-libs-browser": "^2.2.1",
-    "@builder/pack": "^0.5.2"
+    "@builder/pack": "^0.5.2",
+    "@babel/generator": "^7.16.5"
   },
   "repository": {
     "type": "git",
