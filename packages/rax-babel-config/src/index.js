@@ -1,12 +1,27 @@
 const chalk = require('chalk');
 
+let logOnce = true;
+
 const defaultOptions = {
   jsxPlus: !process.env.DISABLE_JSX_PLUS,
   styleSheet: false,
   modules: false,
 };
 
-let logOnce = true;
+const typescriptPluginDefaultOptions = {
+  jsxPragma: 'createElement',
+  jsxPragmaFrag: 'Fragment',
+  allowDeclareFields: true,
+  allowNamespaces: true,
+};
+
+const getTypeScriptPluginOptions = (isTSX, disallowAmbiguousJSXLike) => ({
+  ...typescriptPluginDefaultOptions,
+  disallowAmbiguousJSXLike,
+  isTSX,
+});
+
+const typescriptPlugin = require.resolve('@builder/pack/deps/@babel/plugin-transform-typescript');
 
 function resolvePlugin(plugins) {
   return plugins.filter(Boolean).map((plugin) => {
@@ -40,10 +55,6 @@ module.exports = (userOptions = {}) => {
           ],
         },
       ],
-      ['@builder/pack/deps/@babel/preset-typescript', {
-        jsxPragma: 'createElement',
-        jsxPragmaFrag: 'Fragment',
-      }],
       [
         '@builder/pack/deps/@babel/preset-react', {
           pragma: 'createElement',
@@ -53,6 +64,10 @@ module.exports = (userOptions = {}) => {
       ],
     ]),
     plugins: resolvePlugin([
+      [
+        '@builder/pack/deps/@babel/plugin-transform-typescript',
+        typescriptPluginDefaultOptions,
+      ],
       '@builder/pack/deps/@babel/plugin-syntax-dynamic-import',
       // Stage 0
       '@builder/pack/deps/@babel/plugin-proposal-function-bind',
@@ -76,6 +91,22 @@ module.exports = (userOptions = {}) => {
       ],
       'babel-plugin-minify-dead-code-elimination-while-loop-fixed',
     ]),
+    // Add test rule for typescript plugin
+    overrides: [{
+      test: /\.ts$/,
+      plugins: [[typescriptPlugin, getTypeScriptPluginOptions(false, false)]],
+    }, {
+      test: /\.mts$/,
+      sourceType: 'module',
+      plugins: [[typescriptPlugin, getTypeScriptPluginOptions(false, true)]],
+    }, {
+      test: /\.cts$/,
+      sourceType: 'script',
+      plugins: [[typescriptPlugin, getTypeScriptPluginOptions(false, true)]],
+    }, {
+      test: /\.tsx$/,
+      plugins: [[typescriptPlugin, getTypeScriptPluginOptions(true, false)]],
+    }],
   };
 
   if (jsxToHtml) {
