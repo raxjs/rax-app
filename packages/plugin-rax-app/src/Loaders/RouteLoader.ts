@@ -68,7 +68,6 @@ export default function (appJSON) {
   );
   const { routes, ...otherConfig } = staticConfig;
   return `
-  import { createElement } from 'rax';
   ${normalImportExpression}
   const staticConfig = ${JSON.stringify(otherConfig)};
 
