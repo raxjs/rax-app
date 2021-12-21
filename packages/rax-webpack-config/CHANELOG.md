@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.1
+
+- Chore: use webpack-chain directly
+
 ## v3.0.0
 
 - Feat: support webpack 5
