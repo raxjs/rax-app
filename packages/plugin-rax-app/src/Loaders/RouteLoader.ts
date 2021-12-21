@@ -121,11 +121,11 @@ function addDynamicImportRouteExpression(dynamicImports: IRoute[]): string {
     expression += `staticConfig.routes.push({
       ...${JSON.stringify(route)},
       lazy: true,
-      component: import(/* webpackChunkName: "${getComponentName(route).toLowerCase()}.chunk" */ '${getPagePathByRoute(
+      component: () => import(/* webpackChunkName: "${getComponentName(route).toLowerCase()}.chunk" */ '${getPagePathByRoute(
   route,
   { rootContext: this.rootContext },
 )}')
-      .then((mod) => mod.default || mod)
+            .then((mod) => mod.default || mod)
     });`;
   });
 
