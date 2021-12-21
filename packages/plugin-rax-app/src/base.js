@@ -49,6 +49,10 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
       jsc: {
         target: 'es5',
       },
+      module: {
+        type: 'commonjs',
+        ignoreDynamic: true,
+      },
     })
     .end()
     .use('route-loader')
