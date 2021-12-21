@@ -1,4 +1,4 @@
-import * as Config from '@builder/pack/deps/webpack-chain';
+import * as Config from 'webpack-chain';
 import setWebpackLoaders from './setWebpackLoaders';
 import setWebpackPlugins from './setWebpackPlugins';
 import { IOptions } from './types';
