@@ -103,8 +103,8 @@ function getComponentByLazy(PageComponent, { route }) {
   const { lazy = true } = route;
   if (isWeb && lazy) {
     // When it is lazy, PageComponent is a function which return a Promise<Component>
-    PageComponent = PageComponent();
-    return PageComponent.then((component) => {
+    const LazyComponent = PageComponent();
+    return LazyComponent.then((component) => {
       return wrapperPage(component, { route });
     });
   }
