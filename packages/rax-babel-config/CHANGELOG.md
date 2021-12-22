@@ -2,7 +2,7 @@
 
 ## v2.0.1
 
-- Chore: order plugins and let class related plugins as preset after @babel/preset-typescript
+- Chore: remove @babel/preset-typescript
 
 ## v2.0.0
 

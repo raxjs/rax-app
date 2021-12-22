@@ -2,8 +2,6 @@
 import chalk from 'chalk';
 import generate from '@babel/generator';
 
-let errored = false;
-
 function validatePlugin() {
   return {
     visitor: {
@@ -17,16 +15,15 @@ function validatePlugin() {
         // text: string;
         const invalidDecl = propertyDecls?.find((decl) => decl.typeAnnotation && !decl.declare && !decl.value);
 
-        if (invalidDecl && !errored) {
-          errored = true;
+        if (invalidDecl) {
           const { code: generatedCode } = generate(invalidDecl);
-          throw new SyntaxError(chalk.red(`\nInvalid type annotation with:
-${generatedCode}
+          console.warn(chalk.red(`\nInvalid type annotation with:
+          ${generatedCode}
 
-Please add declare in front of your property, such as:
-class Child extends Parent {
-  declare text: string;
-}`));
+          Please add declare in front of your property, such as:
+          class Child extends Parent {
+            declare text: string;
+          }`));
         }
         return;
       },

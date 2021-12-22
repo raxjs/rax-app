@@ -1,7 +1,4 @@
 const chalk = require('chalk');
-const resolvePlugin = require('./resolvePlugin');
-
-let logOnce = true;
 
 const defaultOptions = {
   jsxPlus: !process.env.DISABLE_JSX_PLUS,
@@ -9,12 +6,17 @@ const defaultOptions = {
   modules: false,
 };
 
-const typescriptPluginDefaultOptions = {
-  jsxPragma: 'createElement',
-  jsxPragmaFrag: 'Fragment',
-  allowDeclareFields: true,
-  allowNamespaces: true,
-};
+let logOnce = true;
+
+function resolvePlugin(plugins) {
+  return plugins.filter(Boolean).map((plugin) => {
+    if (Array.isArray(plugin)) {
+      const [pluginName, ...args] = plugin;
+      return [require.resolve(pluginName), ...args];
+    }
+    return require.resolve(plugin);
+  });
+}
 
 module.exports = (userOptions = {}) => {
   const options = Object.assign({}, defaultOptions, userOptions);
@@ -37,11 +39,6 @@ module.exports = (userOptions = {}) => {
             'transform-computed-properties',
           ],
         },
-      ],
-      './classPreset',
-      [
-        '@builder/pack/deps/@babel/preset-typescript',
-        typescriptPluginDefaultOptions,
       ],
       [
         '@builder/pack/deps/@babel/preset-react', {
@@ -66,7 +63,13 @@ module.exports = (userOptions = {}) => {
         { loose: true },
       ],
       // Stage 2
+      ['@builder/pack/deps/@babel/plugin-proposal-decorators', { legacy: true }],
       '@builder/pack/deps/@babel/plugin-proposal-export-namespace-from',
+      // Stage 3
+      [
+        '@builder/pack/deps/@babel/plugin-proposal-class-properties',
+        { loose: true },
+      ],
       'babel-plugin-minify-dead-code-elimination-while-loop-fixed',
     ]),
   };

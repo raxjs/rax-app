@@ -29,7 +29,8 @@
     "terser-webpack-plugin": "^2.0.0",
     "time-fix-plugin": "^2.0.7",
     "file-loader": "^5.0.0",
-    "webpack-chain": "^6.5.1"
+    "webpack-chain": "^6.5.1",
+    "ts-loader": "^8.0.0"
   },
   "devDependencies": {
     "webpack": ">=4.0.0"
