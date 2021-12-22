@@ -3,6 +3,7 @@
 ## v3.0.1
 
 - Fix: add `file-loader` to dependencies
+- Chore: use webpack-chain directly
 
 ## v3.0.0
 

@@ -1,9 +1,7 @@
 {
   "name": "rax-app-renderer",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "description": "",
-  "author": "ice-admin@alibaba-inc.com",
-  "homepage": "https://github.com/alibaba/ice#readme",
   "license": "MIT",
   "main": "lib/index.js",
   "dependencies": {
@@ -27,12 +25,12 @@
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alibaba/ice.git"
+    "url": "git+https://github.com/raxjs/rax-app.git"
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
-    "url": "https://github.com/alibaba/ice/issues"
+    "url": "https://github.com/raxjs/rax-app/issues"
   }
 }

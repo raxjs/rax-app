@@ -8,6 +8,7 @@ const fs = require('fs-extra');
 const ExportsFieldWebpackPlugin = require('@builder/exports-field-webpack-plugin').default;
 const { isWebpack4 } = require('@builder/compat-webpack4');
 const { MINIAPP_PLATFORMS, SSR, DOCUMENT } = require('./constants');
+const validateClassProperty = require('./validateClassProperty').default;
 
 module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => {
   const { context, onGetWebpackConfig } = api;
@@ -43,12 +44,25 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
     .rule('appJSON')
     .type('javascript/auto')
     .test(/app\.json$/)
+    .use('swc-loader')
+    .loader(require.resolve('@builder/swc-loader'))
+    .options({
+      jsc: {
+        target: 'es5',
+      },
+      module: {
+        type: 'commonjs',
+        ignoreDynamic: true,
+      },
+    })
+    .end()
     .use('route-loader')
     .loader(require.resolve('./Loaders/RouteLoader'))
     .options({
       target,
       mpa,
-    });
+    })
+    .end();
 
   enhancedWebpackConfig
     .plugin('ProgressPlugin')
@@ -145,6 +159,9 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
           });
       });
     }
+
+    // Validate class property for ts file
+    validateClassProperty(config);
 
     // TODO: hack for tslib wrong exports field https://github.com/microsoft/tslib/issues/161
     config.resolve.alias.set('tslib', 'tslib/tslib.es6.js');

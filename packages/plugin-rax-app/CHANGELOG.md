@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.1
+
+- Feat: add class property validator for ts file
+
 ## 7.0.0
 
 - Feat: upgrade dependencies for webpack 5
