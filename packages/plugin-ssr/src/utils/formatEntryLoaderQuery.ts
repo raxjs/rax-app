@@ -6,5 +6,6 @@ export default function formatEntryLoaderQuery(query: ILoaderQuery): IFormattedL
     needInjectStyle: query.needInjectStyle === 'true',
     updateDataInClient: query.updateDataInClient === 'true',
     pageConfig: JSON.parse(query.pageConfig as string || '{}'),
+    injectedHTML: JSON.parse(query.injectedHTML || '{}'),
   };
 }
