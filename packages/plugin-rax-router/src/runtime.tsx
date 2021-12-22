@@ -58,13 +58,15 @@ export default async (api) => {
           <TabBarWrapper
             key="rax-app-tab-bar"
             history={history}
-            renderTabBar={() => (
-              <TabBar
+            renderTabBar={() => {
+              const currentPageName = history.location.pathname;
+              const shouldRender = tabBarConfig.items.some(({ pageName }) => pageName === currentPageName);
+              return (shouldRender ? <TabBar
                 onClick={handleTabBarItemClick}
                 config={tabBarConfig}
-                currentPageName={history.location.pathname}
-              />
-            )}
+                currentPageName={currentPageName}
+              /> : null);
+            }}
           />,
         );
       }
