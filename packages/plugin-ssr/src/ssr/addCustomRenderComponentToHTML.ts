@@ -19,7 +19,7 @@ export default function addCustomRenderComponentToHTML(
     injectedScripts.unshift(genComboedScript(injectedHTML.comboScripts));
   }
   return `
-  async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate) {
+  async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate, chunkInfo = {}) {
     const pageInitialProps = await getInitialProps(Component, ctx);
     const data = {
       __SSR_ENABLED__: true,
@@ -37,12 +37,15 @@ export default function addCustomRenderComponentToHTML(
     }
     const title = ${JSON.stringify(pageConfig.window?.title || '')} || getTitle(staticConfig);
 
-    const chunkInfo = JSON.parse(decodeURIComponent("__CHUNK_INFO__"));
+    if (process.env.NODE_ENV !== 'development') {
+      // chunk info will be replaced during local build
+      chunkInfo = JSON.parse(decodeURIComponent("__CHUNK_INFO__"));
+    }
 
     let scripts = chunkInfo[${JSON.stringify(entryName)}].js
       .map(filename => ${JSON.stringify(publicPath)} + filename);
     let styles = chunkInfo[${JSON.stringify(entryName)}].css
-      .map(filename => ${JSON.stringify(publicPath)} + filename);
+      .map(filename => ${JSON.stringify(publicPath)} + filename);;
 
     ${assetsProcessor}
 

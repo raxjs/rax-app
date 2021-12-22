@@ -1,9 +1,5 @@
 # Changelog
 
-## v3.0.1
-
-- Fix: add `file-loader` to dependencies
-
 ## v3.0.0
 
 - Feat: support webpack 5

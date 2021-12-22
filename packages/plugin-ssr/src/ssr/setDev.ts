@@ -4,7 +4,6 @@ import * as url from 'url';
 import { compatDevServer } from '@builder/compat-webpack4';
 import { STATIC_CONFIG } from '../constants';
 import { getChunkInfo } from '../utils/chunkInfo';
-import injectBundleInfo from '../utils/injectBundleInfo';
 
 export default function (api, config) {
   let serverReady = false;
@@ -75,10 +74,10 @@ function render(res, req, next, server, api) {
   const nodeFilePath = path.join(nodeCompiler.options.output.path, `${pathname.replace(/\.html$/, '')}.js`);
   if (nodeFS.existsSync(nodeFilePath)) {
     const bundleContent = nodeFS.readFileSync(nodeFilePath, 'utf-8');
+    const mod = exec(bundleContent, nodeFilePath);
     const htmlFilePath = path.join(webCompiler.options.output.path, /\.html$/.test(pathname) ? pathname : `${pathname}.html`);
     const htmlTemplate = webFS.readFileSync(htmlFilePath, 'utf-8');
-    const mod = exec(injectBundleInfo(bundleContent, { html: htmlTemplate, chunkInfo: getChunkInfo() }), nodeFilePath);
-    mod.render({ req, res });
+    mod.render({ req, res }, { htmlTemplate, chunkInfo: getChunkInfo() });
   }
 }
 
