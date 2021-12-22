@@ -5,15 +5,6 @@ import Logo from '@/components/Logo';
 
 import './index.css';
 
-class Rectangle {
-  height: any;
-  width: any;
-  constructor(height, width) {
-    this.height = height;
-    this.width = width;
-  }
-}
-
 export default function Home(props) {
   return (
     <View className="home">
