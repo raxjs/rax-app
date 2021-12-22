@@ -2,7 +2,7 @@
 
 ## v2.0.1
 
-- Chore: use @babel/plugin-transform-typescript instead of @babel/preset-typescript
+- Chore: order plugins and let class related plugins as preset after @babel/preset-typescript
 
 ## v2.0.0
 
