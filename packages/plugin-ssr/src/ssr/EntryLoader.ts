@@ -81,12 +81,6 @@ export default function () {
 
     function getInitialContext(ctx) {
       const { req, res } = ctx;
-
-      // 某些调用环境 mock 的 request 上不存在 url 字段
-      if (!req.url) {
-        return ctx;
-      }
-
       const { hash, search, query } = parseUrl(req.url);
       const pathname = req.path;
       const location = {
@@ -108,17 +102,16 @@ export default function () {
     ${formattedQuery.documentPath ? addCustomRenderComponentToHTML(formattedQuery) : addBuiltInRenderComponentToHTML(formattedQuery)}
 
     async function renderToHTML(req, res, options = {}) {
-      const { initialData, htmlTemplate } = options;
+      const { initialData, htmlTemplate, chunkInfo } = options;
       ${addDefineInitialPage()}
-      const html = await renderComponentToHTML(Page, getInitialContext({ req, res }), initialData);
+      const html = await renderComponentToHTML(Page, getInitialContext({ req, res }), initialData, htmlTemplate, chunkInfo);
       return html;
     }
 
     async function renderToHTMLWithContext(ctx, options = {}) {
-      const { req, res } = ctx;
-      const { initialData, htmlTemplate } = options;
+      const { initialData, htmlTemplate, chunkInfo } = options;
       ${addDefineInitialPage()}
-      const html = await renderComponentToHTML(Page, getInitialContext(ctx), initialData, htmlTemplate);
+      const html = await renderComponentToHTML(Page, getInitialContext(ctx), initialData, htmlTemplate, chunkInfo);
       return html;
     }
 
@@ -137,12 +130,12 @@ export default function () {
       ctx.body = html;
     }
 
-    async function render(ctx, options = {}) {
+    async function render(ctx, options) {
       let html;
       if (ctx.req) {
-        const { initialData, htmlTemplate } = options;
+        const { initialData, htmlTemplate, chunkInfo } = options;
         try {
-          html = await renderToHTML(ctx.req, ctx.res, { initialData, htmlTemplate });
+          html = await renderToHTML(ctx.req, ctx.res, { initialData, htmlTemplate, chunkInfo });
         } catch (e) {
           html = htmlTemplate;
           console.error(e);

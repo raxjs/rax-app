@@ -50,7 +50,7 @@ export default class EntryPlugin {
         needInjectStyle: web.mpa && !inlineStyle,
         documentPath,
         publicPath,
-        injectedHTML: JSON.stringify(applyMethod('rax.getInjectedHTML')),
+        injectedHTML: applyMethod('rax.getInjectedHTML'),
         assetsProcessor,
         doctype: web.doctype,
       };
