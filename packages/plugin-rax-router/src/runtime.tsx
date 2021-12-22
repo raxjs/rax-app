@@ -102,7 +102,9 @@ function parseRoutes(routes) {
 function getComponentByLazy(PageComponent, { route }) {
   const { lazy = true } = route;
   if (isWeb && lazy) {
-    return PageComponent.then((component) => {
+    // When it is lazy, PageComponent is a function which return a Promise<Component>
+    const LazyComponent = PageComponent();
+    return LazyComponent.then((component) => {
       return wrapperPage(component, { route });
     });
   }
