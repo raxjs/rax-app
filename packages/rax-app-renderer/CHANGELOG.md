@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.1
+
+- Fix: set a default value for `appConfig`
+
 ## v3.0.0
 
 - Feat: use `runApp` as MPA default render trigger

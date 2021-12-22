@@ -3,6 +3,7 @@ import { isWebpack4 } from '@builder/compat-webpack4';
 
 const devServerDefaultOptionsMap = {
   webpack4: {
+    allowedHosts: 'all',
     compress: true,
     // Use 'ws' instead of 'sockjs-node' on server since webpackHotDevClient is using native websocket
     disableHostCheck: true,
@@ -28,6 +29,7 @@ const devServerDefaultOptionsMap = {
     historyApiFallback: true,
   },
   webpack5: {
+    allowedHosts: 'all',
     compress: true,
     hot: true,
     static: {
