@@ -1,4 +1,5 @@
 const chalk = require('chalk');
+const resolvePlugin = require('./resolvePlugin');
 
 let logOnce = true;
 
@@ -14,24 +15,6 @@ const typescriptPluginDefaultOptions = {
   allowDeclareFields: true,
   allowNamespaces: true,
 };
-
-const getTypeScriptPluginOptions = (isTSX, disallowAmbiguousJSXLike) => ({
-  ...typescriptPluginDefaultOptions,
-  disallowAmbiguousJSXLike,
-  isTSX,
-});
-
-const typescriptPlugin = require.resolve('@builder/pack/deps/@babel/plugin-transform-typescript');
-
-function resolvePlugin(plugins) {
-  return plugins.filter(Boolean).map((plugin) => {
-    if (Array.isArray(plugin)) {
-      const [pluginName, ...args] = plugin;
-      return [require.resolve(pluginName), ...args];
-    }
-    return require.resolve(plugin);
-  });
-}
 
 module.exports = (userOptions = {}) => {
   const options = Object.assign({}, defaultOptions, userOptions);
@@ -54,6 +37,11 @@ module.exports = (userOptions = {}) => {
             'transform-computed-properties',
           ],
         },
+      ],
+      './classPreset',
+      [
+        '@builder/pack/deps/@babel/preset-typescript',
+        typescriptPluginDefaultOptions,
       ],
       [
         '@builder/pack/deps/@babel/preset-react', {
@@ -78,31 +66,9 @@ module.exports = (userOptions = {}) => {
         { loose: true },
       ],
       // Stage 2
-      ['@builder/pack/deps/@babel/plugin-proposal-decorators', { legacy: true }],
       '@builder/pack/deps/@babel/plugin-proposal-export-namespace-from',
-      // Stage 3
-      [
-        '@builder/pack/deps/@babel/plugin-proposal-class-properties',
-        { loose: true },
-      ],
       'babel-plugin-minify-dead-code-elimination-while-loop-fixed',
     ]),
-    // Add test rule for typescript plugin
-    overrides: [{
-      test: /\.ts$/,
-      plugins: [[typescriptPlugin, getTypeScriptPluginOptions(false, false)]],
-    }, {
-      test: /\.mts$/,
-      sourceType: 'module',
-      plugins: [[typescriptPlugin, getTypeScriptPluginOptions(false, true)]],
-    }, {
-      test: /\.cts$/,
-      sourceType: 'script',
-      plugins: [[typescriptPlugin, getTypeScriptPluginOptions(false, true)]],
-    }, {
-      test: /\.tsx$/,
-      plugins: [[typescriptPlugin, getTypeScriptPluginOptions(true, false)]],
-    }],
   };
 
   if (jsxToHtml) {
