@@ -160,17 +160,27 @@ export default (config, { rootDir, babelConfig }: IOptions) => {
 
   const babelLoader = require.resolve('@builder/pack/deps/babel-loader');
 
-  ['jsx', 'tsx'].forEach((ruleName) => {
-    const testRegx = new RegExp(`\\.${ruleName}?$`);
-    config.module.rule(ruleName)
-      .test(testRegx)
-      .exclude
-      .add(EXCLUDE_REGX)
-      .end()
-      .use('babel-loader')
-      .loader(babelLoader)
-      .options({ ...cloneDeep(babelConfig) });
-  });
+  config.module
+    .rule('jsx')
+    .test(/\.jsx?$/)
+    .exclude.add(EXCLUDE_REGX)
+    .end()
+    .use('babel-loader')
+    .loader(babelLoader)
+    .options(cloneDeep(babelConfig));
+
+  config.module
+    .rule('tsx')
+    .test(/\.tsx?$/)
+    .exclude.add(EXCLUDE_REGX)
+    .end()
+    .use('babel-loader')
+    .loader(babelLoader)
+    .options(cloneDeep(babelConfig))
+    .end()
+    .use('ts-loader')
+    .loader(require.resolve('ts-loader'))
+    .options({ transpileOnly: true });
 
   return config;
 };

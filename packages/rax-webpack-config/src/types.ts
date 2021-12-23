@@ -1,5 +1,5 @@
 export interface IOptions {
-  mode: string;
+  mode: 'none' | 'production' | 'development';
   rootDir: string;
   babelConfig: unknown;
   target: string;

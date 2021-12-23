@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.1
+
+- Fix: chunkInfo is `undefined`
+- Fix: close hot with ssr
+
 ## v2.0.0
 
 - Feat: upgrade dependencies for webpack 5

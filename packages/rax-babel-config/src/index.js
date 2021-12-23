@@ -40,10 +40,6 @@ module.exports = (userOptions = {}) => {
           ],
         },
       ],
-      ['@builder/pack/deps/@babel/preset-typescript', {
-        jsxPragma: 'createElement',
-        jsxPragmaFrag: 'Fragment',
-      }],
       [
         '@builder/pack/deps/@babel/preset-react', {
           pragma: 'createElement',

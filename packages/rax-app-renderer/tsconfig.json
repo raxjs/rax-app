@@ -6,7 +6,7 @@
     "jsx": "react",
     "jsxFactory": "createElement",
     "module": "esNext",
-    "target": "ES2016",
+    "target": "es5",
     "experimentalDecorators": true,
     "declaration": true,
     "sourceMap": true,
