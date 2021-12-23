@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.1
+
+- Fix: static export error
+
 ## v2.0.0
 
 - Feat: upgrade dependencies for webpack 5
