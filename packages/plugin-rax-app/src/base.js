@@ -8,7 +8,6 @@ const fs = require('fs-extra');
 const ExportsFieldWebpackPlugin = require('@builder/exports-field-webpack-plugin').default;
 const { isWebpack4 } = require('@builder/compat-webpack4');
 const { MINIAPP_PLATFORMS, SSR, DOCUMENT } = require('./constants');
-const validateClassProperty = require('./validateClassProperty').default;
 
 module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => {
   const { context, onGetWebpackConfig } = api;
@@ -159,9 +158,6 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
           });
       });
     }
-
-    // Validate class property for ts file
-    validateClassProperty(config);
 
     // TODO: hack for tslib wrong exports field https://github.com/microsoft/tslib/issues/161
     config.resolve.alias.set('tslib', 'tslib/tslib.es6.js');
