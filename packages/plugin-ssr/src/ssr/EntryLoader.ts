@@ -5,6 +5,7 @@ import { IFormattedLoaderQuery, ILoaderQuery } from '../types';
 import addCustomRenderComponentToHTML from './addCustomRenderComponentToHTML';
 import addBuiltInRenderComponentToHTML from './addBuiltInRenderComponentToHTML';
 import formatEntryLoaderQuery from '../utils/formatEntryLoaderQuery';
+import addPageHTMLAssign from './addPageHTMLAssign';
 
 function addExport(code) {
   return `${code}
@@ -161,7 +162,7 @@ export default function () {
     async function renderPageToHtml(ctx, options = {}) {
       const Component = Page;
       const pageInitialProps = options.initialProps;
-      ${addPageHTMLAssign(query.useRunApp)}
+      ${addPageHTMLAssign()}
 
       return pageHTML;
     }
