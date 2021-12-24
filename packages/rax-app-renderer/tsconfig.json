@@ -9,9 +9,10 @@
     "target": "es5",
     "experimentalDecorators": true,
     "declaration": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "allowJs": true
   },
 }

@@ -3,5 +3,9 @@
   "version": "1.0.0",
   "description": "A React compatibility plugin for Rax",
   "license": "BSD-3-Clause",
-  "main": "lib/index.js"
+  "main": "lib/index.js",
+  "files": [
+    "lib",
+    "!lib/**/*.map"
+  ]
 }

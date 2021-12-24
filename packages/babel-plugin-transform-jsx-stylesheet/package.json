@@ -4,6 +4,10 @@
   "description": "Transform stylesheet selector to style in JSX Elements.",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "!lib/**/*.map"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/raxjs/rax-scripts.git"

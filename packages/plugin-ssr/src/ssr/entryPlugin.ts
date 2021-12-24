@@ -1,4 +1,7 @@
-import * as qs from 'qs';
+import * as queryString from 'query-string';
+import * as path from 'path';
+import * as fs from 'fs-extra';
+import { modifyEntry } from '@builder/compat-webpack4';
 import { IEntryPluginOptions, ILoaderQuery } from '../types';
 import { STATIC_CONFIG, TEMP_PATH } from '../constants';
 import getPageConfig from '../utils/getPageConfig';
@@ -38,7 +41,6 @@ export default class EntryPlugin {
 
     let query: ILoaderQuery = {
       tempPath: getValue(TEMP_PATH),
-      useRunApp: !web.mpa,
       updateDataInClient,
     };
 
@@ -48,21 +50,39 @@ export default class EntryPlugin {
         needInjectStyle: web.mpa && !inlineStyle,
         documentPath,
         publicPath,
-        injectedHTML: applyMethod('rax.getInjectedHTML'),
+        injectedHTML: JSON.stringify(applyMethod('rax.getInjectedHTML')),
         assetsProcessor,
         doctype: web.doctype,
       };
     }
 
+    const coreRunAppPath = path.join(query.tempPath, 'core/runApp');
+
     Object.keys(entries).forEach((entryName) => {
-      query.entryName = entryName;
-      if (web.mpa) {
-        query.pageConfig = pageConfig[entryName];
-      }
       const entryPaths = entries[entryName];
-      compiler.options.entry[entryName] = `${EntryLoader}?${qs.stringify(query || {})}!${
-        entryPaths[entryPaths.length - 1]
-      }`;
+      // Transform hmr-loader.js!entryPath to [hmr-loader, entryPath]
+      const entrySeparatedLoader = entryPaths[entryPaths.length - 1].split('!');
+      // Get the real entry path
+      const entry = entrySeparatedLoader[entrySeparatedLoader.length - 1];
+      query.entryName = entryName;
+
+      if (web.mpa) {
+        query.pageConfig = JSON.stringify(pageConfig[entryName]);
+        const entryFolder = path.dirname(entry);
+        // Check runApp path
+        let runAppPath = path.join(entryFolder, 'runApp');
+        if (!fs.existsSync(`${runAppPath}.ts`)) {
+          // Use core runApp path as default runApp implement
+          runAppPath = coreRunAppPath;
+        }
+        query.runAppPath = runAppPath;
+      } else {
+        query.runAppPath = coreRunAppPath;
+      }
+      modifyEntry(compiler, {
+        entryName,
+        entryPath: `${EntryLoader}?${queryString.stringify(query)}!${entry}`,
+      });
     });
   }
 }

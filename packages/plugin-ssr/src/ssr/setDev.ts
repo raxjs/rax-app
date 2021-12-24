@@ -1,17 +1,18 @@
 import * as Module from 'module';
 import * as path from 'path';
 import * as url from 'url';
+import { compatDevServer } from '@builder/compat-webpack4';
 import { STATIC_CONFIG } from '../constants';
 import { getChunkInfo } from '../utils/chunkInfo';
+import injectBundleInfo from '../utils/injectBundleInfo';
 
 export default function (api, config) {
   let serverReady = false;
   let httpResponseQueue = [];
 
-  config.devServer.inline(false);
-  config.devServer.hot(false);
   // It will override all devServer before func, because ssr need hijack route
-  config.devServer.set('before', (app, server) => {
+  compatDevServer(config.devServer).setValue('onBeforeSetupMiddleware', (server) => {
+    const { app } = server;
     let compilerDoneCount = 0;
     server.compiler.compilers.forEach((compiler) => {
       compiler.hooks.done.tap('ssrServer', () => {
@@ -74,10 +75,10 @@ function render(res, req, next, server, api) {
   const nodeFilePath = path.join(nodeCompiler.options.output.path, `${pathname.replace(/\.html$/, '')}.js`);
   if (nodeFS.existsSync(nodeFilePath)) {
     const bundleContent = nodeFS.readFileSync(nodeFilePath, 'utf-8');
-    const mod = exec(bundleContent, nodeFilePath);
     const htmlFilePath = path.join(webCompiler.options.output.path, /\.html$/.test(pathname) ? pathname : `${pathname}.html`);
     const htmlTemplate = webFS.readFileSync(htmlFilePath, 'utf-8');
-    mod.render({ req, res }, { htmlTemplate, chunkInfo: getChunkInfo() });
+    const mod = exec(injectBundleInfo(bundleContent, { html: htmlTemplate, chunkInfo: getChunkInfo() }), nodeFilePath);
+    mod.render({ req, res });
   }
 }
 

@@ -61,8 +61,12 @@ export default function TabBar(props) {
         return <div key={`tab-${index}`} className='rax-app-tab-bar-item'
             style={{ height: 98 + safeAreaInsetBottom, paddingBottom: safeAreaInsetBottom }}
             onClick={() => handleTabItemClick(item)}>
-          <img x-if={item.activeIcon && selected} className='rax-app-tab-bar-item-img' alt='' src={item.activeIcon} />
-          <img x-if={item.icon && !selected} className='rax-app-tab-bar-item-img' alt='' src={item.icon} />
+          { item.activeIcon && selected ?
+            <img className='rax-app-tab-bar-item-img' alt='' src={item.activeIcon} /> : null
+          }
+          { item.icon && !selected ?
+            <img className='rax-app-tab-bar-item-img' alt='' src={item.icon} /> : null
+          }
           <span className='rax-app-tab-bar-item-text' style={{ color: selected ? itemSelectedColor : itemTextColor }} >{item.text || item.name}</span>
         </div>;
       })

@@ -1,27 +1,19 @@
-import { ILoaderQuery } from '../types';
+import { IFormattedLoaderQuery } from '../types';
 import addPageHTMLAssign from './addPageHTMLAssign';
 import genComboedScript from '../utils/genComboedScript';
 
 export default function addCustomRenderComponentToHTML(
   {
-    needInjectStyle,
     entryName,
-    pageConfig = { path: '/' },
     publicPath,
+    pageConfig = { path: '/' },
     assetsProcessor = '',
-    useRunApp,
     doctype = '<!DOCTYPE html>',
     injectedHTML = { scripts: [] },
     updateDataInClient,
-  }: ILoaderQuery,
+  }: IFormattedLoaderQuery,
 ) {
-  const scripts = [];
-  const styles = [];
-  if (needInjectStyle) {
-    styles.push(`${publicPath}__${entryName}_FILE__.css`);
-  }
-  scripts.push(`${publicPath}__${entryName}_FILE__.js`);
-  const injectedScripts = (injectedHTML.scripts || []);
+  const injectedScripts = [];
 
   if (injectedHTML.comboScripts) {
     injectedScripts.unshift(genComboedScript(injectedHTML.comboScripts));
@@ -30,30 +22,29 @@ export default function addCustomRenderComponentToHTML(
   async function renderComponentToHTML(Component, ctx, options = {}) {
     const { initialData, htmlTemplate, chunkInfo = {}, initialProps } = options;
     const pageInitialProps = initialProps || await getInitialProps(Component, ctx);
+
     const data = {
       __SSR_ENABLED__: true,
       initialData,
-      pageInitialProps
+      pageInitialProps,
     };
 
     // Assign pageHTML
-    ${addPageHTMLAssign(useRunApp)}
+    ${addPageHTMLAssign()}
 
     const documentData = await getInitialProps(Document, ctx);
-    const pageConfig = Component.__pageConfig;
 
     function getTitle(config) {
       return config.window && config.window.title
     }
-    const title = getTitle(pageConfig) || getTitle(staticConfig);
+    const title = ${JSON.stringify(pageConfig.window?.title || '')} || getTitle(staticConfig);
 
-    let scripts = ${JSON.stringify(scripts)};
-    let styles = ${JSON.stringify(styles)};
-    if (process.env.NODE_ENV === 'development') {
-      const chunkname = chunkInfo['${entryName}'] || '${entryName}';
-      scripts = scripts.map(script => script.replace('__${entryName}_FILE__', chunkname));
-      styles = styles.map(link => link.replace('__${entryName}_FILE__', chunkname));
-    }
+    const chunkInfo = JSON.parse(decodeURIComponent("__CHUNK_INFO__"));
+
+    let scripts = chunkInfo[${JSON.stringify(entryName)}].js
+      .map(filename => ${JSON.stringify(publicPath)} + filename);
+    let styles = chunkInfo[${JSON.stringify(entryName)}].css
+      .map(filename => ${JSON.stringify(publicPath)} + filename);
 
     ${assetsProcessor}
 

@@ -1,10 +1,10 @@
 import { formatPath } from '@builder/app-helpers';
-import * as qs from 'qs';
+import { parse } from 'query-string';
 import * as path from 'path';
-import { ILoaderQuery } from '../types';
+import { IFormattedLoaderQuery, ILoaderQuery } from '../types';
 import addCustomRenderComponentToHTML from './addCustomRenderComponentToHTML';
 import addBuiltInRenderComponentToHTML from './addBuiltInRenderComponentToHTML';
-import addPageHTMLAssign from './addPageHTMLAssign';
+import formatEntryLoaderQuery from '../utils/formatEntryLoaderQuery';
 
 function addExport(code) {
   return `${code}
@@ -18,69 +18,51 @@ function addExport(code) {
   };`;
 }
 
-function addImportDocument(code, documentPath) {
-  return `
-    import Document from '${formatPath(documentPath)}';
-    ${code}
-    `;
-}
-
-function addImportPageComponent(resourcePath, pageConfig) {
-  return `import Page from '${formatPath(resourcePath)}';
-  Page.__pageConfig = ${JSON.stringify(pageConfig)};
-  `;
-}
-
-function addRunAppDependencies(resourcePath, tempPath) {
-  return `
-  import '${resourcePath}';
-  import app from '${path.join(tempPath, 'runApp.ts')}';
-
-  const { createBaseApp, emitLifeCycles } = app;
-  `;
-}
-
 function addDefineInitialPage() {
   return `
   const pathname = req.path;
-  const routes = staticConfig.routes;
-  const route = routes.find(({ path }) => path === pathname);
-  const Page = route.component();
-  Page.__pageConfig = route;
+  let Page;
+  if (enableRouter) {
+    const route = staticConfig.routes.find(({ path }) => path === pathname);
+    Page = route.component;
+  } else {
+    Page = appConfig.app && appConfig.app.renderComponent;
+  }
   `;
 }
 
 /**
  * Global variables:
- * utils: Generator
+ * utils: Generator, parseUrl
  * rax render: createElement/renderer
  * Component: Page/Document
- * generated in .rax: appConfig/staticConfig/createBaseApp/emitLifeCycles
+ * generated in .rax: appConfig/staticConfig/createBaseApp/emitLifeCycles/setHistory/enableRouter
+ * MPA: pageConfig
  */
 export default function () {
-  const query = (qs.parse(this.query.substr(1)) as unknown) as ILoaderQuery;
-  const appConfigPath = path.join(query.tempPath, 'appConfig.ts');
-  query.useRunApp = query.useRunApp === 'true';
-  query.needInjectStyle = query.needInjectStyle === 'true';
-  query.updateDataInClient = query.updateDataInClient === 'true';
+  const query = parse(this.query) as unknown as ILoaderQuery;
+  const formattedQuery: IFormattedLoaderQuery = formatEntryLoaderQuery(query);
+  const corePath = path.join(query.tempPath, 'core');
+
   let code = `
     import Generator from '@builder/html-generator';
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
-    import staticConfig from '${formatPath(path.join(query.tempPath, 'staticConfig.ts'))}';
-    import TabBar from '${formatPath(path.join(query.tempPath, 'TabBar'))}';
-    import { getAppConfig } from '${formatPath(appConfigPath)}';
-    ${
-  query.useRunApp
-    ? addRunAppDependencies(this.resourcePath, query.tempPath)
-    : addImportPageComponent(this.resourcePath, query.pageConfig)
-}
+    import * as parseUrl from 'parse-url';
+    import { getAppConfig } from '${formatPath(path.join(corePath, 'appConfig'))}';
+    import { emitLifeCycles } from '${formatPath(path.join(corePath, 'publicAPI'))}';
+    import { setHistory } from '${formatPath(path.join(corePath, 'routerAPI'))}';
+    import '${formatPath(this.resourcePath)}';
+    import app from '${formatPath(formattedQuery.runAppPath)}';
+
+    const { createBaseApp, staticConfig, pageConfig, TabBar, enableRouter } = app;
 
     const escapeLookup = {
       '<': '\\u003c',
       '>': '\\u003e',
       '/': '\\u002f',
     };
+
     const escapeRegex = /[<>\/]/g;
     function stripXSS(str) {
       return str.replace(escapeRegex, (match) => escapeLookup[match]);
@@ -99,29 +81,56 @@ export default function () {
       throw new Error(message);
     }
 
-    ${query.documentPath ? addCustomRenderComponentToHTML(query) : addBuiltInRenderComponentToHTML(query)}
+    function getInitialContext(ctx) {
+      const { req, res } = ctx;
+
+      // 某些调用环境 mock 的 request 上不存在 url 字段
+      if (!req.url) {
+        return ctx;
+      }
+
+      const { hash, search, query } = parseUrl(req.url);
+      const pathname = req.path;
+      const location = {
+        pathname,
+        search,
+        state: null,
+        hash,
+      };
+
+      return {
+        req,
+        res,
+        pathname,
+        query,
+        location,
+      };
+    }
+
+    ${formattedQuery.documentPath ? addCustomRenderComponentToHTML(formattedQuery) : addBuiltInRenderComponentToHTML(formattedQuery)}
 
     async function renderToHTML(req, res, options = {}) {
-      const { initialData, htmlTemplate, chunkInfo } = options;
-      ${query.useRunApp ? addDefineInitialPage() : ''}
-      const html = await renderComponentToHTML(Page, { req, res }, options);
+      const { initialData, htmlTemplate } = options;
+      ${addDefineInitialPage()}
+      const html = await renderComponentToHTML(Page, getInitialContext({ req, res }), options);
       return html;
     }
 
     async function renderToHTMLWithContext(ctx, options = {}) {
-      const { initialData, htmlTemplate, chunkInfo } = options;
-      ${query.useRunApp ? addDefineInitialPage() : ''}
-      const html = await renderComponentToHTML(Page, ctx, options);
+      const { req, res } = ctx;
+      const { initialData, htmlTemplate } = options;
+      ${addDefineInitialPage()}
+      const html = await renderComponentToHTML(Page, getInitialContext(ctx), options);
       return html;
     }
 
     async function renderWithContext(ctx, options = {}) {
       const { res, req } = ctx;
-      const { htmlTemplate } = options;
-      ${query.useRunApp ? addDefineInitialPage() : ''}
+      const { initialData, htmlTemplate } = options;
+      ${addDefineInitialPage()}
       let html;
       try {
-        html = await renderComponentToHTML(Page, ctx, options);
+        html = await renderComponentToHTML(Page, getInitialContext(ctx), options);
       } catch (e) {
         html = htmlTemplate;
         console.error(e);
@@ -130,9 +139,8 @@ export default function () {
       ctx.body = html;
     }
 
-    async function render(ctx, options) {
+    async function render(ctx, options = {}) {
       let html;
-
       if (!ctx.req) {
         const [req, res] = [...arguments];
         ctx = { req, res };
@@ -168,8 +176,9 @@ export default function () {
     }
   `;
 
-  if (query.documentPath) {
-    code = addImportDocument(code, query.documentPath);
+  if (formattedQuery.documentPath) {
+    code = `import Document from '${formatPath(formattedQuery.documentPath)}';
+    ${code}`;
   }
 
   return addExport(code);

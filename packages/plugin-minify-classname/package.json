@@ -1,13 +1,13 @@
 {
   "name": "build-plugin-minify-classname",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "minify css modules classname",
   "main": "lib/index.js",
   "license": "BSD-3-Clause",
   "dependencies": {
     "read-pkg-up": "^7.0.1",
     "minify-css-modules-classname": "^0.1.4",
-    "miniapp-builder-shared": "^0.2.4"
+    "miniapp-builder-shared": "^0.3.0"
   },
   "repository": {
     "type": "git",

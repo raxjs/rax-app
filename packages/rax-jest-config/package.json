@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "rax jest config",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "!lib/**/*.map"
+  ],
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",

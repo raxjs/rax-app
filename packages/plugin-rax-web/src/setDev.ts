@@ -1,40 +1,51 @@
-let compilationCache;
+import { compatDevServer } from '@builder/compat-webpack4';
+import { getHTMLByEntryName } from './utils/htmlCache';
 
-function getHTMLFromCompilation(compilation, filename) {
-  if (compilation.assets[`${filename}.html`]) {
-    return compilation.assets[`${filename}.html`].source();
-  }
+let afterCompiled;
+
+function getHTML(entryName) {
+  const html = getHTMLByEntryName(entryName);
+  if (html) return html;
   return 'Document Not Found.';
 }
 
 export default (config) => {
-  const devServerBeforeHook = config.devServer.get('before');
-  config.devServer.set('before', (app, devServer) => {
+  const devServer = compatDevServer(config.devServer);
+  const devServerBeforeHook = devServer.get('onBeforeSetupMiddleware');
+  devServer.setValue('onBeforeSetupMiddleware', (app, server) => {
+    if (!server) {
+      // In webpack5, the first argument is devServer instance
+      server = app;
+      app = server.app;
+    }
     if (typeof devServerBeforeHook === 'function') {
-      devServerBeforeHook(app, devServer);
+      devServerBeforeHook(server);
     }
     // Get web compiler for intercept AppHistoryFallback
-    const compiler = devServer.compiler.compilers[0];
+    const compiler = server.compiler.compilers[0];
     const contextQueue = [];
-    compiler.hooks.emit.tap('AppHistoryFallback', (compilation) => {
+
+    compiler.hooks.done.tapAsync('ApiHistoryCallback', (stats, callback) => {
       let context;
-      compilationCache = compilation;
+      afterCompiled = true;
       // eslint-disable-next-line
       while ((context = contextQueue.shift())) {
         const { entryName, res } = context;
-        res.send(getHTMLFromCompilation(compilation, entryName));
+        res.send(getHTML(entryName));
       }
+      callback();
     });
 
     app.get(/^\/?(?!\.(js|css|json))/, (req, res, next) => {
-      const matched = req.url.match(/^\/(\S*?)\.html/);
+      const path = req.url.split('?')[0];
+      const matched = path.match(/^\/(\S*?)\.html/);
       if (!matched) {
         next();
         return;
       }
       const entryName = matched[1];
-      if (compilationCache) {
-        res.send(getHTMLFromCompilation(compilationCache, entryName));
+      if (afterCompiled) {
+        res.send(getHTML(entryName));
       } else {
         contextQueue.push({
           res,

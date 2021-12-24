@@ -1,4 +1,13 @@
+const { getHookFiles } = require('./packages/rax-app/lib/require-hook');
+
+const moduleNameMapper = getHookFiles().reduce((mapper, [id, value]) => {
+  mapper[`^${id}$`] = value;
+  return mapper;
+}, {});
+
+
 module.exports = {
+  moduleNameMapper,
   coverageDirectory: './coverage/',
   testEnvironment: 'node',
   collectCoverage: true,
