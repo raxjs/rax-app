@@ -20,7 +20,7 @@ export default function addCustomRenderComponentToHTML(
   }
   return `
   async function renderComponentToHTML(Component, ctx, options = {}) {
-    const { initialData, htmlTemplate, chunkInfo = {}, initialProps } = options;
+    const { initialData, htmlTemplate, initialProps } = options;
     const pageInitialProps = initialProps || await getInitialProps(Component, ctx);
 
     const data = {
