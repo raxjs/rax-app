@@ -2,7 +2,7 @@
 
 ## 1.0.5
 
-- Fix: double style attribute when `retainClassName` is true
+- Fix: double style attributes when `retainClassName` is true
 
 ## 1.0.4
 
