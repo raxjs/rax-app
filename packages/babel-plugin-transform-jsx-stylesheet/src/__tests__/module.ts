@@ -78,6 +78,10 @@ import styles from './app.css';
 
 render(<div style={styles.header} />);`);
   });
+  expect(getTransformCode(`
+import { createElement, render } from 'rax';
+import styles from './app.css';
+
+render(<div className={styles.header} />);
+`, { retainClassName: true })).toMatchSnapshot();
 });
-
-
