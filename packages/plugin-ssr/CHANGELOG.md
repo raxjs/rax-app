@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.3
+
+- Fix: remove comment node
+
 ## v2.0.2
 
 - Fix： override `ctx`

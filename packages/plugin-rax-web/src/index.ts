@@ -14,7 +14,7 @@ import getAppEntry from './utils/getAppEntry';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
-  const { onGetWebpackConfig, getValue, context, registerTask, registerCliOption, applyMethod } = api;
+  const { onGetWebpackConfig, getValue, context, registerTask, registerCliOption, applyMethod, onHook } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
@@ -45,9 +45,12 @@ export default (api) => {
     }
   });
 
+  // Web entries
+  let entries = [getAppEntry(rootDir)];
+
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { rootDir, command } = context;
+    const { command } = context;
     const staticConfig = getValue('staticConfig');
 
     config.plugin('document').use(DocumentPlugin, [
@@ -55,9 +58,7 @@ export default (api) => {
         api,
         staticConfig,
         documentPath,
-        pages: webConfig.mpa ? [] : [
-          getAppEntry(rootDir),
-        ],
+        pages: webConfig.mpa ? [] : entries,
       },
     ]);
     if (webConfig.snapshot) {
@@ -69,6 +70,10 @@ export default (api) => {
     }
 
     if (webConfig.mpa || webConfig.pha) {
+      entries = getMpaEntries(api, {
+        target,
+        appJsonContent: staticConfig,
+      });
       // support --mpa-entry to specify mpa entry
       registerCliOption({
         name: 'mpa-entry',
@@ -78,10 +83,7 @@ export default (api) => {
         type: 'web',
         framework: 'rax',
         targetDir: tempDir,
-        entries: getMpaEntries(api, {
-          target,
-          appJsonContent: staticConfig,
-        }),
+        entries,
       });
     }
 
@@ -99,6 +101,22 @@ export default (api) => {
     }
     setLocalBuilder(api);
   }
+
+  // Remove comment node
+  let webBuildDir;
+
+  onHook('before.build.run', ({ config: configs }) => {
+    const config = configs.find((configItem) => configItem.name === 'web');
+    webBuildDir = config.output.path;
+  });
+
+  onHook('after.build.compile', () => {
+    entries.forEach(({ entryName }) => {
+      const htmlFilePath = path.join(webBuildDir, `${entryName}.html`);
+      const html = fs.readFileSync(htmlFilePath, 'utf-8');
+      fs.writeFileSync(htmlFilePath, html.replace(/(\<\!--__INNER_ROOT__--\>|\<\!--__BEFORE_ROOT__--\>|\<\!--__AFTER_ROOT__--\>)/g, ''));
+    });
+  });
 };
 
 function getAbsolutePath(filepath: string): string | undefined {

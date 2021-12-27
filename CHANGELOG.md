@@ -1,5 +1,59 @@
 ## Changelog
 
+## 3.8.3
+
+- Fix: remove comment node in html result
+
+## 3.8.2
+
+- Fix: ssr context shouldn't be overrode
+- Fix: static export mode build error
+
+## 3.8.1
+
+SSR: fix chunkInfo is undefined FaaS app
+SSR: fix request might be fake that lose url field
+SSR: fix devServer.hot should be closed
+SSR: fix appConfig might be undefined
+Fix: __webpack_public_path__ is invalid in front of page file
+Fix: tabBar show in other page
+Fix: child class need use declare with add type for property which extends parent
+Fix: miniapp compile mode @alias is invalid
+Fix: invalid host in bind host case
+Chore: use webpack-chain directly
+
+## 3.8.0
+
+- Feat: support toggle webpack version 5 by `webpack5: true`
+- Feat: support use swc instead of babel by `swc: true`
+- Feat: `dropLogLevel` for removing different level log code
+- Feat: miniapp support webview mode
+- Feat: support MPA runtime plugin
+- Feat: SPA supports per-page configurations of `keepAlive` and `lazy`, such as
+  ```json
+  // app.json
+  {
+    "routes": [
+      {
+        "path": "/",
+        "source": "pages/Home/index",
+        "keepAlive": true,
+        "lazy": false,
+      }
+    ]
+  }
+  ```
+- Chore: MPA changed to render every page by `runApp`
+- Chore: use `minify` `object` type options instead `terserOptions`, such as
+  ```json
+  // build.json
+  "minify": {
+    "type": "terser",
+    "options": {}
+  }
+  ```
+- Chore: only wrapper DOM/BOM fake API in specified page bundle with build miniapp
+
 ## 3.7.4
 
 - Chore: add node version validate
