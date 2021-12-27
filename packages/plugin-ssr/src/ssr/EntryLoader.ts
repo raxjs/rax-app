@@ -97,11 +97,10 @@ export default function () {
       };
 
       return {
-        req,
-        res,
         pathname,
         query,
         location,
+        ...ctx,
       };
     }
 

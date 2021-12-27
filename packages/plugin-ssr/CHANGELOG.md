@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.2
+
+- Fix： override `ctx`
+
 ## v2.0.1
 
 - Fix: chunkInfo is `undefined`
