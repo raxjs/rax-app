@@ -103,9 +103,6 @@ export default function (api) {
       const htmlFilePath = path.join(webBuildDir, `${entryName}.html`);
       const bundle = fs.readFileSync(serverFilePath, 'utf-8');
       const html = fs.readFileSync(htmlFilePath, 'utf-8');
-      if (command === 'build') {
-        fs.writeFileSync(htmlFilePath, html.replace(/(\<\!--__INNER_ROOT__--\>|\<\!--__BEFORE_ROOT__--\>|\<\!--__AFTER_ROOT__--\>)/g, ''));
-      }
       const minifedHtml = minify(html, { collapseWhitespace: true, quoteCharacter: "'" });
       const newBundle = injectBundleInfo(bundle, { html: minifedHtml, chunkInfo });
       fs.writeFileSync(serverFilePath, newBundle, 'utf-8');
