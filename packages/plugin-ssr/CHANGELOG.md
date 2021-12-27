@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.4
+
+- Chore: update `parse-url` to v6
+
 ## v2.0.3
 
 - Fix: remove comment node

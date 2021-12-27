@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.8.4
+
+- Chore: update `parse-url` to v6
+
 ## 3.8.3
 
 - Fix: remove comment node in html result
