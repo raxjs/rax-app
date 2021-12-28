@@ -75,5 +75,8 @@
   "dependencies": {
     "core-js": "^3.6.4",
     "path-to-regexp": "6.1.0"
+  },
+  "resolutions": {
+    "@builder/mpa-config": "4.1.4-beta.1"
   }
 }
