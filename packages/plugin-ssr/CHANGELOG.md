@@ -7,6 +7,19 @@
 - Feat: support enable sourcemap
 - Feat: adjust output for mock browser env
 
+## v2.0.4
+
+- Chore: update `parse-url` to v6
+- Fix: inject configured scripts
+
+## v2.0.3
+
+- Fix: remove comment node
+
+## v2.0.2
+
+- Fix： override `ctx`
+
 ## v2.0.1
 
 - Fix: chunkInfo is `undefined`

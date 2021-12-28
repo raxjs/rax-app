@@ -65,4 +65,23 @@ import styles from './app.module.css';
 
 render(<div className={styles.header} style={app.header} />);`);
   });
+
+  it('should transform code correctly when `retainClassName` is true', () => {
+    expect(getTransformCode(`
+import { createElement, render } from 'rax';
+import styles from './app.css';
+
+render(<div className={styles.header} />);
+`, { retainClassName: true })).toBe(`
+import { createElement, render } from 'rax';
+import styles from './app.css';
+
+render(<div style={styles.header} />);`);
+  });
+  expect(getTransformCode(`
+import { createElement, render } from 'rax';
+import styles from './app.css';
+
+render(<div className={styles.header} />);
+`, { retainClassName: true })).toMatchSnapshot();
 });

@@ -37,6 +37,6 @@
     "chalk": "^4.0.0",
     "@builder/compat-webpack4": "^1.0.0",
     "query-string": "^7.0.1",
-    "parse-url": "^5.0.7"
+    "parse-url": "^6.0.0"
   }
 }

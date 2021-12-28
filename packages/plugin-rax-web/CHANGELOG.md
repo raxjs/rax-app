@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.0.3
+
+- Chore: add logic protect
+
+## v2.0.2
+
+- Fix: remove comment node
+
+## v2.0.1
+
+- Fix: static export error
+
 ## v2.0.0
 
 - Feat: upgrade dependencies for webpack 5
