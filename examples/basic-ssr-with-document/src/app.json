@@ -17,5 +17,8 @@
   ],
   "window": {
     "title": "Rax App"
-  }
+  },
+  "scripts": [
+    "<script id=\"appear\" src=\"https://g.alicdn.com/ali-lib/appear-polyfill/0.1.2/index.js\"></script>"
+  ]
 }
