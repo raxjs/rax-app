@@ -3,6 +3,7 @@
 ## 3.8.4
 
 - Chore: update `parse-url` to v6
+- SSR: fix inject configured scripts
 
 ## 3.8.3
 

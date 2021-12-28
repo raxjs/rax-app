@@ -3,6 +3,7 @@
 ## v2.0.4
 
 - Chore: update `parse-url` to v6
+- Fix: inject configured scripts
 
 ## v2.0.3
 
