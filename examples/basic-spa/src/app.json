@@ -27,7 +27,7 @@
         "name": "Home Page"
       },
       {
-        "pageName": "/about",
+        "pageName": "/pages/about.html",
         "text": "About"
       }
     ]
