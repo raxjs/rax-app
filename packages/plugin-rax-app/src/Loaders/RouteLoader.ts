@@ -161,8 +161,10 @@ function getComponentName(route: IRoute): string {
   }
   if (route.path === '/') return 'Index';
   // /about => About
-  // /list-a => Lista
-  return `${route.path[1].toUpperCase()}${route.path.substr(2).replace(/-/, '')}`;
+  // /list-a => List_a
+  // /index.html => Index_html
+  // /pages/home => Pages_home
+  return `${route.path[1].toUpperCase()}${route.path.substr(2).replace(/(-|\.|\/)/g, '_')}`;
 }
 
 function transformAppConfig(jsonContent): IStaticConfig {
