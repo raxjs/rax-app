@@ -6,7 +6,7 @@
       "keepAlive": true
     },
     {
-      "path": "/about",
+      "path": "/pages/about.html",
       "source": "pages/About/index",
       "lazy": false,
       "window": {
