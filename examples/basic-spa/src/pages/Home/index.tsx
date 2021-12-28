@@ -31,7 +31,7 @@ export default function Home(props) {
       <Text onClick={() => {
         setCount(count + 1);
       }}>State: {count}</Text>
-      <Text className="info" id="link" onClick={() => history.push('/about', { id: 1 })}>Go About</Text>
+      <Text className="info" id="link" onClick={() => history.push('/pages/about.html', { id: 1 })}>Go About</Text>
     </View>
   );
 }

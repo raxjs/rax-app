@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.8.5
+
+- Fix: special SPA route.path
+
 ## 3.8.4
 
 - Chore: update `parse-url` to v6
