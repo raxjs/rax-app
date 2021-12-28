@@ -1,5 +1,10 @@
 ## Changelog
 
+## 3.8.6
+
+- Fix: page component import method in the env other than web
+- Fix: MPA runApp file path in SSR
+
 ## 3.8.5
 
 - Fix: special SPA route.path

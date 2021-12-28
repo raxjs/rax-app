@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.3
+
+- Fix: page component import method in the env other than web
+
 ## 7.0.2
 
 - Fix: special SPA route.path

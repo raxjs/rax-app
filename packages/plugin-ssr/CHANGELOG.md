@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.5
+
+- Fix: MPA runApp file path
+
 ## v2.0.4
 
 - Chore: update `parse-url` to v6
