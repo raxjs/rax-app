@@ -34,13 +34,14 @@ export default class EntryPlugin {
     const staticConfig = getValue(STATIC_CONFIG);
     const { updateDataInClient } = web.ssr;
     const pageConfig = getPageConfig(api, staticConfig);
+    const tempPath = getValue(TEMP_PATH);
 
     if (!updateDataInClient) {
       log.info('Enabled inject initial data into HTML.');
     }
 
     let query: ILoaderQuery = {
-      tempPath: getValue(TEMP_PATH),
+      tempPath,
       updateDataInClient,
     };
 
@@ -68,9 +69,8 @@ export default class EntryPlugin {
 
       if (web.mpa) {
         query.pageConfig = JSON.stringify(pageConfig[entryName]);
-        const entryFolder = path.dirname(entry);
-        // Check runApp path
-        let runAppPath = path.join(entryFolder, 'runApp');
+        // Check runApp path: .rax/entries/home/runApp.ts
+        let runAppPath = path.join(tempPath, 'entries', entryName, 'runApp');
         if (!fs.existsSync(`${runAppPath}.ts`)) {
           // Use core runApp path as default runApp implement
           runAppPath = coreRunAppPath;

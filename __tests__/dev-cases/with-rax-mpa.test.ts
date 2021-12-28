@@ -26,7 +26,13 @@ describe('should start web devServer: ', () => {
     await page.push('/about.html');
     await page.waitForFunction(`document.getElementsByTagName('span').length > 0`);
     expect(await page.$$text('.title')).toStrictEqual(['About Page']);
-  })
+  });
+
+  test('open /profile', async () => {
+    await page.push('/profile.html');
+    await page.waitForFunction(`document.getElementsByTagName('span').length > 0`);
+    expect(await page.$$text('.title')).toStrictEqual(['Profile Page']);
+  });
 });
 
 describe('should build weex result: ', () => {

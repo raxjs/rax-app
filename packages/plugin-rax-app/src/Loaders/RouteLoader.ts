@@ -84,7 +84,7 @@ export default function (appJSON) {
 
 function getImportComponentInfo(appConfig: IStaticConfig, target: string): IImportComponentInfo {
   const dynamicImports = [];
-  let normalImports = [];
+  const normalImports = [];
   let requireRoutes = [];
   if (target === 'web') {
     appConfig.routes.forEach((route) => {
@@ -95,10 +95,8 @@ function getImportComponentInfo(appConfig: IStaticConfig, target: string): IImpo
         normalImports.push(route);
       }
     });
-  } else if (MINIAPP_PLATFORMS.includes(target)) {
-    requireRoutes = appConfig.routes;
   } else {
-    normalImports = appConfig.routes;
+    requireRoutes = appConfig.routes;
   }
   const normalImportExpression = normalImports.reduce((curr, next) => {
     // import Home from 'source';
