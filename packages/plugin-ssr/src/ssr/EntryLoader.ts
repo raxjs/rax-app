@@ -160,8 +160,18 @@ export default function () {
     }
     
     async function renderPageToHtml(ctx, options = {}) {
+      const { res, req } = ctx;
+
+      ${addDefineInitialPage()}
       const Component = Page;
-      const pageInitialProps = options.initialProps;
+      const { initialData, pageInitialProps } = options;
+
+      const data = {
+        __SSR_ENABLED__: true,
+        initialData,
+        pageInitialProps,
+      };
+
       ${addPageHTMLAssign()}
 
       return pageHTML;
