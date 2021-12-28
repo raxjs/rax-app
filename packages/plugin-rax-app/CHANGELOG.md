@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.2
+
+- Fix: special SPA route.path
+
 ## 7.0.1
 
 - Feat: add class property validator for ts file
