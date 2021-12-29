@@ -59,7 +59,7 @@ export default (api) => {
         staticConfig,
         documentPath,
         pages: webConfig.mpa ? [] : entries,
-        target
+        target,
       },
     ]);
     if (webConfig.snapshot) {
