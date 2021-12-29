@@ -103,15 +103,21 @@ function parseRoutes(routes) {
 
 function getComponentByLazy(PageComponent, { route }) {
   const { lazy = true } = route;
-  if (isWeb && lazy) {
-    // When it is lazy, PageComponent is a function which return a Promise<Component>
-    const LazyComponent = PageComponent();
-    return LazyComponent.then((component) => {
-      return wrapperPage(component, { route });
-    });
+  if (isWeb) {
+    if (lazy) {
+      // When it is lazy, PageComponent is a function which return a Promise<Component>
+      const LazyComponent = PageComponent();
+      return LazyComponent.then((component) => {
+        return wrapperPage(component, { route });
+      });
+    }
+
+    return wrapperPage(PageComponent, { route });
   }
 
-  return wrapperPage(PageComponent, { route });
+  // When it is other platform, the route.component is () => Component
+  const Page = PageComponent();
+  return wrapperPage(Page, { route });
 }
 
 function wrapperPage(PageComponent, { route }) {
