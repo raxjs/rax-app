@@ -29,11 +29,31 @@ function addDefineInitialPage() {
   `;
 }
 
+function addImportSource(source, exportPageComponent: boolean): string {
+  if (exportPageComponent) {
+    return `import PageComponent from '${formatPath(source)}';`;
+  }
+
+  return `import '${formatPath(source)}';`;
+}
+
+function addExecuteRunApp(exportPageComponent: boolean): string {
+  if (exportPageComponent) {
+    return `runApp({
+      app: {
+        renderComponent: PageComponent,
+      }
+    });`;
+  }
+
+  return '';
+}
+
 /**
  * Global variables:
  * utils: Generator, parseUrl
  * rax render: createElement/renderer
- * Component: Page/Document
+ * Component: Document/PageComponent
  * generated in .rax: appConfig/staticConfig/createBaseApp/emitLifeCycles/setHistory/enableRouter
  * MPA: pageConfig
  */
@@ -50,8 +70,10 @@ export default function () {
     import { getAppConfig } from '${formatPath(path.join(corePath, 'appConfig'))}';
     import { emitLifeCycles } from '${formatPath(path.join(corePath, 'publicAPI'))}';
     import { setHistory } from '${formatPath(path.join(corePath, 'routerAPI'))}';
-    import '${formatPath(this.resourcePath)}';
-    import app from '${formatPath(formattedQuery.runAppPath)}';
+    ${addImportSource(this.resourcePath, formattedQuery.exportPageComponent)}
+    import app, { runApp } from '${formatPath(formattedQuery.runAppPath)}';
+
+    ${addExecuteRunApp(formattedQuery.exportPageComponent)}
 
     const { createBaseApp, staticConfig, pageConfig, TabBar, enableRouter } = app;
 

@@ -41,7 +41,11 @@ function wrapperPageWithWeb(staticConfig) {
       const location = history?.location || window.location;
       const [data, setData] = useState((window as any)?.__INITIAL_DATA__?.pageInitialProps);
       useEffect(() => {
-        document.title = pageConfig.window?.title || staticConfig.window?.title;
+        const title = pageConfig.window?.title || staticConfig.window?.title;
+        // Avoid override developer custom title
+        if (title) {
+          document.title = title;
+        }
 
         // When enter the page for the first time, need to use window.__INITIAL_DATA__.pageInitialProps as props
         // And don't need to re-request to switch routes
