@@ -2,6 +2,7 @@ import * as queryString from 'query-string';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { modifyEntry } from '@builder/compat-webpack4';
+import { checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 import { IEntryPluginOptions, ILoaderQuery } from '../types';
 import { STATIC_CONFIG, TEMP_PATH } from '../constants';
 import getPageConfig from '../utils/getPageConfig';
@@ -66,6 +67,11 @@ export default class EntryPlugin {
       // Get the real entry path
       const entry = entrySeparatedLoader[entrySeparatedLoader.length - 1];
       query.entryName = entryName;
+
+      // 如果是 app.ts 且是 export default 导出，就需要引用该导出作为页面组件并执行 runApp
+      if (/app(\.(t|j)sx?)?$/.test(entry) && checkExportDefaultDeclarationExists(entry)) {
+        query.exportPageComponent = true;
+      }
 
       if (web.mpa) {
         query.pageConfig = JSON.stringify(pageConfig[entryName]);
