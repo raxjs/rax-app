@@ -67,7 +67,7 @@ export default function () {
     import { createElement } from 'rax';
     import renderer from 'rax-server-renderer';
     import * as parseUrl from 'parse-url';
-    import { getAppConfig, setAppConfig } from '${formatPath(path.join(corePath, 'appConfig'))}';
+    import { getAppConfig } from '${formatPath(path.join(corePath, 'appConfig'))}';
     import { emitLifeCycles } from '${formatPath(path.join(corePath, 'publicAPI'))}';
     import { setHistory } from '${formatPath(path.join(corePath, 'routerAPI'))}';
     ${addImportSource(this.resourcePath, formattedQuery.exportPageComponent)}
