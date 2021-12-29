@@ -31,6 +31,7 @@ export default class DocumentPlugin {
       },
       documentPath,
       insertScript,
+      target
     } = this.options;
     const { mpa, doctype = '<!DOCTYPE html>', ssr, staticExport } = webConfig || {};
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
@@ -65,6 +66,7 @@ export default class DocumentPlugin {
             entryName,
             mpa,
             rootDir,
+            target
           });
           let html = '';
           // PHA will consume document field
@@ -132,9 +134,15 @@ export default class DocumentPlugin {
   }
 }
 
-function getTitleByStaticConfig(staticConfig, { entryName, mpa, rootDir }): string {
+function getTitleByStaticConfig(staticConfig, { entryName, mpa, rootDir, target }): string {
   if (!mpa) return staticConfig.window?.title;
   const route = staticConfig.routes
+    .filter((route) => {
+      if (Array.isArray(route.targets) && !route.targets.includes(target)) {
+        return false;
+      }
+      return true;
+    })
     .reduce((prev, curr) => {
       return [...prev, ...getEntriesByRoute(curr, rootDir)];
     }, [])
