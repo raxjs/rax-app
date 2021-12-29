@@ -1,9 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[` 1`] = `
+exports[`css module should transform code correctly when \`retainClassName\` is true 1`] = `
 "
 import { createElement, render } from 'rax';
 import styles from './app.css';
 
 render(<div style={styles.header} />);"
+`;
+
+exports[`css module should transform code correctly when \`retainClassName\` is true and use different attr 1`] = `
+"
+import { createElement, render } from 'rax';
+import styles from './app.css';
+
+render(<div style={Object.assign({}, styles.header, styles.container)} />);"
 `;
