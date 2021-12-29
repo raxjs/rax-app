@@ -3,6 +3,7 @@
 ## 7.0.3
 
 - Fix: page component import method in the env other than web
+- Fix: override developer custom title
 
 ## 7.0.2
 

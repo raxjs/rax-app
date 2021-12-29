@@ -4,6 +4,7 @@
 
 - Fix: page component import method in the env other than web
 - Fix: MPA runApp file path in SSR
+- Fix: override developer custom title
 
 ## 3.8.5
 
