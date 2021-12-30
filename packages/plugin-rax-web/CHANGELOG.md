@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.4
+
+- Fix: not filter routes by target in document plugin
+
 ## v2.0.3
 
 - Chore: add logic protect
