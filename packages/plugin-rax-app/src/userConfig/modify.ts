@@ -59,7 +59,7 @@ export default (api) => {
   }
 
   // Unify all targets mpa config
-  const hasMPA = newUserConfig.targets.some((target) => newUserConfig[target] && newUserConfig[target].mpa);
+  const hasMPA = newUserConfig.targets.some((target) => newUserConfig[target] && (newUserConfig[target].mpa || newUserConfig[target].buildType === 'webview'));
   if (hasMPA) {
     newUserConfig.targets
       // Avoid miniapp runtime mode be became MPA
@@ -78,7 +78,7 @@ export default (api) => {
 
     // Warning tip when use miniapp runtime mode with MPA
     for (const target of newUserConfig.targets) {
-      if (MINIAPP_PLATFORMS.includes(target) && !newUserConfig[target]?.subpackages) {
+      if (MINIAPP_PLATFORMS.includes(target) && !newUserConfig[target]?.subpackages && newUserConfig[target]?.buildType !== 'webview') {
         log.error('小程序非分包模式不推荐和 MPA 应用同时使用，下一个大版本将禁止该能力！');
       }
     }

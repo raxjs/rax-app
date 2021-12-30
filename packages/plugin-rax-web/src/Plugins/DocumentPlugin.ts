@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as Module from 'module';
-import * as cheerio from 'cheerio';
+import { load } from 'cheerio';
 import * as htmlparser2 from 'htmlparser2';
 import { getEntriesByRoute } from '@builder/app-helpers';
 import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } from '../utils/localBuildCache';
@@ -31,6 +31,7 @@ export default class DocumentPlugin {
       },
       documentPath,
       insertScript,
+      target,
     } = this.options;
     const { mpa, doctype = '<!DOCTYPE html>', ssr, staticExport } = webConfig || {};
     // DEF plugin will pass publicPath override compiler publicPath in Weex Type App
@@ -65,6 +66,7 @@ export default class DocumentPlugin {
             entryName,
             mpa,
             rootDir,
+            target,
           });
           let html = '';
           // PHA will consume document field
@@ -84,7 +86,7 @@ export default class DocumentPlugin {
             }
 
             const parserOptions = { decodeEntities: false };
-            const $ = cheerio.load(htmlparser2.parseDOM(html, parserOptions), parserOptions);
+            const $ = load(htmlparser2.parseDOM(html, parserOptions), parserOptions);
             if (injectedHTML.comboScripts.length) {
               // Insert comboed script
               $('#root').after([genComboedScript(injectedHTML.comboScripts), ...injectedHTML.scripts]);
@@ -132,9 +134,15 @@ export default class DocumentPlugin {
   }
 }
 
-function getTitleByStaticConfig(staticConfig, { entryName, mpa, rootDir }): string {
+function getTitleByStaticConfig(staticConfig, { entryName, mpa, rootDir, target }): string {
   if (!mpa) return staticConfig.window?.title;
   const route = staticConfig.routes
+    .filter((r) => {
+      if (Array.isArray(r.targets) && !r.targets.includes(target)) {
+        return false;
+      }
+      return true;
+    })
     .reduce((prev, curr) => {
       return [...prev, ...getEntriesByRoute(curr, rootDir)];
     }, [])

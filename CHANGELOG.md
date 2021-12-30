@@ -1,5 +1,12 @@
 ## Changelog
 
+## 3.8.7
+
+- Fix: SPA SSR `getInitialProps` is invalid
+- Feat: miniapp webview mode should modify app to MPA type
+- Chore: add ssr test case
+- Chore: remove DEF comment node
+
 ## 3.8.6
 
 - Fix: page component import method in the env other than web
