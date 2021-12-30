@@ -1,9 +1,5 @@
 ## Changelog
 
-## 3.8.7
-
-- Fix: SPA SSR `getInitialProps` is invalid
-
 ## 3.8.6
 
 - Fix: page component import method in the env other than web

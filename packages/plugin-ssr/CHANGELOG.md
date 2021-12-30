@@ -1,9 +1,5 @@
 # Changelog
 
-## v2.0.6
-
-- Fix: SPA SSR `getInitialProps` is invalid
-
 ## v2.0.5
 
 - Fix: MPA runApp file path
