@@ -1,5 +1,22 @@
 ## Changelog
 
+## 3.8.7
+
+- Fix: SPA SSR `getInitialProps` is invalid
+- Feat: miniapp webview mode should modify app to MPA type
+- Chore: add ssr test case
+- Chore: remove DEF comment node
+
+## 3.8.6
+
+- Fix: page component import method in the env other than web
+- Fix: MPA runApp file path in SSR
+- Fix: override developer custom title
+
+## 3.8.5
+
+- Fix: special SPA route.path
+
 ## 3.8.4
 
 - Chore: update `parse-url` to v6

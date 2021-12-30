@@ -7,6 +7,14 @@
 - Feat: support enable sourcemap
 - Feat: adjust output for mock browser env
 
+## v2.0.6
+
+- Fix: SPA SSR `getInitialProps` is invalid
+
+## v2.0.5
+
+- Fix: MPA runApp file path
+
 ## v2.0.4
 
 - Chore: update `parse-url` to v6

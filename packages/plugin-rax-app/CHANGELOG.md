@@ -1,5 +1,18 @@
 # Changelog
 
+## 7.0.4
+
+- Fix: Remove error message when using mpa mode with webview miniapp
+
+## 7.0.3
+
+- Fix: page component import method in the env other than web
+- Fix: override developer custom title
+
+## 7.0.2
+
+- Fix: special SPA route.path
+
 ## 7.0.1
 
 - Feat: add class property validator for ts file

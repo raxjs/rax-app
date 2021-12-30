@@ -25,6 +25,15 @@ describe('should build web result: ', () => {
     await page.waitForFunction(`document.getElementsByTagName('span').length > 0`);
     expect(await page.$$text('.title')).toStrictEqual(['About Page']);
   });
+
+  test('open /profile', async () => {
+    const res = await setupBrowser({ example, defaultHtml: 'about.html' });
+    page = res.page;
+    browser = res.browser;
+    await page.push('/profile.html');
+    await page.waitForFunction(`document.getElementsByTagName('span').length > 0`);
+    expect(await page.$$text('.title')).toStrictEqual(['Profile Page']);
+  });
 });
 
 describe('should build weex result: ', () => {
