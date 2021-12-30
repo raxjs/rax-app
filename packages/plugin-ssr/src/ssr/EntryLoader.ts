@@ -22,7 +22,7 @@ function addDefineInitialPage() {
   let Page;
   if (enableRouter) {
     const route = staticConfig.routes.find(({ path }) => path === pathname);
-    Page = route.component;
+    Page = route.component();
   } else {
     Page = appConfig.app && appConfig.app.renderComponent;
   }
