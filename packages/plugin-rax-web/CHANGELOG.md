@@ -2,6 +2,7 @@
 
 ## v2.0.4
 
+- Fix: not filter routes by target in document plugin
 - Fix: DEF remove comment node check
 
 ## v2.0.3
