@@ -29,7 +29,7 @@ module.exports = function () {
 
           const result = [];
 
-          let html = `<${ tagName}`;
+          let html = `<${tagName}`;
 
           let attrs = openingPath.node.attributes;
           if (attrs.length) {
@@ -68,7 +68,7 @@ module.exports = function () {
           }
 
           if (path.node.closingElement || innerHTML) {
-            pushResult(t.stringLiteral(`</${ tagName }>`), result);
+            pushResult(t.stringLiteral(`</${tagName}>`), result);
           }
 
           if (result && result.length) {
@@ -197,7 +197,7 @@ function buildOpeningElementAttributes(attribs, file) {
         name = 'class';
       }
       const value = prop.value.value.replace(/\n\s+/g, ' ');
-      staticAttrs = `${staticAttrs } ${ name }="${ value }"`;
+      staticAttrs = `${staticAttrs} ${name}="${value}"`;
     } else {
       _props.push(convertAttribute(prop));
     }
@@ -260,7 +260,7 @@ function convertAttribute(node) {
 
   if (t.isJSXNamespacedName(node.name)) {
     node.name = t.stringLiteral(
-      `${node.name.namespace.name }:${ node.name.name.name}`,
+      `${node.name.namespace.name}:${node.name.name.name}`,
     );
   } else if (esutils.keyword.isIdentifierNameES6(node.name.name)) {
     node.name.type = 'Identifier';
