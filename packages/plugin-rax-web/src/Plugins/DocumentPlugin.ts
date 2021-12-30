@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as Module from 'module';
-import { load, Node } from 'cheerio';
+import { load } from 'cheerio';
 import * as htmlparser2 from 'htmlparser2';
 import { getEntriesByRoute } from '@builder/app-helpers';
 import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } from '../utils/localBuildCache';
