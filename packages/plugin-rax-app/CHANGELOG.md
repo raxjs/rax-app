@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.4
+
+- Fix: Remove error message when using mpa mode with webview miniapp
+
 ## 7.0.3
 
 - Fix: page component import method in the env other than web
