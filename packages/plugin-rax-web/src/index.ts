@@ -14,7 +14,7 @@ import getAppEntry from './utils/getAppEntry';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
-  const { onGetWebpackConfig, getValue, context, registerTask, registerCliOption, applyMethod, onHook } = api;
+  const { onGetWebpackConfig, getValue, context, registerTask, registerCliOption, applyMethod } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');

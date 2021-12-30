@@ -32,10 +32,10 @@ function measure(value, key) {
     }
   }
 
-  const topKey = `${key }Top`;
-  const rightKey = `${key }Right`;
-  const bottomKey = `${key }Bottom`;
-  const leftKey = `${key }Left`;
+  const topKey = `${key}Top`;
+  const rightKey = `${key}Right`;
+  const bottomKey = `${key}Bottom`;
+  const leftKey = `${key}Left`;
 
   const result = {
     isDeleted: true,
@@ -54,22 +54,22 @@ const border = function (key, value) {
   };
   const direction = value && value.split(' ');
 
-  result[`${key }Width`] = direction && convertUnit(direction[0]);
-  result[`${key }Style`] = direction && direction[1];
-  result[`${key }Color`] = direction && normalizeColor(direction[2]);
+  result[`${key}Width`] = direction && convertUnit(direction[0]);
+  result[`${key}Style`] = direction && direction[1];
+  result[`${key}Color`] = direction && normalizeColor(direction[2]);
   return result;
 };
 
 const toMs = function (value) {
   if (typeof value === 'string') {
-    if (/^\./.test(value)) value = `0${ value}`; // .5s
+    if (/^\./.test(value)) value = `0${value}`; // .5s
     if (/s$/.test(value) && !/ms$/.test(value)) { // 1.5s
       value = parseFloat(value) * 1000;
     } else { // 150 or 150ms
       value = parseFloat(value);
     }
   }
-  return `${value || 0 }ms`;
+  return `${value || 0}ms`;
 };
 
 const transitionProperty = function (value) {
