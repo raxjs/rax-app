@@ -17,6 +17,7 @@ export interface IFormattedLoaderQuery extends ILoaderQuery {
   needInjectStyle?: boolean;
   pageConfig?: IPageConfig;
   updateDataInClient: boolean;
+  exportPageComponent?: boolean;
 }
 
 export interface ILoaderQuery {
@@ -31,4 +32,5 @@ export interface ILoaderQuery {
   doctype?: string;
   updateDataInClient: boolean | string;
   runAppPath?: string;
+  exportPageComponent?: boolean | string;
 }

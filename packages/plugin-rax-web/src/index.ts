@@ -113,8 +113,10 @@ export default (api) => {
   onHook('after.build.compile', () => {
     entries.forEach(({ entryName }) => {
       const htmlFilePath = path.join(webBuildDir, `${entryName}.html`);
-      const html = fs.readFileSync(htmlFilePath, 'utf-8');
-      fs.writeFileSync(htmlFilePath, html.replace(/(\<\!--__INNER_ROOT__--\>|\<\!--__BEFORE_ROOT__--\>|\<\!--__AFTER_ROOT__--\>)/g, ''));
+      if (fs.existsSync(htmlFilePath)) {
+        const html = fs.readFileSync(htmlFilePath, 'utf-8');
+        fs.writeFileSync(htmlFilePath, html.replace(/(\<\!--__INNER_ROOT__--\>|\<\!--__BEFORE_ROOT__--\>|\<\!--__AFTER_ROOT__--\>)/g, ''));
+      }
     });
   });
 };

@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.3
+
+- Chore: add logic protect
+
 ## v2.0.2
 
 - Fix: remove comment node

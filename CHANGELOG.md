@@ -1,5 +1,24 @@
 ## Changelog
 
+## 3.8.7
+
+- Fix: SPA SSR `getInitialProps` is invalid
+
+## 3.8.6
+
+- Fix: page component import method in the env other than web
+- Fix: MPA runApp file path in SSR
+- Fix: override developer custom title
+
+## 3.8.5
+
+- Fix: special SPA route.path
+
+## 3.8.4
+
+- Chore: update `parse-url` to v6
+- SSR: fix inject configured scripts
+
 ## 3.8.3
 
 - Fix: remove comment node in html result

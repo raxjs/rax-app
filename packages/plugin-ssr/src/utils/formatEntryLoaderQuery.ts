@@ -7,5 +7,6 @@ export default function formatEntryLoaderQuery(query: ILoaderQuery): IFormattedL
     updateDataInClient: query.updateDataInClient === 'true',
     pageConfig: JSON.parse(query.pageConfig as string || '{}'),
     injectedHTML: JSON.parse(query.injectedHTML || '{}'),
+    exportPageComponent: query.exportPageComponent === 'true',
   };
 }

@@ -8,6 +8,10 @@
     {
       "name": "about",
       "source": "pages/About/app"
+    },
+    {
+      "name": "profile",
+      "source": "pages/Profile/app"
     }
   ],
   "spm": "a123",

@@ -13,7 +13,7 @@ export default function addCustomRenderComponentToHTML(
     updateDataInClient,
   }: IFormattedLoaderQuery,
 ) {
-  const injectedScripts = [];
+  const injectedScripts = (injectedHTML.scripts || []);
 
   if (injectedHTML.comboScripts) {
     injectedScripts.unshift(genComboedScript(injectedHTML.comboScripts));
