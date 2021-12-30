@@ -90,8 +90,7 @@ export default class DocumentPlugin {
               $('#root').after([genComboedScript(injectedHTML.comboScripts), ...injectedHTML.scripts]);
               html = $.html();
               // Remove comboed script and insert decomboed scripts
-              const decombedScripts = injectedHTML.comboScripts.map(({ script }) => script) as unknown as Node[];
-              $('.__combo_script__').replaceWith(decombedScripts);
+              $('.__combo_script__').replaceWith(injectedHTML.comboScripts.map(({ script }) => script));
             } else {
               $('#root').after(injectedHTML.scripts);
               html = $.html();
