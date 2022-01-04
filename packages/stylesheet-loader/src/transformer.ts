@@ -13,7 +13,7 @@ export default {
   sanitizeSelector(selector, transformDescendantCombinator = false, position = { start: { line: 0, column: 0 } }, log = false) {
     // tag selector suffix @
     if (/^[a-zA-Z]/.test(selector)) {
-      selector = `@${ selector}`;
+      selector = `@${selector}`;
     }
     // filter multiple extend selectors
     if (log && !transformDescendantCombinator && !/^[.|@|#][a-zA-Z0-9_:\-]+$/.test(selector)) {

@@ -7,7 +7,7 @@ interface ICachedRoutes {
 
 export default class RouteMatcher {
   cachedRoutes: ICachedRoutes = {};
-  private routes: IRoute[];
+  private routes: IRoute[] = [];
 
   constructor(routes: IRoute[]) {
     this.routes = routes;

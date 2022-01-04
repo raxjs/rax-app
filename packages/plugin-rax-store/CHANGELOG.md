@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.0
+
+- Feat: upgrade dependencies for webpack 5
+
 ## v1.3.2
 
 - Fix: can't wrap `store.Provider` to nested page

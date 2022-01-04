@@ -8,6 +8,5 @@
     "lib",
     "!lib/**/*.map"
   ],
-  "dependencies": {
-  }
+  "dependencies": {}
 }

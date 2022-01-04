@@ -28,7 +28,11 @@
     "copy-webpack-plugin": "^5.0.4",
     "miniapp-compile-config": "^0.3.0",
     "@builder/app-helpers": "^2.3.4",
+<<<<<<< HEAD
     "miniapp-renderer": "^0.1.15",
+=======
+    "miniapp-renderer": "^0.2.2",
+>>>>>>> master
     "miniapp-webview-config": "^1.0.0"
   }
 }

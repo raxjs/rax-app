@@ -47,7 +47,7 @@ export default (api) => {
 
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { rootDir, command } = context;
+    const { command } = context;
     const staticConfig = getValue('staticConfig');
 
     config.plugin('document').use(DocumentPlugin, [
@@ -55,9 +55,8 @@ export default (api) => {
         api,
         staticConfig,
         documentPath,
-        pages: webConfig.mpa ? [] : [
-          getAppEntry(rootDir),
-        ],
+        pages: webConfig.mpa ? [] : [getAppEntry(rootDir)],
+        target,
       },
     ]);
     if (webConfig.snapshot) {

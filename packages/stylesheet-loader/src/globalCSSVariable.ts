@@ -17,7 +17,7 @@ export default function getGlobalCSSVariable(config) {
         } else {
           styleValue = styles[key][name];
         }
-        globalCSSVariable += `__globalObject.__RootCSSVariable["${ name }"] = "${ styleValue }";`;
+        globalCSSVariable += `__globalObject.__RootCSSVariable["${name}"] = "${styleValue}";`;
       }
     }
   }

@@ -93,7 +93,7 @@ export default function (resolver, hook, conditionNames) {
           fragment,
         };
 
-        resolver.doResolve(hook, obj, `using exports field: ${ p}`, resolveContext, forEachCallback);
+        resolver.doResolve(hook, obj, `using exports field: ${p}`, resolveContext, forEachCallback);
       },
       (err, result) => callback(err, result || null),
     );

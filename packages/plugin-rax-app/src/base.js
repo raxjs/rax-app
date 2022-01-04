@@ -42,13 +42,26 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
   enhancedWebpackConfig.module
     .rule('appJSON')
     .type('javascript/auto')
-    .test(/app\.json$/)
+    .test(/\/app\.json$/)
+    .use('swc-loader')
+    .loader(require.resolve('@builder/swc-loader'))
+    .options({
+      jsc: {
+        target: 'es5',
+      },
+      module: {
+        type: 'commonjs',
+        ignoreDynamic: true,
+      },
+    })
+    .end()
     .use('route-loader')
     .loader(require.resolve('./Loaders/RouteLoader'))
     .options({
       target,
       mpa,
-    });
+    })
+    .end();
 
   enhancedWebpackConfig
     .plugin('ProgressPlugin')

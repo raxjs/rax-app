@@ -68,7 +68,6 @@ export default function (appJSON) {
   );
   const { routes, ...otherConfig } = staticConfig;
   return `
-  import { createElement } from 'rax';
   ${normalImportExpression}
   const staticConfig = ${JSON.stringify(otherConfig)};
 
@@ -85,7 +84,7 @@ export default function (appJSON) {
 
 function getImportComponentInfo(appConfig: IStaticConfig, target: string): IImportComponentInfo {
   const dynamicImports = [];
-  let normalImports = [];
+  const normalImports = [];
   let requireRoutes = [];
   if (target === 'web') {
     appConfig.routes.forEach((route) => {
@@ -96,10 +95,8 @@ function getImportComponentInfo(appConfig: IStaticConfig, target: string): IImpo
         normalImports.push(route);
       }
     });
-  } else if (MINIAPP_PLATFORMS.includes(target)) {
-    requireRoutes = appConfig.routes;
   } else {
-    normalImports = appConfig.routes;
+    requireRoutes = appConfig.routes;
   }
   const normalImportExpression = normalImports.reduce((curr, next) => {
     // import Home from 'source';
@@ -121,11 +118,11 @@ function addDynamicImportRouteExpression(dynamicImports: IRoute[]): string {
     expression += `staticConfig.routes.push({
       ...${JSON.stringify(route)},
       lazy: true,
-      component: import(/* webpackChunkName: "${getComponentName(route).toLowerCase()}.chunk" */ '${getPagePathByRoute(
+      component: () => import(/* webpackChunkName: "${getComponentName(route).toLowerCase()}.chunk" */ '${getPagePathByRoute(
   route,
   { rootContext: this.rootContext },
 )}')
-      .then((mod) => mod.default || mod)
+            .then((mod) => mod.default || mod)
     });`;
   });
 
@@ -162,8 +159,10 @@ function getComponentName(route: IRoute): string {
   }
   if (route.path === '/') return 'Index';
   // /about => About
-  // /list-a => Lista
-  return `${route.path[1].toUpperCase()}${route.path.substr(2).replace(/-/, '')}`;
+  // /list-a => List_a
+  // /index.html => Index_html
+  // /pages/home => Pages_home
+  return `${route.path[1].toUpperCase()}${route.path.substr(2).replace(/(-|\.|\/)/g, '_')}`;
 }
 
 function transformAppConfig(jsonContent): IStaticConfig {

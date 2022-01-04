@@ -21,7 +21,7 @@ function renderInServer(context, options) {
 }
 
 export default function raxAppRendererWithSSR(context, options) {
-  const { appConfig } = options || {};
+  const { appConfig = {} } = options || {};
   if (!appConfig.router) {
     appConfig.router = {};
   }

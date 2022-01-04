@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.0.2
+
+- Fix: bundle format should be es5
+
+## v3.0.1
+
+- Fix: set a default value for `appConfig`
+
+## v3.0.0
+
+- Feat: use `runApp` as MPA default render trigger
+- Feat: optimize code and remove router logic
+
 # v2.0.5
 
 - Fix: tabbar state update

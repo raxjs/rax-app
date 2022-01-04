@@ -93,6 +93,13 @@ export default (api, documentPath?: string | undefined) => {
 
     config.output.filename('[name].js');
 
+    // Set server flag
+    config.plugin('DefinePlugin').tap((args) => [
+      Object.assign({}, ...args, {
+        'process.env.__IS_SERVER__': true,
+      }),
+    ]);
+
     // Get redirect runApp info in MPA
     const { runApp: { multipleSource = [] } } = getValue('importDeclarations');
 

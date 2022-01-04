@@ -1,5 +1,36 @@
 # Changelog
 
+## v2.0.6
+
+- Fix: SPA SSR `getInitialProps` is invalid
+
+## v2.0.5
+
+- Fix: MPA runApp file path
+
+## v2.0.4
+
+- Chore: update `parse-url` to v6
+- Fix: inject configured scripts
+
+## v2.0.3
+
+- Fix: remove comment node
+
+## v2.0.2
+
+- Fix： override `ctx`
+
+## v2.0.1
+
+- Fix: chunkInfo is `undefined`
+- Fix: close hot with ssr
+
+## v2.0.0
+
+- Feat: upgrade dependencies for webpack 5
+- Feat: use `runApp` as MPA default render trigger
+
 ## v1.3.12
 
 - Feat: escape data to prevent xss

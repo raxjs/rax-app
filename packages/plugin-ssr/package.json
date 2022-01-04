@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-ssr",
-  "version": "1.3.12",
+  "version": "2.0.6",
   "description": "",
   "author": "",
   "homepage": "https://github.com/alibaba/ice#readme",
@@ -26,17 +26,17 @@
   },
   "dependencies": {
     "fs-extra": "^9.0.1",
-    "error-stack-tracey": "^0.1.3",
+    "error-stack-tracey": "^0.1.5",
     "@builder/app-helpers": "^2.1.0",
     "react-dev-utils": "^11.0.0",
     "cheerio": "1.0.0-rc.3",
     "html-minifier": "^4.0.0",
-    "rax-app-renderer": "^2.0.3",
+    "rax-app-renderer": "^3.0.2",
     "rax-server-renderer": "^1.2.0",
     "@builder/html-generator": "^2.0.0",
     "chalk": "^4.0.0",
     "@builder/compat-webpack4": "^1.0.0",
     "query-string": "^7.0.1",
-    "parse-url": "^5.0.7"
+    "parse-url": "^6.0.0"
   }
 }

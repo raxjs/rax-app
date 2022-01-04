@@ -8,6 +8,7 @@ import { NODE, WEB } from './constants';
 import setDev from './ssr/setDev';
 import { getChunkInfo } from './utils/chunkInfo';
 import WebAssetsPlugin from './WebAssetsPlugin';
+import injectBundleInfo from './utils/injectBundleInfo';
 
 export default function (api) {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;
@@ -34,6 +35,15 @@ export default function (api) {
   });
   onGetWebpackConfig('ssr', (config) => {
     config.target('node');
+    // remove process fallback when target is node
+    config.plugins.delete('ProvidePlugin');
+
+    // Deprecate in v4.0
+    // SSR need close hot for mock require case
+    config.devServer.hot(false);
+
+    // not generate vendor
+    config.optimization.splitChunks({ cacheGroups: {} });
     // Set entry
     Object.keys(entries).forEach((entryName) => {
       const entryPaths = entries[entryName];
@@ -93,13 +103,8 @@ export default function (api) {
       const htmlFilePath = path.join(webBuildDir, `${entryName}.html`);
       const bundle = fs.readFileSync(serverFilePath, 'utf-8');
       const html = fs.readFileSync(htmlFilePath, 'utf-8');
-      if (command === 'build') {
-        fs.writeFileSync(htmlFilePath, html.replace(/(\<\!--__INNER_ROOT__--\>|\<\!--__BEFORE_ROOT__--\>|\<\!--__AFTER_ROOT__--\>)/g, ''));
-      }
       const minifedHtml = minify(html, { collapseWhitespace: true, quoteCharacter: "'" });
-      const newBundle = bundle
-        .replace(/__RAX_APP_SERVER_HTML_TEMPLATE__/, minifedHtml)
-        .replace(new RegExp('__CHUNK_INFO__'), encodeURIComponent(JSON.stringify(chunkInfo)));
+      const newBundle = injectBundleInfo(bundle, { html: minifedHtml, chunkInfo });
       fs.writeFileSync(serverFilePath, newBundle, 'utf-8');
     });
   });

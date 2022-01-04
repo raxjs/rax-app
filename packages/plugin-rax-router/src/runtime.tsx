@@ -58,13 +58,15 @@ export default async (api) => {
           <TabBarWrapper
             key="rax-app-tab-bar"
             history={history}
-            renderTabBar={() => (
-              <TabBar
+            renderTabBar={() => {
+              const currentPageName = history.location.pathname;
+              const shouldRender = tabBarConfig.items.some(({ pageName }) => pageName === currentPageName);
+              return (shouldRender ? <TabBar
                 onClick={handleTabBarItemClick}
                 config={tabBarConfig}
-                currentPageName={history.location.pathname}
-              />
-            )}
+                currentPageName={currentPageName}
+              /> : null);
+            }}
           />,
         );
       }
@@ -101,13 +103,21 @@ function parseRoutes(routes) {
 
 function getComponentByLazy(PageComponent, { route }) {
   const { lazy = true } = route;
-  if (isWeb && lazy) {
-    return PageComponent.then((component) => {
-      return wrapperPage(component, { route });
-    });
+  if (isWeb) {
+    if (lazy) {
+      // When it is lazy, PageComponent is a function which return a Promise<Component>
+      const LazyComponent = PageComponent();
+      return LazyComponent.then((component) => {
+        return wrapperPage(component, { route });
+      });
+    }
+
+    return wrapperPage(PageComponent, { route });
   }
 
-  return wrapperPage(PageComponent, { route });
+  // When it is other platform, the route.component is () => Component
+  const Page = PageComponent();
+  return wrapperPage(Page, { route });
 }
 
 function wrapperPage(PageComponent, { route }) {
