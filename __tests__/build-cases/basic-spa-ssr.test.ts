@@ -3,7 +3,6 @@ import * as cheerio from 'cheerio';
 import { buildFixture } from '../utils/build';
 
 const example = 'basic-spa-ssr';
-const BUNDLE_URL = require.resolve(path.join(process.cwd(), `examples/${example}/build/node/index.js`));
 
 describe('should build web result: ', () => {
   beforeEach(() => {
@@ -14,7 +13,7 @@ describe('should build web result: ', () => {
   buildFixture(example);
 
   test('ssr render method', async () => {
-    const { render } = require(BUNDLE_URL);
+    const { render } = require(path.join(process.cwd(), `examples/${example}/build/node/index.js`));
     const ctxReq = {
       url: '/?a=1',
       path: '/',
@@ -34,7 +33,7 @@ describe('should build web result: ', () => {
   });
 
   test('ssr renderToHTML method', async () => {
-    const { renderToHTML } = require(BUNDLE_URL);
+    const { renderToHTML } = require(path.join(process.cwd(), `examples/${example}/build/node/index.js`));
     const req = {
       url: '/?a=1',
       path: '/',
