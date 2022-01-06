@@ -22,7 +22,6 @@ describe('should build web result: ', () => {
     };
 
     const ctx = { req: ctxReq };
-
     const { html } = await renderPageOnly(ctx);
 
     const $ = cheerio.load(html, { decodeEntities: false });
@@ -39,7 +38,6 @@ describe('should build web result: ', () => {
     };
 
     const ctx = { req: ctxReq };
-
     const { html } = await renderPageOnly(ctx, { 
       initialProps: {
         data: {
@@ -62,7 +60,6 @@ describe('should build web result: ', () => {
     };
 
     const ctx = { req: ctxReq };
-
     const { html } = await renderDocumentOnly(ctx, { 
       initialProps: {
         data: {

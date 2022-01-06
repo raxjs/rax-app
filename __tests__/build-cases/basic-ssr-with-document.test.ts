@@ -20,11 +20,9 @@ describe('should build web result: ', () => {
       url: '/?a=1',
       path: '/',
     };
-
     const ctx = { req: ctxReq };
 
     const { html } = await renderPageOnly(ctx);
-
     const $ = cheerio.load(html, { decodeEntities: false });
     expect($('#title').text()).toBe('Welcome to Your Rax App with SSR');
   });
@@ -37,7 +35,6 @@ describe('should build web result: ', () => {
       url: '/?a=1',
       path: '/',
     };
-
     const ctx = { req: ctxReq };
 
     const { html } = await renderPageOnly(ctx, { 
@@ -60,11 +57,9 @@ describe('should build web result: ', () => {
       url: '/?a=1',
       path: '/',
     };
-
     const ctx = { req: ctxReq };
 
     const { html } = await renderDocumentOnly(ctx);
-
     const $ = cheerio.load(html, { decodeEntities: false });
 
     expect($('#root').text()).toBe('');
@@ -79,7 +74,6 @@ describe('should build web result: ', () => {
       url: '/?a=1',
       path: '/',
     };
-
     const ctx = { req: ctxReq };
 
     const { html } = await renderDocumentOnly(ctx, { 
