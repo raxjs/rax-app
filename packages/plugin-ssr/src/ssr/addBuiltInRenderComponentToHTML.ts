@@ -13,9 +13,18 @@ export default function addBuiltInRenderComponentToHTML({ updateDataInClient }: 
       initialData,
       pageInitialProps
     };
-    // Assign pageHTML
-    ${addPageHTMLAssign()}
-    $.root.innerHTML = pageHTML;
+
+    let initialHtml;
+
+    if (options.__pageHTML != null) {
+      initialHtml = options.__pageHTML;
+    } else {
+      // Assign pageHTML
+      ${addPageHTMLAssign()}
+      initialHtml = pageHTML;
+    }
+
+    $.root.innerHTML = initialHtml;
     ${updateDataInClient ? '' : '$.insertScript(\'<script data-from="server">window.__INITIAL_DATA__=\' + stripXSS(JSON.stringify(data)) + \'</script>\');'}
     return $.html();
   };

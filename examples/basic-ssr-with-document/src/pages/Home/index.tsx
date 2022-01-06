@@ -25,7 +25,7 @@ export default function Home(props) {
   return (
     <View className="home">
       <Logo />
-      <Text className="title">{props?.data?.title || 'Welcome to Your Rax App'}</Text>
+      <Text id="title" className="title">{props?.data?.title || 'Welcome to Your Rax App'}</Text>
       <Text className="info">{props?.data?.info || 'More information about Rax'}</Text>
       <Text className="info" id="link" onClick={() => history.push('/about', { id: 1 })}>Go About</Text>
     </View>

@@ -14,8 +14,8 @@ function addExport(code) {
     renderToHTML,
     renderWithContext,
     renderToHTMLWithContext,
-    renderPageToHtml,
     renderDocumentToHtml,
+    renderPageToHtml
   };`;
 }
 
@@ -185,11 +185,11 @@ export default function () {
 
       ${addDefineInitialPage()}
       const Component = Page;
-      const { initialData, pageInitialProps } = options;
+      const pageInitialProps = options.initialProps || await getInitialProps(Component, ctx);
 
       const data = {
         __SSR_ENABLED__: true,
-        initialData,
+        initialData: options.initialData,
         pageInitialProps,
       };
 
@@ -203,7 +203,14 @@ export default function () {
       const Page = () => '';
       Page.__pageConfig = {};
 
-      const html = await renderComponentToHTML(Page, ctx, options);
+      const documentData = options.initialProps || await getInitialProps(Document, ctx);
+
+      const html = await renderComponentToHTML(Page, ctx, {
+        __pageHTML: '',
+        __documentData: documentData,
+        ...options,
+      });
+
       return html;
     }
   `;
