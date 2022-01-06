@@ -43,7 +43,7 @@ function wrapperPageWithWeb(staticConfig) {
       useEffect(() => {
         const title = pageConfig.window?.title || staticConfig.window?.title;
         // Avoid override developer custom title
-        if (title) {
+        if (title && !document.title) {
           document.title = title;
         }
 
