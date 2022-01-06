@@ -39,6 +39,9 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
     babelConfig,
   });
 
+  // dynamic import script cross origin
+  enhancedWebpackConfig.output.crossOriginLoading('anonymous');
+
   enhancedWebpackConfig.module
     .rule('appJSON')
     .type('javascript/auto')
