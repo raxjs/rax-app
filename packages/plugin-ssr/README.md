@@ -26,7 +26,7 @@ Params
 * initialProps(optional): initial props for rendering page.
 
 ```js
-const { html } = await renderPageToHtml(ctx, {
+const { html } = await renderPageOnly(ctx, {
   initialProps: {},
 });
 ```
@@ -40,7 +40,7 @@ Params
 * initialProps(optional): initial props for rendering page.
 
 ```js
-const { html } = await renderDocumentHtml(ctx, {
+const { html } = await renderDocumentOnly(ctx, {
   initialProps: {},
 });
 ```
