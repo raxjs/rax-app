@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.5
+
+- Fix: avoid override developer custom title
+
 ## 7.0.4
 
 - Fix: Remove error message when using mpa mode with webview miniapp
