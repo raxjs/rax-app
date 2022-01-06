@@ -3,6 +3,7 @@
 ## 7.0.5
 
 - Fix: avoid override developer custom title
+- Fix: dynamic import script crossorigin property
 
 ## 7.0.4
 
