@@ -17,7 +17,7 @@ await renderWithContext(ctx, {
 });
 ```
 
-### renderPageToHtml
+### renderPageOnly
 
 Render page component to html string.
 
@@ -26,12 +26,12 @@ Params
 * initialProps(optional): initial props for rendering page.
 
 ```js
-const html = await renderPageToHtml(ctx, {
+const { html } = await renderPageToHtml(ctx, {
   initialProps: {},
 });
 ```
 
-### renderDocumentToHtml
+### renderDocumentOnly
 
 Render document component to html string.
 
@@ -40,7 +40,7 @@ Params
 * initialProps(optional): initial props for rendering page.
 
 ```js
-const html = await renderDocumentHtml(ctx, {
+const { html } = await renderDocumentHtml(ctx, {
   initialProps: {},
 });
 ```

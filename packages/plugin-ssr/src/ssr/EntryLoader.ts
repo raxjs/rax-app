@@ -14,8 +14,8 @@ function addExport(code) {
     renderToHTML,
     renderWithContext,
     renderToHTMLWithContext,
-    renderDocumentToHtml,
-    renderPageToHtml
+    renderDocumentOnly,
+    renderPageOnly
   };`;
 }
 
@@ -180,7 +180,7 @@ export default function () {
       ctx.res.send(html);
     }
     
-    async function renderPageToHtml(ctx, options = {}) {
+    async function renderPageOnly(ctx, options = {}) {
       const { res, req } = ctx;
 
       ${addDefineInitialPage()}
@@ -195,10 +195,13 @@ export default function () {
 
       ${addPageHTMLAssign()}
 
-      return pageHTML;
+      return {
+        html: pageHTML,
+        initialProps: pageInitialProps
+      };
     }
 
-    async function renderDocumentToHtml(ctx, options = {}) {
+    async function renderDocumentOnly(ctx, options = {}) {
       // render empty page
       const Page = () => '';
       Page.__pageConfig = {};
@@ -211,7 +214,10 @@ export default function () {
         ...options,
       });
 
-      return html;
+      return {
+        html: html,
+        initialProps: documentData
+      };
     }
   `;
 

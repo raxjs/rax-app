@@ -12,9 +12,9 @@ describe('should build web result: ', () => {
 
   buildFixture(example);
 
-  test('renderPageToHtml', async () => {
+  test('renderPageOnly', async () => {
     const BUNDLE_URL = path.join(process.cwd(), `examples/${example}/build/node/home.js`);
-    const { renderPageToHtml } = require(BUNDLE_URL);
+    const { renderPageOnly } = require(BUNDLE_URL);
 
     const ctxReq = {
       url: '/?a=1',
@@ -23,15 +23,15 @@ describe('should build web result: ', () => {
 
     const ctx = { req: ctxReq };
 
-    const html = await renderPageToHtml(ctx);
+    const { html } = await renderPageOnly(ctx);
 
     const $ = cheerio.load(html, { decodeEntities: false });
     expect($('#title').text()).toBe('Welcome to Your Rax App with SSR');
   });
 
-  test('renderPageToHtml with initialProps', async () => {
+  test('renderPageOnly with initialProps', async () => {
     const BUNDLE_URL = path.join(process.cwd(), `examples/${example}/build/node/home.js`);
-    const { renderPageToHtml } = require(BUNDLE_URL);
+    const { renderPageOnly } = require(BUNDLE_URL);
 
     const ctxReq = {
       url: '/?a=1',
@@ -40,7 +40,7 @@ describe('should build web result: ', () => {
 
     const ctx = { req: ctxReq };
 
-    const html = await renderPageToHtml(ctx, { 
+    const { html } = await renderPageOnly(ctx, { 
       initialProps: {
         data: {
           title: 'Welcome to Your Rax App with SSR!',
@@ -52,9 +52,9 @@ describe('should build web result: ', () => {
     expect($('#title').text()).toBe('Welcome to Your Rax App with SSR!');
   });
 
-  test('renderDocumentToHtml with initialProps', async () => {
+  test('renderDocumentOnly with initialProps', async () => {
     const BUNDLE_URL = path.join(process.cwd(), `examples/${example}/build/node/home.js`);
-    const { renderDocumentToHtml } = require(BUNDLE_URL);
+    const { renderDocumentOnly } = require(BUNDLE_URL);
 
     const ctxReq = {
       url: '/?a=1',
@@ -63,7 +63,7 @@ describe('should build web result: ', () => {
 
     const ctx = { req: ctxReq };
 
-    const html = await renderDocumentToHtml(ctx, { 
+    const { html } = await renderDocumentOnly(ctx, { 
       initialProps: {
         data: {
           title: 'Welcome to Your Rax App with SSR!',
