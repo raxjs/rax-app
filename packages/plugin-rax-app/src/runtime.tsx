@@ -15,8 +15,7 @@ function wrapperPageWithOtherPlatform({ appConfig, context }) {
   const WrapperPageFn = (PageComponent) => {
     const { __pageConfig: pageConfig } = PageComponent;
     const PageWrapper = (props) => {
-      // MiniApp need window.history
-      const history = appConfig?.router?.history || window?.history;
+      const history = appConfig?.router?.history;
       const pageProps = {
         ...props,
         ...context.pageInitialProps,
