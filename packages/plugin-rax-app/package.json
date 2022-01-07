@@ -6,7 +6,8 @@
   "main": "lib/index.js",
   "files": [
     "lib",
-    "!lib/**/*.map"
+    "!lib/**/*.map",
+    "src/runtime.tsx"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
