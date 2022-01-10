@@ -22,7 +22,8 @@ export default function (api) {
   const baseConfig = getWebpackBase(api);
 
   const {
-    ssr: { sourceMap, mockBrowserEnv },
+    ssr: { mockBrowserEnv },
+    sourceMap,
   } = web;
 
   registerTask('ssr', baseConfig);
