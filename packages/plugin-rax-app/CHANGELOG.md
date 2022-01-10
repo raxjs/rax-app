@@ -6,6 +6,7 @@
 - Fix: dynamic import script crossorigin property
 - Fix: windows path error
 - Fix: css-modules should not add to normal css file
+- Fix: react-dev-utils socket pathname
 
 ## 7.0.4
 

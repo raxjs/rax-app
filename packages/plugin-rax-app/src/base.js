@@ -88,7 +88,6 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
     config.plugin('DefinePlugin').tap((args) => [
       Object.assign({}, ...args, {
         'process.env.PUBLIC_URL': JSON.stringify(publicUrl),
-        'process.env.WDS_SOCKET_PATH': '"/ws"',
       }),
     ]);
 
