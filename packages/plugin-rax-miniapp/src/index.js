@@ -13,11 +13,12 @@ const { setWebviewConfig, setWebviewPageConfig } = require('miniapp-webview-conf
 const separateRoutes = require('./separateRoutes').default;
 const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR, MINIAPP_BUILD_TYPES } = require('./constants');
+const { default: copyRemoteDist } = require('./copyRemoteDist');
 
 module.exports = (api) => {
-  const { getValue, context, registerTask, onGetWebpackConfig } = api;
-  const { userConfig } = context;
-  const { targets, inlineStyle, vendor } = userConfig;
+  const { getValue, context, registerTask, onGetWebpackConfig, onHook, cancelTask } = api;
+  const { userConfig, rootDir } = context;
+  const { targets, inlineStyle, vendor, outputDir = 'build' } = userConfig;
 
   const miniappStandardList = [
     MINIAPP,
@@ -28,6 +29,15 @@ module.exports = (api) => {
   ];
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
+  const mixTargets = [];
+
+  onHook('after.build.compile', () => {
+    copyRemoteDist(mixTargets, path.resolve(rootDir, outputDir));
+  });
+  onHook('after.start.compile', () => {
+    copyRemoteDist(mixTargets, path.resolve(rootDir, outputDir));
+  });
+
   targets.forEach((target) => {
     if (miniappStandardList.includes(target)) {
       const chainConfig = getWebpackBase(api, {
@@ -43,17 +53,37 @@ module.exports = (api) => {
       // Register task
       registerTask(target, chainConfig);
 
-      onGetWebpackConfig(target, (config) => {
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const { rootDir, userConfig } = context;
-        const { outputDir = 'build' } = userConfig;
-        // Get output dir
-        const outputPath = path.resolve(rootDir, outputDir, target);
+      // Get output dir
+      const outputPath = path.resolve(rootDir, outputDir, target);
 
-        // static config
-        const staticConfig = normalizeStaticConfig(getValue('staticConfig'), { rootDir });
-        const { normalRoutes, nativeRoutes, remoteRoutes } = separateRoutes(staticConfig.routes, { target, rootDir });
-        const buildType = userConfig[target] && userConfig[target].buildType ? userConfig[target].buildType : MINIAPP_BUILD_TYPES.RUNTIME;
+      // static config
+      const staticConfig = normalizeStaticConfig(getValue('staticConfig'), { rootDir });
+      const { normalRoutes, nativeRoutes, remoteRoutes } = separateRoutes(staticConfig.routes, { target, rootDir });
+
+      const buildType = userConfig[target] && userConfig[target].buildType ? userConfig[target].buildType : MINIAPP_BUILD_TYPES.RUNTIME;
+      if (remoteRoutes.length > 0 && buildType !== MINIAPP_BUILD_TYPES.WEBVIEW) {
+        mixTargets.push(target);
+        const webviewTaskName = `webview-${target}`;
+        const webviewPagesChainConfig = getWebpackBase(api, {
+          target: webviewTaskName,
+          babelConfigOptions: { styleSheet: inlineStyle, disableRegenerator: true },
+        });
+        webviewPagesChainConfig.plugins.delete('ProgressPlugin');
+        webviewPagesChainConfig.name(webviewTaskName);
+        webviewPagesChainConfig.taskName = webviewTaskName;
+        setWebviewPageConfig(
+          webviewPagesChainConfig,
+          {
+            api,
+            target,
+            outputPath: path.resolve(rootDir, outputDir, 'webview', target),
+          },
+          remoteRoutes,
+        );
+        registerTask(webviewTaskName, webviewPagesChainConfig);
+      }
+
+      onGetWebpackConfig(target, (config) => {
         // Set Entry when it's runtime project
         if (buildType === MINIAPP_BUILD_TYPES.RUNTIME) {
           setEntry(chainConfig, { context, target, routes: normalRoutes });
@@ -180,26 +210,6 @@ module.exports = (api) => {
             );
             registerTask(compiledComponentsTaskName, compiledComponentsChainConfig);
           }
-        }
-        if (remoteRoutes.length > 0) {
-          const webviewTaskName = `webview-${target}`;
-          const webviewPagesChainConfig = getWebpackBase(api, {
-            target: webviewTaskName,
-            babelConfigOptions: { styleSheet: inlineStyle, disableRegenerator: true },
-          });
-          webviewPagesChainConfig.plugins.delete('ProgressPlugin');
-          webviewPagesChainConfig.name(webviewTaskName);
-          webviewPagesChainConfig.taskName = webviewTaskName;
-          setWebviewPageConfig(
-            webviewPagesChainConfig,
-            {
-              api,
-              target,
-              outputPath: path.resolve(rootDir, outputDir, target),
-            },
-            remoteRoutes,
-          );
-          registerTask(webviewTaskName, webviewPagesChainConfig);
         }
       });
     }
