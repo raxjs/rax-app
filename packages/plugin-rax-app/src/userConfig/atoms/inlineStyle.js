@@ -154,7 +154,7 @@ function configLoadersInNode(configRule, type) {
         exportOnlyLocals: true,
       };
     }
-    return configRule.uses
+    return configRule
       .use('css-loader')
       .tap((loaderOptions) => ({
         ...loaderOptions,
