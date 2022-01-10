@@ -101,7 +101,7 @@ const configAssetsRule = (config, type, testReg, loaderOpts = {}) => {
     .rule(type)
     .test(testReg)
     .use(type)
-    .loader(require.resolve('@builder/pack/deps/url-loader'))
+    .loader(require.resolve('url-loader'))
     .options({
       name: '[hash].[ext]',
       limit: URL_LOADER_LIMIT,
@@ -127,6 +127,7 @@ export default (config, { rootDir, babelConfig }: IOptions) => {
         request = args[0].request;
         callback = args[1];
       }
+
       if (request.indexOf('@weex-module') !== -1) {
         return callback(null, `commonjs ${request}`);
       }
@@ -159,17 +160,27 @@ export default (config, { rootDir, babelConfig }: IOptions) => {
 
   const babelLoader = require.resolve('@builder/pack/deps/babel-loader');
 
-  ['jsx', 'tsx'].forEach((ruleName) => {
-    const testRegx = new RegExp(`\\.${ruleName}?$`);
-    config.module.rule(ruleName)
-      .test(testRegx)
-      .exclude
-      .add(EXCLUDE_REGX)
-      .end()
-      .use('babel-loader')
-      .loader(babelLoader)
-      .options({ ...cloneDeep(babelConfig) });
-  });
+  config.module
+    .rule('jsx')
+    .test(/\.jsx?$/)
+    .exclude.add(EXCLUDE_REGX)
+    .end()
+    .use('babel-loader')
+    .loader(babelLoader)
+    .options(cloneDeep(babelConfig));
+
+  config.module
+    .rule('tsx')
+    .test(/\.tsx?$/)
+    .exclude.add(EXCLUDE_REGX)
+    .end()
+    .use('babel-loader')
+    .loader(babelLoader)
+    .options(cloneDeep(babelConfig))
+    .end()
+    .use('ts-loader')
+    .loader(require.resolve('ts-loader'))
+    .options({ transpileOnly: true });
 
   return config;
 };

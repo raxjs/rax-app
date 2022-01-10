@@ -1,7 +1,8 @@
-import * as qs from 'qs';
+import * as queryString from 'query-string';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { modifyEntry } from '@builder/compat-webpack4';
+import { checkExportDefaultDeclarationExists } from '@builder/app-helpers';
 import { IEntryPluginOptions, ILoaderQuery } from '../types';
 import { STATIC_CONFIG, TEMP_PATH } from '../constants';
 import getPageConfig from '../utils/getPageConfig';
@@ -34,13 +35,14 @@ export default class EntryPlugin {
     const staticConfig = getValue(STATIC_CONFIG);
     const { updateDataInClient } = web.ssr;
     const pageConfig = getPageConfig(api, staticConfig);
+    const tempPath = getValue(TEMP_PATH);
 
     if (!updateDataInClient) {
       log.info('Enabled inject initial data into HTML.');
     }
 
     let query: ILoaderQuery = {
-      tempPath: getValue(TEMP_PATH),
+      tempPath,
       updateDataInClient,
     };
 
@@ -50,7 +52,7 @@ export default class EntryPlugin {
         needInjectStyle: web.mpa && !inlineStyle,
         documentPath,
         publicPath,
-        injectedHTML: applyMethod('rax.getInjectedHTML'),
+        injectedHTML: JSON.stringify(applyMethod('rax.getInjectedHTML')),
         assetsProcessor,
         doctype: web.doctype,
       };
@@ -66,11 +68,15 @@ export default class EntryPlugin {
       const entry = entrySeparatedLoader[entrySeparatedLoader.length - 1];
       query.entryName = entryName;
 
+      // 如果是 app.ts 且是 export default 导出，就需要引用该导出作为页面组件并执行 runApp
+      if (/app(\.(t|j)sx?)?$/.test(entry) && checkExportDefaultDeclarationExists(entry)) {
+        query.exportPageComponent = true;
+      }
+
       if (web.mpa) {
-        query.pageConfig = pageConfig[entryName];
-        const entryFolder = path.dirname(entry);
-        // Check runApp path
-        let runAppPath = path.join(entryFolder, 'runApp');
+        query.pageConfig = JSON.stringify(pageConfig[entryName]);
+        // Check runApp path: .rax/entries/home/runApp.ts
+        let runAppPath = path.join(tempPath, 'entries', entryName, 'runApp');
         if (!fs.existsSync(`${runAppPath}.ts`)) {
           // Use core runApp path as default runApp implement
           runAppPath = coreRunAppPath;
@@ -81,7 +87,7 @@ export default class EntryPlugin {
       }
       modifyEntry(compiler, {
         entryName,
-        entryPath: `${EntryLoader}?${qs.stringify(query || {})}!${entry}`,
+        entryPath: `${EntryLoader}?${queryString.stringify(query)}!${entry}`,
       });
     });
   }

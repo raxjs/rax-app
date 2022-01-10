@@ -7,19 +7,39 @@ import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import { updateEnableStatus } from './utils/localBuildCache';
 
 export default (api, documentPath?: string | undefined) => {
-  const { onGetWebpackConfig, getValue, context, registerTask } = api;
+  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, modifyUserConfig } = api;
+
+  // Register document config key
+  registerUserConfig({
+    name: 'document',
+    validation: 'object',
+  });
+
   const {
     userConfig: { inlineStyle, compileDependencies, web: webConfig = {} },
     rootDir,
     command,
   } = context;
+
+  if (webConfig.mpa) {
+    // Modify mpa config key for document task with RouteLoader
+    modifyUserConfig((originalConfig) => {
+      return {
+        ...originalConfig,
+        document: {
+          ...originalConfig.document,
+          mpa: true,
+        },
+      };
+    });
+  }
+
   const tempPath = getValue('TEMP_PATH');
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const baseConfig = getWebpackBase(api, {
     target: 'document',
     babelConfigOptions: { styleSheet: inlineStyle },
-    isNode: true,
   });
   baseConfig.name('document');
 
@@ -73,17 +93,31 @@ export default (api, documentPath?: string | undefined) => {
 
     config.output.filename('[name].js');
 
+    // Set server flag
+    config.plugin('DefinePlugin').tap((args) => [
+      Object.assign({}, ...args, {
+        'process.env.__IS_SERVER__': true,
+      }),
+    ]);
+
+    // Get redirect runApp info in MPA
+    const { runApp: { multipleSource = [] } } = getValue('importDeclarations');
+
     entries.forEach(({ entryName, entryPath }) => {
       let entry = entryPath;
       if (documentPath) {
         entry = documentPath;
       }
-      // Check runApp path
-      let runAppPath = path.join(path.dirname(entryPath), 'runApp');
-      if (!fs.existsSync(`${runAppPath}.ts`)) {
-        // Use core runApp path as default runApp implement
-        runAppPath = path.join(tempPath, 'core/runApp');
+      // Use core runApp path as default runApp implement
+      let runAppPath = path.join(tempPath, 'core/runApp');
+      if (multipleSource.length > 0) {
+        const targetEntryInfo = multipleSource.find(({ filename }) => filename === entryPath);
+
+        if (targetEntryInfo) {
+          runAppPath = targetEntryInfo.value;
+        }
       }
+
       config.entry(entryName).add(
         `${require.resolve('./Loaders/render-loader')}?${qs.stringify({
           documentPath,
@@ -98,7 +132,7 @@ export default (api, documentPath?: string | undefined) => {
 };
 
 function addReloadByDocumentChange(rootDir, entries) {
-  const watcher = chokidar.watch(`${rootDir}/src/document/index.@(tsx|js?(x))`, {
+  const watcher = chokidar.watch(`${rootDir}/src/document/**`, {
     ignoreInitial: true,
     atomic: 300,
   });

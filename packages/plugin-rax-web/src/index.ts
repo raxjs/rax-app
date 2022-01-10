@@ -14,7 +14,7 @@ import getAppEntry from './utils/getAppEntry';
 
 const { getMpaEntries } = appHelpers;
 export default (api) => {
-  const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, registerCliOption, modifyUserConfig } = api;
+  const { onGetWebpackConfig, getValue, context, registerTask, registerCliOption, applyMethod } = api;
 
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
@@ -31,20 +31,6 @@ export default (api) => {
   });
   chainConfig.name(target);
   chainConfig.taskName = target;
-  registerUserConfig({
-    name: target,
-    validation: 'object',
-  });
-
-  if (webConfig.pha) {
-    // Modify mpa config must before than set entry, because entry check depends on mpa config
-    modifyUserConfig(() => {
-      if (!context.userConfig.web) context.userConfig.web = {};
-      context.userConfig.web.mpa = true;
-      delete context.userConfig.plugins;
-      return context.userConfig;
-    });
-  }
 
   // Set Entry
   setEntry(chainConfig, context);
@@ -61,7 +47,7 @@ export default (api) => {
 
   onGetWebpackConfig(target, (config) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { rootDir, command } = context;
+    const { command } = context;
     const staticConfig = getValue('staticConfig');
 
     config.plugin('document').use(DocumentPlugin, [
@@ -69,9 +55,8 @@ export default (api) => {
         api,
         staticConfig,
         documentPath,
-        pages: webConfig.mpa ? [] : [
-          getAppEntry(rootDir),
-        ],
+        pages: webConfig.mpa ? [] : [getAppEntry(rootDir)],
+        target,
       },
     ]);
     if (webConfig.snapshot) {
@@ -100,17 +85,7 @@ export default (api) => {
     }
 
     if (command === 'start') {
-      const webEntries = config.entryPoints.entries();
-      Object.keys(webEntries).forEach((entryName) => {
-        const entrySet = config.entry(entryName);
-        const entryFiles = entrySet.values();
-        const finalEntryFile = entryFiles[entryFiles.length - 1];
-        // Add webpack hot dev client
-        entrySet.prepend(require.resolve('react-dev-utils/webpackHotDevClient'));
-        // Add module.hot.accept() to entry
-        entrySet.add(`${require.resolve('./Loaders/hmr-loader')}!${finalEntryFile}`);
-        entrySet.delete(finalEntryFile);
-      });
+      applyMethod('rax.injectHotReloadEntries', config);
     }
   });
 

@@ -7,14 +7,21 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const fs = require('fs-extra');
 const ExportsFieldWebpackPlugin = require('@builder/exports-field-webpack-plugin').default;
 const { isWebpack4 } = require('@builder/compat-webpack4');
+const { MINIAPP_PLATFORMS, SSR, DOCUMENT } = require('./constants');
 
-module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNode }) => {
+module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => {
   const { context, onGetWebpackConfig } = api;
   const { rootDir, command, userConfig } = context;
   let mpa = false;
-  if (userConfig[target]) {
-    // subPackages is miniapp config, mpa is web/weex/kraken config
-    mpa = userConfig[target].subPackages || userConfig[target].mpa;
+
+  // subPackages is miniapp config, mpa is web/weex/kraken config
+  // document and ssr need be the same as web
+  if (MINIAPP_PLATFORMS.includes(target)) {
+    mpa = (userConfig[target] || {}).subPackages;
+  } else if ([SSR, DOCUMENT].includes(target)) {
+    mpa = (userConfig.web || {}).mpa;
+  } else if (userConfig[target]) {
+    mpa = userConfig[target].mpa;
   }
 
   const mode = command === 'start' ? 'development' : 'production';
@@ -32,17 +39,29 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
     babelConfig,
   });
 
-  enhancedWebpackConfig
-    .module
+  enhancedWebpackConfig.module
     .rule('appJSON')
     .type('javascript/auto')
-    .test(/app\.json$/)
+    .test(/\/app\.json$/)
+    .use('swc-loader')
+    .loader(require.resolve('@builder/swc-loader'))
+    .options({
+      jsc: {
+        target: 'es5',
+      },
+      module: {
+        type: 'commonjs',
+        ignoreDynamic: true,
+      },
+    })
+    .end()
     .use('route-loader')
     .loader(require.resolve('./Loaders/RouteLoader'))
     .options({
       target,
       mpa,
-    });
+    })
+    .end();
 
   enhancedWebpackConfig
     .plugin('ProgressPlugin')
@@ -52,16 +71,6 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
   if (fs.existsSync(path.resolve(rootDir, 'public'))) {
     enhancedWebpackConfig.plugin('CopyWebpackPlugin').use(CopyWebpackPlugin, [[]]);
   }
-
-  ['jsx', 'tsx'].forEach((ruleName) => {
-    enhancedWebpackConfig.module
-      .rule(ruleName)
-      .use('platform-loader')
-      .loader(require.resolve('rax-platform-loader'))
-      .options({
-        platform: target === 'ssr' || isNode ? 'node' : target,
-      });
-  });
 
   onGetWebpackConfig(target, (config) => {
     // Set public url after developer has set public path
@@ -80,7 +89,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
       }),
     ]);
 
-    const { outputDir = 'build' } = userConfig;
+    const { outputDir = 'build', swc } = userConfig;
     // Copy public dir
     if (config.plugins.has('CopyWebpackPlugin')) {
       config.plugin('CopyWebpackPlugin').tap(([copyList]) => {
@@ -99,7 +108,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
 
     // Add condition names
     if (isWebpack4) {
-      enhancedWebpackConfig.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
+      config.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
         {
           conditionNames,
         },
@@ -109,7 +118,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
       // Reset config target
       config.target('web');
     } else {
-      enhancedWebpackConfig.resolve.merge({
+      config.resolve.merge({
         conditionNames,
       });
 
@@ -123,6 +132,35 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {}, isNod
 
     // Set output path
     config.output.path(path.resolve(rootDir, outputDir, target));
+
+    // Only save target code
+    const keepPlatform = ['ssr', 'document'].includes(target) ? 'node' : target;
+    ['jsx', 'tsx'].forEach((ruleName) => {
+      config.module
+        .rule(ruleName)
+        .use('platform-loader')
+        .loader(require.resolve('rax-platform-loader'))
+        .options({
+          platform: keepPlatform,
+        });
+    });
+
+    if (swc) {
+      ['jsx', 'tsx'].forEach((suffix) => {
+        config.module
+          .rule(`swc-${suffix}`)
+          .use('swc-loader')
+          .tap((options) => {
+            return {
+              ...options,
+              keepPlatform,
+            };
+          });
+      });
+    }
+
+    // TODO: hack for tslib wrong exports field https://github.com/microsoft/tslib/issues/161
+    config.resolve.alias.set('tslib', 'tslib/tslib.es6.js');
   });
 
   return enhancedWebpackConfig;

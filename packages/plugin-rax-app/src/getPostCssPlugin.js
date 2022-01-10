@@ -1,5 +1,3 @@
-/* eslint-disable no-case-declarations */
-/* eslint-disable global-require */
 const atImport = require('postcss-import');
 
 module.exports = function getPlugins(type) {
@@ -20,7 +18,7 @@ module.exports = function getPlugins(type) {
     case 'web':
       return [
         atImport(),
-        require('postcss-preset-env')({
+        require('@builder/pack/deps/postcss-preset-env')({
           autoprefixer: {
             flexbox: 'no-2009',
           },

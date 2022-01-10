@@ -4,11 +4,12 @@ import { formatPath } from '@builder/app-helpers';
 
 function getInitialHTML(staticExport): string {
   if (!staticExport) return '\'\'';
-  return `raxServerRenderer({}, { pageConfig }, {
+  return `raxServerRenderer({ pageConfig, createElement }, {
     appConfig,
     createBaseApp,
     emitLifeCycles,
     TabBar,
+    staticConfig,
   })`;
 }
 

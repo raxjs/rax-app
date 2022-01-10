@@ -1,4 +1,4 @@
-import { IRootDispatch } from 'rax-app';
+import { IStoreDispatch } from 'rax-app';
 
 export const delay = (time) => new Promise((resolve) => setTimeout(() => resolve(), time));
 
@@ -16,7 +16,7 @@ export default {
     },
   },
 
-  effects: (dispatch: IRootDispatch) => ({
+  effects: (dispatch: IStoreDispatch) => ({
     async decrementAsync() {
       await delay(10);
       dispatch.counter.decrement();

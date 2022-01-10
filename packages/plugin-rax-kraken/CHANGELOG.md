@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.0
+
+- Feat: upgrade dependencies for webpack 5
+
 ## v1.1.2
 
 - Chore: optimize `devServer.contentBase` and `output.path` logic

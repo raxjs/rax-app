@@ -1,5 +1,110 @@
 ## Changelog
 
+## 3.8.7
+
+- Fix: SPA SSR `getInitialProps` is invalid
+- Feat: miniapp webview mode should modify app to MPA type
+- Chore: add ssr test case
+- Chore: remove DEF comment node
+
+## 3.8.6
+
+- Fix: page component import method in the env other than web
+- Fix: MPA runApp file path in SSR
+- Fix: override developer custom title
+
+## 3.8.5
+
+- Fix: special SPA route.path
+
+## 3.8.4
+
+- Chore: update `parse-url` to v6
+- SSR: fix inject configured scripts
+
+## 3.8.3
+
+- Fix: remove comment node in html result
+
+## 3.8.2
+
+- Fix: ssr context shouldn't be overrode
+- Fix: static export mode build error
+
+## 3.8.1
+
+SSR: fix chunkInfo is undefined FaaS app
+SSR: fix request might be fake that lose url field
+SSR: fix devServer.hot should be closed
+SSR: fix appConfig might be undefined
+Fix: __webpack_public_path__ is invalid in front of page file
+Fix: tabBar show in other page
+Fix: child class need use declare with add type for property which extends parent
+Fix: miniapp compile mode @alias is invalid
+Fix: invalid host in bind host case
+Chore: use webpack-chain directly
+
+## 3.8.0
+
+- Feat: support toggle webpack version 5 by `webpack5: true`
+- Feat: support use swc instead of babel by `swc: true`
+- Feat: `dropLogLevel` for removing different level log code
+- Feat: miniapp support webview mode
+- Feat: support MPA runtime plugin
+- Feat: SPA supports per-page configurations of `keepAlive` and `lazy`, such as
+  ```json
+  // app.json
+  {
+    "routes": [
+      {
+        "path": "/",
+        "source": "pages/Home/index",
+        "keepAlive": true,
+        "lazy": false,
+      }
+    ]
+  }
+  ```
+- Chore: MPA changed to render every page by `runApp`
+- Chore: use `minify` `object` type options instead `terserOptions`, such as
+  ```json
+  // build.json
+  "minify": {
+    "type": "terser",
+    "options": {}
+  }
+  ```
+- Chore: only wrapper DOM/BOM fake API in specified page bundle with build miniapp
+
+## 3.7.4
+
+- Chore: add node version validate
+- Fix: platform-loader error with no match platform
+- Fix: inject script or stylesheet by assets
+
+## 3.7.3
+
+- Chore: lock webpackbar version for avoid minimum node version error
+
+## 3.7.2
+
+- Fix: PHA TabHeader & TabBar url inject logic
+- Fix: `publicPath` inject logic
+
+## 3.7.1
+
+- Revert: revert node version >= 10.13.0
+
+## 3.7.0
+
+- Feat: update node version >=12
+- Feat: support smaller code size with css module
+- Feat: support inject `html` field in tabHeader & tabBar
+- Feat: support `url` field in app.json for pha specified page url
+- Fix: compat windows page store path
+- Fix: cannot wrap Provider to nested page
+- Chore: optimize pha manifest.json space
+
 ## 3.6.5
 
 - Fix: mpa entries
@@ -40,7 +145,7 @@
 - Feat: support package.json `exports` field with webpack4
 - Feat: support bytedance microapp/ baidu smartprogram/kuaishou miniprogram
 - Feat: support default TabBar in MPA
-- Feat: support query is `csr=true`  with request path end is `.html`, devServer will return CSR result
+- Feat: support query is `csr=true` with request path end is `.html`, devServer will return CSR result
 - Fix: `tschecker` error with default template
 
 ## 3.5.3 (May 12 2021)
@@ -69,6 +174,7 @@
 ## 3.4.11 (April 1 2021)
 
 - Fix: miniapp vendor test
+
 ## 3.4.10 (March 31 2021)
 
 - Feat: support set dataPrefetch for every single page in PHA
@@ -77,11 +183,11 @@
 
 ## 3.4.9 (March 25 2021)
 
- - Feat: add --analyzer-target=web to avoid port conflict with multiple task
- - Feat: support build tabbar html when configured source in tabbar for PHA
- - Chore: change injectServerSideData to updateDataInClient
- - Chore: remove print local url in console
- - Fix: alibaba miniapp subPackages error
+- Feat: add --analyzer-target=web to avoid port conflict with multiple task
+- Feat: support build tabbar html when configured source in tabbar for PHA
+- Chore: change injectServerSideData to updateDataInClient
+- Chore: remove print local url in console
+- Fix: alibaba miniapp subPackages error
 
 ## 3.4.8 (March 23 2021)
 
@@ -167,17 +273,18 @@
 
 - Feat: config store runtime automatically. ([alibaba/ice#3932](https://github.com/alibaba/ice/pull/3932))
 - Feat: support config hydrate in rax-app. ([alibaba/ice#3918](https://github.com/alibaba/ice/pull/3918) [#548](https://github.com/raxjs/rax-app/pull/548))
-- Feat: support set webpackLoaders and webpackPlugins through build.json.([alibaba/ice#3938]((https://github.com/alibaba/ice/pull/3938)))
+- Feat: support set webpackLoaders and webpackPlugins through build.json.([alibaba/ice#3938](<(https://github.com/alibaba/ice/pull/3938)>))
 - Feat: support build without `src/document/index.tsx`. ([#546](https://github.com/raxjs/rax-app/pull/546))
-- Feat: support cloud IDE.([#542]((https://github.com/raxjs/rax-app/pull/542)))
+- Feat: support cloud IDE.([#542](<(https://github.com/raxjs/rax-app/pull/542)>))
 - Feat: miniapp subPackage.
-- Chore: `compileDependencies` default value is `[]`. ([#548]((https://github.com/raxjs/rax-app/pull/548)))
-- Chore: TerserPlugin will remove unused code. ([#548]((https://github.com/raxjs/rax-app/pull/548)))
-- Fix: kraken mpa error.([#541]((https://github.com/raxjs/rax-app/pull/541)))
+- Chore: `compileDependencies` default value is `[]`. ([#548](<(https://github.com/raxjs/rax-app/pull/548)>))
+- Chore: TerserPlugin will remove unused code. ([#548](<(https://github.com/raxjs/rax-app/pull/548)>))
+- Fix: kraken mpa error.([#541](<(https://github.com/raxjs/rax-app/pull/541)>))
 
 ### 3.1.2 & 3.1.3 (December 15 2020)
 
 For v3.1.1 patch version.
+
 ### 3.1.1 (December 14 2020)
 
 - Feat: support use name specifies MPA page name and output path.([alibaba/ice#3906](https://github.com/alibaba/ice/pull/3906))
@@ -200,7 +307,7 @@ For v3.1.1 patch version.
 - Fix: user couldn't custom `outputDir`.([#494](https://github.com/raxjs/rax-app/pull/494))
 - Feat: support config `sourceMap` and `minify` when dev mode.([alibaba/ice#3825](https://github.com/alibaba/ice/pull/3835) [raxjs/miniapp](https://github.com/raxjs/miniapp/pull/45))
 - Feat: support dashed page name.([alibaba/ice#3824](https://github.com/alibaba/ice/pull/3824))
-- Fix:  duplicated taskname when both ali and wechat are compiled.([#487](https://github.com/raxjs/rax-app/pull/487))
+- Fix: duplicated taskname when both ali and wechat are compiled.([#487](https://github.com/raxjs/rax-app/pull/487))
 - Fix: compact react plugin targets is undefined.([#490](https://github.com/raxjs/rax-app/pull/490))
 
 ### 3.0.8 (November 13, 2020)
@@ -226,9 +333,7 @@ For v3.1.1 patch version.
 - Chore: change `compileDependencies` default value to `['']`.([#3802](https://github.com/alibaba/ice/pull/3802))
 - Enhance: open browser logic, now you can use ` -- --mpa-entry=home` to specify mpa entry.([#3798](https://github.com/alibaba/ice/pull/3798))
 - Docs: update router and change `compileDependencies` related docs.([raxjs/docs#42](https://github.com/raxjs/docs/pull/42)
-)
-
-
+  )
 
 ### 3.0.6 (October 30, 2020)
 
@@ -237,4 +342,3 @@ For v3.1.1 patch version.
 - Fix: kraken/weex assets couldn't find.([#3736](https://github.com/alibaba/ice/pull/3736))
 - Enhance: format debug info.([#3736](https://github.com/alibaba/ice/pull/3736))
 - Feat: support miniapp compile config.([#3730](https://github.com/alibaba/ice/pull/3730))
-

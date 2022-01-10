@@ -40,9 +40,6 @@ module.exports = (userOptions = {}) => {
           ],
         },
       ],
-      ['@builder/pack/deps/@babel/preset-typescript', {
-        onlyRemoveTypeImports: true,
-      }],
       [
         '@builder/pack/deps/@babel/preset-react', {
           pragma: 'createElement',

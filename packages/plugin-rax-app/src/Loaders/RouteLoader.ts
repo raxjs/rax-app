@@ -1,7 +1,9 @@
 import { getOptions } from 'loader-utils';
 import { join, dirname } from 'path';
 import { formatPath } from '@builder/app-helpers';
-import { checkIsMiniappPlatform } from 'miniapp-builder-shared';
+import { pathHelper, checkIsMiniappPlatform } from 'miniapp-builder-shared';
+import { MINIAPP_PLATFORMS } from '../constants';
+
 
 interface ITabBarItem {
   text?: string;
@@ -17,9 +19,10 @@ interface IRoute {
   source: string;
   lazy?: boolean;
   component?: any;
+  pageSource?: string;
 }
 
-interface IAppConfig {
+interface IStaticConfig {
   routes: IRoute[];
   tabBar: {
     textColor?: string;
@@ -33,14 +36,25 @@ interface IImportComponentInfo {
   normalImportExpression: string;
   normalImports: IRoute[];
   dynamicImports: IRoute[];
+  requireRoutes: IRoute[];
 }
 
 export default function (appJSON) {
   const options = getOptions(this) || {};
   const { target, mpa } = options;
-  const appConfig: IAppConfig = transformAppConfig(appJSON);
+  const initialStaticConfig: IStaticConfig = transformAppConfig(appJSON);
   const isRootAppJsonPath = this.resourcePath === join(this.rootContext, 'src', 'app.json');
   const isMiniappPlatform = checkIsMiniappPlatform(target);
+
+  const staticConfig = {
+    ...initialStaticConfig,
+    routes: formatRoutes(initialStaticConfig.routes, {
+      target,
+      currentSubDir: dirname(this.resourcePath),
+      rootContext: this.rootContext,
+      isRootAppJsonPath,
+    }),
+  };
 
   if (mpa && isRootAppJsonPath) {
     return `
@@ -49,16 +63,20 @@ export default function (appJSON) {
       `;
   }
 
-  const { normalImportExpression, normalImports, dynamicImports } = getImportComponentInfo.call(this, appConfig, target);
-  const { routes, ...otherConfig } = appConfig;
+  const { normalImportExpression, normalImports, dynamicImports, requireRoutes } = getImportComponentInfo.call(
+    this,
+    staticConfig,
+    target,
+  );
+  const { routes, ...otherConfig } = staticConfig;
   if (isMiniappPlatform) {
     return `
-  const staticConfig = ${JSON.stringify(appConfig)};
+  const staticConfig = ${JSON.stringify(staticConfig)};
   export default staticConfig;
   `;
   }
+
   return `
-  import { createElement } from 'rax';
   ${normalImportExpression}
   const staticConfig = ${JSON.stringify(otherConfig)};
 
@@ -67,13 +85,16 @@ export default function (appJSON) {
   ${addNormalImportRouteExpression(normalImports)}
 
   ${addDynamicImportRouteExpression.call(this, dynamicImports)};
+
+  ${addRequireRouteExpression.call(this, requireRoutes)}
   export default staticConfig;
   `;
 }
 
-function getImportComponentInfo(appConfig: IAppConfig, target: string): IImportComponentInfo {
+function getImportComponentInfo(appConfig: IStaticConfig, target: string): IImportComponentInfo {
   const dynamicImports = [];
-  let normalImports = [];
+  const normalImports = [];
+  let requireRoutes = [];
   if (target === 'web') {
     appConfig.routes.forEach((route) => {
       const { lazy = true } = route;
@@ -84,18 +105,19 @@ function getImportComponentInfo(appConfig: IAppConfig, target: string): IImportC
       }
     });
   } else {
-    normalImports = appConfig.routes;
+    requireRoutes = appConfig.routes;
   }
   const normalImportExpression = normalImports.reduce((curr, next) => {
     // import Home from 'source';
     return `${curr}
-    import ${getComponentName(next)} from '${formatPath(join(dirname(this.resourcePath), next.source))}';`;
+    import ${getComponentName(next)} from '${getPagePathByRoute(next, { rootContext: this.rootContext })}';`;
   }, '');
 
   return {
     normalImportExpression,
     normalImports,
     dynamicImports,
+    requireRoutes,
   };
 }
 
@@ -105,8 +127,11 @@ function addDynamicImportRouteExpression(dynamicImports: IRoute[]): string {
     expression += `staticConfig.routes.push({
       ...${JSON.stringify(route)},
       lazy: true,
-      component: import(/* webpackChunkName: "${getComponentName(route).toLowerCase()}.chunk" */ '${formatPath(join(dirname(this.resourcePath), route.source))}')
-      .then((mod) => mod.default || mod)
+      component: () => import(/* webpackChunkName: "${getComponentName(route).toLowerCase()}.chunk" */ '${getPagePathByRoute(
+  route,
+  { rootContext: this.rootContext },
+)}')
+            .then((mod) => mod.default || mod)
     });`;
   });
 
@@ -118,10 +143,19 @@ function addNormalImportRouteExpression(normalImports: IRoute[]): string {
   normalImports.forEach((route) => {
     expression += `staticConfig.routes.push({
       ...${JSON.stringify(route)},
-      component: (props) => createElement(${getComponentName(route)}, {
-        ...props,
-        pageConfig: ${JSON.stringify(route)},
-      }),
+      component: ${getComponentName(route)},
+    });`;
+  });
+
+  return expression;
+}
+
+function addRequireRouteExpression(normalImports: IRoute[]): string {
+  let expression = '';
+  normalImports.forEach((route) => {
+    expression += `staticConfig.routes.push({
+      ...${JSON.stringify(route)},
+      component: () => require('${getPagePathByRoute(route, { rootContext: this.rootContext })}').default,
     });`;
   });
 
@@ -129,12 +163,18 @@ function addNormalImportRouteExpression(normalImports: IRoute[]): string {
 }
 
 function getComponentName(route: IRoute): string {
+  if (!route.path) {
+    throw new Error(`There need path field in this route: ${route}`);
+  }
   if (route.path === '/') return 'Index';
   // /about => About
-  return `${route.path[1].toUpperCase()}${route.path.substr(2)}`;
+  // /list-a => List_a
+  // /index.html => Index_html
+  // /pages/home => Pages_home
+  return `${route.path[1].toUpperCase()}${route.path.substr(2).replace(/(-|\.|\/)/g, '_')}`;
 }
 
-function transformAppConfig(jsonContent): IAppConfig {
+function transformAppConfig(jsonContent): IStaticConfig {
   const appConfig = JSON.parse(jsonContent);
   if (appConfig.tabBar?.items) {
     appConfig.tabBar.items = appConfig.tabBar.items.map((item) => {
@@ -148,4 +188,41 @@ function transformAppConfig(jsonContent): IAppConfig {
   }
 
   return appConfig;
+}
+
+function formatRoutes(routes: IRoute[], { target, currentSubDir, rootContext, isRootAppJsonPath }): IRoute[] {
+  return filterByTarget(routes, { target })
+    .filter(
+      ({ source }) =>
+        // Only filter miniapp native page
+        !MINIAPP_PLATFORMS.includes(target) || !pathHelper.isNativePage(join(currentSubDir, source), target),
+    )
+    .map((route) => {
+      if (isRootAppJsonPath) return route;
+      if (route.pageSource) {
+        return {
+          ...route,
+          source: formatSourcePath(route.pageSource, { rootContext }),
+        };
+      }
+      return {
+        ...route,
+        source: formatSourcePath(join(currentSubDir, route.source), { rootContext }),
+      };
+    });
+}
+
+function filterByTarget(routes, { target }) {
+  return routes.filter(({ targets }) => {
+    if (!targets) return true;
+    return targets.includes(target);
+  });
+}
+
+function formatSourcePath(filepath: string, { rootContext }): string {
+  return formatPath(filepath).replace(formatPath(`${rootContext}/src/`), '');
+}
+
+function getPagePathByRoute({ source, pageSource }: IRoute, { rootContext }): string {
+  return formatPath(pageSource || join(rootContext, 'src', source));
 }

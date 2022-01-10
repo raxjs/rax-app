@@ -14,6 +14,7 @@ describe('should start web devServer: ', () => {
     const res = await setupBrowser({ port, defaultHtml: 'home.html' });
     page = res.page;
     browser = res.browser;
+    expect(await page.$$attr('#appear', 'src')).toStrictEqual(['https://g.alicdn.com/ali-lib/appear-polyfill/0.1.2/index.js']);
     expect(await page.$$text('#star')).toStrictEqual(['10000']);
     expect(await page.$$text('.title')).toStrictEqual(['Welcome to Your Rax App with SSR']);
   }, 120000);
@@ -26,7 +27,7 @@ describe('should start web devServer: ', () => {
 });
 
 afterAll(async () => {
-  await browser.close();
+  await browser?.close?.();
   await devServer.close();
 });
 

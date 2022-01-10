@@ -1,0 +1,20 @@
+{
+  "name": "build-plugin-minify-classname",
+  "version": "0.2.0",
+  "description": "minify css modules classname",
+  "main": "lib/index.js",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "read-pkg-up": "^7.0.1",
+    "minify-css-modules-classname": "^0.1.4",
+    "miniapp-builder-shared": "^0.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raxjs/rax-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raxjs/rax-app/issues"
+  },
+  "homepage": "https://github.com/raxjs/rax-app#readme"
+}

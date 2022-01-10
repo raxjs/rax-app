@@ -1,21 +1,21 @@
 const fs = require('fs-extra');
 const path = require('path');
+
 const { getAppConfig, filterNativePages, pathHelper: { getBundlePath } } = require('miniapp-builder-shared');
 const getVirtualModules = require('./virtualModule/page');
 
-module.exports = (config, context, target) => {
+module.exports = (config, { context, target, routes }) => {
   const { rootDir, userConfig } = context;
   const { subPackages = false } = userConfig[target] || {};
 
-  const appConfig = getAppConfig(rootDir, target);
-
   if (subPackages) {
-    appConfig.routes.forEach((app) => {
-      const subAppRoot = path.dirname(app.source);
-      const subAppEntry = moduleResolve(formatPath(path.join(rootDir, 'src', subAppRoot, 'app')));
+    routes.forEach(({ source }) => {
+      const subAppRoot = path.dirname(source);
       const subAppEntryConfig = config.entry(getBundlePath(subAppRoot));
-      subAppEntryConfig.add(subAppEntry);
 
+      subAppEntryConfig.add(path.join(rootDir, 'src', source));
+
+      // TODO: get app config
       const subAppConfig = getAppConfig(rootDir, target, null, subAppRoot);
       const filteredRoutes = filterNativePages(subAppConfig.routes, [], { rootDir, target });
       const virtualModules = getVirtualModules(filteredRoutes, { rootDir });

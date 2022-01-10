@@ -1,8 +1,11 @@
-import { IHtmlInfo } from '../types';
+import { IHtmlInfo, IComboScript } from '../types';
+
+const CDN_URL = 'https://g.alicdn.com/';
 
 let scripts = [];
 let links = [];
 let metas = [];
+let comboScripts: IComboScript[] = [];
 
 export function addSpmA(spmA) {
   if (!spmA) return '';
@@ -49,7 +52,7 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo, ssr: boolean) {
     title,
     spmA,
     spmB,
-    injectedHTML: { links: customLinks = [], scripts: customScripts = [], metas: customMetas = [] },
+    injectedHTML: { links: customLinks = [], scripts: customScripts = [], metas: customMetas = [], comboScripts: customComboScripts = [] },
     assets: { links: assetLinks = [], scripts: assetScripts = [] },
   } = htmlInfo;
 
@@ -71,10 +74,10 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo, ssr: boolean) {
       ${addLinksBySource(assetLinks)}
     </head>
     <body ${addSpmB(spmB)}>
-      ${ ssr ? '<!--__BEFORE_ROOT__-->' : '' }
+      ${ssr ? '<!--__BEFORE_ROOT__-->' : ''}
       <div id="root">${initialHTML}</div>
-      ${addStaticSource(customScripts)}
-      ${ ssr ? '<!--__AFTER_ROOT__-->' : '' }
+      ${addStaticSource(customComboScripts.length ? [genComboedScript(customComboScripts), ...customScripts] : customScripts)}
+      ${ssr ? '<!--__AFTER_ROOT__-->' : ''}
       ${addScriptsBySource(assetScripts)}
     </body>
   </html>
@@ -93,13 +96,26 @@ export function insertMetas(customMetas) {
   metas = [...metas, ...customMetas];
 }
 
+export function insertCombScripts(customCombScripts) {
+  comboScripts = [...comboScripts, ...customCombScripts];
+}
+
 export function insertScriptsByInfo(customScripts) {
-  insertScripts(
-    customScripts.map((scriptInfo) => {
-      const attrStr = Object.keys(scriptInfo).reduce((curr, next) => `${curr} ${next}="${scriptInfo[next]}" `, '');
-      return `<script${attrStr}></script>`;
-    }),
-  );
+  const matchedScripts = [];
+  const matchedCombScripts: IComboScript[] = [];
+  customScripts.forEach((scriptInfo) => {
+    const { needCombo, ...scriptAttrs } = scriptInfo;
+    if (needCombo) {
+      matchedCombScripts.push({
+        src: scriptAttrs.src.replace(CDN_URL, ''),
+        script: genScript(scriptAttrs),
+      });
+    } else {
+      matchedScripts.push(genScript(scriptAttrs));
+    }
+  });
+  insertScripts(matchedScripts);
+  insertCombScripts(matchedCombScripts);
 }
 
 export function injectHTML(tagName, value) {
@@ -120,8 +136,28 @@ export function injectHTML(tagName, value) {
 
 export function getInjectedHTML() {
   return {
+    comboScripts: [...comboScripts],
     scripts: [...scripts],
     links: [...links],
     metas: [...metas],
   };
+}
+
+export function genScript(scriptAttrs: object): string {
+  const attrStr = Object.keys(scriptAttrs).reduce((curr, next) => `${curr} ${next}="${scriptAttrs[next]}" `, '');
+  return `<script${attrStr}></script>`;
+}
+
+export function genComboedScript(targets: IComboScript[]): string {
+  if (!targets.length) return '';
+
+  const comboedSrc =
+   targets
+     .map(({ src }) => src)
+     .reduce(
+       (curr, next, index) =>
+         (index === 0 ? `${curr}${next}` : `${curr},${next}`), `${CDN_URL}??`,
+     );
+
+  return `<script class="__combo_script__" crossorigin="anonymous" src="${comboedSrc}"></script>`;
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, createElement, useRef, useCallback } from 'rax';
+import { useState, useEffect, createElement, useRef, useCallback, Fragment } from 'rax';
 import useCreation from './useCreation';
 import RouteMatcher from './RouteMatcher';
 import { IRoute } from '../type';
@@ -78,12 +78,12 @@ export default function KeepAliveRouter({ history, routes }) {
   }, []);
 
   return (
-    <>
+    <Fragment>
       {
     keepAliveRoutes.map(({ path, component }) =>
       <div key={path} style={{ display: path === currentPathName ? 'unset' : 'none' }}>{component}</div>)
       }
-    </>
+    </Fragment>
   );
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "rax-platform-loader",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "rax platform loader for helping remove other platform code",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",

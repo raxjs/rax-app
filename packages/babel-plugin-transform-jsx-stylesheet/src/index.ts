@@ -172,6 +172,15 @@ export default function ({ types: t, template }, opts = {}) {
 
           if (isCssModule) {
             classNameAttribute.name.name = 'style';
+            // `className` is already transformed to `style`
+            // `hasStyleAttribute` should equal `true`
+            // and `styleAttribute` should equal `classNameAttribute`
+            if (retainClassName) {
+              hasStyleAttribute = true;
+              styleAttribute = classNameAttribute;
+              hasClassName = false;
+              classNameAttribute = t.jSXAttribute(t.jSXIdentifier('className'), null);
+            }
             file.set('injectGetStyle', false);
           }
 

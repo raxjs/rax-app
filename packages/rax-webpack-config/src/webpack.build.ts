@@ -1,10 +1,10 @@
+import * as TerserPlugin from '@builder/pack/deps/terser-webpack-plugin';
 import isWebpack4 from './isWebpack4';
 
 export default (config) => {
   // disable devtool of mode prod build
   config.devtool(false);
 
-  let TerserPlugin;
   let terserPluginOptions = {
     parallel: true,
     extractComments: false,
@@ -22,11 +22,9 @@ export default (config) => {
   let CssMinimizerPlugin;
 
   if (isWebpack4) {
-    TerserPlugin = require('@builder/rax-pack/deps/terser-webpack-plugin');
     terserPluginOptions = {
       ...terserPluginOptions,
       // @ts-ignore
-      sourceMap: false,
       cache: true,
     };
     // Safe parser
@@ -34,11 +32,10 @@ export default (config) => {
     // css minimizer plugin
     CssMinimizerPlugin = require('@builder/rax-pack/deps/css-minimizer-webpack-plugin');
   } else {
-    TerserPlugin = require('@builder/pack/deps/terser-webpack-plugin');
     // Safe parser
     safeParser = require('@builder/pack/deps/postcss-safe-parser');
     // css minimizer plugin
-    CssMinimizerPlugin = require('@builder/rax-pack/deps/css-minimizer-webpack-plugin');
+    CssMinimizerPlugin = require('@builder/pack/deps/css-minimizer-webpack-plugin');
   }
 
   // uglify js file

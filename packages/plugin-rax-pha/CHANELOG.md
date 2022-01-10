@@ -1,10 +1,43 @@
 # Changelog
 
-## 1.4.4
+## v2.0.0
+
+- Feat: upgrade dependencies for webpack 5
+
+## v1.4.10
+
+- Fix: inject script or stylesheet by assets
+
+## v1.4.9
+
+- Fix: tabHeader & tabBar logic in iOS & Android
+- Fix: `publicPath` in document
+
+## v1.4.8
+
+- Feat: support tabHeader & tabBar template
+- Feat: support config url in page & tabHeader & tabBar
+
+## v1.4.7
+
+- Feat: manifest json output no space in production
+- Chore: white list add cacheQueryParams
+
+## v1.4.6
+
+- Chore: pha plugin add more white list and no decamelize keys
+- Fix: no prefetch type will crash in Android TaoBao 9.26.0
+- Fix:  do not set script field when has frames under the page
+
+## v1.4.5
+
+- Fix: manifest generate stylesheet field when configure forceEnableCSS in inlineStyle to true
+
+## v1.4.4
 
 - Fix: keys of requestHeaders should not be transformed
 
-## 1.4.3
+## v1.4.3
 
 - Chore: compatible with item.name in tabBar config
 
@@ -43,5 +76,5 @@
 
 ## v1.2.3
 
-- Fix: data prefetches do not decamelize 
+- Fix: data prefetches do not decamelize
 

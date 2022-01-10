@@ -6,12 +6,16 @@ const {
   setAppConfig: setAppCompileConfig,
   setComponentConfig: setComponentCompileConfig,
 } = require('miniapp-compile-config');
+const { normalizeStaticConfig } = require('miniapp-builder-shared');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { setWebviewConfig } = require('miniapp-webview-config');
+
+const separateRoutes = require('./separateRoutes').default;
 const setEntry = require('./setEntry');
-const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR } = require('./constants');
+const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR, MINIAPP_BUILD_TYPES } = require('./constants');
 
 module.exports = (api) => {
-  const { getValue, context, registerTask, onGetWebpackConfig, registerUserConfig } = api;
+  const { getValue, context, registerTask, onGetWebpackConfig } = api;
   const { userConfig } = context;
   const { targets, inlineStyle } = userConfig;
 
@@ -35,17 +39,9 @@ module.exports = (api) => {
       });
       chainConfig.name(target);
       chainConfig.taskName = target;
-      const isCompileProject = userConfig[target] && userConfig[target].buildType === 'compile';
-      // Set Entry when it's runtime project
-      if (!isCompileProject) {
-        setEntry(chainConfig, context, target);
-      }
+
       // Register task
       registerTask(target, chainConfig);
-      registerUserConfig({
-        name: target,
-        validation: 'object',
-      });
 
       onGetWebpackConfig(target, (config) => {
         // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -54,6 +50,14 @@ module.exports = (api) => {
         // Get output dir
         const outputPath = path.resolve(rootDir, outputDir, target);
 
+        // static config
+        const staticConfig = normalizeStaticConfig(getValue('staticConfig'), { rootDir });
+        const { normalRoutes, nativeRoutes } = separateRoutes(staticConfig.routes, { target, rootDir });
+        const buildType = userConfig[target] && userConfig[target].buildType ? userConfig[target].buildType : MINIAPP_BUILD_TYPES.RUNTIME;
+        // Set Entry when it's runtime project
+        if (buildType === MINIAPP_BUILD_TYPES.RUNTIME) {
+          setEntry(chainConfig, { context, target, routes: normalRoutes });
+        }
         const needCopyDirs = [];
 
         // Copy miniapp-native dir
@@ -72,18 +76,25 @@ module.exports = (api) => {
           config.plugin('CopyWebpackPlugin').use(CopyWebpackPlugin, [needCopyDirs]);
         }
 
-        if (isCompileProject) {
+        if (buildType === MINIAPP_BUILD_TYPES.COMPILE) {
           setAppCompileConfig(config, userConfig[target] || {}, {
             target,
             context,
             outputPath,
             entryPath: './src/app',
+            staticConfig: {
+              ...staticConfig,
+              routes: normalRoutes,
+            },
+            nativeRoutes,
           });
-        } else {
+        } else if (buildType === MINIAPP_BUILD_TYPES.RUNTIME) {
           const { disableCopyNpm = true } = userConfig[target] || {};
+
           const originalSplitChunks = config.optimization.get('splitChunks');
           const { vendor: originalVendor = {} } = originalSplitChunks.cacheGroups || {};
           config.optimization.runtimeChunk({ name: 'webpack-runtime' });
+
           config.optimization.splitChunks({
             ...originalSplitChunks,
             cacheGroups: {
@@ -93,12 +104,11 @@ module.exports = (api) => {
                 chunks: 'all',
                 name: 'vendors',
                 minChunks: 2,
-                test() {
-                  return true;
-                },
+                test() { return true; },
               },
             },
           });
+
           if (config.plugins.has('MiniCssExtractPlugin')) {
             config.plugin('MiniCssExtractPlugin').tap((options) => [
               {
@@ -113,6 +123,11 @@ module.exports = (api) => {
             target,
             modernMode: true,
             outputPath,
+            staticConfig: {
+              ...staticConfig,
+              routes: normalRoutes,
+            },
+            nativeRoutes,
           });
 
           // If miniapp-compiled dir exists, register a new task
@@ -139,6 +154,11 @@ module.exports = (api) => {
             );
             registerTask(compiledComponentsTaskName, compiledComponentsChainConfig);
           }
+        } else {
+          setWebviewConfig(config, {
+            api,
+            target,
+          });
         }
       });
     }

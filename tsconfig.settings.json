@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "jsx": "react-native",
+    "jsx": "react",
+    "jsxFactory": "createElement",
     "experimentalDecorators": true,
     "declaration": true,
     "sourceMap": true,

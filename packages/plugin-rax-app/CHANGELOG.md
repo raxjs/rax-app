@@ -1,5 +1,38 @@
 # Changelog
 
+## 7.0.4
+
+- Fix: Remove error message when using mpa mode with webview miniapp
+
+## 7.0.3
+
+- Fix: page component import method in the env other than web
+- Fix: override developer custom title
+
+## 7.0.2
+
+- Fix: special SPA route.path
+
+## 7.0.1
+
+- Feat: add class property validator for ts file
+
+## 7.0.0
+
+- Feat: upgrade dependencies for webpack 5
+- Feat: add more tip during developing
+- Feat: only need set `web.mpa` to make multiple app to MPA
+- Feat: support swc
+- Feat: support more compressor
+
+## 6.4.7
+
+- Chore: lock webpackbar version for avoid minimum node version error
+
+## 6.4.6
+
+- Feat: merge postcssOptions support
+
 ## 6.4.5
 
 - Fix: tabbar state update

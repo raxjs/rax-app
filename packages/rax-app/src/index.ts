@@ -10,10 +10,17 @@ interface IRaxAppUserConfig extends IUserConfig {
   targets: string[];
   store?: boolean;
   web?: any;
+  experiments?: {
+    minifyCSSModules?: boolean;
+  };
+
+  webpack5?: boolean;
+
+  router?: boolean;
 }
 
 const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) => {
-  const { targets = ['web'], store = true, router = true, webpack5 } = userConfig;
+  const { targets = ['web'], store = true, router = true, webpack5, experiments = {} } = userConfig;
   const coreOptions: Json = {
     framework: 'rax',
     alias: 'rax-app',
@@ -35,14 +42,6 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
 
   if (targets.includes('web')) {
     builtInPlugins.push('build-plugin-rax-web');
-    if (userConfig.web) {
-      if (userConfig.web.ssr) {
-        builtInPlugins.push('build-plugin-ssr');
-      }
-      if (userConfig.web.pha) {
-        builtInPlugins.push('build-plugin-rax-pha');
-      }
-    }
   }
 
   if (targets.includes('weex')) {
@@ -52,8 +51,21 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
   if (targets.includes('kraken')) {
     builtInPlugins.push('build-plugin-rax-kraken');
   }
-  if (targets.some((target) => miniappPlatforms.includes(target))) {
+
+  const isMiniAppTargeted = targets.some((target) => miniappPlatforms.includes(target));
+
+  if (isMiniAppTargeted) {
     builtInPlugins.push('build-plugin-rax-miniapp');
+  }
+
+  if (userConfig.web) {
+    if (userConfig.web.pha) {
+      builtInPlugins.push('build-plugin-rax-pha');
+    }
+    // Make ssr plugin after base plugin which need registerTask, the action will override the devServer config
+    if (userConfig.web.ssr) {
+      builtInPlugins.push('build-plugin-ssr');
+    }
   }
 
   if (router) {
@@ -61,6 +73,10 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig: IRaxAppUserConfig) =>
   }
 
   builtInPlugins.push('build-plugin-ice-logger');
+
+  if (experiments.minifyCSSModules === true) {
+    builtInPlugins.push('build-plugin-minify-classname');
+  }
 
   return builtInPlugins;
 };

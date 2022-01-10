@@ -29,6 +29,7 @@ module.exports = class {
       pha: { template: isTemplate = true },
     } = web;
     const isStart = command === 'start';
+    const jsonSpace = isStart ? 2 : 0;
 
     let { cdnPrefix = '', pagePrefix = '', pageSuffix } = this.options;
     if (isStart) {
@@ -40,7 +41,8 @@ module.exports = class {
     processAssets({
       pluginName: PLUGIN_NAME,
       compiler,
-    }, ({ compilation, callback }) => {
+    }, ({ compilation, callback, assets }) => {
+      const assetNames = Object.keys(assets);
       const appConfig = getValue('staticConfig');
       let manifestJSON = transformAppConfig(appConfig);
       const devUrls = [];
@@ -68,11 +70,12 @@ module.exports = class {
             isTemplate,
             inlineStyle,
             api,
+            assetNames,
           },
           manifestJSON,
         );
 
-        emitAsset(compilation, 'manifest.json', new RawSource(JSON.stringify(manifestJSON, null, 2)));
+        emitAsset(compilation, 'manifest.json', new RawSource(JSON.stringify(manifestJSON, null, jsonSpace)));
 
         devUrls.push(`${cdnPrefix}manifest.json?pha=true`);
       } else {
@@ -113,11 +116,12 @@ module.exports = class {
                 isTemplate,
                 inlineStyle,
                 api,
+                assetNames,
               },
               copyManifestJSON,
             );
 
-            emitAsset(compilation, `${entryName}-manifest.json`, new RawSource(JSON.stringify(copyManifestJSON, null, 2)));
+            emitAsset(compilation, `${entryName}-manifest.json`, new RawSource(JSON.stringify(copyManifestJSON, null, jsonSpace)));
 
             devUrls.push(`${cdnPrefix}${entryName}-manifest.json?pha=true`);
           });
