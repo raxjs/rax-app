@@ -5,6 +5,7 @@
 - Fix: avoid override developer custom title
 - Fix: dynamic import script crossorigin property
 - Fix: windows path error
+- Fix: css-modules should not add to normal css file
 
 ## 7.0.4
 
