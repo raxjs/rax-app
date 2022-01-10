@@ -13,7 +13,7 @@ import injectBundleInfo from './utils/injectBundleInfo';
 export default function (api) {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;
   const {
-    userConfig: { outputDir, compileDependencies, web = {} },
+    userConfig: { outputDir, compileDependencies, web = {}, sourceMap },
     rootDir,
     command,
   } = context;
@@ -23,7 +23,6 @@ export default function (api) {
 
   const {
     ssr: { mockBrowserEnv },
-    sourceMap,
   } = web;
 
   registerTask('ssr', baseConfig);
@@ -39,6 +38,8 @@ export default function (api) {
     config.plugin('WebAssetsPlugin').use(WebAssetsPlugin);
   });
   onGetWebpackConfig('ssr', (config) => {
+    console.log('sourceMap', sourceMap);
+
     if (sourceMap) {
       config.devtool(sourceMap === true ? 'eval-cheap-module-source-map' : sourceMap);
     }
