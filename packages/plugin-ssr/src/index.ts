@@ -13,13 +13,17 @@ import injectBundleInfo from './utils/injectBundleInfo';
 export default function (api) {
   const { onGetWebpackConfig, registerTask, context, onHook } = api;
   const {
-    userConfig: { outputDir, compileDependencies },
+    userConfig: { outputDir, compileDependencies, web = {}, sourceMap },
     rootDir,
     command,
   } = context;
   const documentPath: string = getDocumentPath(rootDir);
   const outputPath = path.join(rootDir, outputDir, NODE);
   const baseConfig = getWebpackBase(api);
+
+  const {
+    ssr: { mockBrowserEnv },
+  } = web;
 
   registerTask('ssr', baseConfig);
 
@@ -34,6 +38,10 @@ export default function (api) {
     config.plugin('WebAssetsPlugin').use(WebAssetsPlugin);
   });
   onGetWebpackConfig('ssr', (config) => {
+    if (sourceMap) {
+      config.devtool(sourceMap === true ? 'eval-cheap-module-source-map' : sourceMap);
+    }
+
     config.target('node');
     // remove process fallback when target is node
     config.plugins.delete('ProvidePlugin');
@@ -60,6 +68,12 @@ export default function (api) {
         documentPath,
       },
     ]);
+
+    // When mock browser env, output should be a variable, called in a wrapper function.
+    if (mockBrowserEnv) {
+      config.output.libraryTarget('var');
+      config.output.library('Renderer');
+    }
 
     // Set server flag
     config.plugin('DefinePlugin').tap((args) => [
