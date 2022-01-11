@@ -180,7 +180,12 @@ export default (config, { rootDir, babelConfig }: IOptions) => {
     .end()
     .use('ts-loader')
     .loader(require.resolve('ts-loader'))
-    .options({ transpileOnly: true });
+    .options({
+      transpileOnly: true,
+      compilerOptions: {
+        target: 'esnext',
+      },
+    });
 
   return config;
 };

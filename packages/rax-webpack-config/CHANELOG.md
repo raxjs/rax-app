@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.2
+
+- Chore: ts-loader compiler target changed to `esnext`
+
 ## v3.0.1
 
 - Fix: add `file-loader` to dependencies

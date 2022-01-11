@@ -9,6 +9,7 @@ const devServerDefaultOptionsMap = {
     disableHostCheck: true,
     logLevel: 'silent',
     transportMode: 'ws',
+    sockPath: '/ws',
     quiet: false,
     publicPath: '/',
     clientLogLevel: 'none',

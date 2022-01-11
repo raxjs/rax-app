@@ -7,7 +7,7 @@ const example = 'with-rax-mpa';
 let page: IPage = null;
 let browser = null;
 
-buildFixture(example);
+buildFixture(example, true);
 
 describe('should build web result: ', () => {
   test('open /home', async () => {
@@ -16,6 +16,9 @@ describe('should build web result: ', () => {
     browser = res.browser;
     await page.waitForFunction(`document.getElementsByTagName('span').length > 0`);
     expect(await page.$$text('.title')).toStrictEqual(['Welcome to Your Rax App']);
+    const jsBundlePath = path.join(process.cwd(), 'examples', example, 'build/web/home.js');
+    const { size } = fs.statSync(jsBundlePath);
+    expect(size / 1024 < 80).toBeTruthy();
   });
 
   test('open /about', async () => {
