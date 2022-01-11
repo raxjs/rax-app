@@ -11,7 +11,7 @@ function getHTML(entryName) {
 
 export default (config) => {
   const devServer = compatDevServer(config.devServer);
-  const devServerBeforeHook = devServer.get('onBeforeSetupMiddleware');
+  const devServerBeforeHook = devServer.getValue('onBeforeSetupMiddleware');
   devServer.setValue('onBeforeSetupMiddleware', (app, server) => {
     if (!server) {
       // In webpack5, the first argument is devServer instance

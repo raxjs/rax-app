@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.1.0
+- Feat: support render pure page to html
+- Feat: support render pure document to html
+- Feat: support pass initialProps for page
+- Feat: support enable sourcemap
+- Feat: adjust output for mock browser env
+
 ## v2.0.6
 
 - Fix: SPA SSR `getInitialProps` is invalid
@@ -30,6 +37,7 @@
 
 - Feat: upgrade dependencies for webpack 5
 - Feat: use `runApp` as MPA default render trigger
+
 
 ## v1.3.12
 
