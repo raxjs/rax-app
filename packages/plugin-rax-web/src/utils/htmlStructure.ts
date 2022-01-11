@@ -74,10 +74,10 @@ export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo, ssr: boolean) {
       ${addLinksBySource(assetLinks)}
     </head>
     <body ${addSpmB(spmB)}>
-      ${ ssr ? '<!--__BEFORE_ROOT__-->' : '' }
+      ${ssr ? '<!--__BEFORE_ROOT__-->' : ''}
       <div id="root">${initialHTML}</div>
       ${addStaticSource(customComboScripts.length ? [genComboedScript(customComboScripts), ...customScripts] : customScripts)}
-      ${ ssr ? '<!--__AFTER_ROOT__-->' : '' }
+      ${ssr ? '<!--__AFTER_ROOT__-->' : ''}
       ${addScriptsBySource(assetScripts)}
     </body>
   </html>
