@@ -36,7 +36,7 @@ function wrapperPageWithWeb({ staticConfig, appConfig, applyRuntimeAPI }) {
 
     const PageWrapper = (props) => {
       const history = appConfig?.router?.history;
-      const location = history?.location;
+      const location = history?.location || window.location;
       const [data, setData] = useState((window as any).__INITIAL_DATA__?.pageInitialProps);
       useEffect(() => {
         const title = pageConfig.window?.title || staticConfig.window?.title;

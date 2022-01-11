@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.8.9
+
+- Fix: compat with `window.location`
+
 ## 3.8.8
 
 - Feat: ssr support more render methods
