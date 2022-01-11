@@ -6,7 +6,7 @@
 - Fix: override custom title in document
 - Fix: script crossorigin property
 - Fix: css-modules should not add to normal css file
-- Fix: window path error
+- Fix: windows path error
 - Chore: optimize code size
 
 ## 3.8.7
