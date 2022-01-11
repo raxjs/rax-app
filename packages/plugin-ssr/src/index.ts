@@ -38,8 +38,6 @@ export default function (api) {
     config.plugin('WebAssetsPlugin').use(WebAssetsPlugin);
   });
   onGetWebpackConfig('ssr', (config) => {
-    console.log('sourceMap', sourceMap);
-
     if (sourceMap) {
       config.devtool(sourceMap === true ? 'eval-cheap-module-source-map' : sourceMap);
     }
