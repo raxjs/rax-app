@@ -1,4 +1,3 @@
-const postcss = require('postcss');
 // !singlequotes|!doublequotes|!url()|pixelunit
 const rpxRegex = /"[^"]+"|'[^']+'|url\([^\)]+\)|(\d*\.?\d+)rpx/g;
 
