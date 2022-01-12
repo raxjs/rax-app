@@ -9,31 +9,34 @@ const defaults = {
   unitPrecision: 5,
 };
 
-module.exports = postcss.plugin('postcss-rpx2vw', (options) => {
+module.exports = (options) => {
   const opts = Object.assign({}, defaults, options);
 
-  return function (root) {
-    root.walkDecls((decl) => {
-      // This should be the fastest test and will remove most declarations
-      if (decl.value.indexOf('rpx') === -1) return;
+  return {
+    postcssPlugin: 'postcss-plugin-rpx2vw',
+    Once(root) {
+      root.walkDecls((decl) => {
+        // This should be the fastest test and will remove most declarations
+        if (decl.value.indexOf('rpx') === -1) return;
 
-      const unit = getUnit(decl.prop, opts);
-      decl.value = decl.value.replace(rpxRegex, createRpxReplace(opts, unit, opts.viewportWidth));
-    });
+        const unit = getUnit(decl.prop, opts);
+        decl.value = decl.value.replace(rpxRegex, createRpxReplace(opts, unit, opts.viewportWidth));
+      });
 
-    root.walkAtRules('media', (rule) => {
-      if (rule.params.indexOf('rpx') === -1) return;
+      root.walkAtRules('media', (rule) => {
+        if (rule.params.indexOf('rpx') === -1) return;
 
-      rule.params = rule.params.replace(rpxRegex, createRpxReplace(opts, opts.viewportUnit, opts.viewportWidth));
-    });
+        rule.params = rule.params.replace(rpxRegex, createRpxReplace(opts, opts.viewportUnit, opts.viewportWidth));
+      });
+    },
   };
-});
+};
 
 function toFixed(number, precision) {
   const multiplier = Math.pow(10, precision + 1);
   const wholeNumber = Math.floor(number * multiplier);
 
-  return Math.round(wholeNumber / 10) * 10 / multiplier;
+  return (Math.round(wholeNumber / 10) * 10) / multiplier;
 }
 
 // transform rpx to vw
@@ -41,7 +44,7 @@ function createRpxReplace(opts, viewportUnit, viewportSize) {
   return function (m, $1) {
     if (!$1) return m;
     const pixels = parseFloat($1);
-    const parsedVal = toFixed(pixels / viewportSize * 100, opts.unitPrecision);
+    const parsedVal = toFixed((pixels / viewportSize) * 100, opts.unitPrecision);
     return parsedVal + viewportUnit;
   };
 }
