@@ -1,5 +1,10 @@
 ## Changelog
 
+## 3.8.9
+
+- Fix: compat with `window.location`
+- Fix: pha manifest.json document field
+
 ## 3.8.8
 
 - Feat: ssr support more render methods

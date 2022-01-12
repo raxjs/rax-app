@@ -69,8 +69,10 @@ export default class DocumentPlugin {
             target,
           });
           let html = '';
+          let customDocument = false;
           // PHA will consume document field
           if (documentPath && localBuildAssets[`${entryName}.js`]) {
+            customDocument = true;
             const bundleContent = localBuildAssets[`${entryName}.js`].source();
             const mod = exec(bundleContent, entryPath);
 
@@ -101,6 +103,7 @@ export default class DocumentPlugin {
             let initialHTML;
 
             if (localBuildAssets[`${entryName}.js`]) {
+              customDocument = true;
               const bundleContent = localBuildAssets[`${entryName}.js`].source();
               const mod = exec(bundleContent, entryPath);
               try {
@@ -122,7 +125,7 @@ export default class DocumentPlugin {
             }, ssr);
           }
 
-          setDocument(entryName, html);
+          setDocument(entryName, html, customDocument);
           const { RawSource } = webpack.sources || webpackSources;
           updateHTMLByEntryName(entryName, html);
           emitAsset(compilation, `${entryName}.html`, new RawSource(html));

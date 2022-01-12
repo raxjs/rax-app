@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.6
+
+- Fix: compat with `window.location`
+
 ## 7.0.5
 
 - Fix: avoid override developer custom title
