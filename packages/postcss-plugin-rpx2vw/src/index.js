@@ -8,25 +8,27 @@ const defaults = {
   unitPrecision: 5,
 };
 
+// migration guide: https://evilmartians.com/chronicles/postcss-8-plugin-migration
+module.exports.postcss = true;
+
 module.exports = (options) => {
   const opts = Object.assign({}, defaults, options);
 
   return {
     postcssPlugin: 'postcss-plugin-rpx2vw',
-    Once(root) {
-      root.walkDecls((decl) => {
-        // This should be the fastest test and will remove most declarations
-        if (decl.value.indexOf('rpx') === -1) return;
+    Declaration(decl) {
+      // This should be the fastest test and will remove most declarations
+      if (decl.value.indexOf('rpx') === -1) return;
 
-        const unit = getUnit(decl.prop, opts);
-        decl.value = decl.value.replace(rpxRegex, createRpxReplace(opts, unit, opts.viewportWidth));
-      });
-
-      root.walkAtRules('media', (rule) => {
+      const unit = getUnit(decl.prop, opts);
+      decl.value = decl.value.replace(rpxRegex, createRpxReplace(opts, unit, opts.viewportWidth));
+    },
+    AtRule: {
+      media: (rule) => {
         if (rule.params.indexOf('rpx') === -1) return;
 
         rule.params = rule.params.replace(rpxRegex, createRpxReplace(opts, opts.viewportUnit, opts.viewportWidth));
-      });
+      },
     },
   };
 };
