@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.6
+
+- Fix: pha manifest.json document field
+
+## v2.0.5
+
+- Fix: devServer override `before` hook
+
 ## v2.0.4
 
 - Fix: not filter routes by target in document plugin

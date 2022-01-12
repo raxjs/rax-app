@@ -1,28 +1,26 @@
-const { WEB, WEEX, DOCUMENT, SSR, KRAKEN, MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM } = require('../../constants');
-const { createCSSRule } = require('rax-webpack-config');
-const { isWebpack4 } = require('@builder/compat-webpack4');
-const getPostCssPlugin = require('../../getPostCssPlugin');
-
-const webStandardList = [
-  WEB, KRAKEN,
-];
-
-const inlineStandardList = [
+const {
+  WEB,
   WEEX,
-];
-
-const miniappStandardList = [
+  DOCUMENT,
+  SSR,
+  KRAKEN,
   MINIAPP,
   WECHAT_MINIPROGRAM,
   BYTEDANCE_MICROAPP,
   BAIDU_SMARTPROGRAM,
   KUAISHOU_MINIPROGRAM,
-];
+} = require('../../constants');
+const { createCSSRule } = require('rax-webpack-config');
+const { isWebpack4 } = require('@builder/compat-webpack4');
+const getPostCssPlugin = require('../../getPostCssPlugin');
 
-const nodeStandardList = [
-  DOCUMENT,
-  SSR,
-];
+const webStandardList = [WEB, KRAKEN];
+
+const inlineStandardList = [WEEX];
+
+const miniappStandardList = [MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM];
+
+const nodeStandardList = [DOCUMENT, SSR];
 
 module.exports = (config, value, context) => {
   ['css', 'less', 'scss'].forEach((style) => {
@@ -107,7 +105,7 @@ function setCSSRule(config, options) {
       }
     } else {
       // Do not generate CSS file, it will be built by web complier
-      configLoadersInNode(configRule);
+      configLoadersInNode(configRule, type);
     }
   }
 }
@@ -144,29 +142,30 @@ function configPostCssLoader(configRule, type) {
     .end();
 }
 
-function configLoadersInNode(configRule) {
-  const cssLoaderOptions = {};
-  if (isWebpack4) {
-    cssLoaderOptions.onlyLocals = true;
-  } else {
-    cssLoaderOptions.modules = {
-      exportOnlyLocals: true,
-    };
+function configLoadersInNode(configRule, type) {
+  configRule.uses.delete('postcss-loader').end();
+
+  if (type === 'module') {
+    const cssLoaderOptions = {};
+    if (isWebpack4) {
+      cssLoaderOptions.onlyLocals = true;
+    } else {
+      cssLoaderOptions.modules = {
+        exportOnlyLocals: true,
+      };
+    }
+    return configRule
+      .use('css-loader')
+      .tap((loaderOptions) => ({
+        ...loaderOptions,
+        ...cssLoaderOptions,
+        modules: {
+          ...loaderOptions.modules,
+          ...cssLoaderOptions.modules,
+        },
+      }))
+      .end();
   }
-  return configRule
-    .uses
-    .delete('postcss-loader')
-    .end()
-    .use('css-loader')
-    .tap((loaderOptions) => ({
-      ...loaderOptions,
-      ...cssLoaderOptions,
-      modules: {
-        ...loaderOptions.modules,
-        ...cssLoaderOptions.modules,
-      },
-    }))
-    .end();
 }
 
 function setCSSGlobalRule(config, options) {

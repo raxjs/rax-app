@@ -18,9 +18,12 @@ interface IReturn {
 }
 
 // get builtIn plugins
-export const buildFixture = function(example: string) {
+export const buildFixture = function(example: string, minify: boolean = false) {
   test(`setup ${example}`, async () => {
     const rootDir = path.join(__dirname, `../../examples/${example}`);
+    if (minify) {
+      process.env.__MINIFY__ = 'enabled';
+    }
     await build({
       args: {
         config: path.join(rootDir, 'build.json'),
@@ -30,6 +33,9 @@ export const buildFixture = function(example: string) {
         return getBuiltInPlugins(userConfig).concat(require.resolve('./test-plugin'));
       },
     });
+    if (minify) {
+      process.env.__MINIFY__ = '';
+    }
   }, 120000);
 }
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## 7.0.6
+
+- Fix: compat with `window.location`
+
+## 7.0.5
+
+- Fix: avoid override developer custom title
+- Fix: dynamic import script crossorigin property
+- Fix: windows path error
+- Fix: css-modules should not add to normal css file
+- Fix: react-dev-utils socket pathname
+
 ## 7.0.4
 
 - Fix: Remove error message when using mpa mode with webview miniapp
