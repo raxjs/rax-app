@@ -4,11 +4,11 @@ const { isWebpack4 } = require('@builder/compat-webpack4');
 const getPostCssPlugin = require('../../getPostCssPlugin');
 
 const webStandardList = [
-  WEB,
+  WEB, KRAKEN,
 ];
 
 const inlineStandardList = [
-  WEEX, KRAKEN,
+  WEEX,
 ];
 
 const miniappStandardList = [
