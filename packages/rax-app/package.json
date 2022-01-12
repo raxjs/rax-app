@@ -23,7 +23,7 @@
     "build-plugin-rax-miniapp": "2.0.0",
     "build-plugin-rax-pha": "2.0.0",
     "build-plugin-rax-store": "2.0.0",
-    "build-plugin-rax-web": "2.0.5",
+    "build-plugin-rax-web": "2.0.6",
     "build-plugin-rax-weex": "2.0.0",
     "build-plugin-ssr": "2.1.0",
     "build-plugin-rax-router": "1.0.3",
