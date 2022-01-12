@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.7
+
+- Feat: migrate `postcss-plugin-rpx2vw` to postcss 8
+
 ## 7.0.6
 
 - Fix: compat with `window.location`
