@@ -15,7 +15,7 @@
     "webpack-sources": "^1.4.3",
     "@builder/app-helpers": "^2.1.0",
     "@builder/compat-webpack4": "^1.0.0",
-    "lodash.clonedeep": "^4.5.0"
+    "@builder/pack": "^0.5.0"
   },
   "devDependencies": {
     "webpack": ">=4.0.0"
