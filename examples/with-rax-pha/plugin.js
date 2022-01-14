@@ -1,4 +1,5 @@
 module.exports = ({ applyMethod }) => {
+  // For test cases
   applyMethod('rax.injectHTML', 'meta', [`<meta name="release-info" content="version=12,app-id=123" />`]);
 
   applyMethod('rax.insertScriptsByInfo', [
