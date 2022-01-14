@@ -62,7 +62,7 @@ describe('should build kraken result: ', () => {
 });
 
 afterAll(async () => {
-  await browser.close();
-  await devServer.close();
+  await browser?.close();
+  await devServer?.close();
 });
 

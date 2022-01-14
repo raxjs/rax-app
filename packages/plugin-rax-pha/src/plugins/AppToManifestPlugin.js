@@ -4,7 +4,7 @@
 
 const webpackSources = require('webpack-sources');
 const webpack = require('webpack');
-const cloneDeep = require('lodash.clonedeep');
+const { cloneDeep, union } = require('@builder/pack/deps/lodash');
 const { getMpaEntries } = require('@builder/app-helpers');
 const { emitAsset, processAssets } = require('@builder/compat-webpack4');
 const { transformAppConfig, setRealUrlToManifest } = require('../manifestHelpers');
@@ -22,7 +22,7 @@ module.exports = class {
   apply(compiler) {
     const { api, builtInLibrary = [], appWorkerPath } = this.options;
 
-    const { context, getValue } = api;
+    const { context, getValue, applyMethod } = api;
     const { command, userConfig = {} } = context;
     const { inlineStyle, web = {} } = userConfig;
     const {
@@ -44,6 +44,7 @@ module.exports = class {
     }, ({ compilation, callback, assets }) => {
       const assetNames = Object.keys(assets);
       const appConfig = getValue('staticConfig');
+      const { scripts, metas, links } = applyMethod('rax.getInjectedHTML');
       let manifestJSON = transformAppConfig(appConfig);
       const devUrls = [];
 
@@ -55,10 +56,21 @@ module.exports = class {
         }
       }
 
-      manifestJSON.scripts = [
-        ...builtInLibrary.map((url) => `<script crossorigin="anonymous" src="${url}"></script>`),
-        ...(manifestJSON.scripts || []),
-      ];
+      manifestJSON.metas = union(
+        metas,
+        manifestJSON.metas,
+      ) || [];
+
+      manifestJSON.links = union(
+        links,
+        manifestJSON.links,
+      ) || [];
+
+      manifestJSON.scripts = union(
+        scripts,
+        builtInLibrary.map((url) => `<script crossorigin="anonymous" src="${url}"></script>`),
+        manifestJSON.scripts,
+      ) || [];
 
       // if has tabBar, do not generate multiple manifest.json
       if (manifestJSON.tab_bar) {
