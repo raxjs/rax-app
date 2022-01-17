@@ -90,8 +90,8 @@ export default async (api) => {
   gen.render();
 
   onHook('before.start.run', async () => {
-    applyMethod('watchFileChange', /models\/.*|model.*|pages\/\w+\/index(.jsx?|.tsx)/, () => {
-      gen.render();
+    applyMethod('watchFileChange', /models\/.*|model.*|store.*|pages\/\w+\/index(.jsx?|.tsx)/, () => {
+      gen.render(true);
     });
 
     applyMethod('watchFileChange', /store.*/, (event: string, filePath: string) => {
