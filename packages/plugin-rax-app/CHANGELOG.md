@@ -3,6 +3,7 @@
 ## 7.0.7
 
 - Feat: migrate `postcss-plugin-rpx2vw` to postcss 8
+- Feat: update `postcss-loader` to `v5.3.0`
 
 ## 7.0.6
 

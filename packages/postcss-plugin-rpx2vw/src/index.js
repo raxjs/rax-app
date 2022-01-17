@@ -17,7 +17,6 @@ module.exports = (options) => {
   return {
     postcssPlugin: 'postcss-plugin-rpx2vw',
     Declaration(decl) {
-      // This should be the fastest test and will remove most declarations
       if (decl.value.indexOf('rpx') === -1) return;
 
       const unit = getUnit(decl.prop, opts);
