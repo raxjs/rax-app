@@ -17,8 +17,8 @@ export interface RenderAppConfig {
     ErrorBoundaryFallback?: ComponentType;
     errorBoundary?: boolean;
     getInitialData?: (context: Context) => Promise<any>;
+    renderComponent?: ComponentType;
   };
-  renderComponent?: ComponentType;
 }
 export interface AppLifecycle {
   createBaseApp: <T>(appConfig: T, buildConfig: any, context: any) => { runtime: RuntimeModule; appConfig: T };
