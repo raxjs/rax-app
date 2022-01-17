@@ -17,7 +17,14 @@ export interface RenderAppConfig {
     ErrorBoundaryFallback?: ComponentType;
     errorBoundary?: boolean;
     getInitialData?: (context: Context) => Promise<any>;
-    renderComponent?: ComponentType;
+    renderComponent?: ComponentType & {
+      __pageConfig?: {
+        source?: string;
+        path?: string;
+        name?: string;
+        [key: string]: any;
+      };
+    };
   };
 }
 export interface AppLifecycle {
