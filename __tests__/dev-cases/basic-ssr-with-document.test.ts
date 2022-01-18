@@ -28,6 +28,6 @@ describe('should start web devServer: ', () => {
 
 afterAll(async () => {
   await browser?.close?.();
-  await devServer.close();
+  await devServer?.close();
 });
 
