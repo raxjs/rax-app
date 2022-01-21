@@ -4,6 +4,7 @@ const customConfigs = require('./config/user.config').default;
 const customOptionConfig = require('./config/options.config');
 const modifyUserConfig = require('./userConfig/modify').default;
 const generateTplFile = require('./generateTplFile');
+const proxyPostcssOptions = require('./userConfig/proxyPostcssOptions').default;
 const registerCustomUserConfig = require('./userConfig/register').default;
 const setupLaunch = require('./launch').default;
 const setupGlobalValue = require('./global').default;
@@ -12,6 +13,9 @@ module.exports = (api) => {
   const { onGetWebpackConfig, context, applyMethod, registerUserConfig } = api;
   const { rootDir, userConfig } = context;
   const { targets } = userConfig;
+
+  // Proxy postcss options
+  proxyPostcssOptions(api);
 
   registerCustomUserConfig(targets, registerUserConfig);
 
@@ -41,4 +45,3 @@ module.exports = (api) => {
 
   setupLaunch(api);
 };
-
