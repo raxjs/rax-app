@@ -26,6 +26,7 @@ export default function proxyPostcssOptions({ context, onHook }) {
           // proxy `postcss-loader` options
           config.module.rule(ruleName).uses.set(
             'postcss-loader',
+            // eslint-disable-next-line
             new Proxy(loader, {
               get(target, property) {
                 if (property === 'toConfig') {
