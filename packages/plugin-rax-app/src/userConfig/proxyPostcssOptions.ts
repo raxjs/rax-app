@@ -35,6 +35,7 @@ export default function proxyPostcssOptions({ context, onHook }) {
                     const loaderConfig = loader.toConfig();
                     const { options } = loaderConfig;
 
+                    // eslint-disable-next-line
                     Object.entries(options).forEach(([key, value]) => {
                       if (shouldProxyKeys.includes(key)) {
                         const postcssOptions = options.postcssOptions || {};
