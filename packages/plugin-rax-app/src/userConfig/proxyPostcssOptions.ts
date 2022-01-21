@@ -13,6 +13,7 @@ export default function proxyPostcssOptions({ context, onHook }) {
     'less-module',
     'less-global',
   ];
+  const shouldProxyKeys = ['exec', 'parser', 'syntax', 'stringifier', 'config', 'plugins'];
 
   const { command } = context;
 
@@ -34,14 +35,32 @@ export default function proxyPostcssOptions({ context, onHook }) {
                     const loaderConfig = loader.toConfig();
                     const { options } = loaderConfig;
 
-                    const postcssOptions = options.postcssOptions || {};
-                    const postcssPlugins = options.plugins || [];
+                    Object.entries(options).forEach(([key, value]) => {
+                      if (shouldProxyKeys.includes(key)) {
+                        const postcssOptions = options.postcssOptions || {};
 
-                    options.postcssOptions = {
-                      ...postcssOptions,
-                      plugins: [...(postcssOptions.plugins || []), ...postcssPlugins],
-                    };
-                    delete options.plugins;
+                        if (key === 'exec') {
+                          options.execute = value;
+                          delete options.exec;
+                          return;
+                        }
+
+                        if (key === 'plugins') {
+                          options.postcssOptions = {
+                            ...postcssOptions,
+                            plugins: [...(postcssOptions.plugins || []), ...((value as any) || [])],
+                          };
+                          delete options.plugins;
+                          return;
+                        }
+
+                        options.postcssOptions = {
+                          ...postcssOptions,
+                          [key]: value,
+                        };
+                        delete options[key];
+                      }
+                    });
 
                     return loaderConfig;
                   };
