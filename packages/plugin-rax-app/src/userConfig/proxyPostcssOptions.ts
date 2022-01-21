@@ -43,8 +43,6 @@ export default function proxyPostcssOptions({ context, onHook }) {
                     };
                     delete options.plugins;
 
-                    console.log(loaderConfig);
-
                     return loaderConfig;
                   };
                 }
