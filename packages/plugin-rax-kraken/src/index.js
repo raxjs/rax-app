@@ -2,20 +2,18 @@ const setMPAConfig = require('@builder/mpa-config');
 const { getMpaEntries } = require('@builder/app-helpers');
 const { emitAsset, processAssets } = require('@builder/compat-webpack4');
 const webpackSources = require('webpack-sources');
-const webpack = require('webpack');
 const Qjsc = require('qjsc');
 const parse5 = require('parse5');
 
 const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
 
-const { RawSource } = webpack.sources || webpackSources;
-
 const target = 'kraken';
 
 module.exports = (api) => {
   const { getValue, context, registerTask, onGetWebpackConfig, applyMethod } = api;
-  const { userConfig = {} } = context;
+  const { userConfig = {}, webpack } = context;
+  const { RawSource } = webpack.sources || webpackSources;
   const getWebpackBase = getValue(GET_RAX_APP_WEBPACK_CONFIG);
   const tempDir = getValue('TEMP_PATH');
   const chainConfig = getWebpackBase(api, {
