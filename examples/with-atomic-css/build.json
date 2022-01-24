@@ -1,5 +1,7 @@
 {
   "targets": ["web"],
   "plugins": ["./build.plugin.js"],
-  "postcssOptions": {}
+  "postcssOptions": {
+    "tailwindcss": {}
+  }
 }

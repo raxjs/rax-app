@@ -1,19 +1,8 @@
-const tailwindcss = require('tailwindcss');
 const autoprefixer = require('autoprefixer');
 
 module.exports = ({ onGetWebpackConfig }) => {
   onGetWebpackConfig((config) => {
-    const styleRules = [
-      'css',
-      'css-module',
-      // 'css-global',
-      'scss',
-      'scss-module',
-      // 'scss-global',
-      'less',
-      'less-module',
-      // 'less-global',
-    ];
+    const styleRules = ['css', 'css-module', 'scss', 'scss-module', 'less', 'less-module'];
 
     styleRules.forEach((ruleName) => {
       config.module
@@ -21,7 +10,7 @@ module.exports = ({ onGetWebpackConfig }) => {
         .use('postcss-loader')
         .tap((options) => ({
           ...options,
-          plugins: [tailwindcss, autoprefixer],
+          plugins: [autoprefixer],
         }));
     });
   });
