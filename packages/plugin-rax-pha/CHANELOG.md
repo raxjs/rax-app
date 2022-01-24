@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.1
+
+- Fix: manifest.json need includes the scripts which injected by API
+
 ## v2.0.0
 
 - Feat: upgrade dependencies for webpack 5

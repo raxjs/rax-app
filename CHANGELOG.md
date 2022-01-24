@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.8.10
+
+- Fix: manifest.json need includes the scripts which injected by API
+
 ## 3.8.9
 
 - Fix: compat with `window.location`
