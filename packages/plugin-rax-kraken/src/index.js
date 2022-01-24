@@ -119,17 +119,6 @@ function getInjectJS(url) {
   ].join('');
 }
 
-function getInjectCSS(url) {
-  return [
-    '!function(){',
-    'var l=document.createElement("link");',
-    'l.setAttribute("rel", "stylesheet");',
-    `l.setAttribute("href", "${url}");`,
-    'document.head.appendChild(l);',
-    '}();',
-  ].join('');
-}
-
 function getInjectStyle(content) {
   return [
     '!function(){',
@@ -141,7 +130,7 @@ function getInjectStyle(content) {
 }
 
 function getInjectContent(content, injectTarget) {
-  content = content.toString().trim();
+  content = String(content).trim();
   if (!content) return '';
 
   // The injected target, usually 'document.body' or 'document.head'.
@@ -155,20 +144,19 @@ function getInjectContent(content, injectTarget) {
     if (node.nodeName === '#document-fragment') return;
 
     const parentEl = node.parentNode === root ? injectTarget : node.parentNode.identifier;
-
     if (node.nodeName === '#text'/* TextNode */) {
-      codes += `${parentEl}.appendChild(document.createTextNode('${node.value}'));`;
+      codes += `${parentEl}.appendChild(document.createTextNode(${JSON.stringify(node.value)}));`;
     } else if (node.nodeName === node.tagName/* HTMLElement */) {
-      const identifier = 'i' + identifierCount++;
-      codes += `var ${identifier}=document.createElement('${node.tagName}');`;
+      const identifier = `i${identifierCount++}`;
+      codes += `var ${identifier}=document.createElement(${JSON.stringify(node.tagName)});`;
       node.attrs.forEach((attr) => {
-        codes += `${identifier}.setAttribute('${attr.name}','${attr.value}');`;
+        codes += `${identifier}.setAttribute(${JSON.stringify(attr.name)},${JSON.stringify(attr.value)});`;
       });
       codes += `${parentEl}.appendChild(${identifier});`;
       node.identifier = identifier;
     }
   });
-  return codes ? '!function(){' + codes + '}();' : '';
+  return codes ? `!function(){${codes}}();` : '';
 }
 
 function traverseNode(node, callback) {
