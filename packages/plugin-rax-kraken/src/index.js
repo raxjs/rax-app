@@ -4,6 +4,7 @@ const { emitAsset, processAssets } = require('@builder/compat-webpack4');
 const webpackSources = require('webpack-sources');
 const webpack = require('webpack');
 const Qjsc = require('qjsc');
+const parse5 = require('parse5');
 
 const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG } = require('./constants');
@@ -75,23 +76,21 @@ module.exports = (api) => {
                   injectCode += code;
                 };
 
-                // TODO: Async loaded script will delay to execute.
-                if (injected.scripts.length > 0) {
-                  injected.scripts.forEach((url) => {
-                    appendCode(getInjectJS(url));
-                  });
-                }
-
-                if (injected.comboScripts.length > 0) {
-                  injected.comboScripts.forEach((url) => {
-                    appendCode(getInjectJS(url));
-                  });
+                if (injected.metas.length > 0) {
+                  appendCode(getInjectContent(injected.metas.join(''), 'document.head'));
                 }
 
                 if (injected.links.length > 0) {
-                  injected.links.forEach((url) => {
-                    appendCode(getInjectCSS(url));
-                  });
+                  appendCode(getInjectContent(injected.links.join(''), 'document.head'));
+                }
+
+                if (injected.scripts.length > 0) {
+                  appendCode(getInjectContent(injected.scripts.join('')));
+                }
+
+                if (injected.comboScripts.length > 0) {
+                  const comboUrl = 'https://g.alicdn.com/??' + injected.comboScripts.map(s => s.src).join(',');
+                  appendCode(getInjectJS(comboUrl));
                 }
 
                 if (cssFilename in assets) {
@@ -115,9 +114,9 @@ module.exports = (api) => {
 function getInjectJS(url) {
   return [
     '!function(){',
-    'var script = document.createElement("script");',
-    `script.src = "${url}";`,
-    'document.head.appendChild(script);',
+    'var s=document.createElement("script");',
+    `s.src="${url}";`,
+    'document.head.appendChild(s);',
     '}();',
   ].join('');
 }
@@ -125,10 +124,10 @@ function getInjectJS(url) {
 function getInjectCSS(url) {
   return [
     '!function(){',
-    'var link = document.createElement("link");',
-    'link.setAttribute("rel", "stylesheet");',
-    `link.setAttribute("href", "${url}");`,
-    'document.head.appendChild(link);',
+    'var l=document.createElement("link");',
+    'l.setAttribute("rel", "stylesheet");',
+    `l.setAttribute("href", "${url}");`,
+    'document.head.appendChild(l);',
     '}();',
   ].join('');
 }
@@ -136,9 +135,47 @@ function getInjectCSS(url) {
 function getInjectStyle(content) {
   return [
     '!function(){',
-    'var style = document.createElement("style");',
-    `style.appendChild(document.createTextNode(${JSON.stringify(content)}));`,
-    'document.head.appendChild(style);',
+    'var s=document.createElement("style");',
+    `s.appendChild(document.createTextNode(${JSON.stringify(content)}));`,
+    'document.head.appendChild(s);',
     '}();',
   ].join('');
+}
+
+function getInjectContent(content, injectTarget) {
+  content = content.toString().trim();
+  if (!content) return '';
+
+  // The injected target, usually 'document.body' or 'document.head'.
+  if (!injectTarget) injectTarget = 'document.body';
+
+  const root = parse5.parseFragment(content);
+  let identifierCount = 0;
+  let codes = '';
+  traverseNode(root, (node) => {
+    // Ignoring #document-fragment.
+    if (node.nodeName === '#document-fragment') return;
+
+    const parentEl = node.parentNode === root ? injectTarget : node.parentNode.identifier;
+
+    if (node.nodeName === '#text'/* TextNode */) {
+      codes += `${parentEl}.appendChild(document.createTextNode('${node.value}'));`;
+    } else if (node.nodeName === node.tagName/* HTMLElement */) {
+      const identifier = 'i' + identifierCount++;
+      codes += `var ${identifier}=document.createElement('${node.tagName}');`;
+      node.attrs.forEach((attr) => {
+        codes += `${identifier}.setAttribute('${attr.name}','${attr.value}');`;
+      });
+      codes += `${parentEl}.appendChild(${identifier});`;
+      node.identifier = identifier;
+    }
+  });
+  return codes ? '!function(){' + codes + '}();' : '';
+}
+
+function traverseNode(node, callback) {
+  callback(node);
+  if (node.childNodes) {
+    node.childNodes.forEach((sub) => traverseNode(sub, callback));
+  }
 }

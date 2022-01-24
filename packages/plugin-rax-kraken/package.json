@@ -25,6 +25,7 @@
     "@builder/compat-webpack4": "^1.0.0",
     "@builder/mpa-config": "^4.1.0",
     "fs-extra": "^9.0.1",
+    "parse5": "^6.0.1",
     "qjsc": "^0.2.4",
     "webpack": ">=4.0.0",
     "webpack-sources": "^2.0.0"
