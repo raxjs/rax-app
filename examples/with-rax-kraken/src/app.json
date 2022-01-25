@@ -30,11 +30,10 @@
     }
   ],
   "window": {
-    "title": "PHA Demo"
+    "title": "PHA with Kraken Demo"
   },
   "tabBar": {
     "custom": true,
     "list": ["home", "about-single"]
-  },
-  "scripts": ["https://g.alicdn.com/??code/lib/rax/1.2.2/rax.min.umd.js"]
+  }
 }
