@@ -87,7 +87,7 @@ module.exports = (api) => {
                 }
 
                 if (injected.comboScripts.length > 0) {
-                  const comboUrl = 'https://g.alicdn.com/??' + injected.comboScripts.map(s => s.src).join(',');
+                  const comboUrl = `https://g.alicdn.com/??${injected.comboScripts.map((s) => s.src).join(',')}`;
                   appendCode(getInjectJS(comboUrl));
                 }
 
@@ -98,7 +98,7 @@ module.exports = (api) => {
                 }
 
                 const jsContent = assets[chunkFile].source();
-                const bytecode = qjsc.compile(injectCode + '\n' + jsContent);
+                const bytecode = qjsc.compile(`${injectCode}\n${jsContent}`);
                 emitAsset(compilation, kbcFilename, new RawSource(bytecode));
               }
             });

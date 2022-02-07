@@ -8,7 +8,7 @@ exports.getInjectJS = function getInjectJS(url) {
     'document.head.appendChild(s);',
     '}();',
   ].join('');
-}
+};
 
 exports.getInjectStyle = function getInjectStyle(content) {
   return [
@@ -18,7 +18,7 @@ exports.getInjectStyle = function getInjectStyle(content) {
     'document.head.appendChild(s);',
     '}();',
   ].join('');
-}
+};
 
 exports.getInjectContent = function getInjectContent(content, injectTarget) {
   content = String(content).trim();
@@ -48,7 +48,7 @@ exports.getInjectContent = function getInjectContent(content, injectTarget) {
     }
   });
   return codes ? `!function(){${codes}}();` : '';
-}
+};
 
 function traverseNode(node, callback) {
   callback(node);
