@@ -1,8 +1,12 @@
 # Changelog
 
-## 7.0.7
+## 7.0.8
 
 - Feat: migrate `postcss-plugin-rpx2vw` to postcss 8
+
+## 7.0.7
+
+- Fix: SPA title couldn't specified by route info
 
 ## 7.0.6
 

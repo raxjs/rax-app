@@ -1,7 +1,7 @@
 import { createElement, useEffect, useState } from 'rax';
 import { isWeb } from 'universal-env';
 
-export default async (api) => {
+export default (api) => {
   const { appConfig, wrapperPageComponent, addProvider } = api;
 
   if (appConfig.app && appConfig.app.addProvider) {
@@ -31,6 +31,7 @@ function wrapperPageWithOtherPlatform({ appConfig, context }) {
 }
 
 function wrapperPageWithWeb({ staticConfig, appConfig, applyRuntimeAPI }) {
+  let rendered = false;
   const wrapperPage = (PageComponent) => {
     const { __pageConfig: pageConfig } = PageComponent;
 
@@ -41,9 +42,12 @@ function wrapperPageWithWeb({ staticConfig, appConfig, applyRuntimeAPI }) {
       useEffect(() => {
         const title = pageConfig.window?.title || staticConfig.window?.title;
         // Avoid override developer custom title
-        if (title && !document.title) {
+        // SPA toggle route should change title
+        if (title && (rendered || !document.title)) {
           document.title = title;
         }
+
+        rendered = true;
 
         // When enter the page for the first time, need to use window.__INITIAL_DATA__.pageInitialProps as props
         // And don't need to re-request to switch routes
