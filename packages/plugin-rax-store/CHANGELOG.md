@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.1
+
+- Fix: regenerate store types to .rax/types/index.ts
+
 ## v2.0.0
 
 - Feat: upgrade dependencies for webpack 5
