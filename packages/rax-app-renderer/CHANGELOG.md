@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.3
+
+- Fix: types error
+
 ## v3.0.2
 
 - Fix: bundle format should be es5

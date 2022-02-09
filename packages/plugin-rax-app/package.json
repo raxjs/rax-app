@@ -1,12 +1,13 @@
 {
   "name": "build-plugin-rax-app",
-  "version": "7.0.4",
+  "version": "7.0.6",
   "description": "The basic webpack configuration for rax project",
   "author": "Rax Team",
   "main": "lib/index.js",
   "files": [
     "lib",
-    "!lib/**/*.map"
+    "!lib/**/*.map",
+    "src/runtime.tsx"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,7 +18,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "rax-webpack-config": "^3.0.1",
+    "rax-webpack-config": "^3.0.2",
     "rax-babel-config": "^2.0.0",
     "rax-jest-config": "^1.0.0",
     "rax-platform-loader": "^1.1.1",

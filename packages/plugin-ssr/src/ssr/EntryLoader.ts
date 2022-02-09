@@ -5,6 +5,7 @@ import { IFormattedLoaderQuery, ILoaderQuery } from '../types';
 import addCustomRenderComponentToHTML from './addCustomRenderComponentToHTML';
 import addBuiltInRenderComponentToHTML from './addBuiltInRenderComponentToHTML';
 import formatEntryLoaderQuery from '../utils/formatEntryLoaderQuery';
+import addPageHTMLAssign from './addPageHTMLAssign';
 
 function addExport(code) {
   return `${code}
@@ -12,7 +13,9 @@ function addExport(code) {
     render,
     renderToHTML,
     renderWithContext,
-    renderToHTMLWithContext
+    renderToHTMLWithContext,
+    renderDocumentOnly,
+    renderPageOnly
   };`;
 }
 
@@ -131,7 +134,7 @@ export default function () {
     async function renderToHTML(req, res, options = {}) {
       const { initialData, htmlTemplate } = options;
       ${addDefineInitialPage()}
-      const html = await renderComponentToHTML(Page, getInitialContext({ req, res }), initialData);
+      const html = await renderComponentToHTML(Page, getInitialContext({ req, res }), options);
       return html;
     }
 
@@ -139,7 +142,7 @@ export default function () {
       const { req, res } = ctx;
       const { initialData, htmlTemplate } = options;
       ${addDefineInitialPage()}
-      const html = await renderComponentToHTML(Page, getInitialContext(ctx), initialData, htmlTemplate);
+      const html = await renderComponentToHTML(Page, getInitialContext(ctx), options);
       return html;
     }
 
@@ -149,7 +152,7 @@ export default function () {
       ${addDefineInitialPage()}
       let html;
       try {
-        html = await renderComponentToHTML(Page, getInitialContext(ctx), initialData);
+        html = await renderComponentToHTML(Page, getInitialContext(ctx), options);
       } catch (e) {
         html = htmlTemplate;
         console.error(e);
@@ -160,22 +163,61 @@ export default function () {
 
     async function render(ctx, options = {}) {
       let html;
-      if (ctx.req) {
-        const { initialData, htmlTemplate } = options;
-        try {
-          html = await renderToHTML(ctx.req, ctx.res, { initialData, htmlTemplate });
-        } catch (e) {
-          html = htmlTemplate;
-          console.error(e);
-        }
-      } else {
+      if (!ctx.req) {
         const [req, res] = [...arguments];
         ctx = { req, res };
-        html = await renderToHTML(ctx.req, ctx.res);
+      }
+
+      const { htmlTemplate } = options;
+      try {
+        html = await renderToHTML(ctx.req, ctx.res, options);
+      } catch (e) {
+        html = htmlTemplate;
+        console.error(e);
       }
 
       ctx.res.setHeader('Content-Type', 'text/html; charset=utf-8');
       ctx.res.send(html);
+    }
+    
+    async function renderPageOnly(ctx, options = {}) {
+      const { res, req } = ctx;
+
+      ${addDefineInitialPage()}
+      const Component = Page;
+      const pageInitialProps = options.initialProps || await getInitialProps(Component, ctx);
+
+      const data = {
+        __SSR_ENABLED__: true,
+        initialData: options.initialData,
+        pageInitialProps,
+      };
+
+      ${addPageHTMLAssign()}
+
+      return {
+        html: pageHTML,
+        initialProps: pageInitialProps
+      };
+    }
+
+    async function renderDocumentOnly(ctx, options = {}) {
+      // render empty page
+      const Page = () => '';
+      Page.__pageConfig = {};
+
+      const documentData = options.initialProps || await getInitialProps(Document, ctx);
+
+      const html = await renderComponentToHTML(Page, ctx, {
+        __pageHTML: '',
+        __documentData: documentData,
+        ...options,
+      });
+
+      return {
+        html: html,
+        initialProps: documentData
+      };
     }
   `;
 

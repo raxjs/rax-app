@@ -1,23 +1,21 @@
 import { createElement, useEffect, useState } from 'rax';
 import { isWeb } from 'universal-env';
-// @ts-ignore
-import { getHistory, getSearchParams } from 'rax-app';
 
 export default async (api) => {
-  const { appConfig, staticConfig, wrapperPageComponent, addProvider, context } = api;
+  const { appConfig, wrapperPageComponent, addProvider } = api;
 
   if (appConfig.app && appConfig.app.addProvider) {
     addProvider(appConfig.app.addProvider);
   }
 
-  wrapperPageComponent(isWeb ? wrapperPageWithWeb(staticConfig) : wrapperPageWithOtherPlatform(context));
+  wrapperPageComponent((isWeb && !process.env.__IS_SERVER__) ? wrapperPageWithWeb(api) : wrapperPageWithOtherPlatform(api));
 };
 
-function wrapperPageWithOtherPlatform(context) {
+function wrapperPageWithOtherPlatform({ appConfig, context }) {
   const WrapperPageFn = (PageComponent) => {
     const { __pageConfig: pageConfig } = PageComponent;
     const PageWrapper = (props) => {
-      const history = getHistory();
+      const history = appConfig?.router?.history;
       const pageProps = {
         ...props,
         ...context.pageInitialProps,
@@ -32,18 +30,18 @@ function wrapperPageWithOtherPlatform(context) {
   return WrapperPageFn;
 }
 
-function wrapperPageWithWeb(staticConfig) {
+function wrapperPageWithWeb({ staticConfig, appConfig, applyRuntimeAPI }) {
   const wrapperPage = (PageComponent) => {
     const { __pageConfig: pageConfig } = PageComponent;
 
     const PageWrapper = (props) => {
-      const history = getHistory();
+      const history = appConfig?.router?.history;
       const location = history?.location || window.location;
-      const [data, setData] = useState((window as any)?.__INITIAL_DATA__?.pageInitialProps);
+      const [data, setData] = useState((window as any).__INITIAL_DATA__?.pageInitialProps);
       useEffect(() => {
         const title = pageConfig.window?.title || staticConfig.window?.title;
         // Avoid override developer custom title
-        if (title) {
+        if (title && !document.title) {
           document.title = title;
         }
 
@@ -59,7 +57,7 @@ function wrapperPageWithWeb(staticConfig) {
           (async () => {
             const initialContext = {
               pathname: location.pathname,
-              query: getSearchParams(),
+              query: applyRuntimeAPI('getSearchParams'),
               location,
             };
             const result = await PageComponent.getInitialProps(initialContext);

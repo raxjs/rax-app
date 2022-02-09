@@ -120,5 +120,5 @@ describe(`should build wechat-miniprogram result: `, () => {
 
 afterAll(async () => {
   await browser?.close?.();
-  await devServer.close();
+  await devServer?.close();
 });

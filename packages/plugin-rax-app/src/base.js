@@ -39,10 +39,13 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
     babelConfig,
   });
 
+  // dynamic import script cross origin
+  enhancedWebpackConfig.output.crossOriginLoading('anonymous');
+
   enhancedWebpackConfig.module
     .rule('appJSON')
     .type('javascript/auto')
-    .test(/\/app\.json$/)
+    .test(/(\/|\\)app\.json$/)
     .use('swc-loader')
     .loader(require.resolve('@builder/swc-loader'))
     .options({

@@ -1,5 +1,23 @@
 ## Changelog
 
+## 3.8.10
+
+- Fix: manifest.json need includes the scripts which injected by API
+
+## 3.8.9
+
+- Fix: compat with `window.location`
+- Fix: pha manifest.json document field
+
+## 3.8.8
+
+- Feat: ssr support more render methods
+- Fix: override custom title in document
+- Fix: script crossorigin property
+- Fix: css-modules should not add to normal css file
+- Fix: windows path error
+- Chore: optimize code size
+
 ## 3.8.7
 
 - Fix: SPA SSR `getInitialProps` is invalid
