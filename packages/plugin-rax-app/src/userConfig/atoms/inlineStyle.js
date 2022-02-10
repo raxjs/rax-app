@@ -14,9 +14,9 @@ const { createCSSRule } = require('rax-webpack-config');
 const { isWebpack4 } = require('@builder/compat-webpack4');
 const getPostCssPlugin = require('../../getPostCssPlugin');
 
-const webStandardList = [WEB];
+const webStandardList = [WEB, KRAKEN];
 
-const inlineStandardList = [WEEX, KRAKEN];
+const inlineStandardList = [WEEX];
 
 const miniappStandardList = [MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM];
 

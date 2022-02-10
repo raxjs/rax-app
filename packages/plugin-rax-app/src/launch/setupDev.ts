@@ -171,31 +171,23 @@ export default function (api) {
         } else {
           devInfo.urls.web.push(`${urlPrefix}/`);
           console.log(`  ${chalk.underline.white(`${urlPrefix}/`)}`);
-          console.log();
 
           if (shouldOpenBrowser) {
             openBrowser(`${urlPrefix}/`);
           }
         }
+        console.log();
       }
 
       if (targets.includes(KRAKEN)) {
         devInfo.urls.kraken = [];
         console.log(highlightPrint('  [Kraken] Development server at: '));
         krakenEntryKeys.forEach((entryKey) => {
-          const krakenURL = `${urlPrefix}/kraken/${krakenMpa ? entryKey : 'index'}.js`;
+          const krakenURL = `${urlPrefix}/kraken/${krakenMpa ? entryKey : 'index'}.kbc1`;
           devInfo.urls.kraken.push(krakenURL);
           console.log(`  ${chalk.underline.white(krakenURL)}`);
-          console.log();
         });
-
-        console.log(highlightPrint('  [Kraken] Run Kraken Playground App: '));
-        krakenEntryKeys.forEach((entryKey) => {
-          const krakenURL = `${urlPrefix}/kraken/${krakenMpa ? entryKey : 'index'}.js`;
-          devInfo.urls.kraken.push(krakenURL);
-          console.log(`  ${chalk.underline.white(`kraken ${krakenURL}`)}`);
-          console.log();
-        });
+        console.log();
       }
 
       if (targets.includes(WEEX)) {
@@ -206,10 +198,9 @@ export default function (api) {
           const weexUrl = `${urlPrefix}/weex/${weexMpa ? entryKey : 'index'}.js?wh_weex=true`;
           devInfo.urls.weex.push(weexUrl);
           console.log(`  ${chalk.underline.white(weexUrl)}`);
-          console.log();
           qrcode.generate(weexUrl, { small: true });
-          console.log();
         });
+        console.log();
       }
 
       /**

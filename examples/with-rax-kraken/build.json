@@ -1,0 +1,6 @@
+{
+  "targets": ["web", "kraken"],
+  "web": {
+    "pha": true
+  }
+}
