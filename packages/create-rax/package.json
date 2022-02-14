@@ -1,6 +1,6 @@
 {
   "name": "create-rax",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Creator alias for rax.",
   "bin": {
     "create-rax": "bin/create.js"
