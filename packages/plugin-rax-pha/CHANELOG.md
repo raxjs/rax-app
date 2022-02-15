@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.2
+
+- Fix: URL error when build type is Weex
+
 ## v2.0.1
 
 - Fix: manifest.json need includes the scripts which injected by API
@@ -31,7 +35,7 @@
 
 - Chore: pha plugin add more white list and no decamelize keys
 - Fix: no prefetch type will crash in Android TaoBao 9.26.0
-- Fix:  do not set script field when has frames under the page
+- Fix: do not set script field when has frames under the page
 
 ## v1.4.5
 
@@ -81,4 +85,3 @@
 ## v1.2.3
 
 - Fix: data prefetches do not decamelize
-
