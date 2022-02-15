@@ -4,7 +4,7 @@ const spawn = require('cross-spawn');
 
 const argv = process.argv.slice(2);
 
-const TAO_BAO_REGISTRY = 'https://registry.npm.taobao.org';
+const TAO_BAO_REGISTRY = 'https://registry.npmmirror.com';
 const DEFAULT_REGISTRY = 'https://registry.npmjs.org';
 
 function pingUrl(url) {
