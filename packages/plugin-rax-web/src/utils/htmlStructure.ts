@@ -49,18 +49,23 @@ export function insertCommonElements(staticConfig) {
 export function getBuiltInHtmlTpl(htmlInfo: IHtmlInfo, ssr: boolean) {
   const {
     doctype,
-    title,
     spmA,
     spmB,
     injectedHTML: { links: customLinks = [], scripts: customScripts = [], metas: customMetas = [], comboScripts: customComboScripts = [] },
     assets: { links: assetLinks = [], scripts: assetScripts = [] },
   } = htmlInfo;
 
-  let { initialHTML = '' } = htmlInfo;
+  let { initialHTML = '', title } = htmlInfo;
 
   if (ssr) {
     initialHTML = '<!--__INNER_ROOT__-->';
   }
+
+  // Avoid title is undefined
+  if (!title) {
+    title = '';
+  }
+
   return `
   ${doctype}
   <html>
