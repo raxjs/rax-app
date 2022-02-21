@@ -59,7 +59,7 @@ describe('generate html structure', () => {
       <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">
 <meta name=\"apple-mobile-web\" content=\"yes\">
 
-      <title>undefined</title>
+      <title></title>
       <link rel=\"dns-prefetch\" href=\"https://github.githubassets.com\">
 <link rel=\"dns-prefetch\" href=\"https://avatars.githubusercontent.com\">
 

@@ -42,11 +42,12 @@ export default class Generator {
     this.pageEntries = pageEntries;
   }
 
-  render() {
-    // generate .rax/store/index.ts
-    this.renderAppStoreIndex();
-    // generate .rax/store/types.ts
-    this.renderAppStoreTypes();
+  render(rerender = false) {
+    // avoid rerendering files
+    if (!rerender) {
+      this.renderAppStoreIndex();
+      this.renderAppStoreTypes();
+    }
 
     this.pageEntries.forEach((pageEntry) => {
       const pageComponentPath = path.join(this.rootDir, this.srcDir, pageEntry);

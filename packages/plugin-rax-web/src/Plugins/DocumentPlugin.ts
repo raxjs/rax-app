@@ -138,7 +138,8 @@ export default class DocumentPlugin {
 }
 
 function getTitleByStaticConfig(staticConfig, { entryName, mpa, rootDir, target }): string {
-  if (!mpa) return staticConfig.window?.title;
+  // SPA title is set by js api when page componentDidMount
+  if (!mpa) return '';
   const route = staticConfig.routes
     .filter((r) => {
       if (Array.isArray(r.targets) && !r.targets.includes(target)) {

@@ -2,5 +2,6 @@
   "targets": ["web", "weex", "kraken", "miniapp", "wechat-miniprogram"],
   "minify": {
     "activeInDev": ["miniapp"]
-  }
+  },
+  "compileDependencies": []
 }

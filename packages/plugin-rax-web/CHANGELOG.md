@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.7
+
+- Fix: SPA title couldn't specified by route info
+- Fix: title is undefined
+
 ## v2.0.6
 
 - Fix: pha manifest.json document field

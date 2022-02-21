@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.0.7
+
+- Fix: SPA title couldn't specified by route info
+- Fix: `renderComponent` wrong type define
+
 ## 7.0.6
 
 - Fix: compat with `window.location`

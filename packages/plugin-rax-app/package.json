@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-app",
-  "version": "7.0.6",
+  "version": "7.0.7",
   "description": "The basic webpack configuration for rax project",
   "author": "Rax Team",
   "main": "lib/index.js",
@@ -40,7 +40,7 @@
     "stylesheet-loader": "^0.9.1",
     "@builder/exports-field-webpack-plugin": "^1.0.0",
     "@builder/compat-webpack4": "^1.0.0",
-    "postcss-plugin-rpx2vw": "^0.0.2",
+    "postcss-plugin-rpx2vw": "^0.0.3",
     "process": "^0.11.10",
     "events": "^3.3.0",
     "node-libs-browser": "^2.2.1",

@@ -3,7 +3,9 @@
     {
       "path": "/",
       "source": "pages/Home/index",
-      "keepAlive": true
+      "window": {
+        "title": "Home Page"
+      }
     },
     {
       "path": "/pages/about.html",

@@ -226,7 +226,15 @@ function setRealUrlToManifest(options, manifest) {
       // TODO: Android issue
       // TODO: should remove it in PHA 2.x
       // same as iOS issue
-      tab_bar.name = new URL(tab_bar.url).origin;
+      try {
+        tab_bar.name = new URL(tab_bar.url).origin;
+      } catch (e) {
+        // HACK: build type of Weex will inject an invalid URL,
+        // which will throw Error when stringify using `new URL()`
+        // invalid URL: {{xxx}}/path
+        // {{xxx}} will replace by server
+        [tab_bar.name] = tab_bar.url.split('/');
+      }
     }
     delete tab_bar.source;
   }
@@ -260,7 +268,15 @@ function setRealUrlToManifest(options, manifest) {
           // TODO: Android issue
           // TODO: should remove it in PHA 2.x
           // same as iOS issue
-          page.tab_header.name = new URL(page.tab_header.url).origin;
+          try {
+            page.tab_header.name = new URL(page.tab_header.url).origin;
+          } catch (e) {
+            // HACK: build type of Weex will inject an invalid URL,
+            // which will throw Error when stringify using `new URL()`
+            // invalid URL: {{xxx}}/path
+            // {{xxx}} will replace by server
+            [page.tab_header.name] = page.tab_header.url.split('/');
+          }
         }
         delete page.tab_header.source;
       }
