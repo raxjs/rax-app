@@ -216,9 +216,10 @@ function setRealUrlToManifest(options, manifest) {
   if (tab_bar && tab_bar.source) {
     const { document, custom } = applyMethod('rax.getDocument', { name: tab_bar.name, source: tab_bar.source }) || {};
     if (!tab_bar.url) {
-      if (custom) {
-        tab_bar.html = document;
-      }
+      // TODO: DO NOT GENERATE DOCUMENT IN OLD VERSION OF PHA
+      // if (custom) {
+      //   tab_bar.html = document;
+      // }
       // TODO: iOS issue
       // TODO: should remove it in PHA 2.x
       // PHA 1.x should inject `url` to be a base url to load assets
@@ -258,9 +259,10 @@ function setRealUrlToManifest(options, manifest) {
         const { document, custom } =
           applyMethod('rax.getDocument', { name: page.tab_header.name, source: page.tab_header.source }) || {};
         if (!page.tab_header.url) {
-          if (custom) {
-            page.tab_header.html = document;
-          }
+          // TODO: DO NOT GENERATE DOCUMENT IN OLD VERSION OF PHA
+          // if (custom) {
+          //   page.tab_header.html = document;
+          // }
           // TODO: iOS issue
           // TODO: should remove it in PHA 2.x
           // PHA 1.x should inject `url` to be a base url to load assets
