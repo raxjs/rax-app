@@ -1,5 +1,16 @@
 ## Changelog
 
+## 3.8.12
+
+- Fix: fix: remove `html` field for TabBar to avoid error in old PHA
+
+## 3.8.11
+
+- Fix: SPA title couldn't specified by route info
+- Fix: store rerender types
+- Fix: url error when build type is Weex
+- Fix: ReDos of postcss
+
 ## 3.8.10
 
 - Fix: manifest.json need includes the scripts which injected by API
