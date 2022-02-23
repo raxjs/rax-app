@@ -202,7 +202,7 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, api,
  * set real url to manifest
  */
 function setRealUrlToManifest(options, manifest) {
-  const { urlPrefix, cdnPrefix, api } = options;
+  const { urlPrefix, cdnPrefix } = options;
   // const { applyMethod } = api;
   if (!urlPrefix) {
     return manifest;
