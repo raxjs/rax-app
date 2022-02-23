@@ -28,7 +28,8 @@ jobs:
     - run: npm run setup
     - run: npm run dependency:check
     - run: npm run lint
-    - run: ls -la
+    - run: cd node_modules/qjsc && ls -la
+    - run: env
     - run: npm run test
     - if: steps.check-branch.outputs.match == 'true'
       run: npm run version:check
