@@ -214,7 +214,7 @@ function setRealUrlToManifest(options, manifest) {
   }
 
   if (tab_bar && tab_bar.source) {
-    const { document, custom } = applyMethod('rax.getDocument', { name: tab_bar.name, source: tab_bar.source }) || {};
+    // const { document, custom } = applyMethod('rax.getDocument', { name: tab_bar.name, source: tab_bar.source }) || {};
     if (!tab_bar.url) {
       // TODO: DO NOT GENERATE DOCUMENT IN OLD VERSION OF PHA
       // if (custom) {
@@ -256,8 +256,8 @@ function setRealUrlToManifest(options, manifest) {
       }
 
       if (page.tab_header && page.tab_header.source) {
-        const { document, custom } =
-          applyMethod('rax.getDocument', { name: page.tab_header.name, source: page.tab_header.source }) || {};
+        // const { document, custom } =
+        //   applyMethod('rax.getDocument', { name: page.tab_header.name, source: page.tab_header.source }) || {};
         if (!page.tab_header.url) {
           // TODO: DO NOT GENERATE DOCUMENT IN OLD VERSION OF PHA
           // if (custom) {
