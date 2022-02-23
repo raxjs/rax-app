@@ -2,7 +2,7 @@
 
 ## v2.0.3
 
--  Fix: remove `html` field for TabBar & TabHeader
+-  Fix: remove `html` field for TabBar
 
 ## v2.0.2
 

@@ -202,8 +202,8 @@ function changePageInfo({ urlPrefix, urlSuffix = '', cdnPrefix, isTemplate, api,
  * set real url to manifest
  */
 function setRealUrlToManifest(options, manifest) {
-  const { urlPrefix, cdnPrefix } = options;
-  // const { applyMethod } = api;
+  const { urlPrefix, cdnPrefix, api } = options;
+  const { applyMethod } = api;
   if (!urlPrefix) {
     return manifest;
   }
@@ -256,13 +256,12 @@ function setRealUrlToManifest(options, manifest) {
       }
 
       if (page.tab_header && page.tab_header.source) {
-        // const { document, custom } =
-        //   applyMethod('rax.getDocument', { name: page.tab_header.name, source: page.tab_header.source }) || {};
+        const { document, custom } =
+          applyMethod('rax.getDocument', { name: page.tab_header.name, source: page.tab_header.source }) || {};
         if (!page.tab_header.url) {
-          // TODO: DO NOT GENERATE DOCUMENT IN OLD VERSION OF PHA
-          // if (custom) {
-          //   page.tab_header.html = document;
-          // }
+          if (custom) {
+            page.tab_header.html = document;
+          }
           // TODO: iOS issue
           // TODO: should remove it in PHA 2.x
           // PHA 1.x should inject `url` to be a base url to load assets
