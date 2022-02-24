@@ -214,6 +214,8 @@ function setRealUrlToManifest(options, manifest) {
   }
 
   if (tab_bar && tab_bar.source) {
+    // TODO: shoule remove this comment when the PHA version is high enough
+    // ISSUE: https://yuque.antfin-inc.com/pha/topics/10
     // const { document, custom } = applyMethod('rax.getDocument', { name: tab_bar.name, source: tab_bar.source }) || {};
     if (!tab_bar.url) {
       // TODO: DO NOT GENERATE DOCUMENT IN OLD VERSION OF PHA

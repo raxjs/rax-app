@@ -431,6 +431,8 @@ describe('setRealUrlToManifest', () => {
     expect(manifest.pages[0].tab_header.html).toBeUndefined();
 
     expect(manifest.tab_bar.url).toBe('https://abc.com/customtabbar');
+    // TODO: shoule remove this comment when the PHA version is high enough
+    // ISSUE: https://yuque.antfin-inc.com/pha/topics/10
     // expect(manifest.tab_bar.html).toBe('<html>123</html>');
   });
 
