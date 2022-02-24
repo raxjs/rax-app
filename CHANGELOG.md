@@ -2,7 +2,7 @@
 
 ## 3.8.12
 
-- Fix: fix: remove `html` field for TabBar to avoid error in old PHA
+- Fix: remove `html` field for TabBar to avoid error in old PHA
 
 ## 3.8.11
 
