@@ -214,11 +214,7 @@ function setRealUrlToManifest(options, manifest) {
   }
 
   if (tab_bar && tab_bar.source) {
-    const { document, custom } = applyMethod('rax.getDocument', { name: tab_bar.name, source: tab_bar.source }) || {};
     if (!tab_bar.url) {
-      if (custom) {
-        tab_bar.html = document;
-      }
       // TODO: iOS issue
       // TODO: should remove it in PHA 2.x
       // PHA 1.x should inject `url` to be a base url to load assets

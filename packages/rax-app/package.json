@@ -1,6 +1,6 @@
 {
   "name": "rax-app",
-  "version": "3.8.11",
+  "version": "3.8.12",
   "description": "command line interface and builtin plugin for rax app",
   "author": "Rax Team",
   "homepage": "https://github.com/alibaba/ice#readme",
@@ -21,7 +21,7 @@
     "build-plugin-rax-app": "7.0.7",
     "build-plugin-rax-kraken": "2.1.0",
     "build-plugin-rax-miniapp": "2.0.0",
-    "build-plugin-rax-pha": "2.0.2",
+    "build-plugin-rax-pha": "2.0.3",
     "build-plugin-rax-store": "2.0.1",
     "build-plugin-rax-web": "2.0.7",
     "build-plugin-rax-weex": "2.0.0",
