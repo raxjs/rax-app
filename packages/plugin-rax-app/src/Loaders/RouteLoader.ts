@@ -185,7 +185,7 @@ function formatRoutes(routes: IRoute[], { target, currentSubDir, rootContext, is
   return filterByTarget(routes, { target })
     .filter(
       ({ source, url }) =>
-        // Only filter miniapp native page
+        // Only filter miniapp native page and ignore routes with url prop
         (!MINIAPP_PLATFORMS.includes(target) || !pathHelper.isNativePage(join(currentSubDir, source), target)) && !url,
     )
     .map((route) => {

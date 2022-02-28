@@ -13,10 +13,10 @@ const { setWebviewConfig, setWebviewPageConfig } = require('miniapp-webview-conf
 const separateRoutes = require('./separateRoutes').default;
 const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR, MINIAPP_BUILD_TYPES } = require('./constants');
-const { default: copyRemoteDist } = require('./copyRemoteDist');
+const { copyRemoteDist } = require('./copyRemoteDist');
 
 module.exports = (api) => {
-  const { getValue, context, registerTask, onGetWebpackConfig, onHook, cancelTask } = api;
+  const { getValue, context, registerTask, onGetWebpackConfig, onHook } = api;
   const { userConfig, rootDir } = context;
   const { targets, inlineStyle, vendor, outputDir = 'build' } = userConfig;
 

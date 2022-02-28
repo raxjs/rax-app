@@ -19,18 +19,27 @@ export default function addCustomRenderComponentToHTML(
     injectedScripts.unshift(genComboedScript(injectedHTML.comboScripts));
   }
   return `
-  async function renderComponentToHTML(Component, ctx, initialData, htmlTemplate) {
-    const pageInitialProps = await getInitialProps(Component, ctx);
+  async function renderComponentToHTML(Component, ctx, options = {}) {
+    const { initialData, htmlTemplate, initialProps } = options;
+    const pageInitialProps = initialProps || await getInitialProps(Component, ctx);
+
     const data = {
       __SSR_ENABLED__: true,
       initialData,
       pageInitialProps,
     };
 
-    // Assign pageHTML
-    ${addPageHTMLAssign()}
+    let initialHtml;
 
-    const documentData = await getInitialProps(Document, ctx);
+    if (options.__pageHTML != null) {
+      initialHtml = options.__pageHTML;
+    } else {
+      // Assign pageHTML
+      ${addPageHTMLAssign()}
+      initialHtml = pageHTML;
+    }
+
+    const documentData = options.__documentData || await getInitialProps(Document, ctx);
 
     function getTitle(config) {
       return config.window && config.window.title
@@ -49,7 +58,7 @@ export default function addCustomRenderComponentToHTML(
     const DocumentContextProvider = function() {};
     DocumentContextProvider.prototype.getChildContext = function() {
       return {
-        __initialHtml: pageHTML,
+        __initialHtml: initialHtml,
         __initialData: stripXSS(JSON.stringify(data)),
         __styles: styles,
         __scripts: scripts,

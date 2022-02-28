@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.0
+
+- Feat: support remote url in runtime and compile mode
+
 ## v2.0.0
 
 - Feat: upgrade dependencies for webpack 5

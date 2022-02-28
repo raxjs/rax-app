@@ -22,6 +22,6 @@ describe('should start web devServer: ', () => {
 
 
 afterAll(async () => {
-  await browser.close();
-  await devServer.close();
+  await browser?.close();
+  await devServer?.close();
 });

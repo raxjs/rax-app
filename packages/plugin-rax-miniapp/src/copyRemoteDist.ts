@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
-export default function copyRemoteDist(targets: string[], outputDir: string) {
-  targets.forEach(target => {
+export function copyRemoteDist(targets: string[], outputDir: string) {
+  targets.forEach((target) => {
     const sourceDir = path.resolve(outputDir, `webview-${target}`);
     const destDir = path.resolve(outputDir, target);
 

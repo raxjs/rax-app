@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
+const { formatPath } = require('@builder/app-helpers');
 const { STATIC_CONFIG, TAB_BAR_PATH } = require('../constants');
 
 module.exports = (api) => {
@@ -29,6 +30,9 @@ module.exports = (api) => {
     } else {
       tabBarPath = path.join(getValue('TEMP_PATH'), 'plugins/app/TabBar');
     }
+
+    tabBarPath = formatPath(tabBarPath);
+
     setValue(TAB_BAR_PATH, tabBarPath);
 
     if (!userConfig.mpa) {
