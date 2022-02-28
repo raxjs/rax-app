@@ -58,7 +58,7 @@ module.exports = (api) => {
 
       // static config
       const staticConfig = normalizeStaticConfig(getValue('staticConfig'), { rootDir });
-      const { normalRoutes, nativeRoutes, remoteRoutes } = separateRoutes(staticConfig.routes, { target, rootDir });
+      const { normalRoutes, nativeRoutes, remoteRoutes = [] } = separateRoutes(staticConfig.routes, { target, rootDir });
 
       const buildType = userConfig[target] && userConfig[target].buildType ? userConfig[target].buildType : MINIAPP_BUILD_TYPES.RUNTIME;
       if (remoteRoutes.length > 0 && buildType !== MINIAPP_BUILD_TYPES.WEBVIEW) {
