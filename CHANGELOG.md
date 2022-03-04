@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.8.13
+
+- Fix: kraken plugin build-scripts version
+
 ## 3.8.12
 
 - Fix: remove `html` field for TabBar to avoid error in old PHA
