@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-web",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "rax web app plugin",
   "main": "lib/index.js",
   "scripts": {
@@ -17,7 +17,7 @@
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "build-scripts": "1.0.0"
+    "build-scripts": "^1.0.0"
   },
   "dependencies": {
     "@builder/app-helpers": "^2.1.0",

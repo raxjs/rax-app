@@ -2,7 +2,7 @@
 
 ## 3.8.13
 
-- Fix: kraken plugin build-scripts version
+- Fix: build-scripts version
 
 ## 3.8.12
 
