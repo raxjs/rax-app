@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const { constants: { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM }, platformMap } = require('miniapp-builder-shared');
 const { setConfig } = require('miniapp-runtime-config');
+import { separateNativeRoutes } from 'miniapp-builder-shared';
 const {
   setAppConfig: setAppCompileConfig,
   setComponentConfig: setComponentCompileConfig,
@@ -10,7 +11,7 @@ const { normalizeStaticConfig } = require('miniapp-builder-shared');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { setWebviewConfig } = require('miniapp-webview-config');
 
-const separateRoutes = require('./separateRoutes').default;
+const filterByTarget = require('./filterByTarget').default;
 const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR, MINIAPP_BUILD_TYPES } = require('./constants');
 
@@ -52,11 +53,12 @@ module.exports = (api) => {
         const originalStaticConfig = getValue('staticConfig');
 
         // static config
-        const { normalRoutes, nativeRoutes } = separateRoutes(originalStaticConfig.routes, { target, rootDir });
         const staticConfig = normalizeStaticConfig({
           ...originalStaticConfig,
-          routes: [...nativeRoutes, ...normalRoutes],
+          routes: filterByTarget(originalStaticConfig.routes, { target }),
         }, { rootDir });
+        const { normalRoutes, nativeRoutes } = separateRoutes(staticConfig.routes, { target, rootDir });
+
         const buildType = userConfig[target] && userConfig[target].buildType ? userConfig[target].buildType : MINIAPP_BUILD_TYPES.RUNTIME;
         // Set Entry when it's runtime project
         if (buildType === MINIAPP_BUILD_TYPES.RUNTIME) {
