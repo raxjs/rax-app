@@ -49,10 +49,14 @@ module.exports = (api) => {
         const { outputDir = 'build' } = userConfig;
         // Get output dir
         const outputPath = path.resolve(rootDir, outputDir, target);
+        const originalStaticConfig = getValue('staticConfig');
 
         // static config
-        const staticConfig = normalizeStaticConfig(getValue('staticConfig'), { rootDir });
-        const { normalRoutes, nativeRoutes } = separateRoutes(staticConfig.routes, { target, rootDir });
+        const { normalRoutes, nativeRoutes } = separateRoutes(originalStaticConfig.routes, { target, rootDir });
+        const staticConfig = normalizeStaticConfig({
+          ...originalStaticConfig,
+          routes: [...nativeRoutes, ...normalRoutes],
+        }, { rootDir });
         const buildType = userConfig[target] && userConfig[target].buildType ? userConfig[target].buildType : MINIAPP_BUILD_TYPES.RUNTIME;
         // Set Entry when it's runtime project
         if (buildType === MINIAPP_BUILD_TYPES.RUNTIME) {
