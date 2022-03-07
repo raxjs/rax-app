@@ -81,15 +81,10 @@ function parseRoutes(routes) {
   const keepAliveRoutes: IRoute[] = [];
   routes.forEach((route) => {
     const { routeWrappers, ...others } = route;
-    if ((isWeb || isNode) && route.keepAlive) {
-      keepAliveRoutes.push({
-        ...others,
-        component: getComponentByLazy(route.component, { route }),
-      });
-      return;
-    }
+    // keepAlive only valid in web and node
+    const targetRoutes = (isWeb || isNode) && route.keepAlive ? keepAliveRoutes : initialRoutes;
 
-    initialRoutes.push({
+    targetRoutes.push({
       ...others,
       component: getComponentByLazy(route.component, { route }),
     });
@@ -105,11 +100,13 @@ function getComponentByLazy(PageComponent, { route }) {
   const { lazy = true } = route;
   if (isWeb) {
     if (lazy) {
-      // When it is lazy, PageComponent is a function which return a Promise<Component>
-      const LazyComponent = PageComponent();
-      return LazyComponent.then((component) => {
-        return wrapperPage(component, { route });
-      });
+      return () => {
+        // When it is lazy, PageComponent is a function which return a Promise<Component>
+        const LazyComponent = PageComponent();
+        return LazyComponent.then((component) => {
+          return wrapperPage(component, { route });
+        });
+      }
     }
 
     return wrapperPage(PageComponent, { route });
