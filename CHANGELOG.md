@@ -3,6 +3,7 @@
 ## 3.8.13
 
 - Fix: build-scripts version
+- Fix: spa page auto execute
 
 ## 3.8.12
 

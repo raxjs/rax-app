@@ -1,6 +1,6 @@
 {
   "name": "build-plugin-rax-router",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "SPA router in rax-app",
   "license": "MIT",
   "main": "lib/index.js",

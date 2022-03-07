@@ -106,7 +106,7 @@ function getComponentByLazy(PageComponent, { route }) {
         return LazyComponent.then((component) => {
           return wrapperPage(component, { route });
         });
-      }
+      };
     }
 
     return wrapperPage(PageComponent, { route });
