@@ -2,12 +2,11 @@ const path = require('path');
 const fs = require('fs-extra');
 const { constants: { MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP, BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM }, platformMap } = require('miniapp-builder-shared');
 const { setConfig } = require('miniapp-runtime-config');
-import { separateNativeRoutes } from 'miniapp-builder-shared';
 const {
   setAppConfig: setAppCompileConfig,
   setComponentConfig: setComponentCompileConfig,
 } = require('miniapp-compile-config');
-const { normalizeStaticConfig } = require('miniapp-builder-shared');
+const { normalizeStaticConfig, separateNativeRoutes } = require('miniapp-builder-shared');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { setWebviewConfig } = require('miniapp-webview-config');
 
@@ -57,7 +56,7 @@ module.exports = (api) => {
           ...originalStaticConfig,
           routes: filterByTarget(originalStaticConfig.routes, { target }),
         }, { rootDir });
-        const { normalRoutes, nativeRoutes } = separateRoutes(staticConfig.routes, { target, rootDir });
+        const { normalRoutes, nativeRoutes } = separateNativeRoutes(staticConfig.routes, { target, rootDir });
 
         const buildType = userConfig[target] && userConfig[target].buildType ? userConfig[target].buildType : MINIAPP_BUILD_TYPES.RUNTIME;
         // Set Entry when it's runtime project
