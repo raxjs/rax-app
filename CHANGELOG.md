@@ -5,6 +5,7 @@
 - Fix: build-scripts version
 - Fix: spa page auto execute
 - Fix: miniapp app.json pages field need be filtered by targets
+- Fix: css modules `:global`
 
 ## 3.8.12
 
