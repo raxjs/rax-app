@@ -1,8 +1,9 @@
 import { getOptions } from 'loader-utils';
 import { join, dirname } from 'path';
 import { formatPath } from '@builder/app-helpers';
-import { pathHelper } from 'miniapp-builder-shared';
+import { pathHelper, checkIsMiniappPlatform } from 'miniapp-builder-shared';
 import { MINIAPP_PLATFORMS } from '../constants';
+
 
 interface ITabBarItem {
   text?: string;
@@ -43,6 +44,7 @@ export default function (appJSON) {
   const { target, mpa } = options;
   const initialStaticConfig: IStaticConfig = transformAppConfig(appJSON);
   const isRootAppJsonPath = this.resourcePath === join(this.rootContext, 'src', 'app.json');
+  const isMiniappPlatform = checkIsMiniappPlatform(target);
 
   const staticConfig = {
     ...initialStaticConfig,
@@ -67,6 +69,13 @@ export default function (appJSON) {
     target,
   );
   const { routes, ...otherConfig } = staticConfig;
+  if (isMiniappPlatform) {
+    return `
+  const staticConfig = ${JSON.stringify(staticConfig)};
+  export default staticConfig;
+  `;
+  }
+
   return `
   ${normalImportExpression}
   const staticConfig = ${JSON.stringify(otherConfig)};

@@ -21,7 +21,11 @@
     "rax": "^1.0.0"
   },
   "dependencies": {
+    "@builder/app-helpers": "^2.3.4",
+    "copy-webpack-plugin": "^5.0.4",
     "fs-extra": "^9.0.1",
+    "webpack-sources": "^2.0.0",
+    "webpack-virtual-modules": "^0.4.3",
     "miniapp-runtime-config": "^0.4.0",
     "webpack-sources": "^2.0.0",
     "miniapp-builder-shared": "^0.3.0",
