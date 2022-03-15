@@ -107,5 +107,5 @@ function getFinalRoute(route: IRoute): IRoute {
   return {
     ...route,
     component: (route.component as AsyncRouteComponentType)(),
-  }
+  };
 }
