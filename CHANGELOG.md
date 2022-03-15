@@ -4,6 +4,7 @@
 
 - Fix: build-scripts version
 - Fix: spa page auto execute
+- Fix: keep alive page error
 - Fix: miniapp app.json pages field need be filtered by targets
 
 ## 3.8.12

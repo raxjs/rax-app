@@ -3,6 +3,7 @@
 ## 1.0.4
 
 - Fix: spa page auto execute
+- Fix: keep alive page error
 
 ## 1.0.3
 

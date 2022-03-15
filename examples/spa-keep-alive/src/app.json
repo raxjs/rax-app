@@ -1,0 +1,38 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "source": "pages/Home/index",
+      "window": {
+        "title": "Home Page"
+      },
+      "keepAlive": true
+    },
+    {
+      "path": "/pages/about.html",
+      "source": "pages/About/index",
+      "window": {
+        "title": "About Page"
+      },
+      "keepAlive": true
+    }
+  ],
+  "window": {
+    "title": "Rax App"
+  },
+  "tabBar": {
+    "textColor": "#dddddd",
+    "selectedColor": "#49a9ee",
+    "backgroundColor": "#ffffff",
+    "items": [
+      {
+        "pageName": "/",
+        "name": "Home Page"
+      },
+      {
+        "pageName": "/pages/about.html",
+        "text": "About"
+      }
+    ]
+  }
+}
