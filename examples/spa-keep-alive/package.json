@@ -1,0 +1,14 @@
+{
+  "name": "basic-spa",
+  "description": "rax example",
+  "devDependencies": {
+    "@types/rax": "^1.0.0"
+  },
+  "scripts": {
+    "start": "../../packages/rax-app/bin/rax-cli.js start",
+    "build": "../../packages/rax-app/bin/rax-cli.js build"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  }
+}
