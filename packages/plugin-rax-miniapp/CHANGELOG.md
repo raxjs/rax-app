@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.2
+
+- Fix: miniapp app.json pages field need be filtered by targets
+
+## v2.0.1
+
+- Fix: build-scripts version
+
 ## v2.0.0
 
 - Feat: upgrade dependencies for webpack 5

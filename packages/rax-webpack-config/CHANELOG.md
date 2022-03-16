@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.3
+
+- Fix: css modules `:global`
+
 ## v3.0.2
 
 - Chore: ts-loader compiler target changed to `esnext`

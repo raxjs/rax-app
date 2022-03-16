@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.8
+
+- Fix: build-scripts version
+
 ## v2.0.7
 
 - Fix: SPA title couldn't specified by route info
