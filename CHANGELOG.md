@@ -6,6 +6,7 @@
 - Fix: spa page auto execute
 - Fix: keep alive page error
 - Fix: miniapp app.json pages field need be filtered by targets
+- Fix: css modules `:global`
 
 ## 3.8.12
 
