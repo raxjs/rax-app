@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.8.14
+
+- Fix: only inject webpack hot client in webpack4
+
 ## 3.8.13
 
 - Fix: build-scripts version
