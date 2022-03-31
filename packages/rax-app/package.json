@@ -3,7 +3,7 @@
   "version": "3.8.14",
   "description": "command line interface and builtin plugin for rax app",
   "author": "Rax Team",
-  "homepage": "https://github.com/alibaba/ice#readme",
+  "homepage": "https://github.com/raxjs/rax-app#readme",
   "license": "MIT",
   "main": "lib/index.js",
   "bin": {

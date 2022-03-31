@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.4
+
+- Chore: revert 3.0.3 changed file
+
 ## v3.0.3
 
 - Fix: css modules `:global`

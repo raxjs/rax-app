@@ -68,8 +68,6 @@ const addCssLoader = (rule, isCSSModule) => {
   const cssModuleLoaderOpts = {
     ...cssLoaderOpts,
     modules: {
-      mode: 'local',
-      exportGlobals: true,
       localIdentName: '[folder]--[local]--[hash:base64:7]',
     },
   };
