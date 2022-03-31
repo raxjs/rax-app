@@ -1,61 +1,6 @@
 const { decamelize } = require('humps');
 const pathPackage = require('path');
-
-// appConfig keys need transform to manifest
-const retainKeys = [
-  'name',
-  'startUrl',
-  'shortName',
-  'lang',
-  'dir',
-  'description',
-  'backgroundColor',
-  'display',
-  'icons',
-  'appWorker',
-  'window',
-  'pageHeader',
-  'tabHeader',
-  'tabBar',
-  'pages',
-  'dataPrefetch',
-  'spm',
-  'metas',
-  'links',
-  'scripts',
-  'offlineResources',
-  'packageResources',
-  'manifestPrefetchExpires',
-  'manifestPrefetchMaxAge',
-  'maxAge',
-  'expires',
-  'queryParamsPassKeys',
-  'queryParamsPassIgnoreKeys',
-  'splashViewTimeout',
-  'splashViewAutoClose',
-  'swiperThreshold',
-  'requestHeaders',
-  'enablePoplayer',
-  'disableCapture',
-  'enablePullRefresh',
-  'pullRefreshBackgroundColor',
-  'pullRefreshColorScheme',
-  'pullRefresh',
-  'cacheQueryParams',
-];
-
-// do not decamelize list
-const camelizeKeys = [
-  'appKey',
-  'dataType',
-  'valueType',
-  'isSec',
-  'LoginRequest',
-  'sessionOption',
-  'AntiCreep',
-  'AntiFlood',
-  'needLogin',
-];
+const { manifestRetainKeys: retainKeys, manifestCamelizeKeys: camelizeKeys } = require('./manifestWhiteList');
 
 // transform app config to decamelize
 function transformAppConfig(appConfig, isRoot = true, parentKey) {
