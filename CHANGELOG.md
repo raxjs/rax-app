@@ -2,6 +2,7 @@
 
 ## 3.8.14
 
+- Feat: add splashViewUrl and splashViewHtml fields
 - Fix: only inject webpack hot client in webpack4
 
 ## 3.8.13
