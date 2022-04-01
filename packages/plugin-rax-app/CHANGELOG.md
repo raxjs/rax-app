@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.8
+
+- Fix: only inject webpack hot client in webpack4
+
 ## 7.0.7
 
 - Fix: SPA title couldn't specified by route info

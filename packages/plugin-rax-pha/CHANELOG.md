@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.0
+
+- Feat: add splashViewUrl and splashViewHtml fields
+
 ## v2.0.3
 
 - Fix: remove `html` field for TabBar

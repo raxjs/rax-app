@@ -1,5 +1,5 @@
 const babelJest = require('babel-jest');
-const { getBabelConfig } = require('build-scripts-config');
+const getBabelConfig = require('rax-babel-config');
 
 const jestBabelConfig = getBabelConfig();
 module.exports = babelJest.createTransformer(jestBabelConfig);

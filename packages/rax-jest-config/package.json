@@ -1,6 +1,6 @@
 {
   "name": "rax-jest-config",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "rax jest config",
   "main": "lib/index.js",
   "files": [
@@ -19,6 +19,6 @@
   "dependencies": {
     "babel-jest": "^26.1.0",
     "jest-transform-css": "^2.0.0",
-    "build-scripts-config": "^0.1.8"
+    "rax-babel-config": "^2.0.0"
   }
 }

@@ -40,8 +40,10 @@ const devServerDefaultOptionsMap = {
       },
     },
     client: {
-      overlay: false,
-      logging: 'none',
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
     },
     onBeforeSetupMiddleware({ app }) {
       app.use((req, res, next) => {
