@@ -83,7 +83,7 @@ const addCssLoader = (rule, isCSSModule) => {
 
 const addPostCssLoader = (rule) => {
   const postcssLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/postcss-loader') : require.resolve('@builder/pack/deps/postcss-loader');
-  return rule.use('postcss-loader').loader(postcssLoader).options({ implementation: require('postcss'), sourceMap: true,  }).end();
+  return rule.use('postcss-loader').loader(postcssLoader).options({ implementation: require('postcss'), sourceMap: true }).end();
 };
 
 const addCssPreprocessorLoader = (rule, loader) => {
