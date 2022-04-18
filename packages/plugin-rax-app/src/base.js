@@ -107,7 +107,7 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
       });
     }
 
-    const conditionNames = [target, 'import', 'require', 'node'];
+    const conditionNames = [target, '...'];
 
     // Add condition names
     if (isWebpack4) {

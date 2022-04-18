@@ -19,6 +19,6 @@
   "dependencies": {
     "babel-jest": "^26.1.0",
     "jest-transform-css": "^2.0.0",
-    "rax-babel-config": "^2.0.0"
+    "rax-babel-config": "^2.0.2"
   }
 }
