@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.8.15
+
+- Chore: update @builder/pack to 0.6.x, more detail see https://github.com/ice-lab/builder-deps/pull/20
+
 ## 3.8.14
 
 - Feat: add splashViewUrl and splashViewHtml fields
