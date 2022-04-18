@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "rax-webpack-config": "^3.0.5",
-    "rax-babel-config": "^2.0.0",
+    "rax-babel-config": "^2.0.2",
     "rax-jest-config": "^1.1.0",
     "rax-platform-loader": "^1.1.1",
     "@builder/user-config": "^2.0.0",
@@ -44,7 +44,7 @@
     "process": "^0.11.10",
     "events": "^3.3.0",
     "node-libs-browser": "^2.2.1",
-    "@builder/pack": "^0.5.2",
+    "@builder/pack": "^0.6.0",
     "@builder/swc-loader": "^1.0.1"
   },
   "repository": {

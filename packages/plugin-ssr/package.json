@@ -31,7 +31,7 @@
     "react-dev-utils": "^11.0.0",
     "cheerio": "1.0.0-rc.3",
     "html-minifier": "^4.0.0",
-    "rax-app-renderer": "^3.0.2",
+    "rax-app-renderer": "^3.0.3",
     "rax-server-renderer": "^1.2.0",
     "@builder/html-generator": "^2.0.0",
     "chalk": "^4.0.0",

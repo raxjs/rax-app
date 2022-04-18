@@ -14,14 +14,14 @@
     "test": "__tests__"
   },
   "dependencies": {
-    "@builder/pack": "^0.5.0",
+    "@builder/pack": "^0.6.0",
     "build-scripts": "^1.1.0",
     "build-plugin-app-core": "2.1.0",
     "build-plugin-ice-config": "2.0.2",
     "build-plugin-rax-app": "7.0.9",
     "build-plugin-rax-kraken": "2.1.1",
     "build-plugin-rax-miniapp": "2.0.2",
-    "build-plugin-rax-pha": "2.1.0",
+    "build-plugin-rax-pha": "2.1.1",
     "build-plugin-rax-store": "2.0.1",
     "build-plugin-rax-web": "2.0.8",
     "build-plugin-rax-weex": "2.0.0",
