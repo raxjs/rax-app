@@ -32,6 +32,9 @@
     "webpack-chain": "^6.5.1",
     "ts-loader": "^8.0.0"
   },
+  "peerDependencies": {
+    "postcss": "^7.0.0 || ^8.0.0"
+  },
   "devDependencies": {
     "webpack": ">=4.0.0"
   }

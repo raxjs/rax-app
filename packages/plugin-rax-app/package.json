@@ -47,9 +47,6 @@
     "@builder/pack": "^0.6.0",
     "@builder/swc-loader": "^1.0.1"
   },
-  "peerDependencies": {
-    "postcss": "^7.0.0 || ^8.0.0"
-  },
   "repository": {
     "type": "git",
     "url": "git@github.com:raxjs/rax-app.git"
