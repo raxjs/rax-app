@@ -3,7 +3,7 @@ import { cloneDeep } from '@builder/pack/deps/lodash';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { IOptions } from './types';
 import isWebpack4 from './isWebpack4';
-import getPostcssImplementation from './getPostcssImplementation'
+import getPostcssImplementation from './getPostcssImplementation';
 
 const URL_LOADER_LIMIT = 8192;
 const EXCLUDE_REGX = /node_modules/;
