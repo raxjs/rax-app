@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.6
+
+- Revert: version of @builder/rax-pack
+
 ## v3.0.5
 
 - Feat: update version of `postcss-loader`
