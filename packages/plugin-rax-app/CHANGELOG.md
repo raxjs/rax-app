@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.11
+
+- Revert: compat of `postcs-loader` options
+
 ## 7.0.10
 
 - Fix: resolve error with `import` in webpack4
