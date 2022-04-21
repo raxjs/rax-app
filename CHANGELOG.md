@@ -1,8 +1,13 @@
 ## Changelog
 
+## 3.8.16
+
+- Fix: exports field build error in webpack4
+
 ## 3.8.15
 
 - Chore: update @builder/pack to 0.6.x, more detail see https://github.com/ice-lab/builder-deps/pull/20
+- Feat: change the way of options pass into postcss-loader because the update of it
 
 ## 3.8.14
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.10
+
+- Fix: resolve error with `import` in webpack4
+
 ## 7.0.9
 
 - Fix: the way of options pass into `postcss-loader` because the update of `postcss-loader`
