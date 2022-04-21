@@ -3,25 +3,26 @@ import { cloneDeep } from '@builder/pack/deps/lodash';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { IOptions } from './types';
 import isWebpack4 from './isWebpack4';
+import getPostcssImplementation from './getPostcssImplementation';
 
 const URL_LOADER_LIMIT = 8192;
 const EXCLUDE_REGX = /node_modules/;
 // config css rules
-const configCSSRule = (config, style) => {
+const configCSSRule = (config, style, rootDir) => {
   const cssModuleReg = new RegExp(`\\.module\\.${style}$`);
   const styleReg = new RegExp(`\\.${style}$`);
 
   // add both rule of css and css module
   ['css', 'module'].forEach((type) => {
     if (type === 'module') {
-      createCSSRule(config, `${style}-module`, cssModuleReg, []);
+      createCSSRule(config, `${style}-module`, cssModuleReg, [], rootDir);
     } else {
-      createCSSRule(config, style, styleReg, [cssModuleReg]);
+      createCSSRule(config, style, styleReg, [cssModuleReg], rootDir);
     }
   });
 };
 
-export const createCSSRule = (config, ruleName, reg, excludeRegs = []) => {
+export const createCSSRule = (config, ruleName, reg, excludeRegs = [], rootDir) => {
   const isCSSModule = /\-module$/.test(ruleName);
   const extName = ruleName.replace(/\-(module|global)$/, '');
   const rule = config.module.rule(ruleName).test(reg);
@@ -32,7 +33,7 @@ export const createCSSRule = (config, ruleName, reg, excludeRegs = []) => {
 
   addExtractLoader(rule);
   addCssLoader(rule, isCSSModule);
-  addPostCssLoader(rule);
+  addPostCssLoader(rule, rootDir);
 
   const sassLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/sass-loader') : require.resolve('@builder/pack/deps/sass-loader');
   const lessLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/less-loader') : require.resolve('@builder/pack/deps/less-loader');
@@ -81,9 +82,9 @@ const addCssLoader = (rule, isCSSModule) => {
     .end();
 };
 
-const addPostCssLoader = (rule) => {
+const addPostCssLoader = (rule, rootDir) => {
   const postcssLoader = isWebpack4 ? require.resolve('@builder/rax-pack/deps/postcss-loader') : require.resolve('@builder/pack/deps/postcss-loader');
-  return rule.use('postcss-loader').loader(postcssLoader).options({ sourceMap: true }).end();
+  return rule.use('postcss-loader').loader(postcssLoader).options({ implementation: getPostcssImplementation(rootDir), sourceMap: true }).end();
 };
 
 const addCssPreprocessorLoader = (rule, loader) => {
@@ -145,7 +146,7 @@ export default (config, { rootDir, babelConfig }: IOptions) => {
 
   // css loader
   ['css', 'scss', 'less'].forEach((style) => {
-    configCSSRule(config, style);
+    configCSSRule(config, style, rootDir);
   });
 
   [
