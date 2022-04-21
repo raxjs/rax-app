@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.9
+
+- Fix: the way of options pass into `postcss-loader` because the update of `postcss-loader`
+
 ## 7.0.8
 
 - Fix: only inject webpack hot client in webpack4

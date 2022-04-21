@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.5
+
+- Feat: update version of `postcss-loader`
+
 ## v3.0.4
 
 - Chore: revert 3.0.3 changed file
@@ -37,6 +41,7 @@
 ## v2.0.2
 
 - Chore: upgrade less version
+
 ## v2.0.1
 
 - Chore: update sass-loader version
@@ -45,4 +50,3 @@
 ## v2.0.0
 
 - Chore: config `MiniCssExtractPlugin` in base config
-
