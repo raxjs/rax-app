@@ -107,13 +107,12 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
       });
     }
 
-    const conditionNames = [target, '...'];
-
     // Add condition names
     if (isWebpack4) {
       config.plugin('ExportsFieldWebpackPlugin').use(ExportsFieldWebpackPlugin, [
         {
-          conditionNames,
+          // In webpack4, import, require, node for fallback
+          conditionNames: [target, 'import', 'require', 'node'],
         },
       ]);
       // Set dev server content base
@@ -122,7 +121,8 @@ module.exports = (api, { target, babelConfigOptions, progressOptions = {} }) => 
       config.target('web');
     } else {
       config.resolve.merge({
-        conditionNames,
+        // Webpack5+ will dynamic return default value with ..., which depends on build task target
+        conditionNames: [target, '...'],
       });
 
       // Set dev server content base
