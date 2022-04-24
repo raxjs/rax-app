@@ -1,5 +1,10 @@
 ## Changelog
 
+## 3.8.18
+
+- Feat: breaking change for `@builder/rax-pack` to update `postcss-loader`
+- Feat: breaking change for `rax-webpack-config` to update `postcss-loader`
+
 ## 3.8.17
 
 - Revert: compat of postcss-loader options in build-plugin-rax-app
@@ -93,7 +98,7 @@ SSR: fix chunkInfo is undefined FaaS app
 SSR: fix request might be fake that lose url field
 SSR: fix devServer.hot should be closed
 SSR: fix appConfig might be undefined
-Fix: __webpack_public_path__ is invalid in front of page file
+Fix: **webpack_public_path** is invalid in front of page file
 Fix: tabBar show in other page
 Fix: child class need use declare with add type for property which extends parent
 Fix: miniapp compile mode @alias is invalid
@@ -116,7 +121,7 @@ Chore: use webpack-chain directly
         "path": "/",
         "source": "pages/Home/index",
         "keepAlive": true,
-        "lazy": false,
+        "lazy": false
       }
     ]
   }
