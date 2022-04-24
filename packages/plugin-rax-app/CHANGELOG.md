@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.12
+
+- Feat: breaking change for `rax-webpack-config` to update `postcss-loader`
+
 ## 7.0.11
 
 - Revert: compat of `postcs-loader` options
