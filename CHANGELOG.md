@@ -98,7 +98,7 @@ SSR: fix chunkInfo is undefined FaaS app
 SSR: fix request might be fake that lose url field
 SSR: fix devServer.hot should be closed
 SSR: fix appConfig might be undefined
-Fix: **webpack_public_path** is invalid in front of page file
+Fix: `__webpack_public_path__` is invalid in front of page file
 Fix: tabBar show in other page
 Fix: child class need use declare with add type for property which extends parent
 Fix: miniapp compile mode @alias is invalid
