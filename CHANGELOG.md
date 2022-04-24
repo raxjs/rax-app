@@ -1,5 +1,10 @@
 ## Changelog
 
+## 3.8.17
+
+- Revert: compat of postcss-loader options in build-plugin-rax-app
+- Revert: version of @builder/rax-pack in rax-webpack-config
+
 ## 3.8.16
 
 - Fix: exports field build error in webpack4

@@ -124,6 +124,12 @@ function configPostCssLoader(configRule, type) {
   return configRule
     .use('postcss-loader')
     .tap((options) => {
+      if (isWebpack4) {
+        return {
+          ...options,
+          plugins: (options.plugins || []).concat(getPostCssPlugin(type)),
+        };
+      }
       const postcssOptions = options.postcssOptions || {};
       return {
         ...options,
