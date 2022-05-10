@@ -70,7 +70,7 @@ module.exports = (userOptions = {}) => {
         '@builder/pack/deps/@babel/plugin-proposal-class-properties',
         { loose: true },
       ],
-      'babel-plugin-minify-dead-code-elimination',
+      'babel-plugin-minify-dead-code-elimination-while-loop-fixed',
     ]),
   };
 
