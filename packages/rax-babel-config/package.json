@@ -1,6 +1,6 @@
 {
   "name": "rax-babel-config",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "rax base babel config",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
@@ -33,7 +33,7 @@
     "@babel/traverse": "^7.6.3",
     "@babel/types": "^7.6.3",
     "babel-merge": "^3.0.0",
-    "babel-plugin-minify-dead-code-elimination": "^0.5.0",
+    "babel-plugin-minify-dead-code-elimination-while-loop-fixed": "^0.3.0",
     "babel-plugin-transform-jsx-class": "^0.1.2",
     "babel-plugin-transform-jsx-condition": "^0.1.0",
     "babel-plugin-transform-jsx-fragment": "^0.1.1",
