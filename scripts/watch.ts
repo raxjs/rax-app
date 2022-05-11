@@ -47,7 +47,7 @@ async function copyOneFile(file, cwd) {
 }
 
 function reactFileChange(cwd, file) {
-  if (!/\.tsx?$/.test(file)) {
+  if (!/(\.tsx?)|(package\.json)$/.test(file)) {
     copyOneFile(path.relative(cwd, file), cwd);
   }
 }

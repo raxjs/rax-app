@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "rax-webpack-config": "^4.0.0",
-    "rax-babel-config": "^2.0.2",
+    "rax-babel-config": "^2.0.4",
     "rax-jest-config": "^1.1.0",
     "rax-platform-loader": "^1.1.1",
     "@builder/user-config": "^2.0.0",
