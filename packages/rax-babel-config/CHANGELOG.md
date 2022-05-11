@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.4
+
+- Chore: revert v2.0.3
+
 ## v2.0.3
 
 - Chore: use `babel-plugin-minify-dead-code-elimination` instead of `babel-plugin-minify-dead-code-elimination-while-loop-fixed`
