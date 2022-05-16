@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.2
+
+- Fix: pha appworker error with hot update
+
 ## v2.1.0
 
 - Feat: add splashViewUrl and splashViewHtml fields

@@ -25,7 +25,7 @@ let watcher;
 
   const watcher = await watch(cwd, {
     ignored: [/lib\//],
-    ignoreInitial: true
+    ignoreInitial: true,
   });
 
   watcher.on('add', reactFileChange.bind(null, cwd));
@@ -41,11 +41,13 @@ let watcher;
 async function copyOneFile(file, cwd) {
   const from = path.join(cwd, file);
   const to = path.join(cwd, file.replace(/\/src\//, '/lib/'));
-  await fs.copy(from, to);
+  await fs.copy(from, to, {
+    overwrite: true,
+  });
 }
 
 function reactFileChange(cwd, file) {
-  if (/!\.tsx?$/.test(file)) {
+  if (!/(\.tsx?)|(package\.json)$/.test(file)) {
     copyOneFile(path.relative(cwd, file), cwd);
   }
 }

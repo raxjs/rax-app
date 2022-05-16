@@ -1,13 +1,14 @@
 const path = require('path');
 const fs = require('fs-extra');
 const { formatPath } = require('@builder/app-helpers');
-const setEntry = require('./setEntry');
 const AppToManifestPlugin = require('./plugins/AppToManifestPlugin');
 const setRegisterMethod = require('./setRegisterMethod');
+const { PHA_WORKER_ENTRY_KEY } = require('./constants');
+const DeleteHotClient = require('./plugins/DeleteHotClient');
 
 module.exports = (api) => {
   const { onGetWebpackConfig, context, registerTask, getValue } = api;
-  const { rootDir } = context;
+  const { rootDir, userConfig } = context;
   const appWorkerPath = moduleResolve(formatPath(path.join(rootDir, './src/pha-worker')));
 
   onGetWebpackConfig('web', (config) => {
@@ -21,7 +22,6 @@ module.exports = (api) => {
 
   // Set get dev url api before appWorkerPath check
   setRegisterMethod(api);
-
   if (!appWorkerPath) return;
 
   const getWebpackBase = getValue('getRaxAppWebpackConfig');
@@ -37,11 +37,11 @@ module.exports = (api) => {
   registerTask(target, chainConfig);
 
   onGetWebpackConfig(target, (config) => {
-    setEntry({
-      context,
-      config,
-      appWorkerPath,
-    });
+    const { outputDir } = userConfig;
+
+    config.entry(PHA_WORKER_ENTRY_KEY).add(appWorkerPath);
+
+    config.output.path(path.resolve(rootDir, outputDir, 'web')).libraryTarget('umd').globalObject('this');
 
     // do not copy public
     if (config.plugins.has('CopyWebpackPlugin')) {
@@ -49,6 +49,12 @@ module.exports = (api) => {
         return [[]];
       });
     }
+
+    config.plugin('DeleteHotClient').use(DeleteHotClient, [
+      {
+        appWorkerPath,
+      },
+    ]);
   });
 };
 

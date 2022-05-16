@@ -1,5 +1,9 @@
 ## Changelog
 
+## 3.8.19
+
+- Fix: pha appworker error with hot update
+
 ## 3.8.18
 
 - Feat: breaking change for `@builder/rax-pack` to update `postcss-loader`
