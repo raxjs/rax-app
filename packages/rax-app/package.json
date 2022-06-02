@@ -1,6 +1,6 @@
 {
   "name": "rax-app",
-  "version": "3.8.19",
+  "version": "3.8.20-beta.1",
   "description": "command line interface and builtin plugin for rax app",
   "author": "Rax Team",
   "homepage": "https://github.com/raxjs/rax-app#readme",
@@ -18,7 +18,7 @@
     "build-scripts": "^1.1.0",
     "build-plugin-app-core": "2.1.0",
     "build-plugin-ice-config": "2.0.2",
-    "build-plugin-rax-app": "7.0.12",
+    "build-plugin-rax-app": "7.0.13-beta.1",
     "build-plugin-rax-kraken": "2.1.1",
     "build-plugin-rax-miniapp": "2.0.2",
     "build-plugin-rax-pha": "2.1.2",

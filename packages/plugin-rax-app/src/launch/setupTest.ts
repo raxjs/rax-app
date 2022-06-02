@@ -1,4 +1,4 @@
-import * as getJestConfig from 'rax-jest-config';
+import getJestConfig from 'rax-jest-config';
 import logWebpackConfig from '../utils/logWebpackConfig';
 
 export default (api) => {
