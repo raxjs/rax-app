@@ -6,6 +6,7 @@ export default (config) => {
   config.devtool(false);
 
   let terserPluginOptions = {
+    test: /\\.m?[t|j]sx?(\\?.*)?$/i,
     parallel: true,
     extractComments: false,
     terserOptions: {
