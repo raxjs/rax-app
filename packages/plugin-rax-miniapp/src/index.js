@@ -9,7 +9,6 @@ const {
 const { normalizeStaticConfig, separateNativeRoutes } = require('miniapp-builder-shared');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { setWebviewConfig } = require('miniapp-webview-config');
-const fs = require('fs-extra');
 
 const filterByTarget = require('./filterByTarget').default;
 const setEntry = require('./setEntry');
