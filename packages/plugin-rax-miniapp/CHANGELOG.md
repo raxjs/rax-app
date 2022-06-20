@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.0
+
+- Feat: empty cacheDirectory before compile each time for babel execution
+
 ## v2.0.2
 
 - Fix: miniapp app.json pages field need be filtered by targets

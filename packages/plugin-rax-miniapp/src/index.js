@@ -9,14 +9,15 @@ const {
 const { normalizeStaticConfig, separateNativeRoutes } = require('miniapp-builder-shared');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { setWebviewConfig } = require('miniapp-webview-config');
+const fs = require('fs-extra');
 
 const filterByTarget = require('./filterByTarget').default;
 const setEntry = require('./setEntry');
 const { GET_RAX_APP_WEBPACK_CONFIG, MINIAPP_COMPILED_DIR, MINIAPP_BUILD_TYPES } = require('./constants');
 
 module.exports = (api) => {
-  const { getValue, context, registerTask, onGetWebpackConfig } = api;
-  const { userConfig } = context;
+  const { getValue, context, registerTask, onGetWebpackConfig, onHook } = api;
+  const { userConfig, command } = context;
   const { targets, inlineStyle, vendor } = userConfig;
 
   const miniappStandardList = [
@@ -183,7 +184,20 @@ module.exports = (api) => {
             target,
           });
         }
+
+        onHook(`before.${command}.run`, () => {
+          // disable cache because rax-miniapp-babel-plugins should be executed every time
+          const { cacheDirectory = '' } = config.get('cache') || {};
+          emptyDir(cacheDirectory);
+        });
       });
     }
   });
 };
+
+
+function emptyDir(dir) {
+  if (fs.existsSync(dir)) {
+    fs.emptyDirSync(dir);
+  }
+}
