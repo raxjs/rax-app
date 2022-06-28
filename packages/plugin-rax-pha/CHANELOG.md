@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.3
+
+- Chore: add customDataSource field
+
 ## v2.1.2
 
 - Fix: pha appworker error with hot update

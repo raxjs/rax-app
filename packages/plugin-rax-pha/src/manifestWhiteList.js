@@ -41,6 +41,7 @@ const manifestRetainKeys = [
   'pullRefreshColorScheme',
   'pullRefresh',
   'cacheQueryParams',
+  'customDataSource',
 ];
 
 // do not decamelize list
