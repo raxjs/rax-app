@@ -5,5 +5,8 @@
   "main": "lib/index.js",
   "devDependencies": {
     "postcss": "^8.0.0"
+  },
+  "peerDependencies": {
+    "postcss": "^8.0.0"
   }
 }
