@@ -1,6 +1,9 @@
 const { decamelize } = require('humps');
 const pathPackage = require('path');
 const { manifestRetainKeys: retainKeys, manifestCamelizeKeys: camelizeKeys } = require('./manifestWhiteList');
+const ejs = require('ejs');
+const fs = require('fs-extra');
+const path = require('path');
 
 // transform app config to decamelize
 function transformAppConfig(appConfig, isRoot = true, parentKey) {
@@ -54,12 +57,33 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
     } else if (key === 'requestHeaders') {
       // keys of requestHeaders should not be transformed
       data[transformKey] = value;
+    } else if (key === 'tabBar') {
+      // Transform to html string by metas,links and scripts.
+      const { metas = [], links = [], scripts = [] } = value;
+
+      delete value['metas'];
+      delete value['links'];
+      delete value['scripts'];
+
+      const template = fs.readFileSync(path.join(__dirname, './html.ejs'), 'utf-8');
+      const html = ejs.render(template, {
+        metas,
+        links,
+        scripts,
+      });
+
+      data[transformKey] = {
+        ...value,
+        html,
+      };
     } else if (typeof value === 'object' && !(parentKey === 'dataPrefetch' && (key === 'header' || key === 'data'))) {
       data[transformKey] = transformAppConfig(value, false, key);
     } else {
       data[transformKey] = value;
     }
   }
+
+  // console.log('data=', data);
   return data;
 }
 
