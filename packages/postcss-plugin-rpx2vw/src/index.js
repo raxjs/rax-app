@@ -1,4 +1,3 @@
-const postcss = require('postcss');
 // !singlequotes|!doublequotes|!url()|pixelunit
 const rpxRegex = /"[^"]+"|'[^']+'|url\([^\)]+\)|(\d*\.?\d+)rpx/g;
 
@@ -9,25 +8,25 @@ const defaults = {
   unitPrecision: 5,
 };
 
-module.exports = postcss.plugin('postcss-rpx2vw', (options) => {
+module.exports = (options) => {
   const opts = Object.assign({}, defaults, options);
-
-  return function (root) {
-    root.walkDecls((decl) => {
+  return {
+    postcssPlugin: 'postcss-rpx2vw',
+    Declaration(decl) {
       // This should be the fastest test and will remove most declarations
       if (decl.value.indexOf('rpx') === -1) return;
 
       const unit = getUnit(decl.prop, opts);
       decl.value = decl.value.replace(rpxRegex, createRpxReplace(opts, unit, opts.viewportWidth));
-    });
-
-    root.walkAtRules('media', (rule) => {
-      if (rule.params.indexOf('rpx') === -1) return;
-
-      rule.params = rule.params.replace(rpxRegex, createRpxReplace(opts, opts.viewportUnit, opts.viewportWidth));
-    });
+    },
+    AtRule: {
+      media: (rule) => {
+        if (rule.params.indexOf('rpx') === -1) return;
+        rule.params = rule.params.replace(rpxRegex, createRpxReplace(opts, opts.viewportUnit, opts.viewportWidth));
+      },
+    },
   };
-});
+};
 
 function toFixed(number, precision) {
   const multiplier = Math.pow(10, precision + 1);
@@ -50,3 +49,5 @@ function createRpxReplace(opts, viewportUnit, viewportSize) {
 function getUnit(prop, opts) {
   return prop.indexOf('font') === -1 ? opts.viewportUnit : opts.fontViewportUnit;
 }
+
+module.exports.postcss = true;
