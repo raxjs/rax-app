@@ -73,8 +73,8 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
       });
 
       data[transformKey] = {
-        ...value,
         html,
+        ...value,
       };
     } else if (typeof value === 'object' && !(parentKey === 'dataPrefetch' && (key === 'header' || key === 'data'))) {
       data[transformKey] = transformAppConfig(value, false, key);
