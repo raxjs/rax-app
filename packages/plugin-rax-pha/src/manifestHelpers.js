@@ -83,7 +83,6 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
     }
   }
 
-  // console.log('data=', data);
   return data;
 }
 
