@@ -44,6 +44,7 @@ module.exports = class {
     }, ({ compilation, callback, assets }) => {
       const assetNames = Object.keys(assets);
       const appConfig = getValue('staticConfig');
+
       const { scripts, metas, links } = applyMethod('rax.getInjectedHTML');
       let manifestJSON = transformAppConfig(appConfig);
       const devUrls = [];
@@ -72,8 +73,14 @@ module.exports = class {
         manifestJSON.scripts,
       ) || [];
 
-      // if has tabBar, do not generate multiple manifest.json
       if (manifestJSON.tab_bar) {
+        // Try save html string of custom tabbar to html of tab_bar.
+        const { document } = applyMethod('rax.getDocument', { name: 'customtabbar' }) || {};
+        if (document && !manifestJSON.html) {
+          manifestJSON.tab_bar.html = document;
+        }
+
+        // If has tabBar, do not generate multiple manifest.json
         manifestJSON = setRealUrlToManifest(
           {
             urlPrefix: pagePrefix,

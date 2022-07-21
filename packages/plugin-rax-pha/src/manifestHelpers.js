@@ -57,25 +57,6 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
     } else if (key === 'requestHeaders') {
       // keys of requestHeaders should not be transformed
       data[transformKey] = value;
-    } else if (key === 'tabBar') {
-      // Transform to html string by metas,links and scripts.
-      const { metas = [], links = [], scripts = [] } = value;
-
-      delete value['metas'];
-      delete value['links'];
-      delete value['scripts'];
-
-      const template = fs.readFileSync(path.join(__dirname, './html.ejs'), 'utf-8');
-      const html = ejs.render(template, {
-        metas,
-        links,
-        scripts,
-      });
-
-      data[transformKey] = {
-        html,
-        ...value,
-      };
     } else if (typeof value === 'object' && !(parentKey === 'dataPrefetch' && (key === 'header' || key === 'data'))) {
       data[transformKey] = transformAppConfig(value, false, key);
     } else {
