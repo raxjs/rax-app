@@ -41,18 +41,6 @@
   },
   "tabBar": {
     "custom": true,
-    "list": ["home", "about-single"],
-    "metas": [
-      "<meta name=\"tabBar\" content=\"black\" />",
-      "<meta name=\"tar\" content=\"black\" />"
-    ],
-    "links": [
-      "<link rel=\"tabBar\">",
-      "<link rel=\"tabBar2\">"
-    ],
-    "scripts": [
-      "<script defer src=\"xxx/tabBar.js\"></script>",
-      "<script defer src=\"xxx/tabBar22.js\"></script>"
-    ]
+    "list": ["home", "about-single"]
   }
 }
