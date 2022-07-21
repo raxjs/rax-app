@@ -1,9 +1,6 @@
 const { decamelize } = require('humps');
 const pathPackage = require('path');
 const { manifestRetainKeys: retainKeys, manifestCamelizeKeys: camelizeKeys } = require('./manifestWhiteList');
-const ejs = require('ejs');
-const fs = require('fs-extra');
-const path = require('path');
 
 // transform app config to decamelize
 function transformAppConfig(appConfig, isRoot = true, parentKey) {
