@@ -115,9 +115,7 @@ module.exports = class {
             // Move current page to pages[0].
             for (let i = 0; i < copyManifestJSON.pages.length; i++) {
               const page = copyManifestJSON.pages[i];
-              console.log('page[i].source === source', page.source, source);
               if (page.source === source || (__frameIndex === 0 && (page.frames && page.frames[0] && page.frames[0].source === source))) {
-                console.log('i=========', i);
                 copyManifestJSON.pages.unshift(copyManifestJSON.pages.splice(i, 1));
                 break;
               }
