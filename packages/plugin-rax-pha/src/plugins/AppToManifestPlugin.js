@@ -116,7 +116,7 @@ module.exports = class {
             for (let i = 0; i < copyManifestJSON.pages.length; i++) {
               const page = copyManifestJSON.pages[i];
               if (page.source === source || (__frameIndex === 0 && (page.frames && page.frames[0] && page.frames[0].source === source))) {
-                copyManifestJSON.pages.unshift(copyManifestJSON.pages.splice(i, 1));
+                copyManifestJSON.pages.unshift(copyManifestJSON.pages.splice(i, 1)[0]);
                 break;
               }
             }
