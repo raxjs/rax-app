@@ -9,9 +9,8 @@ buildFixture(example, true);
 describe('should build manifest.json: ', () => {
   test('manifest.json content', async () => {
 
-    console.log(123)
     const manifestJSON = fs.readJSONSync(path.join(process.cwd(), 'examples', example, 'build/web/manifest.json'));
-    console.log('manifestJSON=', manifestJSON)
+
     expect(manifestJSON).toEqual({
       app_worker: { url: 'pha-worker.js' },
       links: [],
