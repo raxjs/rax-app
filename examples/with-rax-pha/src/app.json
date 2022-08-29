@@ -29,13 +29,6 @@
       "url": "https://m.taobao.com"
     }
   ],
-  "metas": [
-    "<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />",
-    "<meta name=\"tar\" content=\"black\" />"
-  ],
-  "links": [
-    "<link rel=\"test\">"
-  ],
   "window": {
     "title": "PHA Demo"
   },
