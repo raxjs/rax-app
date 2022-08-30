@@ -44,6 +44,7 @@ module.exports = class {
     }, ({ compilation, callback, assets }) => {
       const assetNames = Object.keys(assets);
       const appConfig = getValue('staticConfig');
+
       const { scripts, metas, links } = applyMethod('rax.getInjectedHTML');
       let manifestJSON = transformAppConfig(appConfig);
       const devUrls = [];
@@ -72,8 +73,14 @@ module.exports = class {
         manifestJSON.scripts,
       ) || [];
 
-      // if has tabBar, do not generate multiple manifest.json
       if (manifestJSON.tab_bar) {
+        // Try save html string of custom tabbar to html of tab_bar.
+        const { document } = applyMethod('rax.getDocument', { name: 'customtabbar' }) || {};
+        if (document && !manifestJSON.html) {
+          manifestJSON.tab_bar.html = document;
+        }
+
+        // If has tabBar, do not generate multiple manifest.json
         manifestJSON = setRealUrlToManifest(
           {
             urlPrefix: pagePrefix,
@@ -104,14 +111,15 @@ module.exports = class {
           })
           .forEach(({ source, entryName, __frameIndex }) => {
             let copyManifestJSON = cloneDeep(manifestJSON);
-            copyManifestJSON.pages = copyManifestJSON.pages.filter((page) => {
-              // has frames
-              if (__frameIndex === 0) {
-                return !!(page.frames && page.frames[0] && page.frames[0].source === source);
-              } else {
-                return page.source === source;
+
+            // Move current page to pages[0].
+            for (let i = 0; i < copyManifestJSON.pages.length; i++) {
+              const page = copyManifestJSON.pages[i];
+              if (page.source === source || (__frameIndex === 0 && (page.frames && page.frames[0] && page.frames[0].source === source))) {
+                copyManifestJSON.pages.unshift(copyManifestJSON.pages.splice(i, 1)[0]);
+                break;
               }
-            });
+            }
 
             const { pages } = copyManifestJSON;
             // take out the page data prefetch and assign it to the root node
