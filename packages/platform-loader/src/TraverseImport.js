@@ -188,25 +188,18 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
                 ],
               ));
             } else {
-              const newNodeInit = platformMap[options.platform].indexOf(specObj.imported) >= 0;
-              let newNode = variableDeclarationMethod(
-                specObj.imported,
-                newNodeInit,
-              );
-
-              path.insertAfter(newNode);
-
-              // Support custom alise import:
+              // Support custom alias import:
               // import { isWeex as iw } from 'universal-env';
+              // Correct the logic of next line. Variable "isWeex" can be declared again after alias to "iw”. So, can't insert "const isWeex = true".
               // const isWeex = true;
               // const iw = true;
-              if (specObj.imported !== specObj.local) {
-                newNode = variableDeclarationMethod(
-                  specObj.local,
-                  newNodeInit,
-                );
-                path.insertAfter(newNode);
-              }
+              const newNodeInit = platformMap[options.platform].indexOf(specObj.imported) >= 0;
+              const hasAlias = specObj.imported !== specObj.local;
+              const newNode = variableDeclarationMethod(
+                hasAlias ? specObj.local : specObj.imported,
+                newNodeInit,
+              );
+              path.insertAfter(newNode);
             }
           });
 
