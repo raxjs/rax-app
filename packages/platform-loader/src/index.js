@@ -77,7 +77,7 @@ module.exports = async function (inputSource, inputSourceMap) {
   const { resourcePath } = this;
   const sourceMapTarget = path.basename(resourcePath);
 
-  const options = Object.assign({ name: 'universal-env' }, loaderOptions);
+  const options = Object.assign({ name: 'universal-env', memberExpObjName: '_universalEnv' }, loaderOptions);
 
   if (!options.platform) {
     callback(null, inputSource);
@@ -86,6 +86,10 @@ module.exports = async function (inputSource, inputSourceMap) {
 
   if (!Array.isArray(options.name)) {
     options.name = [options.name];
+  }
+
+  if (!Array.isArray(options.memberExpObjName)) {
+    options.memberExpObjName = [options.memberExpObjName];
   }
 
   const { code, map } = traverseImport(options, inputSource, {
