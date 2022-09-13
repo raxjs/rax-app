@@ -150,7 +150,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       // don't remove like: var _universalEnv = {isWeex: false}; if(_universalEnv.isWeex){ xxx }
       // change _universalEnv.isWeex to false
       const { node } = path;
-      if (hasPlatformSpecified && node.object.name === '_universalEnv') {
+      if (hasPlatformSpecified && options.memberExpObjName.indexOf(node.object.name) !== -1) {
         if (platformMap[options.platform].indexOf(node.property.name) >= 0) {
           path.replaceWith(types.Identifier('true'));
         } else {
