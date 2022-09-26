@@ -21,6 +21,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
     'kuaishou-miniprogram': ['isKuaiShouMiniProgram'],
     'baidu-smartprogram': ['isBaiduSmartProgram'],
   };
+  const platformMapValues = Object.keys(platformMap).reduce((arr, key) => arr.concat(platformMap[key]), []);
 
   /**
    * generator variable expression
@@ -149,9 +150,11 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       // only remove like: var isWeex = false; if(isWeex){ xxx }
       // don't remove like: var _universalEnv = {isWeex: false}; if(_universalEnv.isWeex){ xxx }
       // change _universalEnv.isWeex to false
+      // Restrict the scope of MemberExpression, don't touch _xxxEnv.isIOS|isTaobao|UA|appName, just apply to platformMaps.
       const { node } = path;
-      if (hasPlatformSpecified && options.memberExpObjName.indexOf(node.object.name) !== -1) {
-        if (platformMap[options.platform].indexOf(node.property.name) >= 0) {
+      const propertyName = node.property.name;
+      if (hasPlatformSpecified && options.memberExpObjName.indexOf(node.object.name) !== -1 && platformMapValues.includes(propertyName)) {
+        if (platformMap[options.platform].indexOf(propertyName) >= 0) {
           path.replaceWith(types.Identifier('true'));
         } else {
           path.replaceWith(types.Identifier('false'));
