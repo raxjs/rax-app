@@ -5,23 +5,30 @@ const types = require('@babel/types');
 const generate = require('@babel/generator').default;
 const { codeFrameColumns } = require('@babel/code-frame');
 
+const platformMap = {
+  weex: ['isWeex'],
+  web: ['isWeb'],
+  kraken: ['isKraken', 'isWeb'],
+  node: ['isNode'],
+  miniapp: ['isMiniApp'],
+  'wechat-miniprogram': ['isWeChatMiniProgram', 'isWeChatMiniprogram'],
+  'bytedance-microapp': ['isByteDanceMicroApp'],
+  'kuaishou-miniprogram': ['isKuaiShouMiniProgram'],
+  'baidu-smartprogram': ['isBaiduSmartProgram'],
+};
+
 module.exports = function traverseImport(options, inputSource, sourceMapOption) {
   let specified; // Collector import specifiers
-  let hasPlatformSpecified = false;
   const { sourceFileName } = sourceMapOption;
-
-  const platformMap = {
-    weex: ['isWeex'],
-    web: ['isWeb'],
-    kraken: ['isKraken', 'isWeb'],
-    node: ['isNode'],
-    miniapp: ['isMiniApp'],
-    'wechat-miniprogram': ['isWeChatMiniProgram', 'isWeChatMiniprogram'],
-    'bytedance-microapp': ['isByteDanceMicroApp'],
-    'kuaishou-miniprogram': ['isKuaiShouMiniProgram'],
-    'baidu-smartprogram': ['isBaiduSmartProgram'],
-  };
-  const platformMapValues = Object.keys(platformMap).reduce((arr, key) => arr.concat(platformMap[key]), []);
+  const { platform, name: libNames, memberExpObjName } = options;
+  const hasPlatformSpecified = typeof platformMap[platform] !== 'undefined';
+  const platformVarMap = Object.keys(platformMap).reduce((map, p) => {
+    platformMap[p].forEach((name) => {
+      // multiple isWeb compat, in platform web and kraken
+      map[name] ||= p === platform;
+    });
+    return map;
+  }, {});
 
   /**
    * generator variable expression
@@ -58,29 +65,56 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
    *     isWeb: false
    *   }
    */
-  function objectExpressionMethod(platformName) {
-    const properties = [];
+  // function objectExpressionMethod(platformName) {
+  //   const properties = Object.keys(platformVarMap).map((key) => {
+  //     return types.objectProperty(
+  //       types.Identifier(key),
+  //       types.booleanLiteral(platformVarMap[key]),
+  //     );
+  //   });
 
-    const propertyMap = {};
-    Object.keys(platformMap).forEach((p) => {
-      const keys = platformMap[p];
-      for (const key of keys) {
-        if (!propertyMap[key]) {
-          propertyMap[key] = p === platformName;
-        }
-      }
-    });
+  //   return types.objectExpression(properties);
+  // }
 
-    Object.keys(propertyMap).forEach((key) => {
-      properties.push(
-        types.objectProperty(
-          types.Identifier(key),
-          types.booleanLiteral(propertyMap[key]),
+  /**
+   * generate member assignment expression
+   * @param {string} objName
+   * @param {string} propertyName
+   * @param {boolean} value
+   * @returns {AssignmentExpression}
+   * @example
+   *   objectMemberExpressionMethod('UniversalEnv', 'isMiniApp', true)
+   *   -> UniversalEnv.isMiniApp = true;
+   */
+  function objectMemberExpressionMethod(objName, propertyName, value) {
+    return types.expressionStatement(
+      types.assignmentExpression(
+        '=',
+        types.memberExpression(
+          types.identifier(objName),
+          types.identifier(propertyName),
         ),
+        types.booleanLiteral(value),
+      ),
+    );
+  }
+
+  /**
+   * insert all member assignment expression in platformMap after path
+   * @param {string} objName
+   * @param {Path} path
+   * @example
+   *   addAllMpVarExpNode('U', path)
+   *   -> path.insertAfter:
+   *   -> U.isMiniApp = true; U.isWeChatMiniProgram = false; U.isByteDanceMicroApp = false;
+   *   -> U.isNode = false; U.isWeb = false; U.isKraken = false; U.isWeex = false; ..
+   */
+  function addAllMpVarExpNode(objName, path) {
+    Object.keys(platformVarMap).forEach((k) => {
+      path.insertAfter(
+        objectMemberExpressionMethod(objName, k, platformVarMap[k]),
       );
     });
-
-    return types.objectExpression(properties);
   }
 
   let ast;
@@ -124,25 +158,40 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
     }
   }
 
+  // Don't touch those env variables which is not involved in MiniApp, like isTaoBao, isAndroid, UA.
+  // Just modify that variables in ${platformVarMap}.
+  //
+  // Case 1:
+  // import A, { isMiniApp, isTaoBaoClient as isT, isAndroid, UA } from 'npm-a';
+  // -> import A, { isTaoBaoClient as isT, isAndroid, UA } from 'npm-a'; (rm isMiniApp)
+  // -> A.isMiniApp = true|false; A.isWeChatMiniProgram = true|false; ... all platformVarMap
+  // -> const isMiniApp = true|false;
+  // import A, * as A_Namespace from 'npm-a'; ditto
+  // const A = require('npm-b'); ditto
+  //
+  // Case 2:（reason see MemberExpression part below）
+  // _universalEnv.isMiniApp && console.log('mp');
+  // _universalEnv.isT && console.log('non-mp');
+  // -> true|false && console.log('mp');
+  // -> _universalEnv.isT && console.log('non-mp');
   traverse(ast, {
     enter() {
       specified = [];
-
-      if (typeof platformMap[options.platform] !== 'undefined') {
-        hasPlatformSpecified = true;
-      }
     },
     // Support commonjs method `require`
     CallExpression(path) {
       const { node } = path;
-
+      // const E = require('');
+      // -> const E = require('');
+      // -> E.isMiniApp = true|false; E.isWeChatMiniProgram = true|false; ... all platformVarMap
       if (
         hasPlatformSpecified &&
         node.callee.name === 'require' &&
         node.arguments[0] &&
-        options.name.indexOf(node.arguments[0].value) !== -1
+        libNames.indexOf(node.arguments[0].value) !== -1
       ) {
-        path.replaceWith(objectExpressionMethod(options.platform));
+        const objName = path.parent.id.name;
+        objName && addAllMpVarExpNode(objName, path.parentPath.parentPath);
       }
     },
     MemberExpression(path) {
@@ -150,26 +199,43 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       // only remove like: var isWeex = false; if(isWeex){ xxx }
       // don't remove like: var _universalEnv = {isWeex: false}; if(_universalEnv.isWeex){ xxx }
       // change _universalEnv.isWeex to false
-      // Restrict the scope of MemberExpression, don't touch _xxxEnv.isIOS|isTaobao|UA|appName, just apply to platformMaps.
-      const { node } = path;
-      const propertyName = node.property.name;
-      if (hasPlatformSpecified && options.memberExpObjName.indexOf(node.object.name) !== -1 && platformMapValues.includes(propertyName)) {
-        if (platformMap[options.platform].indexOf(propertyName) >= 0) {
-          path.replaceWith(types.Identifier('true'));
-        } else {
-          path.replaceWith(types.Identifier('false'));
+      const { node, parent } = path;
+      const objName = node.object.name;
+      if (hasPlatformSpecified && memberExpObjName.indexOf(objName) !== -1) {
+        const propertyName = node.property.name;
+        // Restrict the scope of MemberExpression, don't touch _xxxEnv.isIOS|isTaoBao|UA|appName, just apply to platformMaps.
+        const isPlatformVar = typeof platformVarMap[propertyName] !== 'undefined';
+        // Transform excludes _universalEnv.isMiniApp = true|false;
+        const left = parent && parent.left;
+        const isMemberAssignExp =
+          left &&
+          types.isAssignmentExpression(parent) &&
+          types.isMemberExpression(left) &&
+          left.object.name === objName &&
+          left.property.name === propertyName;
+        if (isPlatformVar && !isMemberAssignExp) {
+          if (platformMap[platform].indexOf(propertyName) >= 0) {
+            path.replaceWith(types.Identifier('true'));
+          } else {
+            path.replaceWith(types.Identifier('false'));
+          }
         }
       }
     },
     ImportDeclaration(path) {
       const { node } = path;
 
-      if (options.name.indexOf(node.source.value) !== -1) {
+      if (libNames.indexOf(node.source.value) !== -1) {
         node.specifiers.forEach((spec) => {
           if (spec.type === 'ImportNamespaceSpecifier') {
             specified.push({
               local: spec.local.name,
               imported: '*',
+            });
+          } else if (spec.type === 'ImportDefaultSpecifier') {
+            specified.push({
+              local: spec.local.name,
+              imported: '~',
             });
           } else {
             specified.push({
@@ -180,33 +246,39 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
         });
 
         if (hasPlatformSpecified) {
-          specified.forEach((specObj) => {
-            if (specObj.imported === '*') {
-              path.insertAfter(types.VariableDeclaration(
-                'const', [
-                  types.variableDeclarator(
-                    types.Identifier(specObj.local),
-                    objectExpressionMethod(options.platform),
-                  ),
-                ],
-              ));
+          specified.forEach((specObj, specIdx) => {
+            if (specObj.imported === '~' || specObj.imported === '*') {
+              // import A from ''; or import * as A from '';
+              // -> import A from '';
+              // -> A.isMiniApp = true|false; A.isWeChatMiniProgram = true|false; ... all platformVarMap
+              const objName = specObj.local;
+              addAllMpVarExpNode(objName, path);
             } else {
-              // Support custom alias import:
-              // import { isWeex as iw } from 'universal-env';
-              // Correct the logic of next line. Variable "isWeex" can be declared again after alias to "iw”. So, can't insert "const isWeex = true".
-              // const isWeex = true;
-              // const iw = true;
-              const newNodeInit = platformMap[options.platform].indexOf(specObj.imported) >= 0;
-              const hasAlias = specObj.imported !== specObj.local;
-              const newNode = variableDeclarationMethod(
-                hasAlias ? specObj.local : specObj.imported,
-                newNodeInit,
-              );
-              path.insertAfter(newNode);
+              // import { isMiniApp as isMp, isTaoBaoClient, isAndroid } from '';
+              // -> import { isTaoBaoClient, isAndroid } from ''; rm platform importSpecifier: isMiniApp
+              // -> const isMp = true; (can't const isMiniApp = true;)
+              const isMpEnvVar = typeof platformVarMap[specObj.imported] !== 'undefined';
+              if (isMpEnvVar) {
+                const name = specObj.imported !== specObj.local ? specObj.local : specObj.imported;
+                const value = platformMap[platform].indexOf(specObj.imported) >= 0;
+                path.insertAfter(
+                  variableDeclarationMethod(name, value),
+                );
+                delete node.specifiers[specIdx];
+              }
             }
           });
 
-          path.remove();
+          // Remove path if specifiers is empty after operate above.
+          // match: import { isMiniApp } from '';
+          // not match:
+          //   import A, { isMiniApp } from '';
+          //   import * as A, { isMiniApp } from '';
+          //   import { isMiniApp, isTaoBao, isAndroid } from '';
+          node.specifiers = node.specifiers.filter((s) => s);
+          if (!node.specifiers.length) {
+            path.remove();
+          }
         }
       }
     },
