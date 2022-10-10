@@ -86,18 +86,18 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
    *   objectMemberExpressionMethod('UniversalEnv', 'isMiniApp', true)
    *   -> UniversalEnv.isMiniApp = true;
    */
-  function objectMemberExpressionMethod(objName, propertyName, value) {
-    return types.expressionStatement(
-      types.assignmentExpression(
-        '=',
-        types.memberExpression(
-          types.identifier(objName),
-          types.identifier(propertyName),
-        ),
-        types.booleanLiteral(value),
-      ),
-    );
-  }
+  // function objectMemberExpressionMethod(objName, propertyName, value) {
+  //   return types.expressionStatement(
+  //     types.assignmentExpression(
+  //       '=',
+  //       types.memberExpression(
+  //         types.identifier(objName),
+  //         types.identifier(propertyName),
+  //       ),
+  //       types.booleanLiteral(value),
+  //     ),
+  //   );
+  // }
 
   /**
    * insert all member assignment expression in platformMap after path
@@ -109,13 +109,13 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
    *   -> U.isMiniApp = true; U.isWeChatMiniProgram = false; U.isByteDanceMicroApp = false;
    *   -> U.isNode = false; U.isWeb = false; U.isKraken = false; U.isWeex = false; ..
    */
-  function addAllMpVarExpNode(objName, path) {
-    Object.keys(platformVarMap).forEach((k) => {
-      path.insertAfter(
-        objectMemberExpressionMethod(objName, k, platformVarMap[k]),
-      );
-    });
-  }
+  // function addAllMpVarExpNode(objName, path) {
+  //   Object.keys(platformVarMap).forEach((k) => {
+  //     path.insertAfter(
+  //       objectMemberExpressionMethod(objName, k, platformVarMap[k]),
+  //     );
+  //   });
+  // }
 
   let ast;
 
@@ -158,42 +158,47 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
     }
   }
 
-  // Don't touch those env variables which is not involved in MiniApp, like isTaoBao, isAndroid, UA.
-  // Just modify that variables in ${platformVarMap}.
-  //
-  // Case 1:
-  // import A, { isMiniApp, isTaoBaoClient as isT, isAndroid, UA } from 'npm-a';
-  // -> import A, { isTaoBaoClient as isT, isAndroid, UA } from 'npm-a'; (rm isMiniApp)
-  // -> A.isMiniApp = true|false; A.isWeChatMiniProgram = true|false; ... all platformVarMap
-  // -> const isMiniApp = true|false;
-  // import A, * as A_Namespace from 'npm-a'; ditto
-  // const A = require('npm-b'); ditto
-  //
-  // Case 2:（reason see MemberExpression part below）
-  // _universalEnv.isMiniApp && console.log('mp');
-  // _universalEnv.isT && console.log('non-mp');
-  // -> true|false && console.log('mp');
-  // -> _universalEnv.isT && console.log('non-mp');
+  /**
+   * Don't touch those env variables which is not involved in MiniApp, like isTaoBao, isAndroid, UA.
+   * Just modify that variables in ${platformVarMap}.
+   *
+   * Case 1:
+   * import A, { isMiniApp, isTaoBaoClient as isT, isAndroid, UA } from 'npm-a';
+   * -> import A, { isTaoBaoClient as isT, isAndroid, UA } from 'npm-a'; (rm isMiniApp)
+   * -> A.isMiniApp = true|false; A.isWeChatMiniProgram = true|false; ... all platformVarMap
+   * -> const isMiniApp = true|false;
+   * import A, * as A_Namespace from 'npm-a'; ditto
+   * const A = require('npm-b'); ditto
+   *
+   * Case 2:（reason see MemberExpression part below）
+   * _universalEnv.isMiniApp && console.log('mp');
+   * _universalEnv.isT && console.log('non-mp');
+   * -> true|false && console.log('mp');
+   * -> _universalEnv.isT && console.log('non-mp');
+   */
   traverse(ast, {
     enter() {
       specified = [];
     },
-    // Support commonjs method `require`
-    CallExpression(path) {
-      const { node } = path;
-      // const E = require('');
-      // -> const E = require('');
-      // -> E.isMiniApp = true|false; E.isWeChatMiniProgram = true|false; ... all platformVarMap
-      if (
-        hasPlatformSpecified &&
-        node.callee.name === 'require' &&
-        node.arguments[0] &&
-        libNames.indexOf(node.arguments[0].value) !== -1
-      ) {
-        const objName = path.parent.id.name;
-        objName && addAllMpVarExpNode(objName, path.parentPath.parentPath);
-      }
-    },
+    // Already have Case 2, So this is useless below.
+    // // Support commonjs method `require`
+    // CallExpression(path) {
+    //   const { node } = path;
+    //   /**
+    //    * const E = require('');
+    //    * -> const E = require('');
+    //    * -> E.isMiniApp = true|false; E.isWeChatMiniProgram = true|false; ... all platformVarMap
+    //    */
+    //   if (
+    //     hasPlatformSpecified &&
+    //     node.callee.name === 'require' &&
+    //     node.arguments[0] &&
+    //     libNames.indexOf(node.arguments[0].value) !== -1
+    //   ) {
+    //     const objName = path.parent.id && path.parent.id.name;
+    //     objName && addAllMpVarExpNode(objName, path.parentPath.parentPath);
+    //   }
+    // },
     MemberExpression(path) {
       // fix babel-plugin-minify-dead-code-elimination bug.
       // only remove like: var isWeex = false; if(isWeex){ xxx }
@@ -203,9 +208,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       const objName = node.object.name;
       if (hasPlatformSpecified && memberExpObjName.indexOf(objName) !== -1) {
         const propertyName = node.property.name;
-        // Restrict the scope of MemberExpression, don't touch _xxxEnv.isIOS|isTaoBao|UA|appName, just apply to platformMaps.
         const isPlatformVar = typeof platformVarMap[propertyName] !== 'undefined';
-        // Transform excludes _universalEnv.isMiniApp = true|false;
         const left = parent && parent.left;
         const isMemberAssignExp =
           left &&
@@ -213,12 +216,11 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
           types.isMemberExpression(left) &&
           left.object.name === objName &&
           left.property.name === propertyName;
+        // Restrict the scope of MemberExpression, don't touch _xxxEnv.isIOS|isTaoBao|UA|appName, just apply to platformMaps.
+        // Transform excludes: _universalEnv.isMiniApp = true|false;
         if (isPlatformVar && !isMemberAssignExp) {
-          if (platformMap[platform].indexOf(propertyName) >= 0) {
-            path.replaceWith(types.Identifier('true'));
-          } else {
-            path.replaceWith(types.Identifier('false'));
-          }
+          const value = String(platformMap[platform].indexOf(propertyName) >= 0);
+          path.replaceWith(types.Identifier(value));
         }
       }
     },
@@ -248,15 +250,20 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
         if (hasPlatformSpecified) {
           specified.forEach((specObj, specIdx) => {
             if (specObj.imported === '~' || specObj.imported === '*') {
-              // import A from ''; or import * as A from '';
-              // -> import A from '';
-              // -> A.isMiniApp = true|false; A.isWeChatMiniProgram = true|false; ... all platformVarMap
-              const objName = specObj.local;
-              addAllMpVarExpNode(objName, path);
+              /**
+               * import A from ''; or import * as A from '';
+               * -> import A from '';
+               * -> A.isMiniApp = true|false; A.isWeChatMiniProgram = true|false; ... all platformVarMap
+               */
+              // Already have Case 2, So this is useless below.
+              // const objName = specObj.local;
+              // addAllMpVarExpNode(objName, path);
             } else {
-              // import { isMiniApp as isMp, isTaoBaoClient, isAndroid } from '';
-              // -> import { isTaoBaoClient, isAndroid } from ''; rm platform importSpecifier: isMiniApp
-              // -> const isMp = true; (can't const isMiniApp = true;)
+              /**
+               * import { isMiniApp as isMp, isTaoBaoClient, isAndroid } from '';
+               * -> import { isTaoBaoClient, isAndroid } from ''; rm platform importSpecifier: isMiniApp
+               * -> const isMp = true; (can't const isMiniApp = true;)
+               */
               const isMpEnvVar = typeof platformVarMap[specObj.imported] !== 'undefined';
               if (isMpEnvVar) {
                 const name = specObj.imported !== specObj.local ? specObj.local : specObj.imported;
@@ -269,12 +276,14 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
             }
           });
 
-          // Remove path if specifiers is empty after operate above.
-          // match: import { isMiniApp } from '';
-          // not match:
-          //   import A, { isMiniApp } from '';
-          //   import * as A, { isMiniApp } from '';
-          //   import { isMiniApp, isTaoBao, isAndroid } from '';
+          /**
+           * Remove path if specifiers is empty after operate above.
+           * match: import { isMiniApp } from '';
+           * not match:
+           *   import A, { isMiniApp } from '';
+           *   import * as A, { isMiniApp } from '';
+           *   import { isMiniApp, isTaoBao, isAndroid } from '';
+           */
           node.specifiers = node.specifiers.filter((s) => s);
           if (!node.specifiers.length) {
             path.remove();
