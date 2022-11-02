@@ -92,6 +92,16 @@ module.exports = async function (inputSource, inputSourceMap) {
     options.memberExpObjName = [options.memberExpObjName];
   }
 
+  // 跳过无效输入，节审 babel 开销
+  const hasPlatformContent = (() => {
+    const identifiers = [...options.name, ...options.memberExpObjName];
+    return identifiers.some((id) => inputSource.indexOf(id) >= 0);
+  })();
+  if (!hasPlatformContent) {
+    callback(null, inputSource);
+    return;
+  }
+
   const { code, map } = traverseImport(options, inputSource, {
     sourceMaps: true,
     sourceMapTarget,
