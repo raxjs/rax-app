@@ -20,12 +20,24 @@ const platformMap = {
 module.exports = function traverseImport(options, inputSource, sourceMapOption) {
   let specified; // Collector import specifiers
   const { sourceFileName } = sourceMapOption;
-  const { platform, name: libNames, memberExpObjName } = options;
+  const { platform, name: libNames, memberExpObjName, platformMap: userPlatformMap } = options;
+
+  // merge user platformMap
+  userPlatformMap &&
+    Object.keys(platformMap).forEach((p) => {
+      userPlatformMap[p] &&
+        userPlatformMap[p].forEach((k) => {
+          if (!platformMap[p].includes(k)) {
+            platformMap[p].push(k);
+          }
+        });
+    });
+
   const hasPlatformSpecified = typeof platformMap[platform] !== 'undefined';
   const platformVarMap = Object.keys(platformMap).reduce((map, p) => {
     platformMap[p].forEach((name) => {
       // multiple isWeb compat, in platform web and kraken
-      map[name] ||= p === platform;
+      map[name] = map[name] || (p === platform);
     });
     return map;
   }, {});
