@@ -40,7 +40,7 @@ export default function KeepAliveRouter({ history, routes }) {
       });
       return [];
     }
-    return [route];
+    return (keepAliveRoutesRef.current = [route]);
   });
   // Keep-alive routes
   const [keepAliveRoutes, setKeepAliveRoutes] = useState(initialRoutes);
