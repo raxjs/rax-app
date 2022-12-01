@@ -60,6 +60,7 @@ function transformAppConfig(appConfig, isRoot = true, parentKey) {
       data[transformKey] = value;
     }
   }
+
   return data;
 }
 
