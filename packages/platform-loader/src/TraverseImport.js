@@ -20,7 +20,7 @@ const platformMap = {
 module.exports = function traverseImport(options, inputSource, sourceMapOption) {
   let specified; // Collector import specifiers
   const { sourceFileName } = sourceMapOption;
-  const { platform, name: libNames, memberExpObjName, platformMap: userPlatformMap } = options;
+  const { platform, name: libNames, memberExpObjName, platformMap: userPlatformMap, excludePlatformMap } = options;
 
   // merge user platformMap
   userPlatformMap &&
@@ -41,6 +41,15 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
     });
     return map;
   }, {});
+
+  // ignore platform variable
+  if (excludePlatformMap && excludePlatformMap[platform]) {
+    excludePlatformMap[platform].forEach((v) => {
+      if (typeof platformVarMap[v] !== 'undefined') {
+        delete platformVarMap[v];
+      }
+    });
+  }
 
   /**
    * generator variable expression
