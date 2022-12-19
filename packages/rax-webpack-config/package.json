@@ -1,6 +1,6 @@
 {
   "name": "rax-webpack-config",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "rax base webpack config",
   "license": "BSD-3-Clause",
   "main": "lib/index.js",

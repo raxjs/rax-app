@@ -163,7 +163,7 @@ export default (config, { rootDir, babelConfig }: IOptions) => {
 
   config.module
     .rule('jsx')
-    .test(/\.jsx?$/)
+    .test(/\.(jsx?|m?js|c?js)$/)
     .exclude.add(EXCLUDE_REGX)
     .end()
     .use('babel-loader')
@@ -172,7 +172,7 @@ export default (config, { rootDir, babelConfig }: IOptions) => {
 
   config.module
     .rule('tsx')
-    .test(/\.tsx?$/)
+    .test(/\.(tsx?|mts)$/)
     .exclude.add(EXCLUDE_REGX)
     .end()
     .use('babel-loader')
