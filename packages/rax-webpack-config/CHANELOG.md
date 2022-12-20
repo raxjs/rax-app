@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.0.1
+
+- Fix: support babel transform for `.mjs` and `.cjs` files
+
 ## v4.0.0
 
 - Feat: breaking change for `@builder/rax-pack` to update `postcss-loader`
