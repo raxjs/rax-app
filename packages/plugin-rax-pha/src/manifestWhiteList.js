@@ -42,6 +42,7 @@ const manifestRetainKeys = [
   'pullRefresh',
   'cacheQueryParams',
   'customDataSource',
+  'enableExpiredManifest',
 ];
 
 // do not decamelize list

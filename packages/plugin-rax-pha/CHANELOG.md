@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.5
+
+- Feat: add enableExpiredManifest
+
 ## v2.1.3
 
 - Chore: add customDataSource field
