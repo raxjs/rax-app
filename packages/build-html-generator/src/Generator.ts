@@ -16,7 +16,7 @@ export default class Generator {
     this.body = new Node(initialHTML, 'body', BODY_REG_EXP);
 
     this.outerHTML = this.outerHTML.replace(/<body([\S\s]*?)>/, (match, p1) => {
-      return "<body" + this.body.attributePlaceholder + p1 + ">"
+      return `<body${this.body.attributePlaceholder}${p1}>`;
     });
 
     this.title = new Node(initialHTML, 'title', TITLE_REG_EXP, {
