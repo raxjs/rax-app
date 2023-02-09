@@ -5,6 +5,7 @@ import * as chokidar from 'chokidar';
 import LocalBuilderPlugin from './Plugins/LocalBuilderPlugin';
 import { GET_RAX_APP_WEBPACK_CONFIG } from './constants';
 import { updateEnableStatus } from './utils/localBuildCache';
+import { getDocumentEntryName } from './utils/document';
 
 export default (api, documentPath?: string | undefined) => {
   const { onGetWebpackConfig, getValue, context, registerTask, registerUserConfig, modifyUserConfig } = api;
@@ -118,7 +119,8 @@ export default (api, documentPath?: string | undefined) => {
         }
       }
 
-      config.entry(`document_${entryName}`).add(
+      const documentEntry = getDocumentEntryName(entryName);
+      config.entry(documentEntry).add(
         `${require.resolve('./Loaders/render-loader')}?${qs.stringify({
           documentPath,
           entryPath,

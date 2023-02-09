@@ -7,7 +7,7 @@ import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } fr
 import * as webpackSources from 'webpack-sources';
 import { processAssets, emitAsset } from '@builder/compat-webpack4';
 import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements, genComboedScript } from '../utils/htmlStructure';
-import { setDocument } from '../utils/document';
+import { setDocument, getDocumentEntryName } from '../utils/document';
 import { updateHTMLByEntryName } from '../utils/htmlCache';
 
 const PLUGIN_NAME = 'DocumentPlugin';
@@ -70,7 +70,7 @@ export default class DocumentPlugin {
           });
           let html = '';
           let customDocument = false;
-          const documentEntry = `document_${entryName}.js`;
+          const documentEntry = getDocumentEntryName(entryName);
 
           // PHA will consume document field
           if (documentPath && localBuildAssets[documentEntry]) {

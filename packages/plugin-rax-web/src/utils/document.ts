@@ -20,3 +20,7 @@ export function getDocument({ name, source }) {
   }
   return documentMap[entryName];
 }
+
+export function getDocumentEntryName(entryName: string) {
+  return `document_${entryName.split('/').join('_')}`;
+}
