@@ -118,7 +118,7 @@ export default (api, documentPath?: string | undefined) => {
         }
       }
 
-      config.entry(entryName).add(
+      config.entry(`document_${entryName}`).add(
         `${require.resolve('./Loaders/render-loader')}?${qs.stringify({
           documentPath,
           entryPath,
