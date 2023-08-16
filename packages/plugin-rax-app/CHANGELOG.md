@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.0.14
+- Fix: change `debug(JSON.stringify(configs, ...))` to run only in debug mode, and modify the implement of `stringify` that will cause Node16 Crash when `configs` has many circular reference in `logWebpackConfig.js`
+
 ## 7.0.12
 
 - Feat: breaking change for `rax-webpack-config` to update `postcss-loader`
