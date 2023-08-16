@@ -15,7 +15,10 @@ export interface IPage extends puppeteer.Page {
   $$text?: (selector: string, trim?: boolean) => Promise<(string|null)[]>;
   $attr?: (selector: string, attr: string) => Promise<string|null>;
   $$attr?: (selector: string, attr: string) => Promise<(string|null)[]>;
-  push?: (url: string, options?: puppeteer.DirectNavigationOptions) => Promise<puppeteer.Response>;
+  push?: (url: string, options?: puppeteer.WaitForOptions & {
+    referer?: string;
+    referrerPolicy?: string;
+}) => Promise<puppeteer.HTTPResponse | null>;
 }
 
 export default class Browser {

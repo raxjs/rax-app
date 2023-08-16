@@ -57,7 +57,6 @@ describe('transform jsx to html', () => {
   <View key="view_1" />
 </div>
     `)).toBe(`var _createElement;
-
 [{
   __html: "<div>"
 }, createElement(View, (_createElement = {
