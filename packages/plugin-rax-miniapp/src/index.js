@@ -87,10 +87,7 @@ module.exports = (api) => {
             context,
             outputPath,
             entryPath: './src/app',
-            staticConfig: {
-              ...staticConfig,
-              routes: normalRoutes,
-            },
+            staticConfig,
             nativeRoutes,
           });
         } else if (buildType === MINIAPP_BUILD_TYPES.RUNTIME) {
