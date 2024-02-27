@@ -7,7 +7,7 @@ import { registerListenTask, getAssets, getEnableStatus, updateEnableStatus } fr
 import * as webpackSources from 'webpack-sources';
 import { processAssets, emitAsset } from '@builder/compat-webpack4';
 import { getInjectedHTML, getBuiltInHtmlTpl, insertCommonElements, genComboedScript } from '../utils/htmlStructure';
-import { setDocument } from '../utils/document';
+import { setDocument, getDocumentEntryName } from '../utils/document';
 import { updateHTMLByEntryName } from '../utils/htmlCache';
 
 const PLUGIN_NAME = 'DocumentPlugin';
@@ -70,10 +70,12 @@ export default class DocumentPlugin {
           });
           let html = '';
           let customDocument = false;
+          const documentEntry = getDocumentEntryName(entryName);
+
           // PHA will consume document field
-          if (documentPath && localBuildAssets[`${entryName}.js`]) {
+          if (documentPath && localBuildAssets[documentEntry]) {
             customDocument = true;
-            const bundleContent = localBuildAssets[`${entryName}.js`].source();
+            const bundleContent = localBuildAssets[documentEntry].source();
             const mod = exec(bundleContent, entryPath);
 
             try {
@@ -102,9 +104,9 @@ export default class DocumentPlugin {
           } else {
             let initialHTML;
 
-            if (localBuildAssets[`${entryName}.js`]) {
+            if (localBuildAssets[documentEntry]) {
               customDocument = true;
-              const bundleContent = localBuildAssets[`${entryName}.js`].source();
+              const bundleContent = localBuildAssets[documentEntry].source();
               const mod = exec(bundleContent, entryPath);
               try {
                 initialHTML = mod.renderPage();

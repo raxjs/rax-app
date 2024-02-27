@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.9
+
+- Fix: ssr overwrite document output
+
 ## v2.0.8
 
 - Fix: build-scripts version
