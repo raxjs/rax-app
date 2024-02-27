@@ -23,10 +23,10 @@ const traverseImport = require('./TraverseImport');
  * ```
  */
 
-function mergeSourceMap(map, inputMap) {
+async function mergeSourceMap(map, inputMap) {
   if (inputMap) {
-    const inputMapConsumer = new sourceMap.SourceMapConsumer(inputMap);
-    const outputMapConsumer = new sourceMap.SourceMapConsumer(map);
+    const inputMapConsumer = await new sourceMap.SourceMapConsumer(inputMap);
+    const outputMapConsumer = await new sourceMap.SourceMapConsumer(map);
 
     const mergedGenerator = new sourceMap.SourceMapGenerator({
       file: inputMapConsumer.file,
@@ -59,13 +59,17 @@ function mergeSourceMap(map, inputMap) {
 
     const mergedMap = mergedGenerator.toJSON();
     inputMap.mappings = mergedMap.mappings;
+
+    inputMapConsumer.destroy();
+    outputMapConsumer.destroy();
+
     return inputMap;
   } else {
     return map;
   }
 }
 
-module.exports = function (inputSource, inputSourceMap) {
+module.exports = async function (inputSource, inputSourceMap) {
   this.cacheable();
   const callback = this.async();
 
@@ -73,7 +77,7 @@ module.exports = function (inputSource, inputSourceMap) {
   const { resourcePath } = this;
   const sourceMapTarget = path.basename(resourcePath);
 
-  const options = Object.assign({ name: 'universal-env' }, loaderOptions);
+  const options = Object.assign({ name: 'universal-env', memberExpObjName: '_universalEnv' }, loaderOptions);
 
   if (!options.platform) {
     callback(null, inputSource);
@@ -84,11 +88,15 @@ module.exports = function (inputSource, inputSourceMap) {
     options.name = [options.name];
   }
 
+  if (!Array.isArray(options.memberExpObjName)) {
+    options.memberExpObjName = [options.memberExpObjName];
+  }
+
   const { code, map } = traverseImport(options, inputSource, {
     sourceMaps: true,
     sourceMapTarget,
     sourceFileName: resourcePath,
   });
 
-  callback(null, code, mergeSourceMap(map, inputSourceMap));
+  callback(null, code, await mergeSourceMap(map, inputSourceMap));
 };

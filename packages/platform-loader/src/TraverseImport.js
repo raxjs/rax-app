@@ -150,7 +150,7 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
       // don't remove like: var _universalEnv = {isWeex: false}; if(_universalEnv.isWeex){ xxx }
       // change _universalEnv.isWeex to false
       const { node } = path;
-      if (hasPlatformSpecified && node.object.name === '_universalEnv') {
+      if (hasPlatformSpecified && options.memberExpObjName.indexOf(node.object.name) !== -1) {
         if (platformMap[options.platform].indexOf(node.property.name) >= 0) {
           path.replaceWith(types.Identifier('true'));
         } else {
@@ -188,25 +188,18 @@ module.exports = function traverseImport(options, inputSource, sourceMapOption) 
                 ],
               ));
             } else {
-              const newNodeInit = platformMap[options.platform].indexOf(specObj.imported) >= 0;
-              let newNode = variableDeclarationMethod(
-                specObj.imported,
-                newNodeInit,
-              );
-
-              path.insertAfter(newNode);
-
-              // Support custom alise import:
+              // Support custom alias import:
               // import { isWeex as iw } from 'universal-env';
+              // Correct the logic of next line. Variable "isWeex" can be declared again after alias to "iw”. So, can't insert "const isWeex = true".
               // const isWeex = true;
               // const iw = true;
-              if (specObj.imported !== specObj.local) {
-                newNode = variableDeclarationMethod(
-                  specObj.local,
-                  newNodeInit,
-                );
-                path.insertAfter(newNode);
-              }
+              const newNodeInit = platformMap[options.platform].indexOf(specObj.imported) >= 0;
+              const hasAlias = specObj.imported !== specObj.local;
+              const newNode = variableDeclarationMethod(
+                hasAlias ? specObj.local : specObj.imported,
+                newNodeInit,
+              );
+              path.insertAfter(newNode);
             }
           });
 
