@@ -41,6 +41,7 @@ export default async (api) => {
       });
       // Add KeepAliveRouter
       const RouterComponents = [
+        // @ts-ignore
         <KeepAliveRouter key="rax-keep-alive-router" history={history} routes={keepAliveRoutes} />,
       ];
       const handleTabBarItemClick = useCallback((item) => {

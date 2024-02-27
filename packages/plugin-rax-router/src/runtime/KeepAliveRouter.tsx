@@ -40,7 +40,7 @@ export default function KeepAliveRouter({ history, routes }) {
       });
       return [];
     }
-    return [route];
+    return (keepAliveRoutesRef.current = [route]);
   });
   // Keep-alive routes
   const [keepAliveRoutes, setKeepAliveRoutes] = useState(initialRoutes);
@@ -79,14 +79,11 @@ export default function KeepAliveRouter({ history, routes }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <Fragment>
-      {
-        keepAliveRoutes.map(({ path, component }) =>
-          <div key={path} style={{ display: path === currentPathName ? 'unset' : 'none' }}>{component}</div>)
-      }
-    </Fragment>
-  );
+  return keepAliveRoutes.map(({ path, component }) => (
+    <div key={path} style={{ display: path === currentPathName ? 'unset' : 'none' }}>
+      {component}
+    </div>
+  ));
 }
 
 function isPromise(route: IRoute): boolean {
