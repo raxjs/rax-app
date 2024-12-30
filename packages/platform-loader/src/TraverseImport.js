@@ -15,6 +15,7 @@ const platformMap = {
   'bytedance-microapp': ['isByteDanceMicroApp'],
   'kuaishou-miniprogram': ['isKuaiShouMiniProgram'],
   'baidu-smartprogram': ['isBaiduSmartProgram'],
+  'xhs-miniapp': ['isXhsMiniApp'],
 };
 
 module.exports = function traverseImport(options, inputSource, sourceMapOption) {
